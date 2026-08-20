@@ -15,8 +15,24 @@ if str(BACKEND_ROOT) not in sys.path:
 from g1_teleop.ik_fallback import (  # noqa: E402
     IKFallbackSettings,
     IKFallbackSupervisor,
+    MultiSeedSettings,
     load_ik_fallback_settings,
 )
+
+
+def multiseed(**overrides):
+    values = dict(
+        enabled=True,
+        iterations_per_seed=8,
+        shoulder_yaw_offset_rad=math.radians(22.0),
+        elbow_offset_rad=math.radians(25.0),
+        ready_seed_enabled=True,
+        joint_motion_weight=0.12,
+        joint_margin_weight=0.08,
+        min_improvement_ratio=0.99,
+    )
+    values.update(overrides)
+    return MultiSeedSettings(**values)
 
 
 def settings(**overrides):
@@ -33,9 +49,41 @@ def settings(**overrides):
         orientation_weight_m_per_rad=0.12,
         min_improvement_ratio=0.995,
         allow_during_inspection_contact=False,
+        multiseed=multiseed(),
     )
     values.update(overrides)
     return IKFallbackSettings(**values)
+
+
+def fallback_payload():
+    return {
+        "ik": {
+            "fallback": {
+                "enabled": True,
+                "position_error_enter_m": 0.035,
+                "rotation_error_enter_deg": 12.0,
+                "position_error_exit_m": 0.018,
+                "rotation_error_exit_deg": 6.0,
+                "enter_frames": 5,
+                "inspection_enter_frames": 12,
+                "exit_frames": 15,
+                "damping": 0.06,
+                "orientation_weight_m_per_rad": 0.12,
+                "min_improvement_ratio": 0.995,
+                "allow_during_inspection_contact": False,
+                "multiseed": {
+                    "enabled": True,
+                    "iterations_per_seed": 8,
+                    "shoulder_yaw_offset_deg": 22.0,
+                    "elbow_offset_deg": 25.0,
+                    "ready_seed_enabled": True,
+                    "joint_motion_weight": 0.12,
+                    "joint_margin_weight": 0.08,
+                    "min_improvement_ratio": 0.99,
+                },
+            }
+        }
+    }
 
 
 class IKFallbackSupervisorTest(unittest.TestCase):
@@ -75,25 +123,8 @@ class IKFallbackSupervisorTest(unittest.TestCase):
         self.assertFalse(transition.active)
         self.assertEqual(transition.reason, "disabled")
 
-    def test_loader_validates_hysteresis_thresholds(self):
-        payload = {
-            "ik": {
-                "fallback": {
-                    "enabled": True,
-                    "position_error_enter_m": 0.035,
-                    "rotation_error_enter_deg": 12.0,
-                    "position_error_exit_m": 0.018,
-                    "rotation_error_exit_deg": 6.0,
-                    "enter_frames": 5,
-                    "inspection_enter_frames": 12,
-                    "exit_frames": 15,
-                    "damping": 0.06,
-                    "orientation_weight_m_per_rad": 0.12,
-                    "min_improvement_ratio": 0.995,
-                    "allow_during_inspection_contact": False,
-                }
-            }
-        }
+    def test_loader_reads_multiseed_settings(self):
+        payload = fallback_payload()
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "teleop.json"
             path.write_text(json.dumps(payload), encoding="utf-8")
@@ -101,31 +132,40 @@ class IKFallbackSupervisorTest(unittest.TestCase):
         self.assertTrue(loaded.enabled)
         self.assertEqual(loaded.enter_frames, 5)
         self.assertAlmostEqual(loaded.rotation_error_enter_rad, math.radians(12.0))
+        self.assertTrue(loaded.multiseed.enabled)
+        self.assertEqual(loaded.multiseed.iterations_per_seed, 8)
+        self.assertAlmostEqual(loaded.multiseed.shoulder_yaw_offset_rad, math.radians(22.0))
+        self.assertAlmostEqual(loaded.multiseed.elbow_offset_rad, math.radians(25.0))
+        self.assertAlmostEqual(loaded.multiseed.min_improvement_ratio, 0.99)
 
     def test_loader_rejects_exit_threshold_above_enter_threshold(self):
-        payload = {
-            "ik": {
-                "fallback": {
-                    "enabled": True,
-                    "position_error_enter_m": 0.02,
-                    "rotation_error_enter_deg": 12.0,
-                    "position_error_exit_m": 0.03,
-                    "rotation_error_exit_deg": 6.0,
-                    "enter_frames": 5,
-                    "inspection_enter_frames": 12,
-                    "exit_frames": 15,
-                    "damping": 0.06,
-                    "orientation_weight_m_per_rad": 0.12,
-                    "min_improvement_ratio": 0.995,
-                    "allow_during_inspection_contact": False,
-                }
-            }
-        }
+        payload = fallback_payload()
+        payload["ik"]["fallback"]["position_error_enter_m"] = 0.02
+        payload["ik"]["fallback"]["position_error_exit_m"] = 0.03
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "teleop.json"
             path.write_text(json.dumps(payload), encoding="utf-8")
             with self.assertRaises(ValueError):
                 load_ik_fallback_settings(path)
+
+    def test_loader_rejects_invalid_multiseed_ratio(self):
+        payload = fallback_payload()
+        payload["ik"]["fallback"]["multiseed"]["min_improvement_ratio"] = 1.1
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "teleop.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                load_ik_fallback_settings(path)
+
+    def test_multiseed_can_be_disabled_without_disabling_coupled_fallback(self):
+        payload = fallback_payload()
+        payload["ik"]["fallback"]["multiseed"]["enabled"] = False
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "teleop.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            loaded = load_ik_fallback_settings(path)
+        self.assertTrue(loaded.enabled)
+        self.assertFalse(loaded.multiseed.enabled)
 
 
 if __name__ == "__main__":

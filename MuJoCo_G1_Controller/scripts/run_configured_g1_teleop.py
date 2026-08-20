@@ -16,6 +16,10 @@ from g1_teleop.config import (  # noqa: E402
     apply_to_projected_runtime,
     load_teleop_config,
 )
+from g1_teleop.ik_fallback import (  # noqa: E402
+    install_coupled_ik_fallback,
+    load_ik_fallback_settings,
+)
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
 
@@ -27,12 +31,14 @@ TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 def main() -> None:
     config = load_teleop_config(TELEOP_CONFIG_PATH)
+    fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
     apply_to_base_module(base, config)
     install_runtime_collision_policy(base, config)
     inspection_machine = install_inspection_contact_monitor(base, config)
+    fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
 
-    # Import only after base tuning values and safety hooks are applied so the
-    # projected runtime reuses one validated configuration and one policy stack.
+    # Import only after tuning and safety/IK hooks are applied so the projected
+    # runtime observes one configured policy stack.
     import g1_right_arm_udp_ik_runtime as runtime
 
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
@@ -44,6 +50,10 @@ def main() -> None:
     print(
         "Inspection contact state: "
         + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
+    )
+    print(
+        "IK strategy: decoupled primary + coupled 7-DoF fallback "
+        + ("enabled" if fallback_supervisor.settings.enabled else "disabled")
     )
     runtime.main()
 

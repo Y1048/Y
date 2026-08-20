@@ -7,6 +7,7 @@ import json
 import math
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 import mujoco
@@ -14,9 +15,14 @@ import numpy as np
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parents[1]
+BACKEND_ROOT = PROJECT_ROOT / "backend"
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
 
+from g1_teleop.collision_policy import RightArmCollisionPolicy  # noqa: E402
 from g1_right_arm_udp_ik_demo import (  # noqa: E402
     RIGHT_ARM_JOINTS,
     RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES,
@@ -32,31 +38,27 @@ DEFAULT_SUMMARY = Path("logs/workspace/right_arm_workspace_summary.json")
 DEFAULT_SAMPLES = 200_000
 SAFE_MIN_SINGULAR_VALUE = 0.035
 SAFE_NORMALIZED_JOINT_MARGIN = 0.08
+DANGEROUS_CONTACT_STATUSES = {
+    "right_arm_self_collision",
+    "right_arm_robot_collision",
+}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Sample collision-free G1 right-arm joint configurations and save "
-            "their reachable wrist workspace without launching a viewer."
-        )
+        description="Sample the collision-free reachable workspace of the G1 right arm."
     )
     parser.add_argument("--samples", type=int, default=DEFAULT_SAMPLES)
     parser.add_argument("--seed", type=int, default=1048)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--summary", type=Path, default=DEFAULT_SUMMARY)
     parser.add_argument("--progress-every", type=int, default=10_000)
+    parser.add_argument("--safe-min-singular-value", type=float, default=SAFE_MIN_SINGULAR_VALUE)
+    parser.add_argument("--safe-joint-margin", type=float, default=SAFE_NORMALIZED_JOINT_MARGIN)
     parser.add_argument(
-        "--safe-min-singular-value",
-        type=float,
-        default=SAFE_MIN_SINGULAR_VALUE,
-        help="minimum positional Jacobian singular value for SAFE classification",
-    )
-    parser.add_argument(
-        "--safe-joint-margin",
-        type=float,
-        default=SAFE_NORMALIZED_JOINT_MARGIN,
-        help="minimum normalized distance to every sampled joint limit",
+        "--diagnose-only",
+        action="store_true",
+        help="only sample contacts and print the most frequent body pairs",
     )
     return parser.parse_args()
 
@@ -89,38 +91,6 @@ def normalized_joint_margin(q: np.ndarray, lower: np.ndarray, upper: np.ndarray)
     return float(np.min(distance_to_nearest_limit / span))
 
 
-def robot_body_ids(model) -> set[int]:
-    ids: set[int] = set()
-    for body_id in range(1, model.nbody):
-        name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
-        if name is not None:
-            ids.add(body_id)
-    return ids
-
-
-def has_right_arm_robot_contact(model, data, right_arm_body_ids: set[int], all_robot_body_ids: set[int]) -> bool:
-    """Return True for any MuJoCo-enabled contact between the right arm and robot.
-
-    The generated workspace scene disables the floor/panel collision masks, so
-    contacts involving world body 0 are ignored. MuJoCo's model-level contact
-    filtering remains authoritative for adjacent-link exclusions.
-    """
-    for contact_index in range(data.ncon):
-        contact = data.contact[contact_index]
-        first_body = int(model.geom_bodyid[contact.geom1])
-        second_body = int(model.geom_bodyid[contact.geom2])
-        if first_body == second_body:
-            continue
-        first_is_arm = first_body in right_arm_body_ids
-        second_is_arm = second_body in right_arm_body_ids
-        if not (first_is_arm or second_is_arm):
-            continue
-        other_body = second_body if first_is_arm else first_body
-        if other_body in all_robot_body_ids:
-            return True
-    return False
-
-
 def positional_quality(model, data, context) -> tuple[float, float]:
     jacp = np.zeros((3, model.nv), dtype=float)
     jacr = np.zeros((3, model.nv), dtype=float)
@@ -149,13 +119,36 @@ def classify_sample(
     return 2
 
 
-def percentile_bounds(points: np.ndarray, low_percentile: float = 0.5, high_percentile: float = 99.5) -> dict[str, list[float]]:
+def percentile_bounds(points: np.ndarray) -> dict[str, list[float]]:
     if len(points) == 0:
         return {"low": [0.0, 0.0, 0.0], "high": [0.0, 0.0, 0.0]}
     return {
-        "low": np.percentile(points, low_percentile, axis=0).tolist(),
-        "high": np.percentile(points, high_percentile, axis=0).tolist(),
+        "low": np.percentile(points, 0.5, axis=0).tolist(),
+        "high": np.percentile(points, 99.5, axis=0).tolist(),
     }
+
+
+def body_name(model, body_id: int) -> str:
+    if body_id == 0:
+        return "world"
+    name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, int(body_id))
+    return name or f"body_{body_id}"
+
+
+def contact_diagnostics(model, counter: Counter, limit: int = 20) -> list[dict[str, object]]:
+    rows = []
+    for ((first_body, second_body), status), count in counter.most_common(limit):
+        rows.append(
+            {
+                "first_body_id": int(first_body),
+                "second_body_id": int(second_body),
+                "first_body": body_name(model, first_body),
+                "second_body": body_name(model, second_body),
+                "status": status,
+                "count": int(count),
+            }
+        )
+    return rows
 
 
 def main() -> None:
@@ -174,9 +167,10 @@ def main() -> None:
     right_qpos_ids = context["right_qpos_ids"]
     lower, upper = right_arm_joint_limits(model)
     rng = np.random.default_rng(args.seed)
-
-    right_arm_body_ids = set(context["right_arm_body_ids"])
-    all_robot_body_ids = robot_body_ids(model)
+    collision_policy = RightArmCollisionPolicy.from_model(
+        model,
+        context["right_arm_body_ids"],
+    )
 
     positions = np.empty((args.samples, 3), dtype=np.float32)
     joint_positions = np.empty((args.samples, len(RIGHT_ARM_JOINTS)), dtype=np.float32)
@@ -184,6 +178,11 @@ def main() -> None:
     manipulability = np.empty(args.samples, dtype=np.float32)
     joint_margins = np.empty(args.samples, dtype=np.float32)
     classes = np.empty(args.samples, dtype=np.uint8)
+    contact_counter: Counter = Counter()
+    collision_status_counter: Counter = Counter()
+
+    # Diagnose the ready pose before random sampling.
+    ready_contacts = collision_policy.count_contacts(model, data)
 
     start = time.perf_counter()
     for sample_index in range(args.samples):
@@ -194,12 +193,20 @@ def main() -> None:
         data.qvel[:] = 0.0
         mujoco.mj_forward(model, data)
 
-        collision = has_right_arm_robot_contact(
-            model,
-            data,
-            right_arm_body_ids,
-            all_robot_body_ids,
-        )
+        observations = collision_policy.observe_contacts(model, data)
+        collision = False
+        for observation in observations:
+            contact_counter[(observation.pair, observation.status)] += 1
+            collision_status_counter[observation.status] += 1
+            if observation.status in DANGEROUS_CONTACT_STATUSES:
+                collision = True
+
+        if args.diagnose_only:
+            completed = sample_index + 1
+            if completed % args.progress_every == 0 or completed == args.samples:
+                print(f"{completed:,}/{args.samples:,} diagnostic samples")
+            continue
+
         min_sv, manip = positional_quality(model, data, context)
         margin = normalized_joint_margin(q, lower, upper)
         sample_class = classify_sample(
@@ -220,12 +227,23 @@ def main() -> None:
         completed = sample_index + 1
         if completed % args.progress_every == 0 or completed == args.samples:
             elapsed = max(time.perf_counter() - start, 1e-9)
-            rate = completed / elapsed
             print(
                 f"{completed:,}/{args.samples:,} samples "
                 f"({100.0 * completed / args.samples:5.1f}%) "
-                f"{rate:,.0f} samples/s"
+                f"{completed / elapsed:,.0f} samples/s"
             )
+
+    diagnostic_summary = {
+        "ready_pose_contacts": contact_diagnostics(model, ready_contacts),
+        "sampled_contact_status_counts": {
+            str(key): int(value) for key, value in collision_status_counter.items()
+        },
+        "top_sampled_contact_pairs": contact_diagnostics(model, contact_counter),
+    }
+
+    if args.diagnose_only:
+        print(json.dumps(diagnostic_summary, indent=2))
+        return
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(
@@ -277,6 +295,7 @@ def main() -> None:
             "safe_min_singular_value": args.safe_min_singular_value,
             "safe_normalized_joint_margin": args.safe_joint_margin,
         },
+        "contact_diagnostics": diagnostic_summary,
         "output_npz": str(args.output),
     }
     args.summary.parent.mkdir(parents=True, exist_ok=True)
@@ -285,6 +304,8 @@ def main() -> None:
     print(f"Saved workspace samples: {args.output}")
     print(f"Saved summary: {args.summary}")
     print(json.dumps(summary["classification"], indent=2))
+    print("Top contact pairs:")
+    print(json.dumps(diagnostic_summary["top_sampled_contact_pairs"][:10], indent=2))
 
 
 if __name__ == "__main__":

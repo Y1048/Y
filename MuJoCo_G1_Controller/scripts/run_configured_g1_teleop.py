@@ -51,10 +51,13 @@ def main() -> None:
         "Inspection contact state: "
         + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
     )
-    print(
-        "IK strategy: decoupled primary + coupled 7-DoF fallback "
-        + ("enabled" if fallback_supervisor.settings.enabled else "disabled")
-    )
+    if fallback_supervisor.settings.enabled:
+        strategy = "decoupled primary + coupled 7-DoF fallback"
+        if fallback_supervisor.settings.multiseed.enabled:
+            strategy += " + multi-seed search"
+        print(f"IK strategy: {strategy}")
+    else:
+        print("IK strategy: decoupled only (fallback disabled)")
     runtime.main()
 
 

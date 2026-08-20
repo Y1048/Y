@@ -30,6 +30,8 @@
       "enabled": true,
       "position_error_enter_m": 0.035,
       "rotation_error_enter_deg": 12.0,
+      "severe_position_error_m": 0.05,
+      "severe_rotation_error_deg": 25.0,
       "position_error_exit_m": 0.018,
       "rotation_error_exit_deg": 6.0,
       "enter_frames": 5,

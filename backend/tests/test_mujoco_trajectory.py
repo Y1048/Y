@@ -70,7 +70,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         maximum_rotation_error = 0.0
         maximum_joint_step = 0.0
         minimum_elbow_angle = float("inf")
-        workspace_failures = 0
+        relative_workspace_failures = 0
         collision_limited_frames = 0
 
         for frame_index in range(frame_count):
@@ -84,12 +84,15 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
             requested_delta = (
                 desired_position - clutch_reference["robot_position"]
             )
-            workspace_safe = (
-                CONTROLLER.is_clutch_delta_within_workspace(requested_delta)
-                and CONTROLLER.is_right_wrist_target_safe(desired_position)
-            )
-            if not workspace_safe:
-                workspace_failures += 1
+
+            # The projected-workspace runtime intentionally replaces the legacy
+            # coarse absolute torso keep-out with the sampled voxel workspace.
+            # This trajectory test imports the legacy helper module directly and
+            # has no workspace NPZ, so only verify that the fake VR motion stays
+            # within the clutch-relative envelope here. Workspace projection and
+            # collision safety have dedicated tests.
+            if not CONTROLLER.is_clutch_delta_within_workspace(requested_delta):
+                relative_workspace_failures += 1
                 continue
 
             safe_position = CONTROLLER.update_safe_position_reference(
@@ -143,7 +146,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
             if context["collision_limited"]:
                 collision_limited_frames += 1
 
-        self.assertEqual(workspace_failures, 0)
+        self.assertEqual(relative_workspace_failures, 0)
         self.assertEqual(collision_limited_frames, 0)
         self.assertLessEqual(maximum_tracking_error, 0.01)
         self.assertLessEqual(maximum_rotation_error, math.radians(2.0))

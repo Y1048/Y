@@ -54,10 +54,6 @@ FAKE_SENDER = load_module("udp_fake_vr_sender_trajectory", FAKE_SENDER_PATH)
 
 class MuJoCoTrajectoryTest(unittest.TestCase):
     def test_fake_vr_path_stays_humanlike_and_trackable(self):
-        # Mirror the configured live solver stack instead of testing the raw
-        # legacy decoupled helper in isolation. The projected runtime applies the
-        # same config, task-aware collision policy, inspection monitor, and
-        # coupled/multi-seed fallback before control starts.
         config = load_teleop_config(TELEOP_CONFIG_PATH)
         fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
         apply_to_base_module(CONTROLLER, config)
@@ -65,10 +61,6 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         install_inspection_contact_monitor(CONTROLLER, config)
         install_coupled_ik_fallback(CONTROLLER, fallback_settings)
 
-        # The voxel workspace is authoritative in the projected runtime and
-        # replaces the legacy coarse absolute torso keep-out. This test has no
-        # dependency on the generated NPZ, so mirror that runtime condition by
-        # disabling only the obsolete absolute target guard for this trajectory.
         original_wrist_guard = CONTROLLER.is_right_wrist_target_safe
         CONTROLLER.is_right_wrist_target_safe = lambda target: True
         self.addCleanup(
@@ -111,6 +103,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         relative_workspace_failures = 0
         collision_limited_frames = 0
         fallback_frames = 0
+        maximum_error_diagnostic = None
 
         for frame_index in range(frame_count):
             elapsed_time = min(frame_index * delta_time, total_duration)
@@ -169,7 +162,53 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
             )))
             previous_joint_positions = joint_positions
 
-            maximum_tracking_error = max(maximum_tracking_error, tracking_error)
+            if tracking_error > maximum_tracking_error:
+                maximum_tracking_error = tracking_error
+                supervisor = getattr(CONTROLLER, "IK_FALLBACK_SUPERVISOR", None)
+                maximum_error_diagnostic = {
+                    "frame": frame_index,
+                    "elapsed_s": round(elapsed_time, 6),
+                    "tracking_error_m": tracking_error,
+                    "rotation_error_deg": math.degrees(rotation_error),
+                    "ik_mode": getattr(CONTROLLER, "RUNTIME_IK_MODE", None),
+                    "fallback_active": getattr(
+                        CONTROLLER, "RUNTIME_IK_FALLBACK_ACTIVE", None
+                    ),
+                    "fallback_bad_frames": (
+                        getattr(supervisor, "bad_frames", None)
+                        if supervisor is not None
+                        else None
+                    ),
+                    "fallback_good_frames": (
+                        getattr(supervisor, "good_frames", None)
+                        if supervisor is not None
+                        else None
+                    ),
+                    "decoupled_score": getattr(
+                        CONTROLLER, "RUNTIME_IK_DECOUPLED_SCORE", None
+                    ),
+                    "coupled_score": getattr(
+                        CONTROLLER, "RUNTIME_IK_COUPLED_SCORE", None
+                    ),
+                    "multiseed_score": getattr(
+                        CONTROLLER, "RUNTIME_IK_MULTI_SEED_SCORE", None
+                    ),
+                    "selected_seed": getattr(
+                        CONTROLLER, "RUNTIME_IK_SELECTED_SEED", None
+                    ),
+                    "collision_status": getattr(
+                        CONTROLLER, "RUNTIME_COLLISION_NEAREST_STATUS", None
+                    ),
+                    "collision_clearance_m": getattr(
+                        CONTROLLER, "RUNTIME_COLLISION_CLEARANCE_M", None
+                    ),
+                    "safe_position": np.asarray(safe_position).tolist(),
+                    "wrist_position": np.asarray(wrist_position).tolist(),
+                    "seed_diagnostics": getattr(
+                        CONTROLLER, "RUNTIME_IK_SEED_DIAGNOSTICS", []
+                    ),
+                }
+
             maximum_rotation_error = max(maximum_rotation_error, rotation_error)
             maximum_joint_step = max(maximum_joint_step, joint_step)
             minimum_elbow_angle = min(
@@ -183,7 +222,11 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
 
         self.assertEqual(relative_workspace_failures, 0)
         self.assertEqual(collision_limited_frames, 0)
-        self.assertLessEqual(maximum_tracking_error, 0.01)
+        self.assertLessEqual(
+            maximum_tracking_error,
+            0.01,
+            msg=f"maximum tracking error diagnostic: {maximum_error_diagnostic}",
+        )
         self.assertLessEqual(maximum_rotation_error, math.radians(2.0))
         self.assertLessEqual(maximum_joint_step, math.radians(1.5))
         self.assertGreaterEqual(minimum_elbow_angle, math.radians(10.0))

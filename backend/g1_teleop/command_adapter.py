@@ -28,6 +28,17 @@ class InternalCommand:
         return self.mode == "workspace_exit"
 
 
+def _decode_object(payload: bytes | str, label: str) -> tuple[str, dict[str, object]]:
+    try:
+        text = payload.decode("utf-8") if isinstance(payload, bytes) else payload
+        value = json.loads(text)
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ProtocolError(f"{label} is not valid UTF-8 JSON") from error
+    if not isinstance(value, dict):
+        raise ProtocolError(f"{label} must be a JSON object")
+    return text, value
+
+
 def _legacy_integer(value: object, field_name: str) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value < 0:
         raise ProtocolError(f"{field_name} must be a non-negative integer")
@@ -44,16 +55,7 @@ def _legacy_vector(value: object, length: int, field_name: str) -> np.ndarray:
     return result
 
 
-def parse_legacy_command(payload: bytes | str) -> InternalCommand:
-    try:
-        if isinstance(payload, bytes):
-            payload = payload.decode("utf-8")
-        value = json.loads(payload)
-    except (UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise ProtocolError("legacy packet is not valid UTF-8 JSON") from error
-
-    if not isinstance(value, dict):
-        raise ProtocolError("legacy packet must be a JSON object")
+def _parse_legacy_value(value: dict[str, object]) -> InternalCommand:
     if "schema" in value:
         raise ProtocolError("legacy packet must not contain schema")
 
@@ -104,6 +106,11 @@ def parse_legacy_command(payload: bytes | str) -> InternalCommand:
     )
 
 
+def parse_legacy_command(payload: bytes | str) -> InternalCommand:
+    _, value = _decode_object(payload, "legacy packet")
+    return _parse_legacy_value(value)
+
+
 def parse_v2_command(payload: bytes | str) -> InternalCommand:
     packet = PosePacketV2.from_json(payload)
     valid = (
@@ -126,19 +133,15 @@ def parse_v2_command(payload: bytes | str) -> InternalCommand:
 
 
 def parse_command_packet(payload: bytes | str) -> InternalCommand:
-    """Parse a packet without silently treating unknown schemas as legacy."""
-    try:
-        text = payload.decode("utf-8") if isinstance(payload, bytes) else payload
-        value = json.loads(text)
-    except (UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise ProtocolError("command packet is not valid UTF-8 JSON") from error
+    """Parse a packet without silently treating unknown schemas as legacy.
 
-    if not isinstance(value, dict):
-        raise ProtocolError("command packet must be a JSON object")
-
+    Legacy traffic is the current hot path, so it is decoded only once here.
+    V2 remains strict and delegates schema validation to ``PosePacketV2``.
+    """
+    text, value = _decode_object(payload, "command packet")
     schema = value.get("schema")
     if schema is None:
-        return parse_legacy_command(text)
+        return _parse_legacy_value(value)
     if schema == POSE_SCHEMA_V2:
         return parse_v2_command(text)
     raise ProtocolError(f"unsupported command schema: {schema}")

@@ -29,6 +29,7 @@ from .g1_camera_mount import (
     G1_D435I_VERTICAL_FOV_DEG,
     add_g1_d435i_camera,
 )
+from .performance import ScalarMetric, TeleopPerformanceMonitor
 from .protocol import PosePacketV1, PosePacketV2, StatePacketV1, StatePacketV2
 from .runtime_state import RuntimeTransition, TeleopRuntimeStateMachine
 from .unitree_image_transport import UnitreeSimImageWriter
@@ -63,10 +64,12 @@ __all__ = [
     "RealSenseD435iSource",
     "ReceiveBatch",
     "RuntimeTransition",
+    "ScalarMetric",
     "SequenceWatchdog",
     "SessionSequenceWatchdog",
     "StatePacketV1",
     "StatePacketV2",
+    "TeleopPerformanceMonitor",
     "TeleopRuntimeStateMachine",
     "WorkspaceScaleEstimator",
     "WorkspaceExitDebounce",

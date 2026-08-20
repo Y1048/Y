@@ -25,7 +25,21 @@
     "posture_gain": 0.08,
     "elbow_pole_gain": 0.65,
     "elbow_pole_damping": 0.08,
-    "elbow_avoidance_weight": 0.85
+    "elbow_avoidance_weight": 0.85,
+    "fallback": {
+      "enabled": true,
+      "position_error_enter_m": 0.035,
+      "rotation_error_enter_deg": 12.0,
+      "position_error_exit_m": 0.018,
+      "rotation_error_exit_deg": 6.0,
+      "enter_frames": 5,
+      "inspection_enter_frames": 12,
+      "exit_frames": 15,
+      "damping": 0.06,
+      "orientation_weight_m_per_rad": 0.12,
+      "min_improvement_ratio": 0.995,
+      "allow_during_inspection_contact": false
+    }
   },
   "collision": {
     "margin_m": 0.015,

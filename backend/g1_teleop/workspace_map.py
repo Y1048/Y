@@ -9,6 +9,14 @@ from typing import Iterable
 import numpy as np
 
 
+# NPZ workspace samples are stored as float32. Values that are mathematically on
+# a voxel boundary (for example -0.20 m at 10 mm resolution) can therefore load
+# as -0.20000000298... and floor into the neighboring negative voxel. Apply a
+# tiny tolerance in voxel-coordinate space so serialization precision does not
+# change occupancy. The tolerance is far smaller than any physical resolution.
+_VOXEL_INDEX_EPSILON = 1e-6
+
+
 @dataclass(frozen=True)
 class WorkspaceProjection:
     operator_target: np.ndarray
@@ -37,9 +45,12 @@ class VoxelWorkspaceMap:
             raise ValueError("voxel_size_m must be positive")
 
         self.voxel_size_m = float(voxel_size_m)
-        self.origin_m = np.floor(points.min(axis=0) / self.voxel_size_m) * self.voxel_size_m
+        minimum_voxel_index = np.floor(
+            points.min(axis=0) / self.voxel_size_m + _VOXEL_INDEX_EPSILON
+        ).astype(np.int64)
+        self.origin_m = minimum_voxel_index.astype(float) * self.voxel_size_m
         voxel_indices = np.floor(
-            (points - self.origin_m) / self.voxel_size_m
+            (points - self.origin_m) / self.voxel_size_m + _VOXEL_INDEX_EPSILON
         ).astype(np.int32)
         self.safe_voxel_indices = np.unique(voxel_indices, axis=0)
         self.safe_voxel_centers_m = (
@@ -86,7 +97,9 @@ class VoxelWorkspaceMap:
         point = np.asarray(point_m, dtype=float)
         if point.shape != (3,) or not np.all(np.isfinite(point)):
             raise ValueError("point_m must be a finite 3-vector")
-        index = np.floor((point - self.origin_m) / self.voxel_size_m).astype(np.int32)
+        index = np.floor(
+            (point - self.origin_m) / self.voxel_size_m + _VOXEL_INDEX_EPSILON
+        ).astype(np.int32)
         return tuple(int(value) for value in index)
 
     def contains_safe(self, point_m: np.ndarray) -> bool:

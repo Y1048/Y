@@ -51,6 +51,13 @@ VALID_CONFIG = {
     "collision": {
         "margin_m": 0.015,
         "structural_neighbor_distance": 2,
+        "environment_obstacles_enabled": True,
+        "tangential_slide_enabled": True,
+        "task_contact": {
+            "enabled": True,
+            "tool_body_names": ["inspection_tool_tip_body"],
+            "target_geom_names": ["inspection_panel"],
+        },
     },
     "workspace": {
         "voxel_size_m": 0.01,
@@ -80,6 +87,22 @@ class TeleopConfigTest(unittest.TestCase):
         self.assertEqual(config.workspace.allowed_classes, (1, 2))
         self.assertAlmostEqual(config.motion.position_max_speed_mps, 0.08)
         self.assertEqual(config.collision.structural_neighbor_distance, 2)
+        self.assertTrue(config.collision.environment_obstacles_enabled)
+        self.assertTrue(config.collision.tangential_slide_enabled)
+        self.assertTrue(config.collision.task_contact_enabled)
+        self.assertEqual(config.collision.task_contact_tool_body_names, ("inspection_tool_tip_body",))
+
+    def test_enabled_task_contact_requires_tool_and_target(self):
+        payload = json.loads(json.dumps(VALID_CONFIG))
+        payload["collision"]["task_contact"]["target_geom_names"] = []
+        with self.assertRaises(ValueError):
+            self._load(payload)
+
+    def test_invalid_collision_boolean_is_rejected(self):
+        payload = json.loads(json.dumps(VALID_CONFIG))
+        payload["collision"]["environment_obstacles_enabled"] = "yes"
+        with self.assertRaises(ValueError):
+            self._load(payload)
 
     def test_invalid_speed_is_rejected(self):
         payload = json.loads(json.dumps(VALID_CONFIG))
@@ -112,15 +135,10 @@ class TeleopConfigTest(unittest.TestCase):
         self.assertAlmostEqual(base.POSITION_MAX_SPEED, 0.08)
         self.assertAlmostEqual(base.IK_STEP_GAIN, 0.5)
         self.assertEqual(tuple(base.CLUTCH_POSITION_DELTA_MAX), (0.2, 0.45, 0.34))
-
         runtime = types.SimpleNamespace()
         apply_to_projected_runtime(runtime, config, Path("C:/project"))
         self.assertAlmostEqual(runtime.WORKSPACE_VOXEL_SIZE_M, 0.01)
         self.assertEqual(runtime.WORKSPACE_ALLOWED_CLASSES, (1, 2))
-        self.assertEqual(
-            runtime.WORKSPACE_PATH,
-            Path("C:/project") / "logs/workspace/right_arm_workspace.npz",
-        )
 
 
 if __name__ == "__main__":

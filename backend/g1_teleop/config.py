@@ -50,6 +50,11 @@ class IKConfig:
 class CollisionConfig:
     margin_m: float
     structural_neighbor_distance: int
+    environment_obstacles_enabled: bool
+    tangential_slide_enabled: bool
+    task_contact_enabled: bool
+    task_contact_tool_body_names: tuple[str, ...]
+    task_contact_target_geom_names: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -102,6 +107,12 @@ def _integer(value: Any, name: str, *, minimum: int | None = None) -> int:
     return int(value)
 
 
+def _boolean(value: Any, name: str) -> bool:
+    if not isinstance(value, bool):
+        raise ValueError(f"{name} must be a boolean")
+    return value
+
+
 def _port(value: Any, name: str) -> int:
     port = _integer(value, name, minimum=1)
     if port > 65535:
@@ -113,6 +124,15 @@ def _string(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{name} must be a non-empty string")
     return value.strip()
+
+
+def _string_tuple(value: Any, name: str) -> tuple[str, ...]:
+    if not isinstance(value, list):
+        raise ValueError(f"{name} must be an array")
+    result = tuple(_string(item, f"{name}[{index}]") for index, item in enumerate(value))
+    if len(set(result)) != len(result):
+        raise ValueError(f"{name} must not contain duplicates")
+    return result
 
 
 def _vector(value: Any, name: str, size: int) -> tuple[float, ...]:
@@ -136,6 +156,7 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
     motion = _mapping(root.get("motion"), "motion")
     ik = _mapping(root.get("ik"), "ik")
     collision = _mapping(root.get("collision"), "collision")
+    task_contact = _mapping(collision.get("task_contact"), "collision.task_contact")
     workspace = _mapping(root.get("workspace"), "workspace")
 
     allowed_raw = workspace.get("allowed_classes")
@@ -159,6 +180,12 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
     torso_z = _vector(workspace.get("torso_keep_out_z_m"), "workspace.torso_keep_out_z_m", 2)
     if torso_x[0] >= torso_x[1] or torso_z[0] >= torso_z[1]:
         raise ValueError("workspace torso keep-out ranges must be ordered")
+
+    task_contact_enabled = _boolean(task_contact.get("enabled"), "collision.task_contact.enabled")
+    tool_body_names = _string_tuple(task_contact.get("tool_body_names"), "collision.task_contact.tool_body_names")
+    target_geom_names = _string_tuple(task_contact.get("target_geom_names"), "collision.task_contact.target_geom_names")
+    if task_contact_enabled and (not tool_body_names or not target_geom_names):
+        raise ValueError("enabled task contact requires at least one tool body and target geom")
 
     return TeleopConfig(
         network=NetworkConfig(
@@ -190,8 +217,13 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
             elbow_avoidance_weight=_number(ik.get("elbow_avoidance_weight"), "ik.elbow_avoidance_weight", nonnegative=True),
         ),
         collision=CollisionConfig(
-            margin_m=_number(collision.get("margin_m"), "collision.margin_m", nonnegative=True),
+            margin_m=_number(collision.get("margin_m"), "collision.margin_m", positive=True),
             structural_neighbor_distance=_integer(collision.get("structural_neighbor_distance"), "collision.structural_neighbor_distance", minimum=1),
+            environment_obstacles_enabled=_boolean(collision.get("environment_obstacles_enabled"), "collision.environment_obstacles_enabled"),
+            tangential_slide_enabled=_boolean(collision.get("tangential_slide_enabled"), "collision.tangential_slide_enabled"),
+            task_contact_enabled=task_contact_enabled,
+            task_contact_tool_body_names=tool_body_names,
+            task_contact_target_geom_names=target_geom_names,
         ),
         workspace=WorkspaceConfig(
             voxel_size_m=_number(workspace.get("voxel_size_m"), "workspace.voxel_size_m", positive=True),

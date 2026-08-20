@@ -29,7 +29,18 @@
   },
   "collision": {
     "margin_m": 0.015,
-    "structural_neighbor_distance": 2
+    "structural_neighbor_distance": 2,
+    "environment_obstacles_enabled": true,
+    "tangential_slide_enabled": true,
+    "task_contact": {
+      "enabled": true,
+      "tool_body_names": [
+        "inspection_tool_tip_body"
+      ],
+      "target_geom_names": [
+        "inspection_panel"
+      ]
+    }
   },
   "workspace": {
     "voxel_size_m": 0.01,

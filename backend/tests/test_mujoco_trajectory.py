@@ -38,6 +38,7 @@ from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
     load_ik_fallback_settings,
 )
+from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
 
@@ -66,6 +67,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         install_inspection_contact_monitor(CONTROLLER, config)
         install_coupled_ik_fallback(CONTROLLER, fallback_settings)
         install_severe_ik_fallback_trigger(CONTROLLER, severe_fallback_settings)
+        install_primary_task_guard(CONTROLLER)
 
         original_wrist_guard = CONTROLLER.is_right_wrist_target_safe
         CONTROLLER.is_right_wrist_target_safe = lambda target: True
@@ -110,6 +112,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         collision_limited_frames = 0
         fallback_frames = 0
         severe_trigger_frames = 0
+        primary_guard_frames = 0
         maximum_error_diagnostic = None
 
         for frame_index in range(frame_count):
@@ -187,6 +190,15 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
                     "severe_reason": getattr(
                         CONTROLLER, "RUNTIME_IK_SEVERE_REASON", None
                     ),
+                    "primary_guard_reverted": getattr(
+                        CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_REVERTED", None
+                    ),
+                    "primary_guard_start_error_m": getattr(
+                        CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M", None
+                    ),
+                    "primary_guard_candidate_error_m": getattr(
+                        CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M", None
+                    ),
                     "fallback_bad_frames": (
                         getattr(supervisor, "bad_frames", None)
                         if supervisor is not None
@@ -234,6 +246,8 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
                 fallback_frames += 1
             if getattr(CONTROLLER, "RUNTIME_IK_SEVERE_TRIGGERED", False):
                 severe_trigger_frames += 1
+            if getattr(CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_REVERTED", False):
+                primary_guard_frames += 1
 
         self.assertEqual(relative_workspace_failures, 0)
         self.assertEqual(collision_limited_frames, 0)
@@ -247,6 +261,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         self.assertGreaterEqual(minimum_elbow_angle, math.radians(10.0))
         self.assertGreaterEqual(fallback_frames, 0)
         self.assertGreaterEqual(severe_trigger_frames, 0)
+        self.assertGreaterEqual(primary_guard_frames, 0)
 
 
 if __name__ == "__main__":

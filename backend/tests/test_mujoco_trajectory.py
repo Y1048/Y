@@ -73,78 +73,85 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         relative_workspace_failures = 0
         collision_limited_frames = 0
 
-        for frame_index in range(frame_count):
-            elapsed_time = min(frame_index * delta_time, total_duration)
-            input_position, input_rotation = FAKE_SENDER.sample_motion(elapsed_time)
-            desired_position, _ = CONTROLLER.calculate_clutched_target(
-                clutch_reference,
-                np.asarray(input_position, dtype=float),
-                np.asarray(input_rotation, dtype=float),
-            )
-            requested_delta = (
-                desired_position - clutch_reference["robot_position"]
-            )
-
-            # The projected-workspace runtime intentionally replaces the legacy
-            # coarse absolute torso keep-out with the sampled voxel workspace.
-            # This trajectory test imports the legacy helper module directly and
-            # has no workspace NPZ, so only verify that the fake VR motion stays
-            # within the clutch-relative envelope here. Workspace projection and
-            # collision safety have dedicated tests.
-            if not CONTROLLER.is_clutch_delta_within_workspace(requested_delta):
-                relative_workspace_failures += 1
-                continue
-
-            safe_position = CONTROLLER.update_safe_position_reference(
-                safe_position,
-                desired_position,
-                delta_time,
-            )
-            safe_rotation = CONTROLLER.update_safe_rotation_reference(
-                safe_rotation,
-                np.asarray(input_rotation, dtype=float),
-                delta_time,
-            )
-            _, target_rotation = CONTROLLER.calculate_clutched_target(
-                clutch_reference,
-                np.asarray(input_position, dtype=float),
-                safe_rotation,
-            )
-            CONTROLLER.solve_right_arm_target(
-                model,
-                data,
-                initial_qpos,
-                preferred,
-                safe_position,
-                target_rotation=target_rotation,
-                context=context,
-                elbow_pole_reference=clutch_reference["elbow_pole"],
-            )
-
-            wrist_position = data.xpos[position_body].copy()
-            wrist_rotation = data.xmat[orientation_body].reshape(3, 3).copy()
-            tracking_error = float(np.linalg.norm(safe_position - wrist_position))
-            rotation_error = float(np.linalg.norm(
-                CONTROLLER.calculate_rotation_error(
-                    target_rotation,
-                    wrist_rotation,
+        # The projected-workspace runtime disables the old coarse absolute wrist
+        # keep-out after loading the sampled voxel map. This test imports the
+        # legacy helper module directly, so mirror that runtime condition while
+        # exercising the same IK trajectory. Restore the helper afterward so
+        # other tests keep their original legacy behavior.
+        original_wrist_guard = CONTROLLER.is_right_wrist_target_safe
+        CONTROLLER.is_right_wrist_target_safe = lambda target: True
+        try:
+            for frame_index in range(frame_count):
+                elapsed_time = min(frame_index * delta_time, total_duration)
+                input_position, input_rotation = FAKE_SENDER.sample_motion(elapsed_time)
+                desired_position, _ = CONTROLLER.calculate_clutched_target(
+                    clutch_reference,
+                    np.asarray(input_position, dtype=float),
+                    np.asarray(input_rotation, dtype=float),
                 )
-            ))
-            joint_positions = data.qpos[context["right_qpos_ids"]].copy()
-            joint_step = float(np.max(np.abs(
-                joint_positions - previous_joint_positions
-            )))
-            previous_joint_positions = joint_positions
+                requested_delta = (
+                    desired_position - clutch_reference["robot_position"]
+                )
 
-            maximum_tracking_error = max(maximum_tracking_error, tracking_error)
-            maximum_rotation_error = max(maximum_rotation_error, rotation_error)
-            maximum_joint_step = max(maximum_joint_step, joint_step)
-            minimum_elbow_angle = min(
-                minimum_elbow_angle,
-                float(joint_positions[3]),
-            )
-            if context["collision_limited"]:
-                collision_limited_frames += 1
+                # Workspace projection and collision safety have dedicated tests.
+                # Here only verify that the scripted operator path stays inside
+                # the relative clutch envelope before it reaches the IK solver.
+                if not CONTROLLER.is_clutch_delta_within_workspace(requested_delta):
+                    relative_workspace_failures += 1
+                    continue
+
+                safe_position = CONTROLLER.update_safe_position_reference(
+                    safe_position,
+                    desired_position,
+                    delta_time,
+                )
+                safe_rotation = CONTROLLER.update_safe_rotation_reference(
+                    safe_rotation,
+                    np.asarray(input_rotation, dtype=float),
+                    delta_time,
+                )
+                _, target_rotation = CONTROLLER.calculate_clutched_target(
+                    clutch_reference,
+                    np.asarray(input_position, dtype=float),
+                    safe_rotation,
+                )
+                CONTROLLER.solve_right_arm_target(
+                    model,
+                    data,
+                    initial_qpos,
+                    preferred,
+                    safe_position,
+                    target_rotation=target_rotation,
+                    context=context,
+                    elbow_pole_reference=clutch_reference["elbow_pole"],
+                )
+
+                wrist_position = data.xpos[position_body].copy()
+                wrist_rotation = data.xmat[orientation_body].reshape(3, 3).copy()
+                tracking_error = float(np.linalg.norm(safe_position - wrist_position))
+                rotation_error = float(np.linalg.norm(
+                    CONTROLLER.calculate_rotation_error(
+                        target_rotation,
+                        wrist_rotation,
+                    )
+                ))
+                joint_positions = data.qpos[context["right_qpos_ids"]].copy()
+                joint_step = float(np.max(np.abs(
+                    joint_positions - previous_joint_positions
+                )))
+                previous_joint_positions = joint_positions
+
+                maximum_tracking_error = max(maximum_tracking_error, tracking_error)
+                maximum_rotation_error = max(maximum_rotation_error, rotation_error)
+                maximum_joint_step = max(maximum_joint_step, joint_step)
+                minimum_elbow_angle = min(
+                    minimum_elbow_angle,
+                    float(joint_positions[3]),
+                )
+                if context["collision_limited"]:
+                    collision_limited_frames += 1
+        finally:
+            CONTROLLER.is_right_wrist_target_safe = original_wrist_guard
 
         self.assertEqual(relative_workspace_failures, 0)
         self.assertEqual(collision_limited_frames, 0)

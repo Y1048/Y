@@ -215,7 +215,15 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
             msg=f"maximum tracking error diagnostic: {maximum_error_diagnostic}",
         )
         self.assertLessEqual(maximum_rotation_error, math.radians(2.0))
-        self.assertLessEqual(maximum_joint_step, math.radians(1.5))
+
+        # The controller clamps each joint step to exactly 1.5 degrees. Floating-
+        # point subtraction can reproduce that boundary a few ulps above
+        # math.radians(1.5), so compare with a tiny numerical tolerance rather
+        # than treating an exact-limit command as a physical overshoot.
+        self.assertLessEqual(
+            maximum_joint_step,
+            math.radians(1.5) + 1e-12,
+        )
         self.assertGreaterEqual(minimum_elbow_angle, math.radians(10.0))
         self.assertGreaterEqual(fallback_frames, 0)
         self.assertGreaterEqual(severe_trigger_frames, 0)

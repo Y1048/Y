@@ -40,7 +40,6 @@ C:\Users\user\Desktop\G1_Teleop_Project\START_VR_HAND_TO_MUJOCO.bat
 | `tools/VERIFY_HEAD_CAMERA_FOUNDATION.bat` | 카메라 변환, 프레임, 공유메모리 경로 자동 검증 |
 | `tools/START_HEAD_CAMERA_SIMULATION.bat` | MuJoCo G1 머리 카메라 시뮬레이션 실행 |
 | `tools/CAPTURE_HEAD_CAMERA_PREVIEW.bat` | 머리 카메라 검증 화면을 BMP로 저장 |
-| `tools/FIX_META_LINK_RTX5070_ADMIN.bat` | Meta Link의 RTX 5070 호환성 검사 우회용 관리자 도구 |
 
 카메라 구성은 `docs/CAMERA_SIMULATION_GUIDE.md`에 정리되어 있다.
 

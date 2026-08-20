@@ -40,6 +40,11 @@ from .watchdog import (
     WorkspaceFaultLatch,
 )
 from .whole_body import JointOwnership, compose_whole_body_target
+from .workspace_map import (
+    VoxelWorkspaceMap,
+    WorkspaceProjection,
+    WorkspaceTargetProjector,
+)
 
 __all__ = [
     "ArmCalibration",
@@ -71,9 +76,13 @@ __all__ = [
     "StatePacketV2",
     "TeleopPerformanceMonitor",
     "TeleopRuntimeStateMachine",
-    "WorkspaceScaleEstimator",
+    "UnitreeSimImageWriter",
+    "VoxelWorkspaceMap",
     "WorkspaceExitDebounce",
     "WorkspaceFaultLatch",
+    "WorkspaceProjection",
+    "WorkspaceScaleEstimator",
+    "WorkspaceTargetProjector",
     "add_g1_d435i_camera",
     "compose_whole_body_target",
     "estimate_rigid_registration",
@@ -82,5 +91,4 @@ __all__ = [
     "parse_command_packet",
     "receive_available_commands",
     "save_bgr_bmp",
-    "UnitreeSimImageWriter",
 ]

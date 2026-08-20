@@ -119,6 +119,34 @@ def classify_sample(
     return 2
 
 
+def quality_breakdown(
+    classes: np.ndarray,
+    min_singular_values: np.ndarray,
+    joint_margins: np.ndarray,
+    *,
+    safe_min_singular_value: float,
+    safe_joint_margin: float,
+) -> dict[str, int]:
+    collision_free = classes >= 1
+    low_singularity = min_singular_values < safe_min_singular_value
+    low_joint_margin = joint_margins < safe_joint_margin
+    return {
+        "collision_free": int(np.count_nonzero(collision_free)),
+        "low_singularity_only": int(
+            np.count_nonzero(collision_free & low_singularity & ~low_joint_margin)
+        ),
+        "low_joint_margin_only": int(
+            np.count_nonzero(collision_free & ~low_singularity & low_joint_margin)
+        ),
+        "low_singularity_and_joint_margin": int(
+            np.count_nonzero(collision_free & low_singularity & low_joint_margin)
+        ),
+        "safe": int(
+            np.count_nonzero(collision_free & ~low_singularity & ~low_joint_margin)
+        ),
+    }
+
+
 def percentile_bounds(points: np.ndarray) -> dict[str, list[float]]:
     if len(points) == 0:
         return {"low": [0.0, 0.0, 0.0], "high": [0.0, 0.0, 0.0]}
@@ -181,7 +209,6 @@ def main() -> None:
     contact_counter: Counter = Counter()
     collision_status_counter: Counter = Counter()
 
-    # Diagnose the ready pose before random sampling.
     ready_contacts = collision_policy.count_contacts(model, data)
 
     start = time.perf_counter()
@@ -265,6 +292,13 @@ def main() -> None:
     reachable_points = positions[reachable_mask]
     safe_points = positions[safe_mask]
     elapsed = time.perf_counter() - start
+    quality = quality_breakdown(
+        classes,
+        min_singular_values,
+        joint_margins,
+        safe_min_singular_value=args.safe_min_singular_value,
+        safe_joint_margin=args.safe_joint_margin,
+    )
 
     summary = {
         "samples": int(args.samples),
@@ -281,6 +315,7 @@ def main() -> None:
             "reachable": float(np.mean(reachable_mask)),
             "safe": float(np.mean(safe_mask)),
         },
+        "quality_breakdown": quality,
         "reachable_bounds_m": {
             "min": reachable_points.min(axis=0).tolist() if len(reachable_points) else None,
             "max": reachable_points.max(axis=0).tolist() if len(reachable_points) else None,
@@ -304,6 +339,8 @@ def main() -> None:
     print(f"Saved workspace samples: {args.output}")
     print(f"Saved summary: {args.summary}")
     print(json.dumps(summary["classification"], indent=2))
+    print("Quality breakdown:")
+    print(json.dumps(quality, indent=2))
     print("Top contact pairs:")
     print(json.dumps(diagnostic_summary["top_sampled_contact_pairs"][:10], indent=2))
 

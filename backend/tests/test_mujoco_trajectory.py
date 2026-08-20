@@ -30,6 +30,10 @@ FAKE_SENDER_PATH = (
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 from g1_teleop.config import apply_to_base_module, load_teleop_config  # noqa: E402
+from g1_teleop.ik_emergency import (  # noqa: E402
+    install_severe_ik_fallback_trigger,
+    load_severe_ik_fallback_settings,
+)
 from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
     load_ik_fallback_settings,
@@ -56,10 +60,12 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
     def test_fake_vr_path_stays_humanlike_and_trackable(self):
         config = load_teleop_config(TELEOP_CONFIG_PATH)
         fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
+        severe_fallback_settings = load_severe_ik_fallback_settings(TELEOP_CONFIG_PATH)
         apply_to_base_module(CONTROLLER, config)
         install_runtime_collision_policy(CONTROLLER, config)
         install_inspection_contact_monitor(CONTROLLER, config)
         install_coupled_ik_fallback(CONTROLLER, fallback_settings)
+        install_severe_ik_fallback_trigger(CONTROLLER, severe_fallback_settings)
 
         original_wrist_guard = CONTROLLER.is_right_wrist_target_safe
         CONTROLLER.is_right_wrist_target_safe = lambda target: True
@@ -103,6 +109,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         relative_workspace_failures = 0
         collision_limited_frames = 0
         fallback_frames = 0
+        severe_trigger_frames = 0
         maximum_error_diagnostic = None
 
         for frame_index in range(frame_count):
@@ -174,6 +181,12 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
                     "fallback_active": getattr(
                         CONTROLLER, "RUNTIME_IK_FALLBACK_ACTIVE", None
                     ),
+                    "severe_triggered": getattr(
+                        CONTROLLER, "RUNTIME_IK_SEVERE_TRIGGERED", None
+                    ),
+                    "severe_reason": getattr(
+                        CONTROLLER, "RUNTIME_IK_SEVERE_REASON", None
+                    ),
                     "fallback_bad_frames": (
                         getattr(supervisor, "bad_frames", None)
                         if supervisor is not None
@@ -219,6 +232,8 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
                 collision_limited_frames += 1
             if getattr(CONTROLLER, "RUNTIME_IK_MODE", "decoupled") != "decoupled":
                 fallback_frames += 1
+            if getattr(CONTROLLER, "RUNTIME_IK_SEVERE_TRIGGERED", False):
+                severe_trigger_frames += 1
 
         self.assertEqual(relative_workspace_failures, 0)
         self.assertEqual(collision_limited_frames, 0)
@@ -231,6 +246,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
         self.assertLessEqual(maximum_joint_step, math.radians(1.5))
         self.assertGreaterEqual(minimum_elbow_angle, math.radians(10.0))
         self.assertGreaterEqual(fallback_frames, 0)
+        self.assertGreaterEqual(severe_trigger_frames, 0)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable
 
 import numpy as np
 
@@ -20,9 +21,10 @@ class VoxelWorkspaceMap:
     """Represent collision-free workspace as occupied 3D voxels.
 
     The map is intentionally dependency-light: NumPy is sufficient for loading
-    samples, checking occupancy, and projecting a target to the nearest safe
-    voxel center. For the current G1 dataset (thousands of safe voxels), the
-    vectorized nearest-point search is fast enough for controller prototyping.
+    samples, checking occupancy, and projecting a target to the nearest allowed
+    voxel center. Runtime control normally loads both collision-free classes
+    (reachable-but-poor and safe) so the map describes physical reachability;
+    quality thresholds remain a separate concern.
     """
 
     def __init__(self, safe_points_m: np.ndarray, *, voxel_size_m: float = 0.01) -> None:
@@ -55,16 +57,29 @@ class VoxelWorkspaceMap:
         path: str | Path,
         *,
         voxel_size_m: float = 0.01,
-        safe_class: int = 2,
+        safe_class: int | None = None,
+        allowed_classes: Iterable[int] | None = None,
     ) -> "VoxelWorkspaceMap":
+        if safe_class is not None and allowed_classes is not None:
+            raise ValueError("use either safe_class or allowed_classes, not both")
+
+        if allowed_classes is None:
+            classes = (2 if safe_class is None else int(safe_class),)
+        else:
+            classes = tuple(sorted({int(value) for value in allowed_classes}))
+            if not classes:
+                raise ValueError("allowed_classes must not be empty")
+
         with np.load(Path(path), allow_pickle=False) as workspace:
             positions = np.asarray(workspace["positions_m"], dtype=float)
             classification = np.asarray(workspace["classification"], dtype=np.uint8)
         if positions.shape[0] != classification.shape[0]:
             raise ValueError("workspace positions and classification lengths differ")
-        safe_points = positions[classification == int(safe_class)]
+
+        allowed_mask = np.isin(classification, np.asarray(classes, dtype=np.uint8))
+        safe_points = positions[allowed_mask]
         if len(safe_points) == 0:
-            raise ValueError("workspace contains no safe samples")
+            raise ValueError("workspace contains no samples in the requested classes")
         return cls(safe_points, voxel_size_m=voxel_size_m)
 
     def point_to_index(self, point_m: np.ndarray) -> tuple[int, int, int]:

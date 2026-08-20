@@ -7,7 +7,7 @@ set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
 set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_Quest3S"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
-set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\g1_right_arm_udp_ik_demo.py"
+set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\g1_right_arm_udp_ik_runtime.py"
 
 echo ========================================
 echo G1 Quest hand tracking to MuJoCo test
@@ -26,7 +26,7 @@ if not exist "%UNITY_PROJECT%\Assets\Scenes\SampleScene.unity" (
 )
 
 if not exist "%MUJOCO_SCRIPT%" (
-    echo [ERROR] The MuJoCo controller was not found.
+    echo [ERROR] The MuJoCo projected-workspace controller was not found.
     goto :failed
 )
 
@@ -60,8 +60,8 @@ if /I "%~1"=="--check" (
 )
 
 if "%UDP_RUNNING%"=="0" (
-    echo [START] MuJoCo G1 right-arm controller
-    start "G1 MuJoCo Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 scripts\g1_right_arm_udp_ik_demo.py --scene control --view overview
+    echo [START] MuJoCo G1 right-arm projected-workspace controller
+    start "G1 MuJoCo Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 scripts\g1_right_arm_udp_ik_runtime.py --scene control --view overview
     timeout /t 2 /nobreak >nul
 ) else (
     echo [KEEP] A UDP controller is already listening on port 5005.
@@ -82,14 +82,18 @@ echo   3. Press the Play button at the top of Unity.
 echo   4. Put on Quest and move the cyan wrist marker to the white target.
 echo   5. Hold it inside the target for around 0.55 seconds while it turns yellow.
 echo   6. After the target turns green, move and rotate your right wrist.
-echo   7. Confirm that MuJoCo prints "receiving" and the right arm moves.
+echo   7. Confirm that MuJoCo prints "ACTIVE" and the right arm moves.
 echo.
 echo Marker colors:
 echo   Cyan   = actual Quest wrist
 echo   White  = waiting for alignment
 echo   Yellow = aligned; hold still to engage
 echo   Green  = teleoperation active
-echo   Orange = G1 workspace limit reached
+echo   Orange = backend workspace projection active
+echo.
+echo Workspace map:
+echo   logs\workspace\right_arm_workspace.npz
+echo   If missing, the controller falls back to the legacy workspace guards.
 echo.
 echo Test without Quest: tools\TEST_FAKE_VR_TO_MUJOCO.bat
 echo.

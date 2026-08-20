@@ -31,10 +31,10 @@ class ContactPairObservation:
 class RightArmCollisionPolicy:
     """Classify MuJoCo contacts that are relevant to right-arm safety.
 
-    Direct parent-child body pairs are ignored because connected robot links can
-    share or overlap collision geometry around a joint without representing an
-    actionable self-collision. Non-adjacent right-arm contacts and contacts
-    between the right arm and another robot body remain collision events.
+    Robot links separated by at most two edges in the kinematic tree are treated
+    as structural neighbors. Their collision geometry can legitimately overlap
+    around joints, so those contacts are not actionable self-collisions.
+    Contacts spanning three or more kinematic edges remain collision candidates.
     """
 
     def __init__(
@@ -44,11 +44,15 @@ class RightArmCollisionPolicy:
         robot_body_ids: Iterable[int],
         body_parent_ids: Iterable[int],
         ignored_pairs: Iterable[PairKey] = (),
+        structural_neighbor_distance: int = 2,
     ) -> None:
+        if structural_neighbor_distance < 1:
+            raise ValueError("structural_neighbor_distance must be >= 1")
         self.right_arm_body_ids = {int(value) for value in right_arm_body_ids}
         self.robot_body_ids = {int(value) for value in robot_body_ids}
         self.body_parent_ids = tuple(int(value) for value in body_parent_ids)
         self.ignored_pairs = {canonical_pair(*pair) for pair in ignored_pairs}
+        self.structural_neighbor_distance = int(structural_neighbor_distance)
 
     @classmethod
     def from_model(
@@ -57,6 +61,7 @@ class RightArmCollisionPolicy:
         right_arm_body_ids: Iterable[int],
         *,
         ignored_pairs: Iterable[PairKey] = (),
+        structural_neighbor_distance: int = 2,
     ) -> "RightArmCollisionPolicy":
         robot_body_ids = range(1, int(model.nbody))
         return cls(
@@ -64,21 +69,44 @@ class RightArmCollisionPolicy:
             robot_body_ids=robot_body_ids,
             body_parent_ids=model.body_parentid,
             ignored_pairs=ignored_pairs,
+            structural_neighbor_distance=structural_neighbor_distance,
+        )
+
+    def _ancestor_distances(self, body_id: int) -> dict[int, int]:
+        body = int(body_id)
+        if body < 0 or body >= len(self.body_parent_ids):
+            return {}
+
+        distances: dict[int, int] = {}
+        distance = 0
+        current = body
+        while current not in distances:
+            distances[current] = distance
+            if current == 0:
+                break
+            parent = self.body_parent_ids[current]
+            if parent < 0 or parent >= len(self.body_parent_ids) or parent == current:
+                break
+            current = parent
+            distance += 1
+        return distances
+
+    def kinematic_distance(self, first_body: int, second_body: int) -> int | None:
+        """Return edge distance in the body tree, or None for invalid/disconnected ids."""
+        first = int(first_body)
+        second = int(second_body)
+        first_ancestors = self._ancestor_distances(first)
+        second_ancestors = self._ancestor_distances(second)
+        common = set(first_ancestors).intersection(second_ancestors)
+        if not common:
+            return None
+        return min(
+            first_ancestors[ancestor] + second_ancestors[ancestor]
+            for ancestor in common
         )
 
     def are_directly_connected(self, first_body: int, second_body: int) -> bool:
-        first = int(first_body)
-        second = int(second_body)
-        if first == second:
-            return True
-        if first < 0 or second < 0:
-            return False
-        if first >= len(self.body_parent_ids) or second >= len(self.body_parent_ids):
-            return False
-        return (
-            self.body_parent_ids[first] == second
-            or self.body_parent_ids[second] == first
-        )
+        return self.kinematic_distance(first_body, second_body) in {0, 1}
 
     def classify_body_pair(self, first_body: int, second_body: int) -> PairStatus:
         first = int(first_body)
@@ -98,8 +126,11 @@ class RightArmCollisionPolicy:
         if first not in self.robot_body_ids or second not in self.robot_body_ids:
             return "environment"
 
-        if self.are_directly_connected(first, second):
+        distance = self.kinematic_distance(first, second)
+        if distance == 1:
             return "adjacent"
+        if distance is not None and distance <= self.structural_neighbor_distance:
+            return "near_adjacent"
 
         if first_is_arm and second_is_arm:
             return "right_arm_self_collision"

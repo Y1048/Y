@@ -24,6 +24,7 @@ from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
     load_ik_fallback_settings,
 )
+from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
 
@@ -42,6 +43,7 @@ def main() -> None:
     inspection_machine = install_inspection_contact_monitor(base, config)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_severe_ik_fallback_trigger(base, severe_fallback_settings)
+    install_primary_task_guard(base)
 
     # Import only after tuning and safety/IK hooks are applied so the projected
     # runtime observes one configured policy stack.
@@ -61,7 +63,7 @@ def main() -> None:
         strategy = "decoupled primary + coupled 7-DoF fallback"
         if fallback_supervisor.settings.multiseed.enabled:
             strategy += " + multi-seed search"
-        strategy += " + immediate severe-error trigger"
+        strategy += " + immediate severe-error trigger + primary-task descent guard"
         print(f"IK strategy: {strategy}")
     else:
         print("IK strategy: decoupled only (fallback disabled)")

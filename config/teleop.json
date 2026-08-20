@@ -1,0 +1,45 @@
+{
+  "network": {
+    "udp_host": "0.0.0.0",
+    "udp_port": 5005,
+    "unity_state_host": "127.0.0.1",
+    "unity_state_port": 5006,
+    "unity_state_hz": 60.0
+  },
+  "runtime": {
+    "input_timeout_s": 0.75,
+    "workspace_exit_confirm_s": 0.8,
+    "status_hz": 2.0,
+    "head_camera_fps": 30.0,
+    "neutral_solve_iterations": 600
+  },
+  "motion": {
+    "position_max_speed_mps": 0.08,
+    "rotation_max_speed_deg_s": 70.0
+  },
+  "ik": {
+    "position_damping": 0.045,
+    "orientation_damping": 0.035,
+    "ik_step_gain": 0.5,
+    "ik_max_step_deg": 1.5,
+    "posture_gain": 0.08,
+    "elbow_pole_gain": 0.65,
+    "elbow_pole_damping": 0.08,
+    "elbow_avoidance_weight": 0.85
+  },
+  "collision": {
+    "margin_m": 0.015,
+    "structural_neighbor_distance": 2
+  },
+  "workspace": {
+    "voxel_size_m": 0.01,
+    "allowed_classes": [1, 2],
+    "workspace_file": "logs/workspace/right_arm_workspace.npz",
+    "clutch_delta_min_m": [-0.2, -0.3, -0.28],
+    "clutch_delta_max_m": [0.2, 0.45, 0.34],
+    "right_elbow_lateral_limit_m": -0.3,
+    "right_wrist_lateral_limit_m": -0.3,
+    "torso_keep_out_x_m": [-0.18, 0.22],
+    "torso_keep_out_z_m": [0.45, 1.3]
+  }
+}

@@ -1,8 +1,8 @@
 """Optional inspection-contact state machine for NDT teleoperation.
 
 The state machine is intentionally policy-only. It does not command forces or
-change the arm trajectory by itself. When disabled, it stays in FREE_SPACE and
-the existing teleoperation runtime behaves exactly as before.
+change the arm trajectory by itself. Disabling collision.task_contact keeps it
+in FREE_SPACE and preserves the existing teleoperation behavior.
 """
 
 from __future__ import annotations
@@ -36,9 +36,9 @@ class InspectionContactTransition:
 class InspectionContactStateMachine:
     """Track an NDT probe from approach through contact and retraction.
 
-    Inputs are deliberately generic so a later real robot can feed force/torque,
-    proximity, vision, or MuJoCo contact observations without changing the state
-    model. Surface following is only entered when explicitly requested.
+    Inputs are generic so a later real robot can feed force/torque, proximity,
+    vision, or MuJoCo contact observations without replacing the state model.
+    Surface following is only entered when explicitly requested.
     """
 
     def __init__(
@@ -46,8 +46,8 @@ class InspectionContactStateMachine:
         *,
         enabled: bool,
         approach_distance_m: float,
-        contact_confirm_s: float,
-        contact_release_s: float,
+        contact_confirm_s: float = 0.0,
+        contact_release_s: float = 0.0,
     ) -> None:
         if approach_distance_m <= 0.0:
             raise ValueError("approach_distance_m must be positive")
@@ -125,13 +125,15 @@ class InspectionContactStateMachine:
 
 
 def install_inspection_contact_monitor(base: ModuleType, config: TeleopConfig) -> InspectionContactStateMachine:
-    """Expose optional inspection state in runtime status without altering motion."""
-    inspection = config.inspection
+    """Expose inspection state in runtime status without altering robot motion.
+
+    The existing task-contact enable flag is the opt-in switch. The current
+    collision margin is reused as the generic approach-distance hint, avoiding a
+    new tuning value before the inspection procedure is finalized.
+    """
     machine = InspectionContactStateMachine(
-        enabled=inspection.enabled,
-        approach_distance_m=inspection.approach_distance_m,
-        contact_confirm_s=inspection.contact_confirm_s,
-        contact_release_s=inspection.contact_release_s,
+        enabled=config.collision.task_contact_enabled,
+        approach_distance_m=config.collision.margin_m,
     )
     base.INSPECTION_CONTACT_MACHINE = machine
     base.RUNTIME_INSPECTION_STATE = machine.state.value
@@ -148,7 +150,7 @@ def install_inspection_contact_monitor(base: ModuleType, config: TeleopConfig) -
             transition = machine.update(task_contact_active=task_contact_active)
             base.RUNTIME_INSPECTION_STATE = transition.current.value
             enriched = dict(status_value)
-            enriched["inspection_enabled"] = bool(inspection.enabled)
+            enriched["inspection_state_enabled"] = bool(machine.enabled)
             enriched["inspection_state"] = transition.current.value
             enriched["inspection_transition_reason"] = transition.reason
             original_status_writer(enriched)

@@ -1,0 +1,42 @@
+{
+  "schema": "g1.teleop.camera.v1",
+  "active_source": "simulation",
+  "frame_id": "g1/d435_color_optical_frame",
+  "stream": {
+    "width": 640,
+    "height": 480,
+    "fps": 30,
+    "pixel_format": "BGR8",
+    "binocular": false,
+    "vertical_fov_deg": 42.5
+  },
+  "mount": {
+    "parent_link": "torso_link",
+    "position_m": [0.0576235, 0.01753, 0.42987],
+    "rpy_rad": [0.0, 0.8307767239493009, 0.0]
+  },
+  "simulation": {
+    "provider": "mujoco",
+    "camera_name": "g1_d435_color",
+    "scene": "camera_validation",
+    "optical_model": "ideal_pinhole",
+    "shared_memory_name": "isaac_head_image_shm",
+    "shared_memory_contract": "unitree_sim_isaaclab.MultiImageWriter"
+  },
+  "real_d435i": {
+    "provider": "pyrealsense2",
+    "serial_number": null,
+    "use_runtime_intrinsics": true,
+    "align_depth_to_color": true
+  },
+  "hardware_acceptance": {
+    "measure_on_first_connection": [
+      "runtime_intrinsics_and_distortion",
+      "actual_camera_to_torso_transform",
+      "exposure_and_low_light_behavior",
+      "glass_to_quest_end_to_end_latency",
+      "frame_drop_rate"
+    ]
+  },
+  "transition_rule": "Only the camera source adapter may change between simulation and real deployment."
+}

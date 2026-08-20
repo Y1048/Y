@@ -1,0 +1,95 @@
+﻿# ==============================
+# Unity
+# ==============================
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+**/[Mm]emoryCaptures/
+**/[Rr]ecordings/
+
+# Unity generated files
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity APK / AAB
+*.apk
+*.aab
+
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*.pyo
+
+.venv/
+venv/
+env/
+ENV/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ==============================
+# Logs / runtime output
+# ==============================
+logs/
+*.log
+
+# ==============================
+# Old backups / archives
+# ==============================
+archive/
+
+# ==============================
+# Secrets / environment
+# ==============================
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+
+credentials.json
+credentials*.json
+secrets.json
+secret*.json
+
+# ==============================
+# IDE / OS
+# ==============================
+.vscode/
+.idea/
+.vs/
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Misc generated
+# ==============================
+*.tmp
+*.temp
+*.bak
+*.cache
+
+*Zone.Identifier

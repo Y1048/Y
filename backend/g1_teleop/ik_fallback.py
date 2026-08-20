@@ -406,7 +406,12 @@ def install_coupled_ik_fallback(base: ModuleType, settings: IKFallbackSettings) 
             base.RUNTIME_IK_MODE = "decoupled"
             context["ik_mode"] = "decoupled"
 
-            collision_busy = getattr(base, "RUNTIME_COLLISION_NEAREST_STATUS", None) is not None
+            collision_status = getattr(base, "RUNTIME_COLLISION_NEAREST_STATUS", None)
+            # Near-contact margins around the robot are early-warning signals, not
+            # a reason to disable IK recovery entirely. Environment obstacle
+            # avoidance keeps priority because its tangential target projection
+            # must not be overwritten by a fallback solving the original target.
+            collision_busy = collision_status == "environment_obstacle"
             contact_blocked = inspection_contact and not settings.allow_during_inspection_contact
             if not transition.active or collision_busy or contact_blocked:
                 return result

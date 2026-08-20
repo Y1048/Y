@@ -115,9 +115,12 @@ class RuntimeCollisionTest(unittest.TestCase):
         self.assertTrue(task_active)
 
     def test_scan_finds_nearest_forbidden_environment_contact(self):
+        # Both contacts must involve a right-arm geom and an environment geom.
+        # The previous fixture accidentally used left_arm_geom vs world for the
+        # 0.006 m sample, so it was correctly excluded by the runtime scanner.
         nearest, task_active = scan_runtime_contacts(
             self.model,
-            FakeData([FakeContact(4, 6, 0.012), FakeContact(5, 6, 0.006)]),
+            FakeData([FakeContact(4, 6, 0.012), FakeContact(8, 6, 0.006)]),
             self.context, make_config(),
         )
         self.assertFalse(task_active)

@@ -123,9 +123,7 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
                 np.asarray(input_position, dtype=float),
                 np.asarray(input_rotation, dtype=float),
             )
-            requested_delta = (
-                desired_position - clutch_reference["robot_position"]
-            )
+            requested_delta = desired_position - clutch_reference["robot_position"]
 
             if not CONTROLLER.is_clutch_delta_within_workspace(requested_delta):
                 relative_workspace_failures += 1
@@ -161,15 +159,10 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
             wrist_rotation = data.xmat[orientation_body].reshape(3, 3).copy()
             tracking_error = float(np.linalg.norm(safe_position - wrist_position))
             rotation_error = float(np.linalg.norm(
-                CONTROLLER.calculate_rotation_error(
-                    target_rotation,
-                    wrist_rotation,
-                )
+                CONTROLLER.calculate_rotation_error(target_rotation, wrist_rotation)
             ))
             joint_positions = data.qpos[context["right_qpos_ids"]].copy()
-            joint_step = float(np.max(np.abs(
-                joint_positions - previous_joint_positions
-            )))
+            joint_step = float(np.max(np.abs(joint_positions - previous_joint_positions)))
             previous_joint_positions = joint_positions
 
             if tracking_error > maximum_tracking_error:
@@ -181,65 +174,30 @@ class MuJoCoTrajectoryTest(unittest.TestCase):
                     "tracking_error_m": tracking_error,
                     "rotation_error_deg": math.degrees(rotation_error),
                     "ik_mode": getattr(CONTROLLER, "RUNTIME_IK_MODE", None),
-                    "fallback_active": getattr(
-                        CONTROLLER, "RUNTIME_IK_FALLBACK_ACTIVE", None
-                    ),
-                    "severe_triggered": getattr(
-                        CONTROLLER, "RUNTIME_IK_SEVERE_TRIGGERED", None
-                    ),
-                    "severe_reason": getattr(
-                        CONTROLLER, "RUNTIME_IK_SEVERE_REASON", None
-                    ),
-                    "primary_guard_reverted": getattr(
-                        CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_REVERTED", None
-                    ),
-                    "primary_guard_start_error_m": getattr(
-                        CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M", None
-                    ),
-                    "primary_guard_candidate_error_m": getattr(
-                        CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M", None
-                    ),
-                    "fallback_bad_frames": (
-                        getattr(supervisor, "bad_frames", None)
-                        if supervisor is not None
-                        else None
-                    ),
-                    "fallback_good_frames": (
-                        getattr(supervisor, "good_frames", None)
-                        if supervisor is not None
-                        else None
-                    ),
-                    "decoupled_score": getattr(
-                        CONTROLLER, "RUNTIME_IK_DECOUPLED_SCORE", None
-                    ),
-                    "coupled_score": getattr(
-                        CONTROLLER, "RUNTIME_IK_COUPLED_SCORE", None
-                    ),
-                    "multiseed_score": getattr(
-                        CONTROLLER, "RUNTIME_IK_MULTI_SEED_SCORE", None
-                    ),
-                    "selected_seed": getattr(
-                        CONTROLLER, "RUNTIME_IK_SELECTED_SEED", None
-                    ),
-                    "collision_status": getattr(
-                        CONTROLLER, "RUNTIME_COLLISION_NEAREST_STATUS", None
-                    ),
-                    "collision_clearance_m": getattr(
-                        CONTROLLER, "RUNTIME_COLLISION_CLEARANCE_M", None
-                    ),
+                    "fallback_active": getattr(CONTROLLER, "RUNTIME_IK_FALLBACK_ACTIVE", None),
+                    "severe_triggered": getattr(CONTROLLER, "RUNTIME_IK_SEVERE_TRIGGERED", None),
+                    "severe_reason": getattr(CONTROLLER, "RUNTIME_IK_SEVERE_REASON", None),
+                    "primary_guard_reverted": getattr(CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_REVERTED", None),
+                    "primary_guard_fallback_triggered": getattr(CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_FALLBACK_TRIGGERED", None),
+                    "primary_guard_start_error_m": getattr(CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M", None),
+                    "primary_guard_candidate_error_m": getattr(CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M", None),
+                    "primary_guard_recovery_error_m": getattr(CONTROLLER, "RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M", None),
+                    "fallback_bad_frames": getattr(supervisor, "bad_frames", None) if supervisor is not None else None,
+                    "fallback_good_frames": getattr(supervisor, "good_frames", None) if supervisor is not None else None,
+                    "decoupled_score": getattr(CONTROLLER, "RUNTIME_IK_DECOUPLED_SCORE", None),
+                    "coupled_score": getattr(CONTROLLER, "RUNTIME_IK_COUPLED_SCORE", None),
+                    "multiseed_score": getattr(CONTROLLER, "RUNTIME_IK_MULTI_SEED_SCORE", None),
+                    "selected_seed": getattr(CONTROLLER, "RUNTIME_IK_SELECTED_SEED", None),
+                    "collision_status": getattr(CONTROLLER, "RUNTIME_COLLISION_NEAREST_STATUS", None),
+                    "collision_clearance_m": getattr(CONTROLLER, "RUNTIME_COLLISION_CLEARANCE_M", None),
                     "safe_position": np.asarray(safe_position).tolist(),
                     "wrist_position": np.asarray(wrist_position).tolist(),
-                    "seed_diagnostics": getattr(
-                        CONTROLLER, "RUNTIME_IK_SEED_DIAGNOSTICS", []
-                    ),
+                    "seed_diagnostics": getattr(CONTROLLER, "RUNTIME_IK_SEED_DIAGNOSTICS", []),
                 }
 
             maximum_rotation_error = max(maximum_rotation_error, rotation_error)
             maximum_joint_step = max(maximum_joint_step, joint_step)
-            minimum_elbow_angle = min(
-                minimum_elbow_angle,
-                float(joint_positions[3]),
-            )
+            minimum_elbow_angle = min(minimum_elbow_angle, float(joint_positions[3]))
             if context["collision_limited"]:
                 collision_limited_frames += 1
             if getattr(CONTROLLER, "RUNTIME_IK_MODE", "decoupled") != "decoupled":

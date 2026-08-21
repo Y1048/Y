@@ -9,28 +9,45 @@ from typing import Any
 import numpy as np
 
 
-TORSO_FRONT_ENTER_X_M = 0.20
-TORSO_FRONT_EXIT_X_M = 0.24
-TORSO_FRONT_LATERAL_ABS_Y_M = 0.26
+TORSO_FRONT_ENTER_X_MIN_M = 0.08
+TORSO_FRONT_ENTER_X_MAX_M = 0.28
+TORSO_FRONT_EXIT_X_MIN_M = 0.05
+TORSO_FRONT_EXIT_X_MAX_M = 0.32
+TORSO_FRONT_ENTER_ABS_Y_M = 0.18
+TORSO_FRONT_EXIT_ABS_Y_M = 0.22
+TORSO_FRONT_Z_MIN_M = 0.72
+TORSO_FRONT_Z_MAX_M = 1.15
 TORSO_FRONT_ELBOW_TARGET_DEG = 90.0
 TORSO_FRONT_ELBOW_READY_DEG = 75.0
 
 
+def _in_torso_front_region(target_position: np.ndarray, *, active_previous: bool) -> bool:
+    x, y, z = (float(value) for value in np.asarray(target_position, dtype=float))
+    if active_previous:
+        return (
+            TORSO_FRONT_EXIT_X_MIN_M <= x <= TORSO_FRONT_EXIT_X_MAX_M
+            and abs(y) <= TORSO_FRONT_EXIT_ABS_Y_M
+            and TORSO_FRONT_Z_MIN_M <= z <= TORSO_FRONT_Z_MAX_M
+        )
+    return (
+        TORSO_FRONT_ENTER_X_MIN_M <= x <= TORSO_FRONT_ENTER_X_MAX_M
+        and abs(y) <= TORSO_FRONT_ENTER_ABS_Y_M
+        and TORSO_FRONT_Z_MIN_M <= z <= TORSO_FRONT_Z_MAX_M
+    )
+
+
 def install_torso_front_prepose(base: ModuleType) -> None:
-    """Prepare a bent elbow before allowing the wrist to move into torso-front space.
+    """Prepare a bent elbow before allowing the wrist into front-center torso space.
 
-    Simultaneously moving the wrist inward and changing the elbow branch made the
-    configured IK stack oscillate between primary/fallback solutions. This wrapper
-    instead uses the arm's one positional null-space DoF explicitly:
+    MuJoCo G1 uses +X forward, +Y left, +Z up. The problematic torso-front zone is
+    therefore identified primarily by the wrist moving toward the robot centerline
+    (Y near zero), not merely by a small X value. The ready arm beside the torso is
+    outside this zone because its right-wrist Y is farther from the centerline.
 
-    1. when the requested wrist target enters the torso-front region, hold the
-       current wrist position;
-    2. temporarily prefer a 90 degree elbow and disable the engagement-captured
-       elbow pole so the arm can re-pose without fighting the old elbow plane;
-    3. once the elbow reaches 75 degrees, release the requested wrist target while
-       keeping the 90 degree elbow preference inside the torso-front region.
-
-    Collision handling remains inside the existing solver stack and is not relaxed.
+    Inside the zone the controller first holds the current wrist position, disables
+    the engagement-captured elbow pole, and uses the position task's redundancy to
+    bend the elbow toward 90 degrees. Once the elbow reaches 75 degrees the real
+    wrist target is released while the 90 degree preference remains active.
     """
     if getattr(base, "_TORSO_FRONT_PREPOSE_INSTALLED", False):
         return
@@ -71,11 +88,10 @@ def install_torso_front_prepose(base: ModuleType) -> None:
             return original_solver(*args, **kwargs)
 
         active_previous = bool(context.get("_torso_prepose_region_active", False))
-        within_lateral = abs(float(target_position[1])) <= TORSO_FRONT_LATERAL_ABS_Y_M
-        if active_previous:
-            region_active = within_lateral and float(target_position[0]) < TORSO_FRONT_EXIT_X_M
-        else:
-            region_active = within_lateral and float(target_position[0]) <= TORSO_FRONT_ENTER_X_M
+        region_active = _in_torso_front_region(
+            target_position,
+            active_previous=active_previous,
+        )
         context["_torso_prepose_region_active"] = region_active
 
         current_elbow = float(data.qpos[qpos_ids[3]])

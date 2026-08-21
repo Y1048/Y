@@ -19,7 +19,10 @@ from g1_teleop.config import (  # noqa: E402
     apply_to_projected_runtime,
     load_teleop_config,
 )
-from g1_teleop.ik_branch_search import install_expanded_multiseed_branches  # noqa: E402
+from g1_teleop.ik_branch_search import (  # noqa: E402
+    install_expanded_multiseed_branches,
+    install_position_only_candidate_scoring,
+)
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings  # noqa: E402
 from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
@@ -50,13 +53,7 @@ STAGNATION_FRAMES = 8
 
 
 def install_calibrated_vr_wrist_orientation(base_module) -> None:
-    """Calibrate Quest hand frame to the current G1 wrist frame at engagement.
-
-    Position remains clutch-relative. Rotation uses the change of the mapped Quest
-    anatomical frame since engagement, applied to the G1 wrist orientation that
-    existed at that same instant. This removes any fixed Quest-hand/G1-tool axis
-    offset without hard-coded 90/180 degree corrections.
-    """
+    """Calibrate Quest hand frame to the current G1 wrist frame at engagement."""
 
     def calibrated_clutched_target(reference, input_position, input_rotation):
         target_position = (
@@ -299,6 +296,7 @@ def main() -> None:
     install_runtime_collision_policy(base, config)
     inspection_machine = install_inspection_contact_monitor(base, config)
     install_expanded_multiseed_branches(ik_fallback_module)
+    install_position_only_candidate_scoring(ik_fallback_module)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_position_only_fallback_policy(fallback_supervisor)
     install_position_only_severe_trigger(
@@ -342,7 +340,7 @@ def main() -> None:
         f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit"
     )
     print(
-        "IK recovery: position-only fallback + stagnation trigger + "
+        "IK recovery: position-only activation/scoring + stagnation trigger + "
         "shoulder pitch/roll/yaw and elbow multi-seed branches"
     )
     if fallback_supervisor.settings.enabled:

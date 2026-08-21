@@ -22,18 +22,15 @@ from g1_teleop.ik_fallback import install_coupled_ik_fallback, load_ik_fallback_
 import g1_teleop.ik_fallback as ik_fallback_module  # noqa: E402
 from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
+from g1_teleop.joint_posture import install_joint_space_posture_scheduler  # noqa: E402
 from g1_teleop.motion_quality import install_joint_command_smoother  # noqa: E402
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
-from g1_teleop.torso_front_prepose import (  # noqa: E402
-    TORSO_FRONT_ELBOW_READY_DEG,
-    TORSO_FRONT_ELBOW_TARGET_DEG,
-    install_torso_front_prepose,
-)
 
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
 
 
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
+JOINT_POSTURE_PROFILE_PATH = PROJECT_ROOT / "config" / "joint_postures.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
 REFERENCE_MAX_DT_S = 1.0 / 60.0
@@ -222,9 +219,8 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
 def main() -> None:
     config = load_teleop_config(TELEOP_CONFIG_PATH)
     fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
-    # Full multi-seed search was causing visible viewer/control stalls in live use.
-    # Keep the cheap coupled recovery path; reintroduce branch search only after
-    # the stable two-stage torso pre-pose is verified.
+    # Keep live recovery cheap and deterministic while the joint-space posture
+    # scheduler resolves redundant arm configuration selection.
     fallback_settings = replace(
         fallback_settings,
         multiseed=replace(fallback_settings.multiseed, enabled=False),
@@ -241,15 +237,15 @@ def main() -> None:
     install_position_only_severe_trigger(base, fallback_supervisor, severe_fallback_settings)
     install_primary_task_guard(base)
     install_calibrated_vr_wrist_orientation(base)
-    install_torso_front_prepose(base)
+    install_joint_space_posture_scheduler(base, profile_path=JOINT_POSTURE_PROFILE_PATH)
     install_smooth_cycle_and_wrist_overlay(base)
-    # Compatibility hook; currently a no-op. Cartesian reference owns speed.
     install_joint_command_smoother(base)
 
     import g1_right_arm_udp_ik_runtime as runtime
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
 
     print(f"Teleop config: {TELEOP_CONFIG_PATH}")
+    print(f"Joint posture profile: {JOINT_POSTURE_PROFILE_PATH}")
     print(
         "Collision authority: TaskAwareRightArmCollisionPolicy "
         f"(structural_neighbor_distance={config.collision.structural_neighbor_distance})"
@@ -265,9 +261,8 @@ def main() -> None:
     print("Joint command smoothing: disabled")
     print("IK recovery: coupled position recovery only; live multi-seed search disabled")
     print(
-        "Torso-front strategy: hold wrist, bend elbow to "
-        f"{TORSO_FRONT_ELBOW_TARGET_DEG:.0f} deg, release wrist at "
-        f"{TORSO_FRONT_ELBOW_READY_DEG:.0f} deg"
+        "Redundancy resolution: Cartesian wrist position primary + "
+        "joint-space posture reference in the position-task null space"
     )
     print(
         "Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame "

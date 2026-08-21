@@ -117,7 +117,7 @@ def main() -> None:
     else:
         print("Workspace authority: legacy relative box + torso guard fallback.")
     print("Target marker: feasible target; G1 follows the lagged safe reference.")
-    print("Filtered workspace step: boundary walking disabled after speed limiting.")
+    print("Safe reference path: fixed-speed interpolation to feasible target; runtime collision guard owns path safety.")
     if args.publish_head_camera:
         print(f"Head camera: 640x480 BGR at {args.camera_fps:g} FPS -> isaac_head_image_shm (TeleImager-compatible)")
 
@@ -245,22 +245,17 @@ def main() -> None:
                             print("\nLegacy workspace exited; clutch released and current pose held.")
 
                     if clutch_active:
-                        filtered_candidate = base.update_safe_position_reference(
+                        # Workspace projection decides the admissible destination.
+                        # The lagged reference then advances toward that destination
+                        # at the configured Cartesian speed. Do not re-project the
+                        # post-speed-limit point through the voxel map: the ready-pose
+                        # anchor may be an isolated injected voxel, which can trap the
+                        # reference even though the feasible destination is valid.
+                        # Runtime collision handling remains authoritative for the
+                        # intermediate path and IK candidate acceptance.
+                        filtered_target = base.update_safe_position_reference(
                             filtered_target, feasible_target, control_delta_time
                         )
-                        if workspace_projector is not None:
-                            # Important: the operator projection may slide along the
-                            # voxel boundary, but the post-speed-limit projection must
-                            # not boundary-walk. Otherwise one 0.08 m/s candidate step
-                            # can become a much larger final target jump.
-                            filtered_projection = workspace_projector.workspace.project_from(
-                                filtered_target,
-                                filtered_candidate,
-                                max_boundary_steps=0,
-                            )
-                            filtered_target = filtered_projection.feasible_target
-                        else:
-                            filtered_target = filtered_candidate
 
                         filtered_rotation = base.update_safe_rotation_reference(
                             filtered_rotation, raw_rotation, control_delta_time

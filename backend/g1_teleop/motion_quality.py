@@ -11,8 +11,8 @@ import numpy as np
 
 DEFAULT_PREFERRED_ELBOW_DEG = 55.0
 TORSO_FRONT_PREFERRED_ELBOW_DEG = 90.0
-TORSO_FRONT_FULL_X_M = 0.16
-TORSO_FRONT_RELEASE_X_M = 0.30
+TORSO_FRONT_FULL_X_M = 0.18
+TORSO_FRONT_RELEASE_X_M = 0.26
 TORSO_FRONT_ELBOW_POLE_DIRECTION = np.array([0.0, -0.55, 0.835], dtype=float)
 DEFAULT_TARGET_MOTION_THRESHOLD_M = 0.00005
 DEFAULT_PROXIMAL_MAX_STEP_DEG = 0.30
@@ -31,19 +31,11 @@ def _torso_front_blend(target_position: np.ndarray) -> float:
     t = (TORSO_FRONT_RELEASE_X_M - x) / (
         TORSO_FRONT_RELEASE_X_M - TORSO_FRONT_FULL_X_M
     )
-    # Smoothstep avoids an elbow-pole discontinuity while crossing the region.
     return float(t * t * (3.0 - 2.0 * t))
 
 
 def install_target_aware_elbow_pole(base: ModuleType) -> None:
-    """Lift the right elbow when the wrist target approaches the torso front.
-
-    The legacy clutch captures one elbow-pole direction at engagement and keeps it
-    for the entire clutch session. That is useful in free space but can preserve a
-    downward elbow branch even when a torso-front wrist target requires a bent,
-    lifted elbow. This wrapper blends the captured pole toward an upward/outward
-    right-arm pole as the robot-space wrist target approaches the torso.
-    """
+    """Lift the right elbow when the wrist target approaches the torso front."""
     if getattr(base, "_TARGET_AWARE_ELBOW_POLE_INSTALLED", False):
         return
 
@@ -114,14 +106,7 @@ def install_motion_gated_elbow_preference(
     preferred_elbow_deg: float = DEFAULT_PREFERRED_ELBOW_DEG,
     target_motion_threshold_m: float = DEFAULT_TARGET_MOTION_THRESHOLD_M,
 ) -> None:
-    """Feed a target-aware bent-elbow preference into the position IK while moving.
-
-    In ordinary free space the preferred elbow angle remains 55 degrees. As the
-    wrist target approaches the torso front, the preferred bend increases smoothly
-    toward 90 degrees so the arm forms the required L-shaped posture instead of
-    reaching inward with a nearly straight elbow. When the Cartesian target is
-    stationary, the current elbow angle is held to preserve wrist-only isolation.
-    """
+    """Feed a target-aware bent-elbow preference into the position IK while moving."""
 
     if getattr(base, "_MOTION_GATED_ELBOW_PREFERENCE_INSTALLED", False):
         return
@@ -197,102 +182,20 @@ def install_joint_command_smoother(
     proximal_max_accel_step_deg: float = DEFAULT_PROXIMAL_MAX_ACCEL_STEP_DEG,
     wrist_max_accel_step_deg: float = DEFAULT_WRIST_MAX_ACCEL_STEP_DEG,
 ) -> None:
-    """Rate/acceleration limit the final seven-joint command written to qpos."""
+    """Compatibility no-op.
+
+    Cartesian speed limiting, the 60 Hz no-catchup reference, and one IK substep
+    already bound the configured motion. A second joint velocity/acceleration
+    limiter caused the arm to lag behind reachable targets and produced visible
+    stop-go motion when collision/fallback candidates changed. Keep this entry
+    point for callers, but deliberately do not wrap ``solve_right_arm_target``.
+    """
+    del proximal_max_step_deg, wrist_max_step_deg
+    del proximal_max_accel_step_deg, wrist_max_accel_step_deg
     if getattr(base, "_JOINT_COMMAND_SMOOTHER_INSTALLED", False):
         return
-
-    original_solver = getattr(base, "solve_right_arm_target", None)
-    if not callable(original_solver):
-        raise RuntimeError("solve_right_arm_target must exist before joint smoother install")
-
-    max_step = np.radians(np.array(
-        [proximal_max_step_deg] * 4 + [wrist_max_step_deg] * 3,
-        dtype=float,
-    ))
-    max_accel_step = np.radians(np.array(
-        [proximal_max_accel_step_deg] * 4 + [wrist_max_accel_step_deg] * 3,
-        dtype=float,
-    ))
-
     base.RUNTIME_JOINT_SMOOTHER_APPLIED = False
     base.RUNTIME_JOINT_SMOOTHER_RAW_STEP_DEG = 0.0
     base.RUNTIME_JOINT_SMOOTHER_APPLIED_STEP_DEG = 0.0
     base.RUNTIME_JOINT_SMOOTHER_BLOCKED = False
-
-    def smooth_solver(*args: Any, **kwargs: Any):
-        model = args[0] if len(args) > 0 else kwargs.get("model")
-        data = args[1] if len(args) > 1 else kwargs.get("data")
-        context = kwargs.get("context")
-        if context is None and len(args) > 8:
-            context = args[8]
-
-        if model is None or data is None or not isinstance(context, dict):
-            return original_solver(*args, **kwargs)
-
-        qpos_ids = np.asarray(context.get("right_qpos_ids", []), dtype=int)
-        if qpos_ids.size != 7:
-            return original_solver(*args, **kwargs)
-
-        import mujoco
-
-        start_q = data.qpos[qpos_ids].copy()
-        result = original_solver(*args, **kwargs)
-        desired_q = data.qpos[qpos_ids].copy()
-        raw_step = desired_q - start_q
-
-        previous_step = np.asarray(
-            context.get("_joint_smoother_previous_step", np.zeros(7)),
-            dtype=float,
-        )
-        velocity_limited = np.clip(raw_step, -max_step, max_step)
-        accel_delta = np.clip(
-            velocity_limited - previous_step,
-            -max_accel_step,
-            max_accel_step,
-        )
-        applied_step = previous_step + accel_delta
-        applied_step = np.clip(applied_step, -max_step, max_step)
-
-        base.RUNTIME_JOINT_SMOOTHER_RAW_STEP_DEG = math.degrees(
-            float(np.linalg.norm(raw_step))
-        )
-        base.RUNTIME_JOINT_SMOOTHER_APPLIED_STEP_DEG = math.degrees(
-            float(np.linalg.norm(applied_step))
-        )
-        base.RUNTIME_JOINT_SMOOTHER_APPLIED = bool(
-            np.linalg.norm(applied_step - raw_step) > 1e-10
-        )
-        base.RUNTIME_JOINT_SMOOTHER_BLOCKED = False
-
-        accepted = False
-        candidate_step = applied_step.copy()
-        for line_search_index in range(6):
-            scale = 0.5 ** line_search_index
-            data.qpos[qpos_ids] = start_q + scale * candidate_step
-            base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
-            mujoco.mj_forward(model, data)
-            if not base.has_right_arm_core_contact(model, data, context):
-                applied_step = data.qpos[qpos_ids].copy() - start_q
-                accepted = True
-                break
-
-        if not accepted:
-            data.qpos[qpos_ids] = start_q
-            applied_step = np.zeros(7)
-            base.RUNTIME_JOINT_SMOOTHER_BLOCKED = True
-            mujoco.mj_forward(model, data)
-
-        context["_joint_smoother_previous_step"] = applied_step.copy()
-        context["joint_smoother_applied"] = bool(base.RUNTIME_JOINT_SMOOTHER_APPLIED)
-        context["joint_smoother_blocked"] = bool(base.RUNTIME_JOINT_SMOOTHER_BLOCKED)
-        context["joint_smoother_step_deg"] = float(
-            base.RUNTIME_JOINT_SMOOTHER_APPLIED_STEP_DEG
-        )
-
-        position_body = context.get("position_body")
-        if position_body is None:
-            return result
-        return data.xpos[int(position_body)].copy()
-
-    base.solve_right_arm_target = smooth_solver
     base._JOINT_COMMAND_SMOOTHER_INSTALLED = True

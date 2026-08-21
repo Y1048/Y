@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import mujoco
@@ -15,10 +16,7 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from g1_teleop.config import apply_to_base_module, apply_to_projected_runtime, load_teleop_config
-from g1_teleop.ik_branch_search import (
-    install_expanded_multiseed_branches,
-    install_position_only_candidate_scoring,
-)
+from g1_teleop.ik_branch_search import install_position_only_candidate_scoring
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings
 from g1_teleop.ik_fallback import install_coupled_ik_fallback, load_ik_fallback_settings
 import g1_teleop.ik_fallback as ik_fallback_module
@@ -26,6 +24,7 @@ from g1_teleop.ik_primary_guard import install_primary_task_guard
 from g1_teleop.inspection_contact import install_inspection_contact_monitor
 from g1_teleop.motion_quality import install_joint_command_smoother
 from g1_teleop.runtime_collision import install_runtime_collision_policy
+from g1_teleop.torso_front_prepose import install_torso_front_prepose
 
 import g1_right_arm_udp_ik_demo as base
 import g1_right_arm_udp_ik_runtime as runtime
@@ -55,18 +54,19 @@ def install_configured_stack():
     """Install exactly the same configured solver stack as the live launcher."""
     config = load_teleop_config(CONFIG_PATH)
     fallback = load_ik_fallback_settings(CONFIG_PATH)
+    fallback = replace(fallback, multiseed=replace(fallback.multiseed, enabled=False))
     severe = load_severe_ik_fallback_settings(CONFIG_PATH)
     apply_to_base_module(base, config)
     configured.install_no_catchup_position_reference(base)
     install_runtime_collision_policy(base, config)
     install_inspection_contact_monitor(base, config)
-    install_expanded_multiseed_branches(ik_fallback_module)
     install_position_only_candidate_scoring(ik_fallback_module)
     supervisor = install_coupled_ik_fallback(base, fallback)
     configured.install_position_only_fallback_policy(supervisor)
     configured.install_position_only_severe_trigger(base, supervisor, severe)
     install_primary_task_guard(base)
     configured.install_calibrated_vr_wrist_orientation(base)
+    install_torso_front_prepose(base)
     configured.install_smooth_cycle_and_wrist_overlay(base)
     install_joint_command_smoother(base)
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
@@ -279,7 +279,7 @@ def main() -> int:
     elif not rotation_pass:
         print("- Live-equivalent configured wrist overlay still fails; inspect overlay/collision diagnostics above.")
     else:
-        print("- Wrist IK passes inside the same calibrated and smoothed stack used by the live runtime.")
+        print("- Wrist IK passes inside the same simplified live-equivalent stack.")
 
     if not ref_pass:
         print("- Reference limiter itself is wrong.")

@@ -363,6 +363,7 @@ def install_coupled_ik_fallback(base: ModuleType, settings: IKFallbackSettings) 
     base.IK_FALLBACK_SUPERVISOR = supervisor
     base.RUNTIME_IK_MODE = "decoupled"
     base.RUNTIME_IK_FALLBACK_ACTIVE = False
+    base.RUNTIME_IK_FALLBACK_SUPPRESSED_RECOVERED = False
     base.RUNTIME_IK_POSITION_ERROR_M = None
     base.RUNTIME_IK_ROTATION_ERROR_RAD = None
     base.RUNTIME_IK_COUPLED_SCORE = None
@@ -396,6 +397,7 @@ def install_coupled_ik_fallback(base: ModuleType, settings: IKFallbackSettings) 
             dec_score = _normalized_score(settings, dec_pos, dec_rot)
 
             base.RUNTIME_IK_FALLBACK_ACTIVE = transition.active
+            base.RUNTIME_IK_FALLBACK_SUPPRESSED_RECOVERED = False
             base.RUNTIME_IK_POSITION_ERROR_M = dec_pos
             base.RUNTIME_IK_ROTATION_ERROR_RAD = dec_rot
             base.RUNTIME_IK_DECOUPLED_SCORE = dec_score
@@ -405,6 +407,18 @@ def install_coupled_ik_fallback(base: ModuleType, settings: IKFallbackSettings) 
             base.RUNTIME_IK_SEED_DIAGNOSTICS = []
             base.RUNTIME_IK_MODE = "decoupled"
             context["ik_mode"] = "decoupled"
+            context["ik_fallback_suppressed_recovered"] = False
+
+            # Hysteresis keeps the supervisor active for several good frames, but
+            # once the primary position task is already inside the exit threshold,
+            # do not let a coupled candidate overwrite its elbow-pole/posture work.
+            # This is especially important near the torso, where the primary solver
+            # intentionally bends/lifts the elbow while the wrist position is good.
+            primary_position_recovered = dec_pos <= settings.position_error_exit_m
+            if transition.active and primary_position_recovered:
+                base.RUNTIME_IK_FALLBACK_SUPPRESSED_RECOVERED = True
+                context["ik_fallback_suppressed_recovered"] = True
+                return result
 
             collision_status = getattr(base, "RUNTIME_COLLISION_NEAREST_STATUS", None)
             # Near-contact margins around the robot are early-warning signals, not
@@ -471,6 +485,9 @@ def install_coupled_ik_fallback(base: ModuleType, settings: IKFallbackSettings) 
             enriched = dict(status_value)
             enriched["ik_mode"] = base.RUNTIME_IK_MODE
             enriched["ik_fallback_active"] = bool(base.RUNTIME_IK_FALLBACK_ACTIVE)
+            enriched["ik_fallback_suppressed_recovered"] = bool(
+                base.RUNTIME_IK_FALLBACK_SUPPRESSED_RECOVERED
+            )
             enriched["ik_position_error_m"] = base.RUNTIME_IK_POSITION_ERROR_M
             rotation_error = base.RUNTIME_IK_ROTATION_ERROR_RAD
             enriched["ik_rotation_error_deg"] = math.degrees(rotation_error) if rotation_error is not None else None

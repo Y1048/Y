@@ -242,7 +242,6 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
 
 
 def apply_to_base_module(base: ModuleType, config: TeleopConfig) -> None:
-    """Apply validated tuning values to the legacy helper module before runtime starts."""
     import numpy as np
 
     base.UDP_HOST = config.network.udp_host
@@ -283,3 +282,5 @@ def apply_to_projected_runtime(runtime: ModuleType, config: TeleopConfig, projec
     runtime.WORKSPACE_VOXEL_SIZE_M = config.workspace.voxel_size_m
     runtime.WORKSPACE_ALLOWED_CLASSES = tuple(config.workspace.allowed_classes)
     runtime.WORKSPACE_DILATION_VOXELS = config.workspace.dilation_voxels
+    if hasattr(runtime, "VoxelWorkspaceMap"):
+        runtime.VoxelWorkspaceMap.DEFAULT_DILATION_VOXELS = config.workspace.dilation_voxels

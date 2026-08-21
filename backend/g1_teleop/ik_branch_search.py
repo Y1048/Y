@@ -1,4 +1,4 @@
-"""Additional multi-seed branches for difficult right-arm targets."""
+"""Additional multi-seed branches and lightweight search policy for right-arm IK."""
 
 from __future__ import annotations
 
@@ -7,15 +7,11 @@ from types import ModuleType
 import numpy as np
 
 
+DEFAULT_MULTISEED_SEARCH_INTERVAL_CALLS = 8
+
+
 def install_expanded_multiseed_branches(ik_fallback_module: ModuleType) -> None:
-    """Add shoulder-pitch/roll branches to the existing fallback seed set.
-
-    The default fallback already explores shoulder yaw, elbow flexion and a
-    ready-pose seed. Targets near the front of the torso can require a different
-    shoulder pitch/roll branch with the elbow lifted. These extra seeds make that
-    branch reachable without forcing a particular elbow position in normal IK.
-    """
-
+    """Add shoulder-pitch/roll branches to the existing fallback seed set."""
     if getattr(ik_fallback_module, "_EXPANDED_MULTI_SEED_BRANCHES_INSTALLED", False):
         return
 
@@ -47,18 +43,7 @@ def install_expanded_multiseed_branches(ik_fallback_module: ModuleType) -> None:
 
 
 def install_position_only_candidate_scoring(ik_fallback_module: ModuleType) -> None:
-    """Score whole-arm fallback branches by Cartesian position, not wrist rotation.
-
-    In the configured teleoperation stack the shoulder/elbow joints own wrist
-    position while hand orientation is repaired afterwards by a dedicated
-    wrist-only DLS overlay. Keeping rotation error in the coupled/multiseed score
-    can therefore choose a worse arm branch merely because that branch happens to
-    reduce wrist rotation before the wrist overlay runs.
-
-    Preserve the existing joint-motion and joint-margin regularizers, but remove
-    rotation from both the normalized pose score and multiseed candidate score.
-    """
-
+    """Score whole-arm fallback branches by Cartesian position, not wrist rotation."""
     if getattr(ik_fallback_module, "_POSITION_ONLY_CANDIDATE_SCORING_INSTALLED", False):
         return
 
@@ -78,8 +63,6 @@ def install_position_only_candidate_scoring(ik_fallback_module: ModuleType) -> N
         rotation_error_rad,
     ):
         del rotation_error_rad
-        # Reuse the module helpers for the regularization terms so behavior stays
-        # identical apart from removing wrist orientation from arm-branch choice.
         pose = float(position_error_m) / float(settings.position_error_exit_m)
         motion = float(np.linalg.norm(np.asarray(candidate_q) - np.asarray(start_q)))
         margin = ik_fallback_module._joint_limit_margin(model, base, candidate_q)
@@ -93,3 +76,42 @@ def install_position_only_candidate_scoring(ik_fallback_module: ModuleType) -> N
     ik_fallback_module._candidate_score = position_only_candidate_score
     ik_fallback_module._POSITION_ONLY_CANDIDATE_SCORING_INSTALLED = True
     ik_fallback_module._ORIGINAL_CANDIDATE_SCORE = original_candidate_score
+
+
+def install_multiseed_search_cadence(
+    ik_fallback_module: ModuleType,
+    *,
+    interval_calls: int = DEFAULT_MULTISEED_SEARCH_INTERVAL_CALLS,
+) -> None:
+    """Run the expensive full multi-seed search only periodically while fallback is active.
+
+    Coupled fallback remains available every control call. The full branch search
+    evaluates many seeds and several DLS/collision iterations per seed; doing that
+    every viewer cycle can halve the effective control rate and create visible
+    zero-order-hold stepping. The first multi-seed request runs immediately, then
+    subsequent requests are skipped until ``interval_calls`` fallback calls have
+    elapsed.
+    """
+    if isinstance(interval_calls, bool) or int(interval_calls) < 1:
+        raise ValueError("interval_calls must be an integer >= 1")
+    if getattr(ik_fallback_module, "_MULTISEED_SEARCH_CADENCE_INSTALLED", False):
+        return
+
+    original_multiseed_candidate = ik_fallback_module._multiseed_candidate
+    counter = 0
+
+    def throttled_multiseed_candidate(*args, **kwargs):
+        nonlocal counter
+        counter += 1
+        should_search = counter == 1 or counter >= int(interval_calls)
+        if should_search:
+            counter = 0
+            return original_multiseed_candidate(*args, **kwargs)
+
+        # Match the original return contract. Coupled fallback still executes on
+        # this cycle; only the heavyweight branch enumeration is deferred.
+        return None, float("inf"), float("inf"), None, []
+
+    ik_fallback_module._multiseed_candidate = throttled_multiseed_candidate
+    ik_fallback_module._MULTISEED_SEARCH_CADENCE_INSTALLED = True
+    ik_fallback_module._MULTISEED_SEARCH_INTERVAL_CALLS = int(interval_calls)

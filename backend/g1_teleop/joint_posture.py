@@ -16,6 +16,7 @@ from .workspace_map import WorkspaceProjection, WorkspaceTargetProjector
 
 DEFAULT_PROFILE_PATH = Path(__file__).resolve().parents[2] / "config" / "joint_postures.json"
 SECONDARY_MAX_STEP_RAD = math.radians(0.35)
+ELBOW_SECONDARY_MAX_STEP_RAD = math.radians(0.12)
 SECONDARY_MAX_PRIMARY_DRIFT_M = 0.0002
 SECONDARY_GAIN = 0.18
 
@@ -145,6 +146,7 @@ def install_joint_space_posture_scheduler(
     base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED = False
     base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED_REASON = None
     base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M = 0.0
+    base.RUNTIME_JOINT_POSTURE_LEGACY_ELBOW_AVOIDANCE_DISABLED = False
 
     def scheduled_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -177,13 +179,27 @@ def install_joint_space_posture_scheduler(
 
         adjusted_kwargs = dict(kwargs)
         adjusted_kwargs["elbow_pole_reference"] = None
-        if len(args) > 3:
-            adjusted_args = list(args)
-            adjusted_args[3] = primary_preferred
-            result = original_solver(*adjusted_args, **adjusted_kwargs)
-        else:
-            adjusted_kwargs["preferred"] = primary_preferred
-            result = original_solver(*args, **adjusted_kwargs)
+
+        # In the scheduled torso-front region, the validated C-space posture and
+        # runtime collision checks replace the old fixed elbow-lateral heuristic.
+        # Keep the legacy behavior outside this region.
+        disable_legacy_elbow_avoidance = bool(torso is not None and alpha > 1e-6)
+        previous_enforce_torso_safety = bool(context.get("enforce_torso_safety", False))
+        base.RUNTIME_JOINT_POSTURE_LEGACY_ELBOW_AVOIDANCE_DISABLED = disable_legacy_elbow_avoidance
+        context["joint_posture_legacy_elbow_avoidance_disabled"] = disable_legacy_elbow_avoidance
+        if disable_legacy_elbow_avoidance:
+            context["enforce_torso_safety"] = False
+
+        try:
+            if len(args) > 3:
+                adjusted_args = list(args)
+                adjusted_args[3] = primary_preferred
+                result = original_solver(*adjusted_args, **adjusted_kwargs)
+            else:
+                adjusted_kwargs["preferred"] = primary_preferred
+                result = original_solver(*args, **adjusted_kwargs)
+        finally:
+            context["enforce_torso_safety"] = previous_enforce_torso_safety
 
         base.RUNTIME_JOINT_POSTURE_ENABLED = torso is not None
         base.RUNTIME_JOINT_POSTURE_BLEND = float(alpha)
@@ -209,6 +225,13 @@ def install_joint_space_posture_scheduler(
                 secondary_delta,
                 -SECONDARY_MAX_STEP_RAD,
                 SECONDARY_MAX_STEP_RAD,
+            )
+            # Elbow index is 3 in RIGHT_ARM_JOINTS. Keep its posture transition
+            # deliberately slower than the other joints to avoid a visible snap.
+            secondary_delta[3] = np.clip(
+                secondary_delta[3],
+                -ELBOW_SECONDARY_MAX_STEP_RAD,
+                ELBOW_SECONDARY_MAX_STEP_RAD,
             )
 
             accepted = False
@@ -293,6 +316,12 @@ def install_joint_space_posture_scheduler(
             )
             enriched["joint_posture_workspace_bypass"] = bool(
                 getattr(base, "RUNTIME_JOINT_POSTURE_WORKSPACE_BYPASS", False)
+            )
+            enriched["joint_posture_legacy_elbow_avoidance_disabled"] = bool(
+                base.RUNTIME_JOINT_POSTURE_LEGACY_ELBOW_AVOIDANCE_DISABLED
+            )
+            enriched["joint_posture_elbow_step_cap_deg"] = math.degrees(
+                ELBOW_SECONDARY_MAX_STEP_RAD
             )
             original_status_writer(enriched)
 

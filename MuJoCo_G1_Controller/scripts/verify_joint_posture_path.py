@@ -34,14 +34,21 @@ def load_path() -> tuple[np.ndarray, np.ndarray]:
     return ready, torso
 
 
-def joint_limit_violation(model, context, q: np.ndarray) -> list[str]:
+def joint_limit_violation(model, q: np.ndarray) -> list[str]:
+    """Return right-arm joint-limit violations for one 7-DoF configuration.
+
+    MuJoCo exposes ``jnt_qposadr`` (joint -> qpos address) but not a reverse
+    ``qpos_jntid`` table. Since the seven values in ``q`` are already ordered by
+    ``base.RIGHT_ARM_JOINTS``, resolve each joint id directly by name instead of
+    trying to reverse-map qpos indices.
+    """
     violations: list[str] = []
-    qpos_ids = np.asarray(context["right_qpos_ids"], dtype=int)
-    for name, qpos_id, value in zip(base.RIGHT_ARM_JOINTS, qpos_ids, q):
-        joint_id = model.qpos_jntid[int(qpos_id)]
+    for name, value in zip(base.RIGHT_ARM_JOINTS, q):
+        joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
         if joint_id < 0:
+            violations.append(f"{name}: joint not found in MuJoCo model")
             continue
-        if not model.jnt_limited[joint_id]:
+        if not bool(model.jnt_limited[joint_id]):
             continue
         low, high = model.jnt_range[joint_id]
         if value < low - 1e-9 or value > high + 1e-9:
@@ -71,7 +78,7 @@ def main() -> int:
         base.set_left_arm_ready(model, data)
         mujoco.mj_forward(model, data)
 
-        limits = joint_limit_violation(model, context, q)
+        limits = joint_limit_violation(model, q)
         if limits:
             limit_samples.append((index, float(alpha), limits))
 
@@ -108,7 +115,14 @@ def main() -> int:
             print("  - " + detail)
 
     safe = not collision_samples and not limit_samples
-    print("RESULT: " + ("PASS - straight joint-space interpolation is feasible" if safe else "FAIL - use one or more C-space waypoints"))
+    print(
+        "RESULT: "
+        + (
+            "PASS - straight joint-space interpolation is feasible"
+            if safe
+            else "FAIL - use one or more C-space waypoints"
+        )
+    )
     return 0 if safe else 1
 
 

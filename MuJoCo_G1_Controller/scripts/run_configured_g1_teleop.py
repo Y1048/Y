@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import math
 import sys
 from pathlib import Path
 
@@ -37,37 +36,39 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 
-def install_direct_position_reference(base_module) -> None:
-    """Use responsive adaptive smoothing instead of a fixed Cartesian speed limit.
+def install_lagged_position_reference(base_module) -> None:
+    """Restore deliberate lag without allowing large command-delay buildup.
 
-    Small hand jitter is low-pass filtered, while deliberate motion rapidly approaches
-    direct feasible-target tracking. Workspace projection, collision handling, and the
-    IK joint-step limiter remain authoritative safety layers.
+    Small errors move slowly for smoothness, while larger errors progressively
+    increase the Cartesian catch-up speed. Workspace projection, collision
+    handling, and the IK joint-step limiter remain authoritative safety layers.
     """
 
-    small_motion_tau_s = 0.040
-    large_motion_tau_s = 0.008
-    direct_follow_distance_m = 0.050
+    min_speed_mps = 0.10
+    max_speed_mps = 0.35
+    full_catchup_error_m = 0.08
 
-    def direct_position_reference(current_position, desired_position, delta_time):
+    def lagged_position_reference(current_position, desired_position, delta_time):
         current = np.asarray(current_position, dtype=float)
         desired = np.asarray(desired_position, dtype=float)
         safe_dt = max(float(delta_time), 1e-4)
-        error_distance = float(np.linalg.norm(desired - current))
+        error = desired - current
+        error_distance = float(np.linalg.norm(error))
 
-        motion_ratio = min(
-            1.0,
-            error_distance / direct_follow_distance_m,
-        )
-        smooth_ratio = motion_ratio * motion_ratio * (3.0 - 2.0 * motion_ratio)
-        tau_s = (
-            small_motion_tau_s
-            + (large_motion_tau_s - small_motion_tau_s) * smooth_ratio
-        )
-        alpha = 1.0 - math.exp(-safe_dt / max(tau_s, 1e-4))
-        return current + alpha * (desired - current)
+        if error_distance < 1e-9:
+            return desired.copy()
 
-    base_module.update_safe_position_reference = direct_position_reference
+        speed_ratio = min(1.0, error_distance / full_catchup_error_m)
+        smooth_ratio = speed_ratio * speed_ratio * (3.0 - 2.0 * speed_ratio)
+        speed_mps = min_speed_mps + (max_speed_mps - min_speed_mps) * smooth_ratio
+        max_step = speed_mps * safe_dt
+
+        if error_distance <= max_step:
+            return desired.copy()
+
+        return current + error * (max_step / error_distance)
+
+    base_module.update_safe_position_reference = lagged_position_reference
 
 
 def main() -> None:
@@ -80,7 +81,7 @@ def main() -> None:
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_severe_ik_fallback_trigger(base, severe_fallback_settings)
     install_primary_task_guard(base)
-    install_direct_position_reference(base)
+    install_lagged_position_reference(base)
 
     # Import only after tuning and safety/IK hooks are applied so the projected
     # runtime observes one configured policy stack.
@@ -97,8 +98,8 @@ def main() -> None:
         + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
     )
     print(
-        "Position reference: adaptive low-latency smoothing "
-        "(8-40 ms response; workspace/collision/IK joint-step safety retained)"
+        "Position reference: smooth lagged follow "
+        "(0.10-0.35 m/s adaptive catch-up; workspace/collision/IK safety retained)"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "decoupled primary + coupled 7-DoF fallback"

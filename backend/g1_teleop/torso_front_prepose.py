@@ -8,6 +8,8 @@ from typing import Any
 
 import numpy as np
 
+from .torso_workspace_override import install_torso_front_workspace_override
+
 
 TORSO_FRONT_ENTER_X_MIN_M = 0.08
 TORSO_FRONT_ENTER_X_MAX_M = 0.28
@@ -20,7 +22,6 @@ TORSO_FRONT_Z_MAX_M = 1.15
 TORSO_FRONT_ELBOW_TARGET_DEG = 90.0
 TORSO_FRONT_ELBOW_READY_DEG = 75.0
 TORSO_PREPOSE_MAX_WRIST_DRIFT_M = 0.005
-# MuJoCo G1 frame: +X forward, +Y left, +Z up. For the right arm, outward is -Y.
 TORSO_FRONT_ELBOW_POLE_DIRECTION = np.array([0.0, -0.45, 0.89], dtype=float)
 
 
@@ -41,15 +42,7 @@ def in_torso_front_region(target_position: np.ndarray, *, active_previous: bool 
 
 
 def install_torso_front_prepose(base: ModuleType) -> None:
-    """Prepare a bent, upward/outward elbow before torso-front wrist motion.
-
-    On region entry the current wrist position is captured once and becomes a fixed
-    pre-pose anchor. While the elbow is below the release angle, the solver holds
-    that fixed anchor and bends the elbow toward 90 degrees using an explicit
-    upward/outward pole. This prevents per-cycle target rebasing from accumulating
-    wrist drift. Once the elbow reaches the ready angle, the requested wrist target
-    is released while the same elbow posture remains preferred.
-    """
+    """Prepare a bent, upward/outward elbow before torso-front wrist motion."""
     if getattr(base, "_TORSO_FRONT_PREPOSE_INSTALLED", False):
         return
 
@@ -198,6 +191,7 @@ def install_torso_front_prepose(base: ModuleType) -> None:
     base.is_torso_front_target = lambda target: in_torso_front_region(
         np.asarray(target, dtype=float), active_previous=False
     )
+    install_torso_front_workspace_override(base)
 
     original_status_writer = getattr(base, "write_runtime_status", None)
     if callable(original_status_writer) and not getattr(base, "_TORSO_PREPOSE_STATUS_INSTALLED", False):

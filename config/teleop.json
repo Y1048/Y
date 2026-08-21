@@ -70,6 +70,7 @@
   },
   "workspace": {
     "voxel_size_m": 0.01,
+    "dilation_voxels": 1,
     "allowed_classes": [1, 2],
     "workspace_file": "logs/workspace/right_arm_workspace.npz",
     "clutch_delta_min_m": [-0.2, -0.3, -0.28],

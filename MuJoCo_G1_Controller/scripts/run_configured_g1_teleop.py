@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -15,25 +16,19 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from g1_teleop.config import apply_to_base_module, apply_to_projected_runtime, load_teleop_config  # noqa: E402
-from g1_teleop.elbow_motion_gate import install_elbow_pole_motion_gate  # noqa: E402
-from g1_teleop.ik_branch_search import (  # noqa: E402
-    install_expanded_multiseed_branches,
-    install_multiseed_search_cadence,
-    install_position_only_candidate_scoring,
-)
+from g1_teleop.ik_branch_search import install_position_only_candidate_scoring  # noqa: E402
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings  # noqa: E402
 from g1_teleop.ik_fallback import install_coupled_ik_fallback, load_ik_fallback_settings  # noqa: E402
 import g1_teleop.ik_fallback as ik_fallback_module  # noqa: E402
 from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
-from g1_teleop.motion_quality import (  # noqa: E402
-    DEFAULT_PREFERRED_ELBOW_DEG as PREFERRED_ELBOW_DEG,
-    TORSO_FRONT_PREFERRED_ELBOW_DEG,
-    install_joint_command_smoother,
-    install_motion_gated_elbow_preference,
-    install_target_aware_elbow_pole,
-)
+from g1_teleop.motion_quality import install_joint_command_smoother  # noqa: E402
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
+from g1_teleop.torso_front_prepose import (  # noqa: E402
+    TORSO_FRONT_ELBOW_READY_DEG,
+    TORSO_FRONT_ELBOW_TARGET_DEG,
+    install_torso_front_prepose,
+)
 
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
 
@@ -41,9 +36,6 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
-# Keep each visible Cartesian update bounded to one 60 Hz reference quantum.
-# Heavy multi-seed work is throttled separately so the control loop itself can
-# stay near 60 Hz instead of compensating a slow loop with larger position jumps.
 REFERENCE_MAX_DT_S = 1.0 / 60.0
 STAGNATION_POSITION_ERROR_M = 0.015
 STAGNATION_MIN_IMPROVEMENT_M = 0.00025
@@ -64,9 +56,11 @@ def install_no_catchup_position_reference(base_module) -> None:
     original_update = base_module.update_safe_position_reference
     if getattr(base_module, "_NO_CATCHUP_POSITION_REFERENCE_INSTALLED", False):
         return
+
     def no_catchup_update(current_position, desired_position, delta_time):
         bounded_dt = min(max(float(delta_time), 1e-4), REFERENCE_MAX_DT_S)
         return original_update(current_position, desired_position, bounded_dt)
+
     base_module.update_safe_position_reference = no_catchup_update
     base_module._NO_CATCHUP_POSITION_REFERENCE_INSTALLED = True
 
@@ -75,6 +69,7 @@ def install_position_only_fallback_policy(supervisor) -> None:
     original_update = supervisor.update
     previous_error = None
     stagnant_frames = 0
+
     def position_only_update(position_error_m, rotation_error_rad, *, inspection_contact):
         nonlocal previous_error, stagnant_frames
         del rotation_error_rad
@@ -82,7 +77,12 @@ def install_position_only_fallback_policy(supervisor) -> None:
         transition = original_update(position_error, 0.0, inspection_contact=inspection_contact)
         improvement = math.inf if previous_error is None else previous_error - position_error
         previous_error = position_error
-        can_recover = supervisor.settings.enabled and not supervisor.active and not inspection_contact and position_error >= STAGNATION_POSITION_ERROR_M
+        can_recover = (
+            supervisor.settings.enabled
+            and not supervisor.active
+            and not inspection_contact
+            and position_error >= STAGNATION_POSITION_ERROR_M
+        )
         if can_recover and improvement < STAGNATION_MIN_IMPROVEMENT_M:
             stagnant_frames += 1
         else:
@@ -94,6 +94,7 @@ def install_position_only_fallback_policy(supervisor) -> None:
             stagnant_frames = 0
             return type(transition)(True, True, "position_stagnation", 0, 0)
         return transition
+
     supervisor.update = position_only_update
 
 
@@ -101,6 +102,7 @@ def install_position_only_severe_trigger(base_module, supervisor, settings) -> N
     original_solver = base_module.solve_right_arm_target
     base_module.RUNTIME_IK_SEVERE_TRIGGERED = False
     base_module.RUNTIME_IK_SEVERE_REASON = None
+
     def position_severe_solver(*args, **kwargs):
         model = args[0] if len(args) > 0 else kwargs.get("model")
         data = args[1] if len(args) > 1 else kwargs.get("data")
@@ -119,7 +121,11 @@ def install_position_only_severe_trigger(base_module, supervisor, settings) -> N
         if start_q is None or qpos_ids is None or supervisor.active:
             return result
         position_error = getattr(base_module, "RUNTIME_IK_POSITION_ERROR_M", None)
-        severe_position = position_error is not None and math.isfinite(float(position_error)) and float(position_error) >= settings.position_error_m
+        severe_position = (
+            position_error is not None
+            and math.isfinite(float(position_error))
+            and float(position_error) >= settings.position_error_m
+        )
         if not severe_position:
             return result
         data.qpos[qpos_ids] = start_q
@@ -134,20 +140,23 @@ def install_position_only_severe_trigger(base_module, supervisor, settings) -> N
         base_module.RUNTIME_IK_SEVERE_TRIGGERED = True
         base_module.RUNTIME_IK_SEVERE_REASON = "position"
         return original_solver(*args, **kwargs)
+
     base_module.solve_right_arm_target = position_severe_solver
 
 
 def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
+    """Keep one position IK step per cycle and repair orientation with wrist only."""
     if getattr(base_module, "_SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED", False):
         return
-    install_motion_gated_elbow_preference(base_module)
-    install_elbow_pole_motion_gate(base_module)
+
     original_solver = base_module.solve_right_arm_target
     wrist_max_step_rad = math.radians(WRIST_MAX_STEP_DEG_PER_CYCLE)
+
     def smooth_wrist_solver(*args, **kwargs):
         adjusted_kwargs = dict(kwargs)
         adjusted_kwargs["substeps"] = CONFIGURED_IK_SUBSTEPS
         result = original_solver(*args, **adjusted_kwargs)
+
         model = args[0] if len(args) > 0 else adjusted_kwargs.get("model")
         data = args[1] if len(args) > 1 else adjusted_kwargs.get("data")
         target_rotation = adjusted_kwargs.get("target_rotation")
@@ -156,26 +165,37 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
             context = args[8]
         if model is None or data is None or target_rotation is None or not isinstance(context, dict):
             return result
+
         right_dof_ids = np.asarray(context.get("right_dof_ids", []), dtype=int)
         right_qpos_ids = np.asarray(context.get("right_qpos_ids", []), dtype=int)
         orientation_body = context.get("orientation_body")
         if right_dof_ids.size < 7 or right_qpos_ids.size < 7 or orientation_body is None:
             return result
+
         import mujoco
         mujoco.mj_forward(model, data)
         current_rotation = data.xmat[int(orientation_body)].reshape(3, 3)
-        rotation_error = np.asarray(base_module.calculate_rotation_error(np.asarray(target_rotation, dtype=float), current_rotation), dtype=float)
+        rotation_error = np.asarray(
+            base_module.calculate_rotation_error(
+                np.asarray(target_rotation, dtype=float), current_rotation
+            ),
+            dtype=float,
+        )
         if float(np.linalg.norm(rotation_error)) < 1e-7:
             return result
+
         jacp_dummy = np.zeros((3, model.nv))
         jacr = np.zeros((3, model.nv))
         mujoco.mj_jacBody(model, data, jacp_dummy, jacr, int(orientation_body))
         wrist_dof_ids = right_dof_ids[4:7]
         wrist_qpos_ids = right_qpos_ids[4:7]
         wrist_jacobian = jacr[:, wrist_dof_ids]
-        wrist_pseudoinverse = base_module.damped_pseudoinverse(wrist_jacobian, float(base_module.ORIENTATION_DAMPING))
+        wrist_pseudoinverse = base_module.damped_pseudoinverse(
+            wrist_jacobian, float(base_module.ORIENTATION_DAMPING)
+        )
         wrist_delta = wrist_pseudoinverse @ rotation_error
         wrist_delta = np.clip(wrist_delta, -wrist_max_step_rad, wrist_max_step_rad)
+
         start_wrist_q = data.qpos[wrist_qpos_ids].copy()
         accepted = False
         for line_search_index in range(5):
@@ -186,6 +206,7 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
             if not base_module.has_right_arm_core_contact(model, data, context):
                 accepted = True
                 break
+
         if not accepted:
             data.qpos[wrist_qpos_ids] = start_wrist_q
             mujoco.mj_forward(model, data)
@@ -193,6 +214,7 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
         else:
             context["wrist_orientation_overlay_blocked"] = False
         return data.xpos[int(context["position_body"])].copy()
+
     base_module.solve_right_arm_target = smooth_wrist_solver
     base_module._SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED = True
 
@@ -200,42 +222,57 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
 def main() -> None:
     config = load_teleop_config(TELEOP_CONFIG_PATH)
     fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
+    # Full multi-seed search was causing visible viewer/control stalls in live use.
+    # Keep the cheap coupled recovery path; reintroduce branch search only after
+    # the stable two-stage torso pre-pose is verified.
+    fallback_settings = replace(
+        fallback_settings,
+        multiseed=replace(fallback_settings.multiseed, enabled=False),
+    )
     severe_fallback_settings = load_severe_ik_fallback_settings(TELEOP_CONFIG_PATH)
+
     apply_to_base_module(base, config)
     install_no_catchup_position_reference(base)
     install_runtime_collision_policy(base, config)
     inspection_machine = install_inspection_contact_monitor(base, config)
-    install_target_aware_elbow_pole(base)
-    install_expanded_multiseed_branches(ik_fallback_module)
     install_position_only_candidate_scoring(ik_fallback_module)
-    install_multiseed_search_cadence(ik_fallback_module, interval_calls=8)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_position_only_fallback_policy(fallback_supervisor)
     install_position_only_severe_trigger(base, fallback_supervisor, severe_fallback_settings)
     install_primary_task_guard(base)
     install_calibrated_vr_wrist_orientation(base)
+    install_torso_front_prepose(base)
     install_smooth_cycle_and_wrist_overlay(base)
-    # Kept as a compatibility hook; the current implementation is intentionally
-    # a no-op so the Cartesian reference, not a second joint limiter, owns speed.
+    # Compatibility hook; currently a no-op. Cartesian reference owns speed.
     install_joint_command_smoother(base)
+
     import g1_right_arm_udp_ik_runtime as runtime
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
+
     print(f"Teleop config: {TELEOP_CONFIG_PATH}")
-    print("Collision authority: TaskAwareRightArmCollisionPolicy " f"(structural_neighbor_distance={config.collision.structural_neighbor_distance})")
-    print("Inspection contact state: " + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled"))
-    print("Position reference: fixed Cartesian speed limit " f"({config.motion.position_max_speed_mps:.2f} m/s; 60 Hz step cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)")
-    print("Joint command smoothing: disabled; Cartesian reference + one IK substep own the motion rate")
-    print("Elbow posture: target-aware pole + bend preference " f"({PREFERRED_ELBOW_DEG:.0f} deg free-space -> {TORSO_FRONT_PREFERRED_ELBOW_DEG:.0f} deg near torso front)")
-    print("Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame " f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit")
-    print("IK recovery: position-only coupled fallback every cycle; expanded multi-seed branch search every 8 fallback calls")
-    if fallback_supervisor.settings.enabled:
-        strategy = "wrist-only orientation + position-only coupled 7-DoF fallback"
-        if fallback_supervisor.settings.multiseed.enabled:
-            strategy += " + throttled expanded multi-seed search"
-        strategy += " + recovered-primary suppression + torso posture escape guard"
-        print(f"IK strategy: {strategy}")
-    else:
-        print("IK strategy: decoupled only (fallback disabled)")
+    print(
+        "Collision authority: TaskAwareRightArmCollisionPolicy "
+        f"(structural_neighbor_distance={config.collision.structural_neighbor_distance})"
+    )
+    print(
+        "Inspection contact state: "
+        + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
+    )
+    print(
+        "Position reference: fixed Cartesian speed limit "
+        f"({config.motion.position_max_speed_mps:.2f} m/s; 60 Hz step cap={REFERENCE_MAX_DT_S*1000.0:.1f} ms)"
+    )
+    print("Joint command smoothing: disabled")
+    print("IK recovery: coupled position recovery only; live multi-seed search disabled")
+    print(
+        "Torso-front strategy: hold wrist, bend elbow to "
+        f"{TORSO_FRONT_ELBOW_TARGET_DEG:.0f} deg, release wrist at "
+        f"{TORSO_FRONT_ELBOW_READY_DEG:.0f} deg"
+    )
+    print(
+        "Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame "
+        f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit"
+    )
     runtime.main()
 
 

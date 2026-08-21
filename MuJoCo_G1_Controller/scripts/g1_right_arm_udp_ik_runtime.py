@@ -21,17 +21,13 @@ from g1_teleop import VoxelWorkspaceMap, WorkspaceTargetProjector
 
 WORKSPACE_PATH = base.PROJECT_ROOT / "logs" / "workspace" / "right_arm_workspace.npz"
 WORKSPACE_VOXEL_SIZE_M = 0.01
-WORKSPACE_ALLOWED_CLASSES = (1, 2)  # collision-free: reachable-but-poor + safe
+WORKSPACE_ALLOWED_CLASSES = (1, 2)
 
 
 def load_workspace_projector(anchor_point_m: np.ndarray) -> WorkspaceTargetProjector | None:
     if not WORKSPACE_PATH.exists():
-        print(
-            "[workspace] right_arm_workspace.npz not found; "
-            "using legacy box/torso workspace guards."
-        )
+        print("[workspace] right_arm_workspace.npz not found; using legacy box/torso workspace guards.")
         return None
-
     try:
         workspace = VoxelWorkspaceMap.from_npz(
             WORKSPACE_PATH,
@@ -46,7 +42,6 @@ def load_workspace_projector(anchor_point_m: np.ndarray) -> WorkspaceTargetProje
     except (KeyError, OSError, ValueError) as exc:
         print(f"[workspace] failed to load voxel map ({exc}); using legacy guards.")
         return None
-
     print(
         "[workspace] loaded collision-free voxel map: "
         f"{len(workspace.safe_voxel_indices):,} voxels, "
@@ -59,7 +54,6 @@ def main() -> None:
     args = base.parse_args()
     if args.camera_fps <= 0.0:
         raise ValueError("--camera-fps must be positive")
-
     if args.snapshot is not None:
         base.main()
         return
@@ -68,11 +62,9 @@ def main() -> None:
     scene_target = np.asarray(base.SCENES[args.scene]["target_pos"], dtype=float)
     ik_context = base.create_right_arm_ik_context(model)
     mujoco.mj_forward(model, data)
-
     position_body = ik_context["position_body"]
     orientation_body = ik_context["orientation_body"]
     workspace_projector = load_workspace_projector(data.xpos[position_body].copy())
-
     if workspace_projector is not None:
         base.is_right_wrist_target_safe = lambda target: True
 
@@ -83,11 +75,7 @@ def main() -> None:
     if args.publish_head_camera:
         camera_profile = base.load_camera_profile(base.CAMERA_PROFILE_PATH)
         camera_profile["active_source"] = "simulation"
-        camera_source = base.create_head_camera_source(
-            camera_profile,
-            model=model,
-            data=data,
-        )
+        camera_source = base.create_head_camera_source(camera_profile, model=model, data=data)
         camera_source.start()
         image_writer = base.UnitreeSimImageWriter()
 
@@ -102,13 +90,9 @@ def main() -> None:
     raw_valid = False
     clutch_active = False
     clutch_reference = None
-    packet_watchdog = base.SessionSequenceWatchdog(
-        takeover_after_s=base.INPUT_TIMEOUT_SECONDS
-    )
+    packet_watchdog = base.SessionSequenceWatchdog(takeover_after_s=base.INPUT_TIMEOUT_SECONDS)
     workspace_fault = base.WorkspaceFaultLatch()
-    workspace_exit_debounce = base.WorkspaceExitDebounce(
-        base.WORKSPACE_EXIT_CONFIRM_SECONDS
-    )
+    workspace_exit_debounce = base.WorkspaceExitDebounce(base.WORKSPACE_EXIT_CONFIRM_SECONDS)
     received_total = 0
     last_received_time = float("-inf")
     packet_was_fresh = False
@@ -124,58 +108,32 @@ def main() -> None:
     print("G1 right-arm UDP IK demo - projected workspace runtime")
     print("----------------------------------------------------")
     print(f"Listening for UDP JSON on 127.0.0.1:{base.UDP_PORT} and local interfaces")
-    print(
-        'Expected format: {"session_id": "...", "sequence": 0, '
-        '"right": {"pos": [0.42, -0.16, 1.05], '
-        '"rot": [0, 0, 0, 1], "valid": true}}'
-    )
+    print('Expected format: {"session_id": "...", "sequence": 0, "right": {"pos": [0.42, -0.16, 1.05], "rot": [0, 0, 0, 1], "valid": true}}')
     print("Run tools\\TEST_FAKE_VR_TO_MUJOCO.bat to test without VR.")
     print("Initial ready pose: both arms down; clutch motion is relative to this pose.")
-    print(
-        f"Publishing right-arm joint state to "
-        f"{base.UNITY_STATE_HOST}:{base.UNITY_STATE_PORT} at {base.UNITY_STATE_HZ:g} Hz."
-    )
+    print(f"Publishing right-arm joint state to {base.UNITY_STATE_HOST}:{base.UNITY_STATE_PORT} at {base.UNITY_STATE_HZ:g} Hz.")
     if workspace_projector is not None:
         print("Workspace authority: backend collision-free voxel projection.")
     else:
         print("Workspace authority: legacy relative box + torso guard fallback.")
     print("Target marker: feasible target; G1 follows the lagged safe reference.")
+    print("Filtered workspace step: boundary walking disabled after speed limiting.")
     if args.publish_head_camera:
-        print(
-            "Head camera: 640x480 BGR at "
-            f"{args.camera_fps:g} FPS -> isaac_head_image_shm (TeleImager-compatible)"
-        )
+        print(f"Head camera: 640x480 BGR at {args.camera_fps:g} FPS -> isaac_head_image_shm (TeleImager-compatible)")
 
     try:
         with mujoco.viewer.launch_passive(model, data) as viewer:
             base.configure_viewer_camera(viewer, model, args.view)
             last_print = 0.0
-
             while viewer.is_running():
                 t = time.monotonic()
-                control_delta_time = float(
-                    np.clip(
-                        t - last_control_time,
-                        model.opt.timestep,
-                        0.05,
-                    )
-                )
+                control_delta_time = float(np.clip(t - last_control_time, model.opt.timestep, 0.05))
                 last_control_time = t
                 base.freeze_non_arm_joints(model, data, initial_qpos)
                 base.set_left_arm_ready(model, data)
 
-                (
-                    raw_target,
-                    raw_rotation,
-                    raw_valid,
-                    received_now,
-                    accepted_workspace_exit,
-                ) = base.receive_target(
-                    sock,
-                    packet_watchdog,
-                    raw_target,
-                    raw_rotation,
-                    raw_valid,
+                raw_target, raw_rotation, raw_valid, received_now, accepted_workspace_exit = base.receive_target(
+                    sock, packet_watchdog, raw_target, raw_rotation, raw_valid
                 )
                 if received_now:
                     received_total += received_now
@@ -185,7 +143,6 @@ def main() -> None:
                     if clutch_active:
                         raw_valid = True
                     accepted_workspace_exit = False
-
                 if accepted_workspace_exit:
                     if not workspace_fault.latched:
                         workspace_fault.trip()
@@ -202,13 +159,8 @@ def main() -> None:
                 if requested_active and not clutch_active:
                     mujoco.mj_forward(model, data)
                     clutch_reference = base.capture_clutch_reference(
-                        data,
-                        position_body,
-                        orientation_body,
-                        raw_target,
-                        raw_rotation,
-                        ik_context["shoulder_body"],
-                        ik_context["elbow_body"],
+                        data, position_body, orientation_body, raw_target, raw_rotation,
+                        ik_context["shoulder_body"], ik_context["elbow_body"],
                     )
                     preferred[:] = data.qpos[ik_context["right_qpos_ids"]]
                     filtered_target = clutch_reference["robot_position"].copy()
@@ -223,13 +175,8 @@ def main() -> None:
                 elif input_resumed and clutch_active:
                     mujoco.mj_forward(model, data)
                     clutch_reference = base.capture_clutch_reference(
-                        data,
-                        position_body,
-                        orientation_body,
-                        raw_target,
-                        raw_rotation,
-                        ik_context["shoulder_body"],
-                        ik_context["elbow_body"],
+                        data, position_body, orientation_body, raw_target, raw_rotation,
+                        ik_context["shoulder_body"], ik_context["elbow_body"],
                     )
                     preferred[:] = data.qpos[ik_context["right_qpos_ids"]]
                     filtered_target = clutch_reference["robot_position"].copy()
@@ -254,10 +201,7 @@ def main() -> None:
                     workspace_projection_distance_m = 0.0
                     target_rotation = data.xmat[orientation_body].reshape(3, 3).copy()
                     data.mocap_pos[0] = filtered_target
-                    print(
-                        "\nExplicit workspace exit received; clutch released "
-                        "and current pose held."
-                    )
+                    print("\nExplicit workspace exit received; clutch released and current pose held.")
 
                 if not packet_fresh and packet_was_fresh and clutch_active:
                     print("\nUDP input temporarily stale; holding the current pose.")
@@ -265,11 +209,8 @@ def main() -> None:
 
                 if clutch_active and packet_fresh:
                     operator_target, desired_rotation = base.calculate_clutched_target(
-                        clutch_reference,
-                        raw_target,
-                        raw_rotation,
+                        clutch_reference, raw_target, raw_rotation
                     )
-
                     if workspace_projector is not None:
                         projection = workspace_projector.update(operator_target)
                         feasible_target = projection.feasible_target
@@ -277,25 +218,17 @@ def main() -> None:
                         workspace_limited = projection.projected
                         workspace_exit_debounce.reset()
                     else:
-                        requested_delta = (
-                            operator_target - clutch_reference["robot_position"]
-                        )
+                        requested_delta = operator_target - clutch_reference["robot_position"]
                         feasible_target = base.clamp_to_clutch_workspace(
-                            operator_target,
-                            clutch_reference["robot_position"],
+                            operator_target, clutch_reference["robot_position"]
                         )
-                        workspace_projection_distance_m = float(
-                            np.linalg.norm(feasible_target - operator_target)
-                        )
+                        workspace_projection_distance_m = float(np.linalg.norm(feasible_target - operator_target))
                         workspace_safe = (
                             base.is_clutch_delta_within_workspace(requested_delta)
                             and base.is_right_wrist_target_safe(feasible_target)
                         )
                         workspace_limited = not workspace_safe
-                        workspace_exit_confirmed = workspace_exit_debounce.update(
-                            workspace_safe,
-                            control_delta_time,
-                        )
+                        workspace_exit_confirmed = workspace_exit_debounce.update(workspace_safe, control_delta_time)
                         if workspace_exit_confirmed:
                             workspace_fault.trip_and_arm_reset()
                             workspace_limited = True
@@ -309,45 +242,36 @@ def main() -> None:
                             workspace_projection_distance_m = 0.0
                             target_rotation = data.xmat[orientation_body].reshape(3, 3).copy()
                             data.mocap_pos[0] = filtered_target
-                            print(
-                                "\nLegacy workspace exited; clutch released "
-                                "and current pose held."
-                            )
+                            print("\nLegacy workspace exited; clutch released and current pose held.")
 
                     if clutch_active:
                         filtered_candidate = base.update_safe_position_reference(
-                            filtered_target,
-                            feasible_target,
-                            control_delta_time,
+                            filtered_target, feasible_target, control_delta_time
                         )
                         if workspace_projector is not None:
-                            filtered_target = workspace_projector.workspace.project(
-                                filtered_candidate
-                            ).feasible_target
+                            # Important: the operator projection may slide along the
+                            # voxel boundary, but the post-speed-limit projection must
+                            # not boundary-walk. Otherwise one 0.08 m/s candidate step
+                            # can become a much larger final target jump.
+                            filtered_projection = workspace_projector.workspace.project_from(
+                                filtered_target,
+                                filtered_candidate,
+                                max_boundary_steps=0,
+                            )
+                            filtered_target = filtered_projection.feasible_target
                         else:
                             filtered_target = filtered_candidate
+
                         filtered_rotation = base.update_safe_rotation_reference(
-                            filtered_rotation,
-                            raw_rotation,
-                            control_delta_time,
+                            filtered_rotation, raw_rotation, control_delta_time
                         )
                         _, target_rotation = base.calculate_clutched_target(
-                            clutch_reference,
-                            raw_target,
-                            filtered_rotation,
+                            clutch_reference, raw_target, filtered_rotation
                         )
-
-                        # The visible target represents the current feasible operator
-                        # intent. The arm itself is still solved against filtered_target,
-                        # which advances at the configured 0.08 m/s reference speed.
                         data.mocap_pos[0] = feasible_target
 
                         base.solve_right_arm_target(
-                            model,
-                            data,
-                            initial_qpos,
-                            preferred,
-                            filtered_target,
+                            model, data, initial_qpos, preferred, filtered_target,
                             target_rotation=target_rotation,
                             context=ik_context,
                             elbow_pole_reference=clutch_reference["elbow_pole"],
@@ -362,19 +286,11 @@ def main() -> None:
                     data.mocap_pos[0] = filtered_target
 
                 input_was_active = requested_active and clutch_active
-
                 monotonic_time = time.monotonic()
                 if monotonic_time >= next_state_time:
                     base.send_robot_state(
-                        state_sock,
-                        data,
-                        ik_context["right_qpos_ids"],
-                        requested_active,
-                        position_body,
-                        filtered_target,
-                        clutch_reference,
-                        ik_context,
-                        workspace_limited,
+                        state_sock, data, ik_context["right_qpos_ids"], requested_active,
+                        position_body, filtered_target, clutch_reference, ik_context, workspace_limited,
                     )
                     next_state_time = monotonic_time + state_period
 
@@ -397,24 +313,12 @@ def main() -> None:
                         "feasible_target": feasible_target.tolist(),
                         "safe_target": filtered_target.tolist(),
                         "g1_wrist": wrist_position.tolist(),
-                        "workspace_projection_distance_m": float(
-                            workspace_projection_distance_m
-                        ),
-                        "safe_reference_lag_m": float(
-                            np.linalg.norm(feasible_target - filtered_target)
-                        ),
-                        "tracking_error_m": float(
-                            np.linalg.norm(filtered_target - wrist_position)
-                        ),
+                        "workspace_projection_distance_m": float(workspace_projection_distance_m),
+                        "safe_reference_lag_m": float(np.linalg.norm(feasible_target - filtered_target)),
+                        "tracking_error_m": float(np.linalg.norm(filtered_target - wrist_position)),
                         "workspace_limited": bool(workspace_limited),
-                        "workspace_source": (
-                            "collision_free_voxel_map"
-                            if workspace_projector is not None
-                            else "legacy_guards"
-                        ),
-                        "workspace_exit_pending_s": float(
-                            workspace_exit_debounce.unsafe_duration_s
-                        ),
+                        "workspace_source": "collision_free_voxel_map" if workspace_projector is not None else "legacy_guards",
+                        "workspace_exit_pending_s": float(workspace_exit_debounce.unsafe_duration_s),
                         "collision_limited": bool(ik_context["collision_limited"]),
                     }
                     base.write_runtime_status(status_value)

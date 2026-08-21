@@ -68,6 +68,7 @@ class WorkspaceConfig:
     right_wrist_lateral_limit_m: float
     torso_keep_out_x_m: tuple[float, float]
     torso_keep_out_z_m: tuple[float, float]
+    dilation_voxels: int = 0
 
 
 @dataclass(frozen=True)
@@ -235,6 +236,7 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
             right_wrist_lateral_limit_m=_number(workspace.get("right_wrist_lateral_limit_m"), "workspace.right_wrist_lateral_limit_m"),
             torso_keep_out_x_m=torso_x,
             torso_keep_out_z_m=torso_z,
+            dilation_voxels=_integer(workspace.get("dilation_voxels", 0), "workspace.dilation_voxels", minimum=0),
         ),
     )
 
@@ -280,3 +282,4 @@ def apply_to_projected_runtime(runtime: ModuleType, config: TeleopConfig, projec
     runtime.WORKSPACE_PATH = workspace_path
     runtime.WORKSPACE_VOXEL_SIZE_M = config.workspace.voxel_size_m
     runtime.WORKSPACE_ALLOWED_CLASSES = tuple(config.workspace.allowed_classes)
+    runtime.WORKSPACE_DILATION_VOXELS = config.workspace.dilation_voxels

@@ -1,0 +1,14 @@
+{
+  "right_arm": {
+    "ready_deg": [10.0, -22.0, 0.0, 55.0, 0.0, 0.0, 0.0],
+    "torso_front_deg": null,
+    "blend": {
+      "centerline_enter_abs_y_m": 0.12,
+      "centerline_release_abs_y_m": 0.24,
+      "front_x_min_m": 0.05,
+      "front_x_max_m": 0.35,
+      "z_min_m": 0.70,
+      "z_max_m": 1.20
+    }
+  }
+}

@@ -103,7 +103,10 @@ public class G1LiveTeleopTrace : MonoBehaviour
             "{14:F6},{15:F6},{16:F6}," +
             "{17:F6},{18:F6},{19:F6}," +
             "{20},{21},{22}," +
-            "{23:F6},{24:F6},{25:F6},{26:F6},{27:F6},{28:F6},{29:F6}",
+            "{23:F6},{24:F6},{25:F6}," +
+            "{26:F6},{27:F6},{28:F6}," +
+            "{29:F6}," +
+            "{30:F6},{31:F6},{32:F6},{33:F6},{34:F6},{35:F6},{36:F6}",
             Time.realtimeSinceStartupAsDouble,
             tracked ? 1 : 0,
             calibrated ? 1 : 0,

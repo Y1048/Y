@@ -5,8 +5,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import numpy as np
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
@@ -36,41 +34,6 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 
-def install_lagged_position_reference(base_module) -> None:
-    """Restore deliberate lag without allowing large command-delay buildup.
-
-    Small errors move slowly for smoothness, while larger errors progressively
-    increase the Cartesian catch-up speed. Workspace projection, collision
-    handling, and the IK joint-step limiter remain authoritative safety layers.
-    """
-
-    min_speed_mps = 0.10
-    max_speed_mps = 0.35
-    full_catchup_error_m = 0.08
-
-    def lagged_position_reference(current_position, desired_position, delta_time):
-        current = np.asarray(current_position, dtype=float)
-        desired = np.asarray(desired_position, dtype=float)
-        safe_dt = max(float(delta_time), 1e-4)
-        error = desired - current
-        error_distance = float(np.linalg.norm(error))
-
-        if error_distance < 1e-9:
-            return desired.copy()
-
-        speed_ratio = min(1.0, error_distance / full_catchup_error_m)
-        smooth_ratio = speed_ratio * speed_ratio * (3.0 - 2.0 * speed_ratio)
-        speed_mps = min_speed_mps + (max_speed_mps - min_speed_mps) * smooth_ratio
-        max_step = speed_mps * safe_dt
-
-        if error_distance <= max_step:
-            return desired.copy()
-
-        return current + error * (max_step / error_distance)
-
-    base_module.update_safe_position_reference = lagged_position_reference
-
-
 def main() -> None:
     config = load_teleop_config(TELEOP_CONFIG_PATH)
     fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
@@ -81,7 +44,6 @@ def main() -> None:
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_severe_ik_fallback_trigger(base, severe_fallback_settings)
     install_primary_task_guard(base)
-    install_lagged_position_reference(base)
 
     # Import only after tuning and safety/IK hooks are applied so the projected
     # runtime observes one configured policy stack.
@@ -98,8 +60,8 @@ def main() -> None:
         + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
     )
     print(
-        "Position reference: smooth lagged follow "
-        "(0.10-0.35 m/s adaptive catch-up; workspace/collision/IK safety retained)"
+        "Position reference: fixed Cartesian speed limit "
+        f"({config.motion.position_max_speed_mps:.2f} m/s; no adaptive acceleration)"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "decoupled primary + coupled 7-DoF fallback"

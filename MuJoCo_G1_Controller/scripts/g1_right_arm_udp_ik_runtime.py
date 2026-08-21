@@ -139,6 +139,7 @@ def main() -> None:
         print("Workspace authority: backend collision-free voxel projection.")
     else:
         print("Workspace authority: legacy relative box + torso guard fallback.")
+    print("Target marker: feasible target; G1 follows the lagged safe reference.")
     if args.publish_head_camera:
         print(
             "Head camera: 640x480 BGR at "
@@ -335,7 +336,11 @@ def main() -> None:
                             raw_target,
                             filtered_rotation,
                         )
-                        data.mocap_pos[0] = filtered_target
+
+                        # The visible target represents the current feasible operator
+                        # intent. The arm itself is still solved against filtered_target,
+                        # which advances at the configured 0.08 m/s reference speed.
+                        data.mocap_pos[0] = feasible_target
 
                         base.solve_right_arm_target(
                             model,

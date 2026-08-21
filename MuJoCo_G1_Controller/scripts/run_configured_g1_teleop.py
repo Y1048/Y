@@ -19,11 +19,13 @@ from g1_teleop.config import (  # noqa: E402
     apply_to_projected_runtime,
     load_teleop_config,
 )
+from g1_teleop.ik_branch_search import install_expanded_multiseed_branches  # noqa: E402
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings  # noqa: E402
 from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
     load_ik_fallback_settings,
 )
+import g1_teleop.ik_fallback as ik_fallback_module  # noqa: E402
 from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
 from g1_teleop.motion_quality import (  # noqa: E402
@@ -194,9 +196,6 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
     if getattr(base_module, "_SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED", False):
         return
 
-    # Feed elbow flexion through the solver's own posture/null-space term so it
-    # remains coherent with the existing elbow-pole objective. Do not apply a
-    # second post-solve elbow correction.
     install_motion_gated_elbow_preference(base_module)
     original_solver = base_module.solve_right_arm_target
     wrist_max_step_rad = math.radians(WRIST_MAX_STEP_DEG_PER_CYCLE)
@@ -299,6 +298,7 @@ def main() -> None:
     install_no_catchup_position_reference(base)
     install_runtime_collision_policy(base, config)
     inspection_machine = install_inspection_contact_monitor(base, config)
+    install_expanded_multiseed_branches(ik_fallback_module)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_position_only_fallback_policy(fallback_supervisor)
     install_position_only_severe_trigger(
@@ -309,8 +309,6 @@ def main() -> None:
     install_primary_task_guard(base)
     install_calibrated_vr_wrist_orientation(base)
     install_smooth_cycle_and_wrist_overlay(base)
-    # Final command-quality layer: smooth the desired IK candidate without
-    # changing Cartesian target semantics or fallback selection.
     install_joint_command_smoother(base)
 
     import g1_right_arm_udp_ik_runtime as runtime
@@ -344,13 +342,13 @@ def main() -> None:
         f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit"
     )
     print(
-        "IK recovery: position-only fallback + stagnation trigger "
-        f"({STAGNATION_POSITION_ERROR_M*100:.1f} cm for {STAGNATION_FRAMES} stagnant frames)"
+        "IK recovery: position-only fallback + stagnation trigger + "
+        "shoulder pitch/roll/yaw and elbow multi-seed branches"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "wrist-only orientation + position-only coupled 7-DoF fallback"
         if fallback_supervisor.settings.multiseed.enabled:
-            strategy += " + multi-seed search"
+            strategy += " + expanded multi-seed search"
         strategy += " + position-only severe trigger + primary-task descent guard"
         print(f"IK strategy: {strategy}")
     else:

@@ -7,29 +7,19 @@ from typing import Any
 
 import numpy as np
 
+from .workspace_map import WorkspaceProjection, WorkspaceTargetProjector
 
-def install_torso_front_workspace_override(runtime_module: ModuleType, base: ModuleType) -> None:
+
+def install_torso_front_workspace_override(base: ModuleType) -> None:
     """Bypass the wrist-only voxel map only in the explicit torso-front zone.
 
-    The offline voxel map classifies Cartesian wrist positions without preserving
-    which elbow/shoulder configuration made a sample safe. A torso-center wrist
-    point can therefore be rejected because a straight-arm branch collides even
-    though the two-stage elbow-up pre-pose can reach the same point safely.
-
-    In that narrow front-center region, pass operator intent through unchanged and
-    let the live joint-level collision policy remain authoritative. The projector's
-    internal last-safe voxel anchor is intentionally left untouched, so leaving the
-    override region resumes normal voxel projection from the last map-valid point.
+    The offline voxel map classifies wrist positions without preserving the arm
+    configuration that made each sample safe. In the narrow front-center region,
+    pass operator intent through unchanged and keep live joint-level collision
+    checks authoritative. The projector's internal last-safe voxel anchor is left
+    untouched so normal voxel projection resumes from a map-valid point on exit.
     """
-    projector_type = getattr(runtime_module, "WorkspaceTargetProjector", None)
-    projection_type = getattr(runtime_module, "WorkspaceProjection", None)
-    if projector_type is None:
-        raise RuntimeError("runtime WorkspaceTargetProjector is unavailable")
-    if projection_type is None:
-        # Runtime imports WorkspaceTargetProjector directly but may not expose the
-        # dataclass; import it from the backend package in that case.
-        from g1_teleop import WorkspaceProjection as projection_type
-
+    projector_type = WorkspaceTargetProjector
     if getattr(projector_type, "_TORSO_FRONT_OVERRIDE_INSTALLED", False):
         return
 
@@ -43,8 +33,7 @@ def install_torso_front_workspace_override(runtime_module: ModuleType, base: Mod
         base.RUNTIME_TORSO_WORKSPACE_BYPASS = bypass
         if not bypass:
             return original_update(self, target)
-
-        return projection_type(
+        return WorkspaceProjection(
             operator_target=target.copy(),
             feasible_target=target.copy(),
             projected=False,

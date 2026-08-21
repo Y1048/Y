@@ -1,11 +1,4 @@
-"""Primary-task monotonicity guard for the configured right-arm IK stack.
-
-The guard normally requires monotonic wrist-position improvement. Near the torso
-front, however, changing elbow branch can require a tiny temporary wrist-error
-increase before the elbow lifts around the body. A bounded posture-escape window
-is therefore allowed only while the target-aware torso elbow blend is active and
-the candidate remains collision-free.
-"""
+"""Primary-task monotonicity guard for the configured right-arm IK stack."""
 
 from __future__ import annotations
 
@@ -17,7 +10,6 @@ import numpy as np
 
 
 PRIMARY_TASK_WORSENING_TOLERANCE_M = 1e-6
-TORSO_FRONT_MAX_ESCAPE_TOLERANCE_M = 0.003
 
 
 def should_reject_primary_step(
@@ -59,29 +51,6 @@ def _can_escalate_to_fallback(base: ModuleType, context: dict[str, Any]) -> bool
     return True
 
 
-def _torso_escape_tolerance(base: ModuleType, model: Any, data: Any, context: dict[str, Any]) -> float:
-    """Allow a small temporary position error only for a collision-free elbow lift."""
-    blend = float(context.get("torso_front_elbow_blend", 0.0) or 0.0)
-    blend = float(np.clip(blend, 0.0, 1.0))
-    if blend <= 1e-6:
-        return PRIMARY_TASK_WORSENING_TOLERANCE_M
-
-    # Collision authority remains strict. The posture escape is only about
-    # primary-task monotonicity, never about relaxing robot/self collision rules.
-    try:
-        if bool(base.has_right_arm_core_contact(model, data, context)):
-            return PRIMARY_TASK_WORSENING_TOLERANCE_M
-    except Exception:
-        return PRIMARY_TASK_WORSENING_TOLERANCE_M
-    if bool(context.get("collision_limited", False)):
-        return PRIMARY_TASK_WORSENING_TOLERANCE_M
-
-    return max(
-        PRIMARY_TASK_WORSENING_TOLERANCE_M,
-        blend * TORSO_FRONT_MAX_ESCAPE_TOLERANCE_M,
-    )
-
-
 def install_primary_task_guard(
     base: ModuleType,
     *,
@@ -101,7 +70,6 @@ def install_primary_task_guard(
     base.RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M = None
     base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M = None
     base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M = None
-    base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = float(tolerance_m)
 
     def guarded_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -116,7 +84,6 @@ def install_primary_task_guard(
         base.RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M = None
         base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M = None
         base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M = None
-        base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = float(tolerance_m)
 
         if (
             model is None or data is None or target is None
@@ -140,14 +107,7 @@ def install_primary_task_guard(
         base.RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M = start_error
         base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M = candidate_error
 
-        applied_tolerance = max(
-            float(tolerance_m),
-            _torso_escape_tolerance(base, model, data, context),
-        )
-        base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = applied_tolerance
-        context["ik_primary_guard_applied_tolerance_m"] = applied_tolerance
-
-        if not should_reject_primary_step(start_error, candidate_error, tolerance_m=applied_tolerance):
+        if not should_reject_primary_step(start_error, candidate_error, tolerance_m=tolerance_m):
             return result
 
         data.qpos[qpos_ids] = start_q
@@ -167,11 +127,7 @@ def install_primary_task_guard(
             recovery_result = original_solver(*args, **kwargs)
             recovery_error = float(np.linalg.norm(target_position - data.xpos[position_body]))
             base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M = recovery_error
-            recovery_tolerance = max(
-                float(tolerance_m),
-                _torso_escape_tolerance(base, model, data, context),
-            )
-            if not should_reject_primary_step(start_error, recovery_error, tolerance_m=recovery_tolerance):
+            if not should_reject_primary_step(start_error, recovery_error, tolerance_m=tolerance_m):
                 base.RUNTIME_IK_PRIMARY_GUARD_REVERTED = False
                 context["ik_primary_guard_reverted"] = False
                 return recovery_result
@@ -196,9 +152,6 @@ def install_primary_task_guard(
             enriched["ik_primary_guard_candidate_error_m"] = base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M
             enriched["ik_primary_guard_recovery_error_m"] = base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M
             enriched["ik_primary_guard_tolerance_m"] = float(tolerance_m)
-            enriched["ik_primary_guard_applied_tolerance_m"] = float(
-                base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M
-            )
             original_status_writer(enriched)
 
         base.write_runtime_status = primary_guard_status_writer

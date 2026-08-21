@@ -19,13 +19,13 @@ TORSO_FRONT_Z_MIN_M = 0.72
 TORSO_FRONT_Z_MAX_M = 1.15
 TORSO_FRONT_ELBOW_TARGET_DEG = 90.0
 TORSO_FRONT_ELBOW_READY_DEG = 75.0
+TORSO_PREPOSE_MAX_WRIST_DRIFT_M = 0.005
 # MuJoCo G1 frame: +X forward, +Y left, +Z up. For the right arm, outward is -Y.
-# Bias the elbow strongly upward and moderately outward so torso-front motion forms
-# the intended L-shaped arm instead of choosing an arbitrary elbow plane.
 TORSO_FRONT_ELBOW_POLE_DIRECTION = np.array([0.0, -0.45, 0.89], dtype=float)
 
 
-def _in_torso_front_region(target_position: np.ndarray, *, active_previous: bool) -> bool:
+def in_torso_front_region(target_position: np.ndarray, *, active_previous: bool = False) -> bool:
+    """Return whether a robot-space wrist target is in the front-center torso zone."""
     x, y, z = (float(value) for value in np.asarray(target_position, dtype=float))
     if active_previous:
         return (
@@ -43,11 +43,12 @@ def _in_torso_front_region(target_position: np.ndarray, *, active_previous: bool
 def install_torso_front_prepose(base: ModuleType) -> None:
     """Prepare a bent, upward/outward elbow before torso-front wrist motion.
 
-    The wrist is held while the elbow is first bent toward 90 degrees. Unlike the
-    previous version, the elbow plane is not left unconstrained: an explicit pole
-    direction sends the right elbow upward (+Z) and outward (-Y). After the elbow
-    reaches 75 degrees the requested wrist target is released while the same elbow
-    pole and 90 degree bend preference remain active inside the torso-front region.
+    On region entry the current wrist position is captured once and becomes a fixed
+    pre-pose anchor. While the elbow is below the release angle, the solver holds
+    that fixed anchor and bends the elbow toward 90 degrees using an explicit
+    upward/outward pole. This prevents per-cycle target rebasing from accumulating
+    wrist drift. Once the elbow reaches the ready angle, the requested wrist target
+    is released while the same elbow posture remains preferred.
     """
     if getattr(base, "_TORSO_FRONT_PREPOSE_INSTALLED", False):
         return
@@ -67,6 +68,8 @@ def install_torso_front_prepose(base: ModuleType) -> None:
     base.RUNTIME_TORSO_PREPOSE_ELBOW_POSITION = None
     base.RUNTIME_TORSO_PREPOSE_ELBOW_TARGET = None
     base.RUNTIME_TORSO_PREPOSE_POLE_DIRECTION = desired_pole.copy()
+    base.RUNTIME_TORSO_PREPOSE_WRIST_ANCHOR = None
+    base.RUNTIME_TORSO_PREPOSE_WRIST_DRIFT_M = 0.0
 
     def prepose_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -101,15 +104,32 @@ def install_torso_front_prepose(base: ModuleType) -> None:
             return original_solver(*args, **kwargs)
 
         active_previous = bool(context.get("_torso_prepose_region_active", False))
-        region_active = _in_torso_front_region(
+        region_active = in_torso_front_region(
             target_position,
             active_previous=active_previous,
         )
         context["_torso_prepose_region_active"] = region_active
 
+        wrist_position = np.asarray(data.xpos[int(position_body)], dtype=float).copy()
+        if region_active and not active_previous:
+            context["_torso_prepose_wrist_anchor"] = wrist_position.copy()
+        elif not region_active:
+            context.pop("_torso_prepose_wrist_anchor", None)
+
+        anchor_value = context.get("_torso_prepose_wrist_anchor")
+        if region_active and anchor_value is None:
+            anchor_value = wrist_position.copy()
+            context["_torso_prepose_wrist_anchor"] = anchor_value.copy()
+        wrist_anchor = (
+            np.asarray(anchor_value, dtype=float).copy()
+            if anchor_value is not None
+            else wrist_position.copy()
+        )
+
         current_elbow = float(data.qpos[qpos_ids[3]])
         current_elbow_deg = math.degrees(current_elbow)
         holding_wrist = bool(region_active and current_elbow < elbow_ready_rad)
+        wrist_drift = float(np.linalg.norm(wrist_position - wrist_anchor)) if region_active else 0.0
 
         elbow_position = np.asarray(data.xpos[int(elbow_body)], dtype=float).copy()
         base.RUNTIME_TORSO_PREPOSE_ACTIVE = region_active
@@ -117,10 +137,14 @@ def install_torso_front_prepose(base: ModuleType) -> None:
         base.RUNTIME_TORSO_PREPOSE_ELBOW_DEG = current_elbow_deg
         base.RUNTIME_TORSO_PREPOSE_ELBOW_POSITION = elbow_position.copy()
         base.RUNTIME_TORSO_PREPOSE_ELBOW_TARGET = None
+        base.RUNTIME_TORSO_PREPOSE_WRIST_ANCHOR = wrist_anchor.copy() if region_active else None
+        base.RUNTIME_TORSO_PREPOSE_WRIST_DRIFT_M = wrist_drift
         context["torso_prepose_active"] = region_active
         context["torso_prepose_holding_wrist"] = holding_wrist
         context["torso_prepose_elbow_deg"] = current_elbow_deg
         context["torso_prepose_elbow_position"] = elbow_position.tolist()
+        context["torso_prepose_wrist_anchor"] = wrist_anchor.tolist() if region_active else None
+        context["torso_prepose_max_wrist_drift_m"] = TORSO_PREPOSE_MAX_WRIST_DRIFT_M
 
         if not region_active:
             return original_solver(*args, **kwargs)
@@ -129,15 +153,12 @@ def install_torso_front_prepose(base: ModuleType) -> None:
         if preferred_value.size >= 4:
             preferred_value[3] = elbow_target_rad
 
-        adjusted_target = target_position.copy()
-        if holding_wrist:
-            adjusted_target = np.asarray(data.xpos[int(position_body)], dtype=float).copy()
+        adjusted_target = wrist_anchor.copy() if holding_wrist else target_position.copy()
 
         source_pole = kwargs.get("elbow_pole_reference")
         if isinstance(source_pole, dict):
             adjusted_pole = dict(source_pole)
         else:
-            # Fall back to the current geometry only if a clutch pole is unavailable.
             adjusted_pole = base.capture_elbow_pole_reference(
                 data,
                 int(shoulder_body),
@@ -174,6 +195,9 @@ def install_torso_front_prepose(base: ModuleType) -> None:
 
     base.solve_right_arm_target = prepose_solver
     base._TORSO_FRONT_PREPOSE_INSTALLED = True
+    base.is_torso_front_target = lambda target: in_torso_front_region(
+        np.asarray(target, dtype=float), active_previous=False
+    )
 
     original_status_writer = getattr(base, "write_runtime_status", None)
     if callable(original_status_writer) and not getattr(base, "_TORSO_PREPOSE_STATUS_INSTALLED", False):
@@ -184,6 +208,7 @@ def install_torso_front_prepose(base: ModuleType) -> None:
             enriched["torso_prepose_elbow_deg"] = base.RUNTIME_TORSO_PREPOSE_ELBOW_DEG
             elbow_position_value = base.RUNTIME_TORSO_PREPOSE_ELBOW_POSITION
             elbow_target_value = base.RUNTIME_TORSO_PREPOSE_ELBOW_TARGET
+            wrist_anchor_value = base.RUNTIME_TORSO_PREPOSE_WRIST_ANCHOR
             enriched["torso_prepose_elbow_position"] = (
                 elbow_position_value.tolist() if isinstance(elbow_position_value, np.ndarray) else elbow_position_value
             )
@@ -191,6 +216,11 @@ def install_torso_front_prepose(base: ModuleType) -> None:
                 elbow_target_value.tolist() if isinstance(elbow_target_value, np.ndarray) else elbow_target_value
             )
             enriched["torso_prepose_pole_direction"] = base.RUNTIME_TORSO_PREPOSE_POLE_DIRECTION.tolist()
+            enriched["torso_prepose_wrist_anchor"] = (
+                wrist_anchor_value.tolist() if isinstance(wrist_anchor_value, np.ndarray) else wrist_anchor_value
+            )
+            enriched["torso_prepose_wrist_drift_m"] = float(base.RUNTIME_TORSO_PREPOSE_WRIST_DRIFT_M)
+            enriched["torso_prepose_max_wrist_drift_m"] = TORSO_PREPOSE_MAX_WRIST_DRIFT_M
             original_status_writer(enriched)
 
         base.write_runtime_status = status_writer

@@ -34,6 +34,22 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 
+def install_direct_position_reference(base_module) -> None:
+    """Bypass the always-on Cartesian speed limiter for projected teleoperation.
+
+    Workspace projection remains authoritative for feasibility and the collision
+    wrapper / IK joint-step limiter still constrain unsafe or abrupt robot motion.
+    This restores the early teleoperation feel where a clear feasible hand target
+    is presented to IK immediately instead of accumulating command-delay lag.
+    """
+
+    def direct_position_reference(current_position, desired_position, delta_time):
+        del current_position, delta_time
+        return desired_position.copy()
+
+    base_module.update_safe_position_reference = direct_position_reference
+
+
 def main() -> None:
     config = load_teleop_config(TELEOP_CONFIG_PATH)
     fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
@@ -44,6 +60,7 @@ def main() -> None:
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_severe_ik_fallback_trigger(base, severe_fallback_settings)
     install_primary_task_guard(base)
+    install_direct_position_reference(base)
 
     # Import only after tuning and safety/IK hooks are applied so the projected
     # runtime observes one configured policy stack.
@@ -58,6 +75,10 @@ def main() -> None:
     print(
         "Inspection contact state: "
         + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
+    )
+    print(
+        "Position reference: direct feasible-target follow "
+        "(workspace/collision/IK joint-step safety retained)"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "decoupled primary + coupled 7-DoF fallback"

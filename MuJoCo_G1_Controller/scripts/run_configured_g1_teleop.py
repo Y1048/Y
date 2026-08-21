@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
+
+import numpy as np
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -35,17 +38,34 @@ TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 
 def install_direct_position_reference(base_module) -> None:
-    """Bypass the always-on Cartesian speed limiter for projected teleoperation.
+    """Use responsive adaptive smoothing instead of a fixed Cartesian speed limit.
 
-    Workspace projection remains authoritative for feasibility and the collision
-    wrapper / IK joint-step limiter still constrain unsafe or abrupt robot motion.
-    This restores the early teleoperation feel where a clear feasible hand target
-    is presented to IK immediately instead of accumulating command-delay lag.
+    Small hand jitter is low-pass filtered, while deliberate motion rapidly approaches
+    direct feasible-target tracking. Workspace projection, collision handling, and the
+    IK joint-step limiter remain authoritative safety layers.
     """
 
+    small_motion_tau_s = 0.040
+    large_motion_tau_s = 0.008
+    direct_follow_distance_m = 0.050
+
     def direct_position_reference(current_position, desired_position, delta_time):
-        del current_position, delta_time
-        return desired_position.copy()
+        current = np.asarray(current_position, dtype=float)
+        desired = np.asarray(desired_position, dtype=float)
+        safe_dt = max(float(delta_time), 1e-4)
+        error_distance = float(np.linalg.norm(desired - current))
+
+        motion_ratio = min(
+            1.0,
+            error_distance / direct_follow_distance_m,
+        )
+        smooth_ratio = motion_ratio * motion_ratio * (3.0 - 2.0 * motion_ratio)
+        tau_s = (
+            small_motion_tau_s
+            + (large_motion_tau_s - small_motion_tau_s) * smooth_ratio
+        )
+        alpha = 1.0 - math.exp(-safe_dt / max(tau_s, 1e-4))
+        return current + alpha * (desired - current)
 
     base_module.update_safe_position_reference = direct_position_reference
 
@@ -77,8 +97,8 @@ def main() -> None:
         + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled")
     )
     print(
-        "Position reference: direct feasible-target follow "
-        "(workspace/collision/IK joint-step safety retained)"
+        "Position reference: adaptive low-latency smoothing "
+        "(8-40 ms response; workspace/collision/IK joint-step safety retained)"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "decoupled primary + coupled 7-DoF fallback"

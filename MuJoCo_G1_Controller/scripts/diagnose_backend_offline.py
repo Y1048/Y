@@ -46,6 +46,7 @@ def rotation_about_axis(axis: np.ndarray, angle_rad: float) -> np.ndarray:
 
 
 def install_configured_stack():
+    """Install exactly the same configured solver stack as the live launcher."""
     config = load_teleop_config(CONFIG_PATH)
     fallback = load_ik_fallback_settings(CONFIG_PATH)
     severe = load_severe_ik_fallback_settings(CONFIG_PATH)
@@ -57,6 +58,7 @@ def install_configured_stack():
     configured.install_position_only_severe_trigger(base, supervisor, severe)
     install_primary_task_guard(base)
     configured.install_absolute_vr_wrist_orientation(base)
+    configured.install_smooth_cycle_and_wrist_overlay(base)
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
     return config
 
@@ -129,17 +131,9 @@ def make_rotation_case():
         np.array([0.0, 0.0, 1.0]), math.radians(ROTATION_TEST_DEG)
     )
     return (
-        model,
-        data,
-        initial_qpos,
-        preferred,
-        context,
-        qids,
-        position_body,
-        orientation_body,
-        target_position,
-        initial_rotation,
-        target_rotation,
+        model, data, initial_qpos, preferred, context, qids,
+        position_body, orientation_body, target_position,
+        initial_rotation, target_rotation,
     )
 
 
@@ -224,6 +218,7 @@ def test_rotation_ik() -> tuple[bool, str]:
     fallback_active = bool(getattr(base.IK_FALLBACK_SUPERVISOR, "active", False))
     severe_triggered = bool(getattr(base, "RUNTIME_IK_SEVERE_TRIGGERED", False))
     collision_limited = bool(context.get("collision_limited", False))
+    overlay_blocked = bool(context.get("wrist_orientation_overlay_blocked", False))
     nearest_status = getattr(base, "RUNTIME_COLLISION_NEAREST_STATUS", None)
     clearance = getattr(base, "RUNTIME_COLLISION_CLEARANCE_M", None)
     primary_reverted = bool(getattr(base, "RUNTIME_IK_PRIMARY_GUARD_REVERTED", False))
@@ -234,13 +229,14 @@ def test_rotation_ik() -> tuple[bool, str]:
         and proximal <= 3.0
         and not fallback_active
         and not severe_triggered
+        and not overlay_blocked
     )
     return passed, (
         f"wrist={wrist:.1f} deg proximal={proximal:.1f} deg "
         f"position_drift={drift*100:.2f} cm rot_error={initial_error:.3f}->{final_error:.3f} "
         f"fallback_active={fallback_active} severe={severe_triggered} "
-        f"collision_limited={collision_limited} nearest={nearest_status} "
-        f"clearance={clearance} primary_reverted={primary_reverted}"
+        f"collision_limited={collision_limited} overlay_blocked={overlay_blocked} "
+        f"nearest={nearest_status} clearance={clearance} primary_reverted={primary_reverted}"
     )
 
 
@@ -268,17 +264,15 @@ def main() -> int:
     print("\nINTERPRETATION")
     if not raw_pass:
         print("- RAW WRIST STEP failed: inspect wrist rotational Jacobian / rotation-error math before any wrapper.")
-    elif "collision=True" in raw_detail and not rotation_pass:
-        print("- Raw wrist math works but the first wrist step is already classified as collision; collision policy is the leading suspect.")
     elif not rotation_pass:
-        print("- Raw wrist math works without an immediate collision, but configured IK still reverts/holds; inspect collision wrapper or primary guard diagnostics above.")
+        print("- Live-equivalent configured wrist overlay still fails; inspect overlay/collision diagnostics above.")
     else:
-        print("- Wrist IK passes inside the configured backend stack.")
+        print("- Wrist IK passes inside the same configured stack used by the live runtime.")
 
     if not ref_pass:
         print("- Reference limiter itself is wrong.")
     elif not workspace_pass:
-        print("- Workspace post-processing violates the configured speed ceiling.")
+        print("- Workspace/reference processing violates the configured speed ceiling.")
     else:
         print("- Position limiter preserves the 0.08 m/s ceiling offline.")
 

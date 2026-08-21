@@ -38,9 +38,6 @@ def load_workspace_projector(anchor_point_m: np.ndarray) -> WorkspaceTargetProje
             voxel_size_m=WORKSPACE_VOXEL_SIZE_M,
             allowed_classes=WORKSPACE_ALLOWED_CLASSES,
         )
-        # Random offline sampling may miss the exact ready/clutch pose. Add the
-        # currently verified robot wrist as a safe anchor so engagement stays
-        # zero-jump even when that exact voxel was not sampled offline.
         anchor = np.asarray(anchor_point_m, dtype=float).reshape(1, 3)
         workspace = VoxelWorkspaceMap(
             np.vstack([workspace.safe_voxel_centers_m, anchor]),
@@ -63,7 +60,6 @@ def main() -> None:
     if args.camera_fps <= 0.0:
         raise ValueError("--camera-fps must be positive")
 
-    # Snapshot/camera validation does not use live teleoperation workspace logic.
     if args.snapshot is not None:
         base.main()
         return
@@ -77,9 +73,6 @@ def main() -> None:
     orientation_body = ik_context["orientation_body"]
     workspace_projector = load_workspace_projector(data.xpos[position_body].copy())
 
-    # The voxel map is generated from collision-free MuJoCo configurations and
-    # replaces the old coarse wrist-position keep-out test. Keep the existing
-    # elbow preference and contact line search active inside the IK solver.
     if workspace_projector is not None:
         base.is_right_wrist_target_safe = lambda target: True
 
@@ -187,10 +180,6 @@ def main() -> None:
                     received_total += received_now
                     last_received_time = t
 
-                # Legacy Unity may still emit workspace_exit using its coarse
-                # local bounds. Once the backend voxel map exists, that packet
-                # must not release/rebase the clutch: backend projection is the
-                # workspace authority and preserves operator intent continuously.
                 if accepted_workspace_exit and workspace_projector is not None:
                     if clutch_active:
                         raw_valid = True
@@ -273,7 +262,7 @@ def main() -> None:
                     print("\nUDP input temporarily stale; holding the current pose.")
                 packet_was_fresh = packet_fresh
 
-                if clutch_active:
+                if clutch_active and packet_fresh:
                     operator_target, desired_rotation = base.calculate_clutched_target(
                         clutch_reference,
                         raw_target,
@@ -375,7 +364,7 @@ def main() -> None:
                         state_sock,
                         data,
                         ik_context["right_qpos_ids"],
-                        clutch_active,
+                        requested_active,
                         position_body,
                         filtered_target,
                         clutch_reference,
@@ -396,6 +385,7 @@ def main() -> None:
                         "received_packets": received_total,
                         "packets_fresh": bool(packet_fresh),
                         "input_valid": bool(raw_valid),
+                        "input_active": bool(requested_active),
                         "clutch_active": bool(clutch_active),
                         "raw_target": raw_target.tolist(),
                         "operator_target": operator_target.tolist(),
@@ -435,8 +425,10 @@ def main() -> None:
                             data.xmat[orientation_body].reshape(3, 3),
                         )
                     )
-                    if clutch_active:
+                    if clutch_active and packet_fresh:
                         status = "ACTIVE"
+                    elif clutch_active:
+                        status = "STALE-HOLD"
                     elif packet_fresh:
                         status = "waiting"
                     else:

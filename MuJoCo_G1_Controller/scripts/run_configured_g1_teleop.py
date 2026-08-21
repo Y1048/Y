@@ -19,6 +19,11 @@ from g1_teleop.config import (  # noqa: E402
     apply_to_projected_runtime,
     load_teleop_config,
 )
+from g1_teleop.elbow_posture import (  # noqa: E402
+    DEFAULT_MAX_STEP_DEG_PER_CYCLE as ELBOW_MAX_STEP_DEG_PER_CYCLE,
+    DEFAULT_PREFERRED_ELBOW_DEG as PREFERRED_ELBOW_DEG,
+    install_smooth_elbow_posture,
+)
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings  # noqa: E402
 from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
@@ -159,16 +164,22 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
     directly instead of using actuator dynamics. The configured runtime therefore
     performs one whole-arm IK substep per cycle.
 
+    A smooth elbow-flexion preference is installed inside the position-task null
+    space before the wrist overlay. It prefers a 55 degree elbow only when the
+    primary wrist-position task has redundant freedom, and its correction is
+    bounded per cycle and rejected on collision or primary-task degradation.
+
     After that position solve, the remaining orientation error is handled by a
     dedicated DLS step on the three wrist joints only. This prevents shoulder and
     elbow motion from being used to chase hand orientation and avoids losing a
     valid wrist step inside the configured wrapper stack.
     """
 
-    original_solver = base_module.solve_right_arm_target
     if getattr(base_module, "_SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED", False):
         return
 
+    install_smooth_elbow_posture(base_module)
+    original_solver = base_module.solve_right_arm_target
     wrist_max_step_rad = math.radians(WRIST_MAX_STEP_DEG_PER_CYCLE)
 
     def smooth_wrist_solver(*args, **kwargs):
@@ -300,6 +311,10 @@ def main() -> None:
     print(
         "Joint motion: one configured IK substep per control cycle "
         f"(wrist overlay <= {WRIST_MAX_STEP_DEG_PER_CYCLE:.1f} deg/cycle)"
+    )
+    print(
+        "Elbow posture: null-space preference "
+        f"({PREFERRED_ELBOW_DEG:.0f} deg, <= {ELBOW_MAX_STEP_DEG_PER_CYCLE:.2f} deg/cycle)"
     )
     print(
         "Wrist orientation: absolute Quest hand-tracking orientation "

@@ -10,7 +10,7 @@ import numpy as np
 
 
 PRIMARY_TASK_WORSENING_TOLERANCE_M = 1e-6
-TORSO_PREPOSE_TOLERANCE_M = 0.001
+TORSO_PREPOSE_DEFAULT_MAX_WRIST_DRIFT_M = 0.005
 
 
 def should_reject_primary_step(
@@ -52,6 +52,37 @@ def _can_escalate_to_fallback(base: ModuleType, context: dict[str, Any]) -> bool
     return True
 
 
+def _prepose_candidate_within_anchor_limit(
+    data: Any,
+    context: dict[str, Any],
+) -> tuple[bool, float | None, float | None]:
+    """Check absolute wrist drift from the fixed torso-prepose anchor.
+
+    The pre-pose is allowed to trade a few millimeters of wrist position for a
+    large elbow configuration change, but the allowance is absolute from the
+    entry anchor rather than additive per cycle. This prevents cumulative wrist
+    migration while still allowing the elbow null-space task to make progress.
+    """
+    if not bool(context.get("torso_prepose_holding_wrist", False)):
+        return False, None, None
+    anchor = context.get("torso_prepose_wrist_anchor")
+    position_body = context.get("position_body")
+    if anchor is None or position_body is None:
+        return False, None, None
+    anchor_value = np.asarray(anchor, dtype=float)
+    if anchor_value.shape != (3,) or not np.all(np.isfinite(anchor_value)):
+        return False, None, None
+    max_drift = float(
+        context.get(
+            "torso_prepose_max_wrist_drift_m",
+            TORSO_PREPOSE_DEFAULT_MAX_WRIST_DRIFT_M,
+        )
+    )
+    wrist = np.asarray(data.xpos[int(position_body)], dtype=float)
+    drift = float(np.linalg.norm(wrist - anchor_value))
+    return True, drift, max_drift
+
+
 def install_primary_task_guard(
     base: ModuleType,
     *,
@@ -72,6 +103,7 @@ def install_primary_task_guard(
     base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M = None
     base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M = None
     base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = float(tolerance_m)
+    base.RUNTIME_IK_PRIMARY_GUARD_PREPOSE_DRIFT_M = None
 
     def guarded_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -86,6 +118,8 @@ def install_primary_task_guard(
         base.RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M = None
         base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M = None
         base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M = None
+        base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = float(tolerance_m)
+        base.RUNTIME_IK_PRIMARY_GUARD_PREPOSE_DRIFT_M = None
 
         if (
             model is None or data is None or target is None
@@ -99,12 +133,6 @@ def install_primary_task_guard(
         if target_position.shape != (3,) or not np.all(np.isfinite(target_position)):
             return original_solver(*args, **kwargs)
 
-        applied_tolerance = float(tolerance_m)
-        if bool(context.get("torso_prepose_holding_wrist", False)):
-            applied_tolerance = max(applied_tolerance, TORSO_PREPOSE_TOLERANCE_M)
-        base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = applied_tolerance
-        context["ik_primary_guard_applied_tolerance_m"] = applied_tolerance
-
         qpos_ids = np.asarray(context["right_qpos_ids"], dtype=int)
         position_body = int(context["position_body"])
         start_q = data.qpos[qpos_ids].copy()
@@ -115,7 +143,32 @@ def install_primary_task_guard(
         base.RUNTIME_IK_PRIMARY_GUARD_START_ERROR_M = start_error
         base.RUNTIME_IK_PRIMARY_GUARD_CANDIDATE_ERROR_M = candidate_error
 
-        if not should_reject_primary_step(start_error, candidate_error, tolerance_m=applied_tolerance):
+        prepose_check, prepose_drift, max_prepose_drift = _prepose_candidate_within_anchor_limit(
+            data, context
+        )
+        if prepose_check:
+            base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M = float(max_prepose_drift)
+            base.RUNTIME_IK_PRIMARY_GUARD_PREPOSE_DRIFT_M = float(prepose_drift)
+            context["ik_primary_guard_applied_tolerance_m"] = float(max_prepose_drift)
+            context["ik_primary_guard_prepose_drift_m"] = float(prepose_drift)
+            # Keep any collision authority strict. This special acceptance only
+            # replaces primary-task monotonicity while the wrist is deliberately
+            # held for elbow pre-positioning.
+            collision_now = False
+            try:
+                collision_now = bool(base.has_right_arm_core_contact(model, data, context))
+            except Exception:
+                collision_now = True
+            if (
+                not collision_now
+                and not bool(context.get("collision_limited", False))
+                and float(prepose_drift) <= float(max_prepose_drift) + 1e-9
+            ):
+                return result
+        else:
+            context["ik_primary_guard_applied_tolerance_m"] = float(tolerance_m)
+
+        if not should_reject_primary_step(start_error, candidate_error, tolerance_m=tolerance_m):
             return result
 
         data.qpos[qpos_ids] = start_q
@@ -124,7 +177,10 @@ def install_primary_task_guard(
         base.RUNTIME_IK_PRIMARY_GUARD_REVERTED = True
         context["ik_primary_guard_reverted"] = True
 
-        if _can_escalate_to_fallback(base, context):
+        # Do not trigger coupled recovery during the deliberate elbow pre-pose.
+        # The whole point of this state is to reconfigure the elbow while holding
+        # the fixed wrist anchor; a coupled retry would undo that posture task.
+        if not prepose_check and _can_escalate_to_fallback(base, context):
             supervisor = base.IK_FALLBACK_SUPERVISOR
             supervisor.active = True
             supervisor.bad_frames = 0
@@ -135,7 +191,7 @@ def install_primary_task_guard(
             recovery_result = original_solver(*args, **kwargs)
             recovery_error = float(np.linalg.norm(target_position - data.xpos[position_body]))
             base.RUNTIME_IK_PRIMARY_GUARD_RECOVERY_ERROR_M = recovery_error
-            if not should_reject_primary_step(start_error, recovery_error, tolerance_m=applied_tolerance):
+            if not should_reject_primary_step(start_error, recovery_error, tolerance_m=tolerance_m):
                 base.RUNTIME_IK_PRIMARY_GUARD_REVERTED = False
                 context["ik_primary_guard_reverted"] = False
                 return recovery_result
@@ -162,6 +218,9 @@ def install_primary_task_guard(
             enriched["ik_primary_guard_tolerance_m"] = float(tolerance_m)
             enriched["ik_primary_guard_applied_tolerance_m"] = float(
                 base.RUNTIME_IK_PRIMARY_GUARD_APPLIED_TOLERANCE_M
+            )
+            enriched["ik_primary_guard_prepose_drift_m"] = (
+                base.RUNTIME_IK_PRIMARY_GUARD_PREPOSE_DRIFT_M
             )
             original_status_writer(enriched)
 

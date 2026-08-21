@@ -35,8 +35,10 @@ from g1_teleop.motion_quality import (  # noqa: E402
     DEFAULT_PREFERRED_ELBOW_DEG as PREFERRED_ELBOW_DEG,
     DEFAULT_PROXIMAL_MAX_STEP_DEG,
     DEFAULT_WRIST_MAX_STEP_DEG,
+    TORSO_FRONT_PREFERRED_ELBOW_DEG,
     install_joint_command_smoother,
     install_motion_gated_elbow_preference,
+    install_target_aware_elbow_pole,
 )
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
 
@@ -295,6 +297,9 @@ def main() -> None:
     install_no_catchup_position_reference(base)
     install_runtime_collision_policy(base, config)
     inspection_machine = install_inspection_contact_monitor(base, config)
+    # Put target-aware elbow geometry inside the fallback stack so the primary
+    # decoupled IK sees the lifted elbow pole before branch recovery is considered.
+    install_target_aware_elbow_pole(base)
     install_expanded_multiseed_branches(ik_fallback_module)
     install_position_only_candidate_scoring(ik_fallback_module)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
@@ -332,8 +337,9 @@ def main() -> None:
         f"{DEFAULT_WRIST_MAX_STEP_DEG:.2f} deg/cycle with acceleration limiting"
     )
     print(
-        "Elbow posture: solver-integrated motion-gated preference "
-        f"({PREFERRED_ELBOW_DEG:.0f} deg while Cartesian reference moves)"
+        "Elbow posture: target-aware pole + bend preference "
+        f"({PREFERRED_ELBOW_DEG:.0f} deg free-space -> "
+        f"{TORSO_FRONT_PREFERRED_ELBOW_DEG:.0f} deg near torso front)"
     )
     print(
         "Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame "

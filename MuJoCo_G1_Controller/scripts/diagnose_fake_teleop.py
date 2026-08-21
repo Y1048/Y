@@ -24,7 +24,10 @@ SEND_HZ = 60.0
 BASE_POSITION = [0.42, -0.16, 1.05]
 POSITION_STEP_M = 0.12
 POSITION_SPEED_LIMIT_MPS = 0.08
-POSITION_SPEED_TOLERANCE_MPS = 0.10
+# State packets carry wall-clock timestamps and are sampled by another Python
+# process on Windows. Single adjacent-sample derivatives are therefore noisy.
+# Judge the transport path using a 3-sample window while still reporting raw max.
+ROBUST_POSITION_SPEED_TOLERANCE_MPS = 0.095
 
 
 @dataclass
@@ -143,24 +146,39 @@ def unique_samples(samples: list[StateSample]) -> list[StateSample]:
 
 def diagnose_position_speed(samples: list[StateSample]) -> tuple[bool, str]:
     values = unique_samples(samples)
-    speeds: list[float] = []
+    adjacent_speeds: list[float] = []
     for previous, current in zip(values, values[1:]):
         dt = current.timestamp - previous.timestamp
         if dt <= 1e-4:
             continue
         displacement = norm(vector_sub(current.target_delta, previous.target_delta))
-        speeds.append(displacement / dt)
+        adjacent_speeds.append(displacement / dt)
 
-    if len(values) < 3 or not speeds:
+    robust_speeds: list[float] = []
+    for index in range(len(values) - 2):
+        first = values[index]
+        last = values[index + 2]
+        dt = last.timestamp - first.timestamp
+        if dt <= 1e-4:
+            continue
+        displacement = norm(vector_sub(last.target_delta, first.target_delta))
+        robust_speeds.append(displacement / dt)
+
+    if len(values) < 4 or not adjacent_speeds or not robust_speeds:
         return False, "insufficient state samples"
 
     total_motion = norm(vector_sub(values[-1].target_delta, values[0].target_delta))
-    maximum_speed = max(speeds)
-    median_speed = statistics.median(speeds)
-    passed = maximum_speed <= POSITION_SPEED_TOLERANCE_MPS and total_motion >= 0.015
+    raw_maximum = max(adjacent_speeds)
+    robust_maximum = max(robust_speeds)
+    median_speed = statistics.median(robust_speeds)
+    passed = (
+        robust_maximum <= ROBUST_POSITION_SPEED_TOLERANCE_MPS
+        and total_motion >= 0.015
+    )
     detail = (
         f"safe-reference motion={total_motion * 100:.1f} cm, "
-        f"max={maximum_speed:.3f} m/s, median={median_speed:.3f} m/s "
+        f"robust_max={robust_maximum:.3f} m/s, "
+        f"raw_max={raw_maximum:.3f} m/s, median={median_speed:.3f} m/s "
         f"(configured={POSITION_SPEED_LIMIT_MPS:.2f} m/s)"
     )
     return passed, detail
@@ -235,7 +253,6 @@ def main() -> int:
             print("Start START_VR_HAND_TO_MUJOCO.bat first, then rerun this diagnostic.")
             return 2
 
-        start_position = BASE_POSITION.copy()
         stepped_position = [
             BASE_POSITION[0] + POSITION_STEP_M,
             BASE_POSITION[1],
@@ -285,7 +302,7 @@ def main() -> int:
 
         print("\nBACKEND/MUJOCO PATH: FAIL or SUSPECT")
         if not position_pass:
-            print("- Position failure points to reference-speed/workspace projection inside the backend.")
+            print("- Robust position-speed samples exceed the expected transport tolerance; inspect runtime timing/reference integration.")
         if not rotation_pass:
             print("- Rotation failure points to backend rotation mapping or wrist IK.")
         if coupled_suspect:

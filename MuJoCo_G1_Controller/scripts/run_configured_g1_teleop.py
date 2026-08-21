@@ -34,6 +34,7 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
+REFERENCE_MAX_DT_S = 1.0 / 60.0
 
 
 def install_absolute_vr_wrist_orientation(base_module) -> None:
@@ -51,6 +52,28 @@ def install_absolute_vr_wrist_orientation(base_module) -> None:
         return target_position, target_rotation
 
     base_module.calculate_clutched_target = absolute_clutched_target
+
+
+def install_no_catchup_position_reference(base_module) -> None:
+    """Prevent delayed viewer cycles from creating Cartesian catch-up bursts.
+
+    The runtime measures wall-clock delta time between control cycles. If Windows
+    stalls a cycle, passing the whole delayed interval into the fixed-speed
+    reference makes the next qpos update visibly jump forward even though the
+    long-term speed remains 0.08 m/s. Cap only the reference integration interval
+    to one 60 Hz frame. Lost time is intentionally not repaid later.
+    """
+
+    original_update = base_module.update_safe_position_reference
+    if getattr(base_module, "_NO_CATCHUP_POSITION_REFERENCE_INSTALLED", False):
+        return
+
+    def no_catchup_update(current_position, desired_position, delta_time):
+        bounded_dt = min(max(float(delta_time), 1e-4), REFERENCE_MAX_DT_S)
+        return original_update(current_position, desired_position, bounded_dt)
+
+    base_module.update_safe_position_reference = no_catchup_update
+    base_module._NO_CATCHUP_POSITION_REFERENCE_INSTALLED = True
 
 
 def install_position_only_fallback_policy(supervisor) -> None:
@@ -150,8 +173,6 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
 
     def smooth_wrist_solver(*args, **kwargs):
         adjusted_kwargs = dict(kwargs)
-        # The live runtime does not explicitly pass substeps. Force the configured
-        # stack to one qpos update opportunity per control cycle.
         adjusted_kwargs["substeps"] = CONFIGURED_IK_SUBSTEPS
         result = original_solver(*args, **adjusted_kwargs)
 
@@ -245,6 +266,7 @@ def main() -> None:
     fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
     severe_fallback_settings = load_severe_ik_fallback_settings(TELEOP_CONFIG_PATH)
     apply_to_base_module(base, config)
+    install_no_catchup_position_reference(base)
     install_runtime_collision_policy(base, config)
     inspection_machine = install_inspection_contact_monitor(base, config)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
@@ -258,8 +280,6 @@ def main() -> None:
     install_absolute_vr_wrist_orientation(base)
     install_smooth_cycle_and_wrist_overlay(base)
 
-    # Import only after tuning and safety/IK hooks are applied so the projected
-    # runtime observes one configured policy stack.
     import g1_right_arm_udp_ik_runtime as runtime
 
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
@@ -274,7 +294,8 @@ def main() -> None:
     )
     print(
         "Position reference: fixed Cartesian speed limit "
-        f"({config.motion.position_max_speed_mps:.2f} m/s; no adaptive acceleration)"
+        f"({config.motion.position_max_speed_mps:.2f} m/s; no adaptive acceleration, "
+        f"dt cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)"
     )
     print(
         "Joint motion: one configured IK substep per control cycle "

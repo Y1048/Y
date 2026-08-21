@@ -9,9 +9,6 @@ from typing import Iterable
 import numpy as np
 
 
-# NPZ workspace samples are stored as float32. Values that are mathematically on
-# a voxel boundary can load a few nanometers across that boundary. Keep indexing
-# stable without changing any physical workspace dimension.
 _VOXEL_INDEX_EPSILON = 1e-6
 _NEIGHBOR_OFFSETS = np.array(
     [
@@ -34,14 +31,9 @@ class WorkspaceProjection:
 
 
 class VoxelWorkspaceMap:
-    """Represent collision-free workspace as occupied 3D voxels.
+    """Represent collision-free workspace as occupied 3D voxels."""
 
-    Runtime projection is deliberately local and directional: when an operator
-    target leaves the sampled workspace, motion advances from the current safe
-    point toward the requested target until the boundary is reached, then walks
-    neighboring safe voxels that continue reducing target distance. This avoids
-    teleporting to an unrelated globally-nearest voxel.
-    """
+    DEFAULT_DILATION_VOXELS = 0
 
     def __init__(self, safe_points_m: np.ndarray, *, voxel_size_m: float = 0.01) -> None:
         points = np.asarray(safe_points_m, dtype=float)
@@ -69,6 +61,11 @@ class VoxelWorkspaceMap:
             tuple(int(value) for value in row)
             for row in self.safe_voxel_indices
         }
+        # Used by the second, speed-filter projection in the live runtime. The
+        # anchor is only updated by project(); WorkspaceTargetProjector uses
+        # project_from() so operator projection and filtered projection keep
+        # independent local histories.
+        self._projection_anchor_m: np.ndarray | None = None
 
     @classmethod
     def from_npz(
@@ -78,10 +75,12 @@ class VoxelWorkspaceMap:
         voxel_size_m: float = 0.01,
         safe_class: int | None = None,
         allowed_classes: Iterable[int] | None = None,
-        dilation_voxels: int = 0,
+        dilation_voxels: int | None = None,
     ) -> "VoxelWorkspaceMap":
         if safe_class is not None and allowed_classes is not None:
             raise ValueError("use either safe_class or allowed_classes, not both")
+        if dilation_voxels is None:
+            dilation_voxels = cls.DEFAULT_DILATION_VOXELS
         if isinstance(dilation_voxels, bool) or not isinstance(dilation_voxels, int):
             raise ValueError("dilation_voxels must be an integer")
         if dilation_voxels < 0:
@@ -115,8 +114,6 @@ class VoxelWorkspaceMap:
             tuple(int(value) for value in row)
             for row in all_indices[allowed_mask]
         }
-        # A voxel with an observed collision sample is never introduced by the
-        # sampling-gap dilation, even if a nearby collision-free sample exists.
         forbidden_keys = {
             tuple(int(value) for value in row)
             for row in all_indices[classification == 0]
@@ -177,16 +174,22 @@ class VoxelWorkspaceMap:
         return self.safe_voxel_centers_m[nearest_index].copy()
 
     def project(self, operator_target_m: np.ndarray) -> WorkspaceProjection:
-        """Stateless fallback projection used for initial anchoring."""
-        operator_target = np.asarray(operator_target_m, dtype=float)
-        feasible_target = self.nearest_safe_point(operator_target)
-        distance_m = float(np.linalg.norm(feasible_target - operator_target))
-        return WorkspaceProjection(
-            operator_target=operator_target.copy(),
-            feasible_target=feasible_target,
-            projected=distance_m > 1e-9,
-            distance_m=distance_m,
-        )
+        """Stateful local projection for filtered runtime targets."""
+        target = np.asarray(operator_target_m, dtype=float)
+        if self._projection_anchor_m is None:
+            if self.contains_safe(target):
+                feasible = target.copy()
+                projection = WorkspaceProjection(target.copy(), feasible, False, 0.0)
+            else:
+                feasible = self.nearest_safe_point(target)
+                distance_m = float(np.linalg.norm(feasible - target))
+                projection = WorkspaceProjection(
+                    target.copy(), feasible, distance_m > 1e-9, distance_m
+                )
+        else:
+            projection = self.project_from(self._projection_anchor_m, target)
+        self._projection_anchor_m = projection.feasible_target.copy()
+        return projection
 
     def project_from(
         self,
@@ -195,12 +198,7 @@ class VoxelWorkspaceMap:
         *,
         max_boundary_steps: int = 128,
     ) -> WorkspaceProjection:
-        """Project locally from a safe anchor while preserving motion direction.
-
-        The direct segment is sampled at half-voxel spacing until occupancy ends.
-        If blocked, a local 26-neighbor hill climb follows the safe boundary only
-        while each move reduces Euclidean distance to the operator target.
-        """
+        """Project locally from a safe anchor while preserving motion direction."""
         start = np.asarray(safe_start_m, dtype=float)
         target = np.asarray(operator_target_m, dtype=float)
         if start.shape != (3,) or target.shape != (3,):
@@ -213,9 +211,7 @@ class VoxelWorkspaceMap:
             raise ValueError("max_boundary_steps must be >= 0")
 
         if self.contains_safe(target):
-            feasible = target.copy()
-            return WorkspaceProjection(target.copy(), feasible, False, 0.0)
-
+            return WorkspaceProjection(target.copy(), target.copy(), False, 0.0)
         if not self.contains_safe(start):
             start = self.nearest_safe_point(start)
 
@@ -278,7 +274,15 @@ class WorkspaceTargetProjector:
 
     def update(self, operator_target_m: np.ndarray) -> WorkspaceProjection:
         if self.feasible_target is None:
-            projection = self.workspace.project(operator_target_m)
+            target = np.asarray(operator_target_m, dtype=float)
+            if self.workspace.contains_safe(target):
+                projection = WorkspaceProjection(target.copy(), target.copy(), False, 0.0)
+            else:
+                feasible = self.workspace.nearest_safe_point(target)
+                distance_m = float(np.linalg.norm(feasible - target))
+                projection = WorkspaceProjection(
+                    target.copy(), feasible, distance_m > 1e-9, distance_m
+                )
         else:
             projection = self.workspace.project_from(
                 self.feasible_target,

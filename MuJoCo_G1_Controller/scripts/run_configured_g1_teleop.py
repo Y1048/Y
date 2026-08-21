@@ -18,6 +18,7 @@ from g1_teleop.config import apply_to_base_module, apply_to_projected_runtime, l
 from g1_teleop.elbow_motion_gate import install_elbow_pole_motion_gate  # noqa: E402
 from g1_teleop.ik_branch_search import (  # noqa: E402
     install_expanded_multiseed_branches,
+    install_multiseed_search_cadence,
     install_position_only_candidate_scoring,
 )
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings  # noqa: E402
@@ -40,9 +41,10 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
-# Keep delayed-frame catch-up bounded, but do not halve the commanded Cartesian
-# speed when the live MuJoCo/viewer loop runs near 30 Hz.
-REFERENCE_MAX_DT_S = 1.0 / 30.0
+# Keep each visible Cartesian update bounded to one 60 Hz reference quantum.
+# Heavy multi-seed work is throttled separately so the control loop itself can
+# stay near 60 Hz instead of compensating a slow loop with larger position jumps.
+REFERENCE_MAX_DT_S = 1.0 / 60.0
 STAGNATION_POSITION_ERROR_M = 0.015
 STAGNATION_MIN_IMPROVEMENT_M = 0.00025
 STAGNATION_FRAMES = 8
@@ -206,6 +208,7 @@ def main() -> None:
     install_target_aware_elbow_pole(base)
     install_expanded_multiseed_branches(ik_fallback_module)
     install_position_only_candidate_scoring(ik_fallback_module)
+    install_multiseed_search_cadence(ik_fallback_module, interval_calls=8)
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_position_only_fallback_policy(fallback_supervisor)
     install_position_only_severe_trigger(base, fallback_supervisor, severe_fallback_settings)
@@ -220,16 +223,16 @@ def main() -> None:
     print(f"Teleop config: {TELEOP_CONFIG_PATH}")
     print("Collision authority: TaskAwareRightArmCollisionPolicy " f"(structural_neighbor_distance={config.collision.structural_neighbor_distance})")
     print("Inspection contact state: " + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled"))
-    print("Position reference: fixed Cartesian speed limit " f"({config.motion.position_max_speed_mps:.2f} m/s; bounded catch-up, dt cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)")
+    print("Position reference: fixed Cartesian speed limit " f"({config.motion.position_max_speed_mps:.2f} m/s; 60 Hz step cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)")
     print("Joint command smoothing: disabled; Cartesian reference + one IK substep own the motion rate")
     print("Elbow posture: target-aware pole + bend preference " f"({PREFERRED_ELBOW_DEG:.0f} deg free-space -> {TORSO_FRONT_PREFERRED_ELBOW_DEG:.0f} deg near torso front)")
     print("Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame " f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit")
-    print("IK recovery: position-only activation/scoring + recovered-primary suppression + stagnation trigger + shoulder pitch/roll/yaw and elbow multi-seed branches")
+    print("IK recovery: position-only coupled fallback every cycle; expanded multi-seed branch search every 8 fallback calls")
     if fallback_supervisor.settings.enabled:
         strategy = "wrist-only orientation + position-only coupled 7-DoF fallback"
         if fallback_supervisor.settings.multiseed.enabled:
-            strategy += " + expanded multi-seed search"
-        strategy += " + recovered-primary suppression + position-only severe trigger + primary-task descent guard"
+            strategy += " + throttled expanded multi-seed search"
+        strategy += " + recovered-primary suppression + torso posture escape guard"
         print(f"IK strategy: {strategy}")
     else:
         print("IK strategy: decoupled only (fallback disabled)")

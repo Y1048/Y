@@ -27,8 +27,6 @@ from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
 from g1_teleop.motion_quality import (  # noqa: E402
     DEFAULT_PREFERRED_ELBOW_DEG as PREFERRED_ELBOW_DEG,
-    DEFAULT_PROXIMAL_MAX_STEP_DEG,
-    DEFAULT_WRIST_MAX_STEP_DEG,
     TORSO_FRONT_PREFERRED_ELBOW_DEG,
     install_joint_command_smoother,
     install_motion_gated_elbow_preference,
@@ -42,7 +40,9 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
-REFERENCE_MAX_DT_S = 1.0 / 60.0
+# Keep delayed-frame catch-up bounded, but do not halve the commanded Cartesian
+# speed when the live MuJoCo/viewer loop runs near 30 Hz.
+REFERENCE_MAX_DT_S = 1.0 / 30.0
 STAGNATION_POSITION_ERROR_M = 0.015
 STAGNATION_MIN_IMPROVEMENT_M = 0.00025
 STAGNATION_FRAMES = 8
@@ -212,22 +212,24 @@ def main() -> None:
     install_primary_task_guard(base)
     install_calibrated_vr_wrist_orientation(base)
     install_smooth_cycle_and_wrist_overlay(base)
+    # Kept as a compatibility hook; the current implementation is intentionally
+    # a no-op so the Cartesian reference, not a second joint limiter, owns speed.
     install_joint_command_smoother(base)
     import g1_right_arm_udp_ik_runtime as runtime
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
     print(f"Teleop config: {TELEOP_CONFIG_PATH}")
     print("Collision authority: TaskAwareRightArmCollisionPolicy " f"(structural_neighbor_distance={config.collision.structural_neighbor_distance})")
     print("Inspection contact state: " + ("enabled (monitor-only foundation)" if inspection_machine.enabled else "disabled"))
-    print("Position reference: fixed Cartesian speed limit " f"({config.motion.position_max_speed_mps:.2f} m/s; no adaptive acceleration, dt cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)")
-    print("Joint command smoothing: proximal <= " f"{DEFAULT_PROXIMAL_MAX_STEP_DEG:.2f} deg/cycle, wrist <= {DEFAULT_WRIST_MAX_STEP_DEG:.2f} deg/cycle with acceleration limiting")
+    print("Position reference: fixed Cartesian speed limit " f"({config.motion.position_max_speed_mps:.2f} m/s; bounded catch-up, dt cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)")
+    print("Joint command smoothing: disabled; Cartesian reference + one IK substep own the motion rate")
     print("Elbow posture: target-aware pole + bend preference " f"({PREFERRED_ELBOW_DEG:.0f} deg free-space -> {TORSO_FRONT_PREFERRED_ELBOW_DEG:.0f} deg near torso front)")
     print("Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame " f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit")
-    print("IK recovery: position-only activation/scoring + stagnation trigger + shoulder pitch/roll/yaw and elbow multi-seed branches")
+    print("IK recovery: position-only activation/scoring + recovered-primary suppression + stagnation trigger + shoulder pitch/roll/yaw and elbow multi-seed branches")
     if fallback_supervisor.settings.enabled:
         strategy = "wrist-only orientation + position-only coupled 7-DoF fallback"
         if fallback_supervisor.settings.multiseed.enabled:
             strategy += " + expanded multi-seed search"
-        strategy += " + position-only severe trigger + primary-task descent guard"
+        strategy += " + recovered-primary suppression + position-only severe trigger + primary-task descent guard"
         print(f"IK strategy: {strategy}")
     else:
         print("IK strategy: decoupled only (fallback disabled)")

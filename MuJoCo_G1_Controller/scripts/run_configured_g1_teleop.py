@@ -39,9 +39,9 @@ def install_absolute_vr_wrist_orientation(base_module) -> None:
 
     Engagement captures only the translational zero point. The incoming Quest
     wrist quaternion is converted directly into the robot frame instead of
-    applying a rotation delta relative to the engagement pose. Rotation-reference
-    rate limiting is also bypassed; physical joint motion remains constrained by
-    the IK joint-step and collision safety layers.
+    applying a rotation delta relative to the engagement pose. The established
+    rotation-reference rate limiter remains active so absolute orientation does
+    not create unbounded per-frame wrist commands.
     """
 
     def absolute_clutched_target(reference, input_position, input_rotation):
@@ -55,12 +55,7 @@ def install_absolute_vr_wrist_orientation(base_module) -> None:
         )
         return target_position, target_rotation
 
-    def direct_rotation_reference(current_rotation, desired_rotation, delta_time):
-        del current_rotation, delta_time
-        return desired_rotation.copy()
-
     base_module.calculate_clutched_target = absolute_clutched_target
-    base_module.update_safe_rotation_reference = direct_rotation_reference
 
 
 def main() -> None:
@@ -95,7 +90,7 @@ def main() -> None:
     )
     print(
         "Wrist orientation: absolute Quest hand-tracking orientation "
-        "(no engagement-relative rotation delta)"
+        f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "decoupled primary + coupled 7-DoF fallback"

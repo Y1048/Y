@@ -34,6 +34,35 @@ import g1_right_arm_udp_ik_demo as base  # noqa: E402
 TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 
 
+def install_absolute_vr_wrist_orientation(base_module) -> None:
+    """Keep position clutch-relative but use the VR wrist orientation absolutely.
+
+    Engagement captures only the translational zero point. The incoming Quest
+    wrist quaternion is converted directly into the robot frame instead of
+    applying a rotation delta relative to the engagement pose. Rotation-reference
+    rate limiting is also bypassed; physical joint motion remains constrained by
+    the IK joint-step and collision safety layers.
+    """
+
+    def absolute_clutched_target(reference, input_position, input_rotation):
+        target_position = (
+            reference["robot_position"]
+            + input_position
+            - reference["input_position"]
+        )
+        target_rotation = base_module.operator_rotation_to_robot_matrix(
+            input_rotation
+        )
+        return target_position, target_rotation
+
+    def direct_rotation_reference(current_rotation, desired_rotation, delta_time):
+        del current_rotation, delta_time
+        return desired_rotation.copy()
+
+    base_module.calculate_clutched_target = absolute_clutched_target
+    base_module.update_safe_rotation_reference = direct_rotation_reference
+
+
 def main() -> None:
     config = load_teleop_config(TELEOP_CONFIG_PATH)
     fallback_settings = load_ik_fallback_settings(TELEOP_CONFIG_PATH)
@@ -44,6 +73,7 @@ def main() -> None:
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_severe_ik_fallback_trigger(base, severe_fallback_settings)
     install_primary_task_guard(base)
+    install_absolute_vr_wrist_orientation(base)
 
     # Import only after tuning and safety/IK hooks are applied so the projected
     # runtime observes one configured policy stack.
@@ -62,6 +92,10 @@ def main() -> None:
     print(
         "Position reference: fixed Cartesian speed limit "
         f"({config.motion.position_max_speed_mps:.2f} m/s; no adaptive acceleration)"
+    )
+    print(
+        "Wrist orientation: absolute Quest hand-tracking orientation "
+        "(no engagement-relative rotation delta)"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "decoupled primary + coupled 7-DoF fallback"

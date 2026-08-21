@@ -28,6 +28,8 @@ POSITION_SPEED_LIMIT_MPS = 0.08
 # process on Windows. Single adjacent-sample derivatives are therefore noisy.
 # Judge the transport path using a 3-sample window while still reporting raw max.
 ROBUST_POSITION_SPEED_TOLERANCE_MPS = 0.095
+MIN_ROBUST_POSITION_SPEED_MPS = 0.060
+MIN_EXPECTED_POSITION_MOTION_M = 0.085
 
 
 @dataclass
@@ -172,14 +174,16 @@ def diagnose_position_speed(samples: list[StateSample]) -> tuple[bool, str]:
     robust_maximum = max(robust_speeds)
     median_speed = statistics.median(robust_speeds)
     passed = (
-        robust_maximum <= ROBUST_POSITION_SPEED_TOLERANCE_MPS
-        and total_motion >= 0.015
+        MIN_ROBUST_POSITION_SPEED_MPS <= robust_maximum <= ROBUST_POSITION_SPEED_TOLERANCE_MPS
+        and total_motion >= MIN_EXPECTED_POSITION_MOTION_M
     )
     detail = (
         f"safe-reference motion={total_motion * 100:.1f} cm, "
         f"robust_max={robust_maximum:.3f} m/s, "
         f"raw_max={raw_maximum:.3f} m/s, median={median_speed:.3f} m/s "
-        f"(configured={POSITION_SPEED_LIMIT_MPS:.2f} m/s)"
+        f"(configured={POSITION_SPEED_LIMIT_MPS:.2f} m/s, "
+        f"expected robust>={MIN_ROBUST_POSITION_SPEED_MPS:.3f}, "
+        f"motion>={MIN_EXPECTED_POSITION_MOTION_M*100:.1f} cm)"
     )
     return passed, detail
 
@@ -297,12 +301,12 @@ def main() -> int:
 
         if position_pass and rotation_pass and not coupled_suspect:
             print("\nBACKEND/MUJOCO PATH: PASS")
-            print("If live Quest behavior is still wrong, the remaining fault is likely upstream in Unity/Quest tracking, engagement, or sender mapping.")
+            print("Position timing and wrist isolation are both within the configured diagnostic range.")
             return 0
 
         print("\nBACKEND/MUJOCO PATH: FAIL or SUSPECT")
         if not position_pass:
-            print("- Robust position-speed samples exceed the expected transport tolerance; inspect runtime timing/reference integration.")
+            print("- Position motion is either too fast OR materially under-speed; inspect runtime timing/reference integration.")
         if not rotation_pass:
             print("- Rotation failure points to backend rotation mapping or wrist IK.")
         if coupled_suspect:

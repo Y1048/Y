@@ -22,15 +22,16 @@ from g1_teleop.ik_fallback import install_coupled_ik_fallback, load_ik_fallback_
 import g1_teleop.ik_fallback as ik_fallback_module
 from g1_teleop.ik_primary_guard import install_primary_task_guard
 from g1_teleop.inspection_contact import install_inspection_contact_monitor
+from g1_teleop.joint_posture import install_joint_space_posture_scheduler
 from g1_teleop.motion_quality import install_joint_command_smoother
 from g1_teleop.runtime_collision import install_runtime_collision_policy
-from g1_teleop.torso_front_prepose import install_torso_front_prepose
 
 import g1_right_arm_udp_ik_demo as base
 import g1_right_arm_udp_ik_runtime as runtime
 import run_configured_g1_teleop as configured
 
 CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
+JOINT_POSTURE_PROFILE_PATH = PROJECT_ROOT / "config" / "joint_postures.json"
 DT = 1.0 / 60.0
 ROTATION_TEST_DEG = 35.0
 POSITION_PROBE_M = 0.08
@@ -66,7 +67,7 @@ def install_configured_stack():
     configured.install_position_only_severe_trigger(base, supervisor, severe)
     install_primary_task_guard(base)
     configured.install_calibrated_vr_wrist_orientation(base)
-    install_torso_front_prepose(base)
+    install_joint_space_posture_scheduler(base, profile_path=JOINT_POSTURE_PROFILE_PATH)
     configured.install_smooth_cycle_and_wrist_overlay(base)
     install_joint_command_smoother(base)
     apply_to_projected_runtime(runtime, config, PROJECT_ROOT)
@@ -279,7 +280,7 @@ def main() -> int:
     elif not rotation_pass:
         print("- Live-equivalent configured wrist overlay still fails; inspect overlay/collision diagnostics above.")
     else:
-        print("- Wrist IK passes inside the same simplified live-equivalent stack.")
+        print("- Wrist IK passes inside the same joint-space-posture live-equivalent stack.")
 
     if not ref_pass:
         print("- Reference limiter itself is wrong.")

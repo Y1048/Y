@@ -19,11 +19,6 @@ from g1_teleop.config import (  # noqa: E402
     apply_to_projected_runtime,
     load_teleop_config,
 )
-from g1_teleop.elbow_posture import (  # noqa: E402
-    DEFAULT_MAX_STEP_DEG_PER_CYCLE as ELBOW_MAX_STEP_DEG_PER_CYCLE,
-    DEFAULT_PREFERRED_ELBOW_DEG as PREFERRED_ELBOW_DEG,
-    install_smooth_elbow_posture,
-)
 from g1_teleop.ik_emergency import load_severe_ik_fallback_settings  # noqa: E402
 from g1_teleop.ik_fallback import (  # noqa: E402
     install_coupled_ik_fallback,
@@ -31,6 +26,13 @@ from g1_teleop.ik_fallback import (  # noqa: E402
 )
 from g1_teleop.ik_primary_guard import install_primary_task_guard  # noqa: E402
 from g1_teleop.inspection_contact import install_inspection_contact_monitor  # noqa: E402
+from g1_teleop.motion_quality import (  # noqa: E402
+    DEFAULT_PREFERRED_ELBOW_DEG as PREFERRED_ELBOW_DEG,
+    DEFAULT_PROXIMAL_MAX_STEP_DEG,
+    DEFAULT_WRIST_MAX_STEP_DEG,
+    install_joint_command_smoother,
+    install_motion_gated_elbow_preference,
+)
 from g1_teleop.runtime_collision import install_runtime_collision_policy  # noqa: E402
 
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
@@ -40,34 +42,38 @@ TELEOP_CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
 REFERENCE_MAX_DT_S = 1.0 / 60.0
+STAGNATION_POSITION_ERROR_M = 0.015
+STAGNATION_MIN_IMPROVEMENT_M = 0.00025
+STAGNATION_FRAMES = 8
 
 
-def install_absolute_vr_wrist_orientation(base_module) -> None:
-    """Keep position clutch-relative but use the VR wrist orientation absolutely."""
+def install_calibrated_vr_wrist_orientation(base_module) -> None:
+    """Calibrate Quest hand frame to the current G1 wrist frame at engagement.
 
-    def absolute_clutched_target(reference, input_position, input_rotation):
+    Position remains clutch-relative. Rotation uses the change of the mapped Quest
+    anatomical frame since engagement, applied to the G1 wrist orientation that
+    existed at that same instant. This removes any fixed Quest-hand/G1-tool axis
+    offset without hard-coded 90/180 degree corrections.
+    """
+
+    def calibrated_clutched_target(reference, input_position, input_rotation):
         target_position = (
             reference["robot_position"]
             + input_position
             - reference["input_position"]
         )
-        target_rotation = base_module.operator_rotation_to_robot_matrix(
+        current_input_rotation = base_module.operator_rotation_to_robot_matrix(
             input_rotation
         )
+        rotation_delta = current_input_rotation @ reference["input_rotation"].T
+        target_rotation = rotation_delta @ reference["robot_rotation"]
         return target_position, target_rotation
 
-    base_module.calculate_clutched_target = absolute_clutched_target
+    base_module.calculate_clutched_target = calibrated_clutched_target
 
 
 def install_no_catchup_position_reference(base_module) -> None:
-    """Prevent delayed viewer cycles from creating Cartesian catch-up bursts.
-
-    The runtime measures wall-clock delta time between control cycles. If Windows
-    stalls a cycle, passing the whole delayed interval into the fixed-speed
-    reference makes the next qpos update visibly jump forward even though the
-    long-term speed remains 0.08 m/s. Cap only the reference integration interval
-    to one 60 Hz frame. Lost time is intentionally not repaid later.
-    """
+    """Prevent delayed viewer cycles from creating Cartesian catch-up bursts."""
 
     original_update = base_module.update_safe_position_reference
     if getattr(base_module, "_NO_CATCHUP_POSITION_REFERENCE_INSTALLED", False):
@@ -82,21 +88,48 @@ def install_no_catchup_position_reference(base_module) -> None:
 
 
 def install_position_only_fallback_policy(supervisor) -> None:
-    """Allow coupled 7-DoF fallback to react to position error only.
-
-    Wrist orientation is intentionally owned by the three wrist joints.
-    Rotation error must not arm a whole-arm fallback or keep one active.
-    """
+    """Use position-only fallback activation, including local-minimum recovery."""
 
     original_update = supervisor.update
+    previous_error = None
+    stagnant_frames = 0
 
     def position_only_update(position_error_m, rotation_error_rad, *, inspection_contact):
+        nonlocal previous_error, stagnant_frames
         del rotation_error_rad
-        return original_update(
-            position_error_m,
+        position_error = float(position_error_m)
+        transition = original_update(
+            position_error,
             0.0,
             inspection_contact=inspection_contact,
         )
+
+        improvement = math.inf if previous_error is None else previous_error - position_error
+        previous_error = position_error
+        can_recover = (
+            supervisor.settings.enabled
+            and not supervisor.active
+            and not inspection_contact
+            and position_error >= STAGNATION_POSITION_ERROR_M
+        )
+        if can_recover and improvement < STAGNATION_MIN_IMPROVEMENT_M:
+            stagnant_frames += 1
+        else:
+            stagnant_frames = 0
+
+        if stagnant_frames >= STAGNATION_FRAMES:
+            supervisor.active = True
+            supervisor.bad_frames = 0
+            supervisor.good_frames = 0
+            stagnant_frames = 0
+            return type(transition)(
+                active=True,
+                changed=True,
+                reason="position_stagnation",
+                bad_frames=0,
+                good_frames=0,
+            )
+        return transition
 
     supervisor.update = position_only_update
 
@@ -156,29 +189,15 @@ def install_position_only_severe_trigger(base_module, supervisor, settings) -> N
 
 
 def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
-    """Limit whole-arm IK work to one substep and guarantee wrist-only orientation.
-
-    The Cartesian reference already advances at 0.08 m/s. Running four IK
-    substeps per viewer cycle can nevertheless change qpos several times in one
-    frame, which looks fast and stair-stepped because this simulator writes qpos
-    directly instead of using actuator dynamics. The configured runtime therefore
-    performs one whole-arm IK substep per cycle.
-
-    A smooth elbow-flexion preference is installed inside the position-task null
-    space before the wrist overlay. It prefers a 55 degree elbow only when the
-    primary wrist-position task has redundant freedom, and its correction is
-    bounded per cycle and rejected on collision or primary-task degradation.
-
-    After that position solve, the remaining orientation error is handled by a
-    dedicated DLS step on the three wrist joints only. This prevents shoulder and
-    elbow motion from being used to chase hand orientation and avoids losing a
-    valid wrist step inside the configured wrapper stack.
-    """
+    """Use one position-IK substep, coherent elbow preference, and wrist-only DLS."""
 
     if getattr(base_module, "_SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED", False):
         return
 
-    install_smooth_elbow_posture(base_module)
+    # Feed elbow flexion through the solver's own posture/null-space term so it
+    # remains coherent with the existing elbow-pole objective. Do not apply a
+    # second post-solve elbow correction.
+    install_motion_gated_elbow_preference(base_module)
     original_solver = base_module.solve_right_arm_target
     wrist_max_step_rad = math.radians(WRIST_MAX_STEP_DEG_PER_CYCLE)
 
@@ -288,8 +307,11 @@ def main() -> None:
         severe_fallback_settings,
     )
     install_primary_task_guard(base)
-    install_absolute_vr_wrist_orientation(base)
+    install_calibrated_vr_wrist_orientation(base)
     install_smooth_cycle_and_wrist_overlay(base)
+    # Final command-quality layer: smooth the desired IK candidate without
+    # changing Cartesian target semantics or fallback selection.
+    install_joint_command_smoother(base)
 
     import g1_right_arm_udp_ik_runtime as runtime
 
@@ -309,16 +331,21 @@ def main() -> None:
         f"dt cap={REFERENCE_MAX_DT_S * 1000.0:.1f} ms)"
     )
     print(
-        "Joint motion: one configured IK substep per control cycle "
-        f"(wrist overlay <= {WRIST_MAX_STEP_DEG_PER_CYCLE:.1f} deg/cycle)"
+        "Joint command smoothing: proximal <= "
+        f"{DEFAULT_PROXIMAL_MAX_STEP_DEG:.2f} deg/cycle, wrist <= "
+        f"{DEFAULT_WRIST_MAX_STEP_DEG:.2f} deg/cycle with acceleration limiting"
     )
     print(
-        "Elbow posture: null-space preference "
-        f"({PREFERRED_ELBOW_DEG:.0f} deg, <= {ELBOW_MAX_STEP_DEG_PER_CYCLE:.2f} deg/cycle)"
+        "Elbow posture: solver-integrated motion-gated preference "
+        f"({PREFERRED_ELBOW_DEG:.0f} deg while Cartesian reference moves)"
     )
     print(
-        "Wrist orientation: absolute Quest hand-tracking orientation "
+        "Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame "
         f"with {config.motion.rotation_max_speed_deg_s:.0f} deg/s reference limit"
+    )
+    print(
+        "IK recovery: position-only fallback + stagnation trigger "
+        f"({STAGNATION_POSITION_ERROR_M*100:.1f} cm for {STAGNATION_FRAMES} stagnant frames)"
     )
     if fallback_supervisor.settings.enabled:
         strategy = "wrist-only orientation + position-only coupled 7-DoF fallback"

@@ -13,6 +13,7 @@ DEFAULT_PREFERRED_ELBOW_DEG = 55.0
 DEFAULT_GAIN = 0.08
 DEFAULT_MAX_STEP_DEG_PER_CYCLE = 0.25
 DEFAULT_POSITION_TOLERANCE_M = 0.0002
+DEFAULT_TARGET_MOTION_THRESHOLD_M = 0.00005
 
 
 def _clamp_vector_norm(vector: np.ndarray, maximum_norm: float) -> np.ndarray:
@@ -30,13 +31,19 @@ def install_smooth_elbow_posture(
     gain: float = DEFAULT_GAIN,
     max_step_deg_per_cycle: float = DEFAULT_MAX_STEP_DEG_PER_CYCLE,
     position_tolerance_m: float = DEFAULT_POSITION_TOLERANCE_M,
+    target_motion_threshold_m: float = DEFAULT_TARGET_MOTION_THRESHOLD_M,
 ) -> None:
-    """Add a bounded elbow-flexion objective in the position-task null space.
+    """Add a bounded elbow-flexion objective while the position reference moves.
 
     The wrist Cartesian position remains the primary task. A small secondary
     correction prefers a bent elbow when redundant freedom is available. The
     correction is continuous, bounded per control cycle, collision checked, and
     rejected if it noticeably worsens the primary wrist-position error.
+
+    Elbow posture adaptation is intentionally paused when the Cartesian target is
+    stationary. This preserves proximal joint pose during wrist-only orientation
+    commands: rotating the operator hand must not slowly re-pose the shoulder or
+    elbow simply because a posture preference exists.
     """
 
     if getattr(base, "_SMOOTH_ELBOW_POSTURE_INSTALLED", False):
@@ -49,6 +56,8 @@ def install_smooth_elbow_posture(
         raise ValueError("max_step_deg_per_cycle must be finite and > 0")
     if not math.isfinite(position_tolerance_m) or position_tolerance_m < 0.0:
         raise ValueError("position_tolerance_m must be finite and >= 0")
+    if not math.isfinite(target_motion_threshold_m) or target_motion_threshold_m < 0.0:
+        raise ValueError("target_motion_threshold_m must be finite and >= 0")
 
     original_solver = getattr(base, "solve_right_arm_target", None)
     if not callable(original_solver):
@@ -61,13 +70,17 @@ def install_smooth_elbow_posture(
     base.RUNTIME_ELBOW_POSTURE_STEP_DEG = 0.0
     base.RUNTIME_ELBOW_POSTURE_ERROR_DEG = 0.0
     base.RUNTIME_ELBOW_POSTURE_BLOCKED = False
+    base.RUNTIME_ELBOW_POSTURE_TARGET_MOTION_M = 0.0
+    base.RUNTIME_ELBOW_POSTURE_TARGET_MOVING = False
 
     def elbow_posture_solver(*args: Any, **kwargs: Any):
         result = original_solver(*args, **kwargs)
 
         model = args[0] if len(args) > 0 else kwargs.get("model")
         data = args[1] if len(args) > 1 else kwargs.get("data")
-        target = args[4] if len(args) > 4 else kwargs.get("target_position", kwargs.get("target"))
+        target = args[4] if len(args) > 4 else kwargs.get(
+            "target_position", kwargs.get("target")
+        )
         context = kwargs.get("context")
         if context is None and len(args) > 8:
             context = args[8]
@@ -75,6 +88,8 @@ def install_smooth_elbow_posture(
         base.RUNTIME_ELBOW_POSTURE_APPLIED = False
         base.RUNTIME_ELBOW_POSTURE_STEP_DEG = 0.0
         base.RUNTIME_ELBOW_POSTURE_BLOCKED = False
+        base.RUNTIME_ELBOW_POSTURE_TARGET_MOTION_M = 0.0
+        base.RUNTIME_ELBOW_POSTURE_TARGET_MOVING = False
 
         if (
             model is None
@@ -98,6 +113,20 @@ def install_smooth_elbow_posture(
 
         target_position = np.asarray(target, dtype=float)
         if target_position.shape != (3,) or not np.all(np.isfinite(target_position)):
+            return result
+
+        previous_target = context.get("_elbow_posture_previous_target")
+        context["_elbow_posture_previous_target"] = target_position.copy()
+        if previous_target is None:
+            return result
+
+        previous_target = np.asarray(previous_target, dtype=float)
+        target_motion = float(np.linalg.norm(target_position - previous_target))
+        base.RUNTIME_ELBOW_POSTURE_TARGET_MOTION_M = target_motion
+        base.RUNTIME_ELBOW_POSTURE_TARGET_MOVING = (
+            target_motion > target_motion_threshold_m
+        )
+        if not base.RUNTIME_ELBOW_POSTURE_TARGET_MOVING:
             return result
 
         import mujoco
@@ -197,6 +226,12 @@ def install_smooth_elbow_posture(
             )
             enriched["elbow_posture_blocked"] = bool(
                 base.RUNTIME_ELBOW_POSTURE_BLOCKED
+            )
+            enriched["elbow_posture_target_motion_m"] = float(
+                base.RUNTIME_ELBOW_POSTURE_TARGET_MOTION_M
+            )
+            enriched["elbow_posture_target_moving"] = bool(
+                base.RUNTIME_ELBOW_POSTURE_TARGET_MOVING
             )
             original_status_writer(enriched)
 

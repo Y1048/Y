@@ -34,6 +34,7 @@ JOINT_POSTURE_PROFILE_PATH = PROJECT_ROOT / "config" / "joint_postures.json"
 CONFIGURED_IK_SUBSTEPS = 1
 WRIST_MAX_STEP_DEG_PER_CYCLE = 0.5
 REFERENCE_MAX_DT_S = 1.0 / 60.0
+PRIMARY_GUARD_TOLERANCE_M = 0.0005
 STAGNATION_POSITION_ERROR_M = 0.015
 STAGNATION_MIN_IMPROVEMENT_M = 0.00025
 STAGNATION_FRAMES = 8
@@ -142,7 +143,7 @@ def install_position_only_severe_trigger(base_module, supervisor, settings) -> N
 
 
 def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
-    """Run position + 7-DOF posture first, then Quest orientation as tertiary."""
+    """Keep XYZ primary, 7-DOF posture secondary, Quest orientation tertiary."""
     if getattr(base_module, "_SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED", False):
         return
 
@@ -153,28 +154,19 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
     base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG = 0.0
 
     def smooth_wrist_solver(*args, **kwargs):
-        adjusted_args = list(args)
         adjusted_kwargs = dict(kwargs)
+        adjusted_kwargs["substeps"] = CONFIGURED_IK_SUBSTEPS
 
-        requested_target_rotation = adjusted_kwargs.get("target_rotation")
-        if requested_target_rotation is None and len(adjusted_args) > 5:
-            requested_target_rotation = adjusted_args[5]
-
-        # The wrapped solver must be position-only. Otherwise its internal wrist
-        # orientation stage runs before the 7-DOF posture task and destroys the
-        # validated configuration-space posture trajectory.
+        # Position and the seven-joint posture own higher priorities. Prevent the
+        # base solver from also rotating the wrist; Quest orientation is applied
+        # exactly once below as the tertiary task.
+        requested_rotation = adjusted_kwargs.get("target_rotation")
+        if requested_rotation is None and len(args) > 5:
+            requested_rotation = args[5]
+        adjusted_kwargs["target_rotation"] = None
+        adjusted_args = list(args)
         if len(adjusted_args) > 5:
             adjusted_args[5] = None
-            adjusted_kwargs.pop("target_rotation", None)
-        else:
-            adjusted_kwargs["target_rotation"] = None
-
-        if len(adjusted_args) > 7:
-            adjusted_args[7] = CONFIGURED_IK_SUBSTEPS
-            adjusted_kwargs.pop("substeps", None)
-        else:
-            adjusted_kwargs["substeps"] = CONFIGURED_IK_SUBSTEPS
-
         result = original_solver(*adjusted_args, **adjusted_kwargs)
 
         model = adjusted_args[0] if len(adjusted_args) > 0 else adjusted_kwargs.get("model")
@@ -182,25 +174,7 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
         context = adjusted_kwargs.get("context")
         if context is None and len(adjusted_args) > 8:
             context = adjusted_args[8]
-
-        blend = float(np.clip(getattr(base_module, "RUNTIME_JOINT_POSTURE_BLEND", 0.0), 0.0, 1.0))
-        orientation_weight = 1.0 - blend
-        base_module.RUNTIME_WRIST_ORIENTATION_WEIGHT = orientation_weight
-        base_module.RUNTIME_WRIST_ORIENTATION_OVERLAY_BLOCKED = False
-        base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG = 0.0
-
-        if isinstance(context, dict):
-            context["wrist_orientation_weight"] = orientation_weight
-            context["wrist_orientation_overlay_blocked"] = False
-            context["wrist_orientation_step_deg"] = 0.0
-
-        if (
-            model is None
-            or data is None
-            or requested_target_rotation is None
-            or not isinstance(context, dict)
-            or orientation_weight <= 1e-6
-        ):
+        if model is None or data is None or requested_rotation is None or not isinstance(context, dict):
             return result
 
         right_dof_ids = np.asarray(context.get("right_dof_ids", []), dtype=int)
@@ -209,15 +183,27 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
         if right_dof_ids.size < 7 or right_qpos_ids.size < 7 or orientation_body is None:
             return result
 
+        posture_blend = float(np.clip(context.get("joint_posture_blend", 0.0), 0.0, 1.0))
+        orientation_weight = 1.0 - posture_blend
+        base_module.RUNTIME_WRIST_ORIENTATION_WEIGHT = orientation_weight
+        base_module.RUNTIME_WRIST_ORIENTATION_OVERLAY_BLOCKED = False
+        base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG = 0.0
+        context["wrist_orientation_weight"] = orientation_weight
+
+        if orientation_weight <= 1e-6:
+            context["wrist_orientation_overlay_blocked"] = False
+            context["wrist_orientation_step_deg"] = 0.0
+            return result
+
         import mujoco
         mujoco.mj_forward(model, data)
         current_rotation = data.xmat[int(orientation_body)].reshape(3, 3)
         rotation_error = np.asarray(
             base_module.calculate_rotation_error(
-                np.asarray(requested_target_rotation, dtype=float), current_rotation
+                np.asarray(requested_rotation, dtype=float), current_rotation
             ),
             dtype=float,
-        )
+        ) * orientation_weight
         if float(np.linalg.norm(rotation_error)) < 1e-7:
             return result
 
@@ -230,7 +216,7 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
         wrist_pseudoinverse = base_module.damped_pseudoinverse(
             wrist_jacobian, float(base_module.ORIENTATION_DAMPING)
         )
-        wrist_delta = orientation_weight * (wrist_pseudoinverse @ rotation_error)
+        wrist_delta = wrist_pseudoinverse @ rotation_error
         wrist_delta = np.clip(wrist_delta, -wrist_max_step_rad, wrist_max_step_rad)
 
         start_wrist_q = data.qpos[wrist_qpos_ids].copy()
@@ -254,6 +240,7 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
         else:
             step_deg = float(np.linalg.norm(np.degrees(accepted_step)))
             base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG = step_deg
+            context["wrist_orientation_overlay_blocked"] = False
             context["wrist_orientation_step_deg"] = step_deg
         return data.xpos[int(context["position_body"])].copy()
 
@@ -261,12 +248,10 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
     base_module._SMOOTH_CYCLE_WRIST_OVERLAY_INSTALLED = True
 
     original_status_writer = getattr(base_module, "write_runtime_status", None)
-    if callable(original_status_writer) and not getattr(base_module, "_WRIST_PRIORITY_STATUS_INSTALLED", False):
-        def status_writer(status_value):
+    if callable(original_status_writer) and not getattr(base_module, "_WRIST_TERTIARY_STATUS_INSTALLED", False):
+        def wrist_status_writer(status_value):
             enriched = dict(status_value)
-            enriched["wrist_orientation_weight"] = float(
-                base_module.RUNTIME_WRIST_ORIENTATION_WEIGHT
-            )
+            enriched["wrist_orientation_weight"] = float(base_module.RUNTIME_WRIST_ORIENTATION_WEIGHT)
             enriched["wrist_orientation_overlay_blocked"] = bool(
                 base_module.RUNTIME_WRIST_ORIENTATION_OVERLAY_BLOCKED
             )
@@ -275,8 +260,8 @@ def install_smooth_cycle_and_wrist_overlay(base_module) -> None:
             )
             original_status_writer(enriched)
 
-        base_module.write_runtime_status = status_writer
-        base_module._WRIST_PRIORITY_STATUS_INSTALLED = True
+        base_module.write_runtime_status = wrist_status_writer
+        base_module._WRIST_TERTIARY_STATUS_INSTALLED = True
 
 
 def main() -> None:
@@ -296,7 +281,7 @@ def main() -> None:
     fallback_supervisor = install_coupled_ik_fallback(base, fallback_settings)
     install_position_only_fallback_policy(fallback_supervisor)
     install_position_only_severe_trigger(base, fallback_supervisor, severe_fallback_settings)
-    install_primary_task_guard(base)
+    install_primary_task_guard(base, tolerance_m=PRIMARY_GUARD_TOLERANCE_M)
     install_calibrated_vr_wrist_orientation(base)
     install_joint_space_posture_scheduler(base, profile_path=JOINT_POSTURE_PROFILE_PATH)
     install_smooth_cycle_and_wrist_overlay(base)
@@ -319,15 +304,16 @@ def main() -> None:
         "Position reference: fixed Cartesian speed limit "
         f"({config.motion.position_max_speed_mps:.2f} m/s; 60 Hz step cap={REFERENCE_MAX_DT_S*1000.0:.1f} ms)"
     )
+    print(f"Primary guard: bounded one-cycle worsening <= {PRIMARY_GUARD_TOLERANCE_M*1000.0:.1f} mm")
     print("Joint command smoothing: disabled")
     print("IK recovery: coupled position recovery only; live multi-seed search disabled")
     print(
-        "Task priority: Cartesian wrist XYZ primary -> captured 7-DOF joint posture secondary -> "
+        "Task priority: Cartesian wrist XYZ primary -> captured 7-DOF posture secondary -> "
         "Quest wrist orientation tertiary"
     )
     print(
-        "Quest orientation weight: 1 - torso posture blend "
-        "(full at side, zero at captured torso-front posture)"
+        "Wrist orientation: engagement-calibrated Quest hand-to-G1 wrist frame, "
+        "faded out as torso posture blend approaches 1"
     )
     runtime.main()
 

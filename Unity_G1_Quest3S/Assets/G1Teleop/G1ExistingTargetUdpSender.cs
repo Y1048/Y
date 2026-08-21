@@ -21,6 +21,17 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public float workspace_exit_confirm_seconds = 0.80f;
     public float workspace_exit_margin = 0.02f;
 
+    // Live Quest hand tracking is noisier than the deterministic fake sender.
+    // Keep the backend's 0.08 m/s reference limiter authoritative, but remove
+    // small frame-to-frame tracking noise before it becomes an IK target.
+    public float live_position_filter_time_constant_s = 0.060f;
+    public float live_rotation_filter_time_constant_s = 0.050f;
+
+    // Forward hand travel is reduced slightly so normal operator reach does not
+    // immediately drive the G1 elbow toward full extension. Lateral/vertical
+    // travel remain 1:1.
+    public float operator_forward_scale = 0.75f;
+
     public Vector3 LastRobotTarget { get; private set; }
     public Vector3 UnclampedRobotTarget { get; private set; }
     public Vector3 LastOperatorTargetDelta { get; private set; }
@@ -41,6 +52,9 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     private bool shutdown_complete;
     private float workspace_exit_duration;
     private bool workspace_violation_hold_active;
+    private bool live_filter_initialized;
+    private Vector3 filtered_operator_delta;
+    private Quaternion filtered_operator_rotation = Quaternion.identity;
 
     private void Awake()
     {
@@ -49,6 +63,9 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             state_receiver = GetComponent<G1RobotStateUdpReceiver>();
         }
         workspace_exit_margin = Mathf.Max(0.0f, workspace_exit_margin);
+        live_position_filter_time_constant_s = Mathf.Max(0.001f, live_position_filter_time_constant_s);
+        live_rotation_filter_time_constant_s = Mathf.Max(0.001f, live_rotation_filter_time_constant_s);
+        operator_forward_scale = Mathf.Clamp(operator_forward_scale, 0.10f, 1.0f);
         send_interval = 1.0f / Mathf.Max(1.0f, send_hz);
         LastRobotTarget = robot_center + position_offset;
         UnclampedRobotTarget = LastRobotTarget;
@@ -84,17 +101,59 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             workspace_exit_duration = 0.0f;
             IsWorkspaceLimited = false;
             workspace_violation_hold_active = false;
+            live_filter_initialized = false;
             Debug.Log("G1 teleoperation engagement accepted; stale workspace feedback is being rearmed.");
         }
 
         bool tracking_valid = hand_binder == null || hand_binder.IsTrackingValid;
         bool command_valid = GetCommandValidity(calibrated, tracking_valid);
-        Vector3 operator_delta = hand_binder == null ? Vector3.zero : hand_binder.OperatorTargetDelta;
-        // Rotation is intentionally NOT clutch-relative. Stream the absolute
-        // hand-tracking wrist frame; the backend maps Unity axes to robot axes.
-        Quaternion target_rotation = hand_binder == null
-            ? right_hand_target.rotation
-            : hand_binder.TrackedWristRotation;
+
+        Vector3 raw_operator_delta = hand_binder == null
+            ? Vector3.zero
+            : hand_binder.OperatorTargetDelta;
+        raw_operator_delta.z *= operator_forward_scale;
+
+        // Position deltas are already expressed in the headset-heading frame by
+        // the binder. Express absolute wrist orientation in that SAME frame.
+        // Sending Unity world rotation directly made live Quest rotation depend
+        // on the room/world yaw while the position command did not.
+        Quaternion raw_operator_rotation;
+        if (hand_binder == null)
+        {
+            raw_operator_rotation = right_hand_target.rotation;
+        }
+        else
+        {
+            raw_operator_rotation = Quaternion.Inverse(hand_binder.OperatorHeading)
+                * hand_binder.TrackedWristRotation;
+        }
+
+        if (!live_filter_initialized)
+        {
+            filtered_operator_delta = raw_operator_delta;
+            filtered_operator_rotation = raw_operator_rotation;
+            live_filter_initialized = true;
+        }
+        else
+        {
+            float position_alpha = ExponentialFilterAlpha(
+                send_interval,
+                live_position_filter_time_constant_s);
+            float rotation_alpha = ExponentialFilterAlpha(
+                send_interval,
+                live_rotation_filter_time_constant_s);
+            filtered_operator_delta = Vector3.Lerp(
+                filtered_operator_delta,
+                raw_operator_delta,
+                position_alpha);
+            filtered_operator_rotation = Quaternion.Slerp(
+                filtered_operator_rotation,
+                raw_operator_rotation,
+                rotation_alpha);
+        }
+
+        Vector3 operator_delta = filtered_operator_delta;
+        Quaternion target_rotation = filtered_operator_rotation;
 
         UnclampedRobotTarget = OperatorToRobot(operator_delta);
         Vector3 clamped_robot_target = ClampToRobotWorkspace(UnclampedRobotTarget);
@@ -118,6 +177,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             IsWorkspaceLimited = true;
             command_valid = false;
             workspace_violation_hold_active = false;
+            live_filter_initialized = false;
             if (hand_binder != null && hand_binder.IsCalibrated) hand_binder.ResetCalibration();
             if (first_exit)
             {
@@ -142,7 +202,10 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
                 {
                     hand_binder.ResetCalibration();
                     hand_binder.Calibrate();
-                    target_rotation = hand_binder.TrackedWristRotation;
+                    live_filter_initialized = false;
+                    raw_operator_rotation = Quaternion.Inverse(hand_binder.OperatorHeading)
+                        * hand_binder.TrackedWristRotation;
+                    target_rotation = raw_operator_rotation;
                 }
             }
 
@@ -174,6 +237,13 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         if (!SendPacket(json_text)) return;
         packet_count++;
         if (packet_count % 120 == 0) Debug.Log("G1 Quest hand UDP #" + packet_count + ": " + json_text);
+    }
+
+    public static float ExponentialFilterAlpha(float delta_time, float time_constant)
+    {
+        float safe_dt = Mathf.Max(0.0f, delta_time);
+        float safe_tau = Mathf.Max(0.001f, time_constant);
+        return 1.0f - Mathf.Exp(-safe_dt / safe_tau);
     }
 
     public Vector3 OperatorToRobot(Vector3 operator_delta)
@@ -245,6 +315,9 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         IsCommandValid = false;
         shutdown_complete = false;
         workspace_violation_hold_active = false;
+        live_filter_initialized = false;
+        filtered_operator_delta = Vector3.zero;
+        filtered_operator_rotation = Quaternion.identity;
     }
 
     private string BuildPacket(Vector3 target_position, Quaternion target_rotation, bool tracking_valid, string command_state)

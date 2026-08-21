@@ -97,10 +97,6 @@ def _install_configuration_aware_workspace(base: ModuleType, torso: np.ndarray |
         base.RUNTIME_JOINT_POSTURE_WORKSPACE_BYPASS = bypass
         if not bypass:
             return original_update(self, target)
-        # The 3-D wrist voxel map cannot distinguish elbow-up and elbow-down
-        # configurations. In the explicitly scheduled joint-space region, pass
-        # operator intent through and keep runtime self/environment collision
-        # checks authoritative for every accepted joint step.
         return WorkspaceProjection(
             operator_target=target.copy(),
             feasible_target=target.copy(),
@@ -117,14 +113,12 @@ def install_joint_space_posture_scheduler(
     *,
     profile_path: str | Path = DEFAULT_PROFILE_PATH,
 ) -> None:
-    """Apply torso posture as an exact-nullspace secondary task.
+    """Apply the captured seven-joint posture as the secondary task.
 
-    The base solver keeps the Cartesian wrist position as the primary task. Its
-    historical damped pseudoinverse posture projector leaks secondary motion into
-    the primary task, so this wrapper suppresses that posture term and applies the
-    captured joint-space posture afterwards through an SVD-derived exact null-space
-    projector. Finite secondary steps are line-searched for collision and primary
-    Cartesian drift before acceptance.
+    Cartesian wrist position remains the primary task. The full 7-DOF posture is
+    projected into the exact numerical null space of the translational Jacobian,
+    so shoulder/elbow and wrist configuration are kept together. Quest wrist
+    orientation is handled later as a lower-priority task by the launcher.
     """
     if getattr(base, "_JOINT_SPACE_POSTURE_SCHEDULER_INSTALLED", False):
         return
@@ -137,9 +131,6 @@ def install_joint_space_posture_scheduler(
     if not callable(original_solver):
         raise RuntimeError("solve_right_arm_target must exist before posture scheduler install")
 
-    # The captured posture is validated against the actual MuJoCo joint range.
-    # Remove the old hand-authored elbow lower bound (5 deg) so a valid captured
-    # negative elbow configuration is not silently clamped away at runtime.
     operational_limits = getattr(base, "RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES", None)
     if torso is not None and isinstance(operational_limits, dict):
         operational_limits.pop("right_elbow_joint", None)
@@ -152,6 +143,8 @@ def install_joint_space_posture_scheduler(
     base.RUNTIME_JOINT_POSTURE_ACTUAL_DEG = None
     base.RUNTIME_JOINT_POSTURE_SECONDARY_STEP_DEG = 0.0
     base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED = False
+    base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED_REASON = None
+    base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M = 0.0
 
     def scheduled_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -176,9 +169,8 @@ def install_joint_space_posture_scheduler(
         if torso is not None:
             scheduled = (1.0 - alpha) * ready + alpha * torso
 
-        # Suppress the base solver's damped-nullspace posture leakage. Feed its
-        # current proximal configuration as preferred and disable the legacy elbow
-        # pole. The exact joint-space secondary task is applied below.
+        # Remove the legacy damped-nullspace posture contribution from the base
+        # solver. The wrapper below owns the complete 7-DOF secondary task.
         current_before = data.qpos[qpos_ids].copy()
         primary_preferred = np.asarray(preferred, dtype=float).copy()
         primary_preferred[:4] = current_before[:4]
@@ -198,6 +190,8 @@ def install_joint_space_posture_scheduler(
         base.RUNTIME_JOINT_POSTURE_TARGET_DEG = np.degrees(scheduled).tolist()
         base.RUNTIME_JOINT_POSTURE_SECONDARY_STEP_DEG = 0.0
         base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED = False
+        base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED_REASON = None
+        base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M = 0.0
 
         if torso is not None and alpha > 1e-6:
             mujoco.mj_forward(model, data)
@@ -207,9 +201,9 @@ def install_joint_space_posture_scheduler(
             jacp = np.zeros((3, model.nv))
             jacr_dummy = np.zeros((3, model.nv))
             mujoco.mj_jacBody(model, data, jacp, jacr_dummy, int(position_body))
-            task_jacobian = jacp[:, dof_ids[:4]]
+            task_jacobian = jacp[:, dof_ids]
             null_projector = _exact_nullspace_projector(task_jacobian)
-            posture_error = scheduled[:4] - start_q[:4]
+            posture_error = scheduled - start_q
             secondary_delta = null_projector @ (SECONDARY_GAIN * posture_error)
             secondary_delta = np.clip(
                 secondary_delta,
@@ -218,27 +212,42 @@ def install_joint_space_posture_scheduler(
             )
 
             accepted = False
-            accepted_step = np.zeros(4, dtype=float)
+            accepted_step = np.zeros(7, dtype=float)
+            saw_collision = False
+            best_primary_drift = math.inf
             for line_search_index in range(6):
                 scale = 0.5 ** line_search_index
                 trial_step = scale * secondary_delta
-                data.qpos[qpos_ids[:4]] = start_q[:4] + trial_step
+                data.qpos[qpos_ids] = start_q + trial_step
                 base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
                 mujoco.mj_forward(model, data)
                 final_error = float(np.linalg.norm(target_position - data.xpos[int(position_body)]))
+                primary_drift = final_error - start_error
+                best_primary_drift = min(best_primary_drift, primary_drift)
                 collision = bool(base.has_right_arm_core_contact(model, data, context))
+                saw_collision = saw_collision or collision
                 if (
                     not collision
-                    and final_error <= start_error + SECONDARY_MAX_PRIMARY_DRIFT_M
+                    and primary_drift <= SECONDARY_MAX_PRIMARY_DRIFT_M
                 ):
                     accepted = True
-                    accepted_step = data.qpos[qpos_ids[:4]] - start_q[:4]
+                    accepted_step = data.qpos[qpos_ids] - start_q
+                    base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M = float(primary_drift)
                     break
 
             if not accepted:
                 data.qpos[qpos_ids] = start_q
                 mujoco.mj_forward(model, data)
                 base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED = True
+                if saw_collision:
+                    reason = "collision"
+                elif math.isfinite(best_primary_drift):
+                    reason = "primary_drift"
+                else:
+                    reason = "unknown"
+                base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED_REASON = reason
+                if math.isfinite(best_primary_drift):
+                    base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M = float(best_primary_drift)
             else:
                 base.RUNTIME_JOINT_POSTURE_SECONDARY_STEP_DEG = float(
                     np.linalg.norm(np.degrees(accepted_step))
@@ -253,6 +262,10 @@ def install_joint_space_posture_scheduler(
         context["joint_posture_actual_deg"] = list(actual_deg)
         context["joint_posture_secondary_step_deg"] = float(base.RUNTIME_JOINT_POSTURE_SECONDARY_STEP_DEG)
         context["joint_posture_secondary_blocked"] = bool(base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED)
+        context["joint_posture_secondary_blocked_reason"] = base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED_REASON
+        context["joint_posture_secondary_primary_drift_m"] = float(
+            base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M
+        )
         return result
 
     base.solve_right_arm_target = scheduled_solver
@@ -271,6 +284,12 @@ def install_joint_space_posture_scheduler(
             )
             enriched["joint_posture_secondary_blocked"] = bool(
                 base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED
+            )
+            enriched["joint_posture_secondary_blocked_reason"] = (
+                base.RUNTIME_JOINT_POSTURE_SECONDARY_BLOCKED_REASON
+            )
+            enriched["joint_posture_secondary_primary_drift_m"] = float(
+                base.RUNTIME_JOINT_POSTURE_SECONDARY_PRIMARY_DRIFT_M
             )
             enriched["joint_posture_workspace_bypass"] = bool(
                 getattr(base, "RUNTIME_JOINT_POSTURE_WORKSPACE_BYPASS", False)

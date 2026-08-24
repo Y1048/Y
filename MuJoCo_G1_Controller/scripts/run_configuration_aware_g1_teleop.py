@@ -2,7 +2,7 @@
 
 The legacy wrist-only voxel map is retained as a diagnostic hint, but it no
 longer projects the operator target. Actual MuJoCo collision geometry, joint
-limits, adaptive redundancy, and the hard clearance floor own feasibility.
+limits, adaptive redundancy, and recovery-aware clearance guards own feasibility.
 """
 
 from __future__ import annotations
@@ -17,6 +17,10 @@ BACKEND_ROOT = PROJECT_ROOT / "backend"
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from g1_teleop.emergency_clearance_escape import (  # noqa: E402
+    install_emergency_clearance_escape,
+    install_recovery_aware_hard_clearance_floor,
+)
 from g1_teleop.workspace_map import WorkspaceProjection, WorkspaceTargetProjector  # noqa: E402
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
 import run_geometry_g1_teleop as geometry  # noqa: E402
@@ -96,13 +100,30 @@ def install_configuration_workspace_status() -> None:
     base._CONFIGURATION_WORKSPACE_STATUS_INSTALLED = True
 
 
+def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None:
+    """Keep the normal resolver and add recovery only inside the <5 mm zone."""
+    geometry.install_geometry_aware_redundancy_resolver(
+        base_module,
+        profile_path=profile_path,
+    )
+    install_emergency_clearance_escape(base_module)
+
+
 def main() -> None:
     # Install before geometry.main() so the old center-only voxel bypass is
     # suppressed and the voxel map remains diagnostic-only everywhere.
     install_diagnostic_only_voxel_workspace()
     install_configuration_workspace_status()
+
+    # Replace only the installation hooks. The normal geometry solver remains
+    # unchanged; the escape layer is dormant unless robot clearance falls below
+    # 5 mm, and the hard floor then permits strictly improving recovery steps.
+    geometry.install_geometry_instead_of_manual_posture = install_geometry_with_emergency_escape
+    geometry.install_hard_clearance_floor = install_recovery_aware_hard_clearance_floor
+
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")
     print("Voxel workspace: diagnostic hint only; no Cartesian projection")
+    print("Emergency clearance recovery: enabled below 5 mm")
     geometry.main()
 
 

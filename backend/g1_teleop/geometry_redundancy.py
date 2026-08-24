@@ -2,8 +2,8 @@
 
 The operator commands wrist Cartesian position. Shoulder/elbow configuration is
 chosen automatically from the proximal null space using MuJoCo collision
-clearance and joint-limit margin. A manually captured posture is not used as a
-live target.
+clearance, joint-limit margin, temporal continuity, and primary-task authority.
+A manually captured posture is not used as a live target.
 """
 
 from __future__ import annotations
@@ -26,9 +26,16 @@ FINITE_DIFFERENCE_RAD = math.radians(0.5)
 PROXIMAL_MAX_STEP_RAD = math.radians(0.20)
 ELBOW_MAX_STEP_RAD = math.radians(0.12)
 MAX_PRIMARY_DRIFT_M = 0.0002
-CLEARANCE_REGRESSION_TOLERANCE_M = 0.0001
+CLEARANCE_REGRESSION_TOLERANCE_M = 0.00002
+CLEARANCE_FULL_PRESSURE_M = 0.006
+CLEARANCE_EMERGENCY_M = 0.007
 JOINT_LIMIT_WEIGHT = 0.45
+CONTINUITY_WEIGHT = 0.20
 JOINT_LIMIT_HARD_FRACTION = 0.05
+TRACKING_ERROR_FULL_SECONDARY_M = 0.004
+TRACKING_ERROR_MIN_SECONDARY_M = 0.020
+TRACKING_MIN_AUTHORITY = 0.12
+EMERGENCY_MIN_AUTHORITY = 0.45
 LINE_SEARCH_STEPS = 7
 
 
@@ -208,6 +215,38 @@ def _clearance_gradient(
     return gradient
 
 
+def _clearance_pressure(clearance_m: float | None, target_m: float) -> float:
+    if clearance_m is None or clearance_m >= target_m:
+        return 0.0
+    full_pressure = min(CLEARANCE_FULL_PRESSURE_M, 0.80 * target_m)
+    if clearance_m <= full_pressure:
+        return 1.0
+    span = max(target_m - full_pressure, 1e-6)
+    return _smoothstep((target_m - clearance_m) / span)
+
+
+def _tracking_authority(tracking_error_m: float, clearance_m: float | None) -> float:
+    if tracking_error_m <= TRACKING_ERROR_FULL_SECONDARY_M:
+        authority = 1.0
+    elif tracking_error_m >= TRACKING_ERROR_MIN_SECONDARY_M:
+        authority = TRACKING_MIN_AUTHORITY
+    else:
+        span = TRACKING_ERROR_MIN_SECONDARY_M - TRACKING_ERROR_FULL_SECONDARY_M
+        blend = _smoothstep(
+            (tracking_error_m - TRACKING_ERROR_FULL_SECONDARY_M) / span
+        )
+        authority = 1.0 - blend * (1.0 - TRACKING_MIN_AUTHORITY)
+    if clearance_m is not None and clearance_m <= CLEARANCE_EMERGENCY_M:
+        authority = max(authority, EMERGENCY_MIN_AUTHORITY)
+    return float(np.clip(authority, 0.0, 1.0))
+
+
+def _normalized_direction(vector: np.ndarray) -> np.ndarray:
+    value = np.asarray(vector, dtype=float)
+    norm = float(np.linalg.norm(value))
+    return value / norm if norm > 1e-9 else np.zeros_like(value)
+
+
 def install_geometry_aware_redundancy_resolver(
     base: ModuleType,
     *,
@@ -241,8 +280,13 @@ def install_geometry_aware_redundancy_resolver(
     base.RUNTIME_GEOMETRY_REDUNDANCY_GRADIENT = [0.0, 0.0, 0.0, 0.0]
     base.RUNTIME_GEOMETRY_JOINT_LIMIT_DIRECTION = [0.0, 0.0, 0.0, 0.0]
     base.RUNTIME_GEOMETRY_JOINT_NORMALIZED = [0.0, 0.0, 0.0, 0.0]
+    base.RUNTIME_GEOMETRY_CONTINUITY_DIRECTION = [0.0, 0.0, 0.0, 0.0]
+    base.RUNTIME_GEOMETRY_TRACKING_ERROR_M = 0.0
+    base.RUNTIME_GEOMETRY_SECONDARY_AUTHORITY = 1.0
+    previous_proximal_q: np.ndarray | None = None
 
     def geometry_solver(*args: Any, **kwargs: Any):
+        nonlocal previous_proximal_q
         model = args[0] if len(args) > 0 else kwargs.get("model")
         data = args[1] if len(args) > 1 else kwargs.get("data")
         preferred = args[3] if len(args) > 3 else kwargs.get("preferred")
@@ -314,25 +358,28 @@ def install_geometry_aware_redundancy_resolver(
             structural_neighbor_distance=structural_neighbor_distance,
             safe_distance_m=safe_distance_m,
         )
-        gradient_norm = float(np.linalg.norm(clearance_gradient))
-        clearance_direction = (
-            clearance_gradient / gradient_norm if gradient_norm > 1e-9 else clearance_gradient
-        )
-        if raw_clearance_before is None:
-            clearance_pressure = 0.0
-        else:
-            clearance_pressure = _smoothstep(
-                (safe_distance_m - float(raw_clearance_before)) / safe_distance_m
-            )
+        clearance_direction = _normalized_direction(clearance_gradient)
+        clearance_pressure = _clearance_pressure(raw_clearance_before, safe_distance_m)
 
         limit_direction, normalized_positions = _joint_limit_avoidance_direction(
             model, qpos_ids, start_q
         )
         max_limit_use = max((abs(v) for v in normalized_positions), default=0.0)
         limit_pressure = _smoothstep((max_limit_use - 0.55) / 0.35)
+
+        if previous_proximal_q is None:
+            continuity_direction = np.zeros(4, dtype=float)
+        else:
+            continuity_direction = _normalized_direction(previous_proximal_q - start_q[:4])
+
+        secondary_authority = _tracking_authority(start_error, raw_clearance_before)
         raw_secondary = (
             clearance_pressure * clearance_direction
-            + JOINT_LIMIT_WEIGHT * max(0.20, limit_pressure) * limit_direction
+            + secondary_authority
+            * (
+                JOINT_LIMIT_WEIGHT * max(0.20, limit_pressure) * limit_direction
+                + CONTINUITY_WEIGHT * continuity_direction
+            )
         )
         projected = null_projector @ raw_secondary
         projected_norm = float(np.linalg.norm(projected))
@@ -344,7 +391,7 @@ def install_geometry_aware_redundancy_resolver(
 
         if projected_norm > 1e-10:
             max_component = float(np.max(np.abs(projected)))
-            intensity = min(1.0, float(np.linalg.norm(raw_secondary)))
+            intensity = min(1.0, float(np.linalg.norm(raw_secondary))) * secondary_authority
             step = projected / max(max_component, 1e-12) * PROXIMAL_MAX_STEP_RAD * intensity
             step[3] = float(np.clip(step[3], -ELBOW_MAX_STEP_RAD, ELBOW_MAX_STEP_RAD))
 
@@ -377,7 +424,13 @@ def install_geometry_aware_redundancy_resolver(
                 clearance_ok = True
                 if raw_clearance_before is not None:
                     trial_value = safe_distance_m if trial_raw_clearance is None else float(trial_raw_clearance)
-                    clearance_ok = trial_value >= float(raw_clearance_before) - CLEARANCE_REGRESSION_TOLERANCE_M
+                    if float(raw_clearance_before) <= CLEARANCE_EMERGENCY_M:
+                        clearance_ok = trial_value >= float(raw_clearance_before)
+                    else:
+                        clearance_ok = (
+                            trial_value
+                            >= float(raw_clearance_before) - CLEARANCE_REGRESSION_TOLERANCE_M
+                        )
                     saw_clearance_regression = saw_clearance_regression or not clearance_ok
 
                 if (
@@ -415,6 +468,7 @@ def install_geometry_aware_redundancy_resolver(
             if accepted
             else (0.0 if not math.isfinite(best_primary_drift) else float(best_primary_drift))
         )
+        previous_proximal_q = data.qpos[qpos_ids[:4]].copy()
 
         base.RUNTIME_JOINT_POSTURE_BLEND = float(blend)
         base.RUNTIME_JOINT_POSTURE_ACTUAL_DEG = actual_deg
@@ -428,6 +482,9 @@ def install_geometry_aware_redundancy_resolver(
         base.RUNTIME_GEOMETRY_REDUNDANCY_GRADIENT = clearance_gradient.tolist()
         base.RUNTIME_GEOMETRY_JOINT_LIMIT_DIRECTION = limit_direction.tolist()
         base.RUNTIME_GEOMETRY_JOINT_NORMALIZED = list(normalized_positions)
+        base.RUNTIME_GEOMETRY_CONTINUITY_DIRECTION = continuity_direction.tolist()
+        base.RUNTIME_GEOMETRY_TRACKING_ERROR_M = float(start_error)
+        base.RUNTIME_GEOMETRY_SECONDARY_AUTHORITY = float(secondary_authority)
 
         context["joint_posture_enabled"] = True
         context["joint_posture_blend"] = float(blend)
@@ -438,13 +495,16 @@ def install_geometry_aware_redundancy_resolver(
         context["joint_posture_secondary_blocked_reason"] = blocked_reason
         context["joint_posture_secondary_primary_drift_m"] = primary_drift_value
         context["joint_posture_legacy_elbow_avoidance_disabled"] = True
-        context["geometry_redundancy_mode"] = "clearance_plus_joint_limits"
+        context["geometry_redundancy_mode"] = "clearance_joint_limits_continuity_adaptive"
         context["geometry_clearance_before_m"] = raw_clearance_before
         context["geometry_clearance_after_m"] = raw_clearance_after
         context["geometry_clearance_pressure"] = float(clearance_pressure)
         context["geometry_clearance_gradient"] = clearance_gradient.tolist()
         context["geometry_joint_limit_direction"] = limit_direction.tolist()
         context["geometry_joint_normalized"] = list(normalized_positions)
+        context["geometry_continuity_direction"] = continuity_direction.tolist()
+        context["geometry_tracking_error_m"] = float(start_error)
+        context["geometry_secondary_authority"] = float(secondary_authority)
         return result
 
     base.solve_right_arm_target = geometry_solver
@@ -467,16 +527,23 @@ def install_geometry_aware_redundancy_resolver(
             )
             enriched["joint_posture_legacy_elbow_avoidance_disabled"] = True
             enriched["joint_posture_elbow_step_cap_deg"] = math.degrees(ELBOW_MAX_STEP_RAD)
-            enriched["geometry_redundancy_mode"] = "clearance_plus_joint_limits"
+            enriched["geometry_redundancy_mode"] = "clearance_joint_limits_continuity_adaptive"
             enriched["geometry_clearance_before_m"] = base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_BEFORE_M
             enriched["geometry_clearance_after_m"] = base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_AFTER_M
             enriched["geometry_clearance_pressure"] = float(base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_PRESSURE)
             enriched["geometry_clearance_gradient"] = list(base.RUNTIME_GEOMETRY_REDUNDANCY_GRADIENT)
             enriched["geometry_joint_limit_direction"] = list(base.RUNTIME_GEOMETRY_JOINT_LIMIT_DIRECTION)
             enriched["geometry_joint_normalized"] = list(base.RUNTIME_GEOMETRY_JOINT_NORMALIZED)
+            enriched["geometry_continuity_direction"] = list(base.RUNTIME_GEOMETRY_CONTINUITY_DIRECTION)
+            enriched["geometry_tracking_error_m"] = float(base.RUNTIME_GEOMETRY_TRACKING_ERROR_M)
+            enriched["geometry_secondary_authority"] = float(base.RUNTIME_GEOMETRY_SECONDARY_AUTHORITY)
             enriched["geometry_safe_distance_m"] = float(
                 getattr(base, "RUNTIME_COLLISION_SLOWDOWN_DISTANCE_M", 0.015)
             )
+            enriched["geometry_clearance_full_pressure_m"] = CLEARANCE_FULL_PRESSURE_M
+            enriched["geometry_clearance_emergency_m"] = CLEARANCE_EMERGENCY_M
+            enriched["geometry_tracking_full_authority_error_m"] = TRACKING_ERROR_FULL_SECONDARY_M
+            enriched["geometry_tracking_min_authority_error_m"] = TRACKING_ERROR_MIN_SECONDARY_M
             enriched["geometry_joint_limit_hard_fraction"] = JOINT_LIMIT_HARD_FRACTION
             enriched["manual_posture_reference_active"] = False
             original_status_writer(enriched)

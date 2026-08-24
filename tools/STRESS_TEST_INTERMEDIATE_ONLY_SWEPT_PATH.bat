@@ -7,9 +7,10 @@ echo ===========================================
 echo.
 echo This is an offline MuJoCo diagnostic. It does not command hardware.
 echo It searches for safe endpoints whose straight C-space path is unsafe.
+echo Reference path uses the same production joint limits and clamping.
 echo.
 
-py -3.11 MuJoCo_G1_Controller\scripts\stress_test_intermediate_only_swept_path.py %*
+py -3.11 MuJoCo_G1_Controller\scripts\stress_test_intermediate_only_swept_path_v2.py %*
 set RC=%ERRORLEVEL%
 
 echo.

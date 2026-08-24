@@ -16,46 +16,62 @@ FREEZE_FLAG_PATH = PROJECT_ROOT / "logs" / "runtime" / "wrist_frame_calibration.
 
 def _read_status() -> dict:
     if not STATUS_PATH.exists():
-        raise RuntimeError(f"runtime status not found: {STATUS_PATH}")
-    return json.loads(STATUS_PATH.read_text(encoding="utf-8"))
+        return {}
+    try:
+        return json.loads(STATUS_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _actively_engaged(status: dict) -> bool:
+    return bool(
+        status.get("input_valid", False)
+        and status.get("input_active", False)
+        and status.get("clutch_active", False)
+    )
 
 
 def main() -> int:
     FREEZE_FLAG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    FREEZE_FLAG_PATH.write_text("freeze wrist orientation for frame calibration\n", encoding="utf-8")
-    print("Wrist orientation FREEZE requested.")
-    print("XYZ tracking and geometry redundancy remain active.")
+    FREEZE_FLAG_PATH.write_text(
+        "freeze wrist orientation for frame calibration\n",
+        encoding="utf-8",
+    )
+    print("Wrist orientation FREEZE requested BEFORE engagement.")
+    print("Now engage the Quest hand in Unity.")
+    print("The first active control cycle will keep the G1 wrist orientation frozen.")
+    print("XYZ tracking and geometry redundancy remain active.\n")
 
     try:
-        deadline = time.monotonic() + 5.0
-        status = {}
+        deadline = time.monotonic() + 60.0
+        status: dict = {}
+        announced_active = False
         while time.monotonic() < deadline:
             status = _read_status()
-            if bool(status.get("wrist_frame_calibration_freeze_active", False)):
+            if _actively_engaged(status) and not announced_active:
+                print("Hand engagement detected; waiting for controller freeze confirmation...")
+                announced_active = True
+            if (
+                _actively_engaged(status)
+                and bool(status.get("wrist_frame_calibration_freeze_active", False))
+            ):
                 break
             time.sleep(0.10)
         else:
             raise RuntimeError(
-                "controller did not enter wrist calibration freeze mode; restart the latest geometry teleop runtime"
+                "timed out waiting for active hand engagement with wrist freeze; "
+                "keep the latest geometry teleop runtime running and engage within 60 seconds"
             )
 
-        if not (
-            bool(status.get("input_valid", False))
-            and bool(status.get("input_active", False))
-            and bool(status.get("clutch_active", False))
-        ):
-            raise RuntimeError(
-                "hand tracking is not actively engaged; engage first, then rerun calibration"
-            )
-
-        print("\nWrist orientation is now frozen.")
+        print("Wrist orientation is now frozen before Quest rotation can drive the G1 wrist.")
         print("Physically align the Quest hand to the desired G1 wrist/hand orientation.")
         print("The G1 wrist will not rotate to chase the Quest hand while this tool is active.")
         input("Keep both still, then press Enter to capture calibration... ")
 
-        # Read a fresh status sample after the operator has aligned the frames.
-        time.sleep(0.20)
+        time.sleep(0.25)
         status = _read_status()
+        if not _actively_engaged(status):
+            raise RuntimeError("hand tracking disengaged before calibration capture")
         if not bool(status.get("wrist_frame_calibration_freeze_active", False)):
             raise RuntimeError("wrist calibration freeze unexpectedly became inactive")
 
@@ -68,9 +84,10 @@ def main() -> int:
         if not (np.all(np.isfinite(hand)) and np.all(np.isfinite(g1))):
             raise RuntimeError("rotation matrices contain non-finite values")
 
-        # R_target = R_hand_mapped @ R_offset
-        # therefore R_offset = R_hand_mapped^T @ R_g1 while the G1 wrist is
-        # explicitly frozen and the physical frames are deliberately aligned.
+        # R_target = R_hand_mapped @ R_offset.
+        # During capture the G1 wrist is frozen before Quest orientation control,
+        # so the measured fixed local-frame relation is not contaminated by the
+        # controller chasing the operator's hand.
         offset = hand.T @ g1
         u, _, vt = np.linalg.svd(offset)
         offset = u @ vt
@@ -84,7 +101,10 @@ def main() -> int:
                 "hand_to_g1_local_rotation": offset.tolist(),
             }
         }
-        CALIBRATION_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        CALIBRATION_PATH.write_text(
+            json.dumps(payload, indent=2),
+            encoding="utf-8",
+        )
         print("\nSaved wrist frame calibration:")
         print(CALIBRATION_PATH)
         print(np.array2string(offset, precision=6, suppress_small=True))

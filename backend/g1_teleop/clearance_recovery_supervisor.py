@@ -5,9 +5,9 @@ solver path approaches the robot closer than the entry threshold, this outer
 supervisor latches a recovery state. During recovery it rejects unsafe tracking
 results, holds all three wrist joints, and moves only shoulder/elbow
 configuration along a clearance-improving direction for several bounded steps
-per control cycle. Tracking resumes only when both the current pose and a fresh
-tracking candidate satisfy the release clearance, preventing recovery/re-entry
-chatter while the operator continues commanding an unsafe target.
+per control cycle. Tracking resumes only when the recovered pose has generous
+clearance and a fresh tracking candidate is outside the normal 15 mm slowdown
+zone. This prevents recovery/re-entry chatter without blocking feasible targets.
 """
 
 from __future__ import annotations
@@ -24,6 +24,7 @@ from .runtime_collision import dangerous_contact_clearance_m
 
 RECOVERY_ENTER_CLEARANCE_M = 0.012
 RECOVERY_RELEASE_CLEARANCE_M = 0.018
+RECOVERY_CANDIDATE_RELEASE_CLEARANCE_M = 0.015
 FINITE_DIFFERENCE_RAD = math.radians(0.5)
 RECOVERY_PROXIMAL_STEP_RAD = math.radians(0.30)
 RECOVERY_ELBOW_STEP_RAD = math.radians(0.20)
@@ -136,9 +137,8 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
         )
 
         # Always evaluate one fresh normal-tracking candidate. While latched this
-        # candidate is only a probe: it is accepted only if it is itself safely
-        # outside the release threshold. Otherwise the complete candidate is
-        # discarded so tracking cannot pull the robot straight back into danger.
+        # candidate is only a probe until it is outside the normal 15 mm slowdown
+        # zone; an unsafe probe is discarded completely.
         result = original_solver(*args, **kwargs)
         mujoco.mj_forward(model, data)
         candidate_clearance = _clearance(
@@ -157,14 +157,13 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
         wrist_drift = 0.0
         release_blocked_by_candidate = False
 
-        # A latched supervisor may release only when BOTH the current accepted
-        # pose and the newly proposed tracking candidate are safely outside the
-        # release threshold. This prevents 18 mm -> unsafe candidate -> 18 mm
-        # oscillation when the operator keeps commanding through the torso.
+        # The accepted pose must retain the larger 18 mm recovery margin, while
+        # the candidate only needs to be outside the ordinary 15 mm slowdown
+        # region. Requiring 18 mm from both unnecessarily blocked feasible goals.
         release_candidate_safe = (
             recovery_latched
             and before >= RECOVERY_RELEASE_CLEARANCE_M
-            and candidate_clearance >= RECOVERY_RELEASE_CLEARANCE_M
+            and candidate_clearance >= RECOVERY_CANDIDATE_RELEASE_CLEARANCE_M
         )
 
         if release_candidate_safe:
@@ -189,9 +188,7 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
                 )
 
                 # Once enough clearance has been recovered, stop moving farther
-                # away but KEEP THE LATCH. The next cycles continue probing the
-                # operator candidate while holding this safe pose until the
-                # commanded target itself becomes safe.
+                # away but keep the latch while the candidate remains <15 mm.
                 if current_clearance >= RECOVERY_RELEASE_CLEARANCE_M:
                     break
 
@@ -328,6 +325,9 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
             )
             enriched["safety_recovery_enter_clearance_m"] = RECOVERY_ENTER_CLEARANCE_M
             enriched["safety_recovery_release_clearance_m"] = RECOVERY_RELEASE_CLEARANCE_M
+            enriched["safety_recovery_candidate_release_clearance_m"] = (
+                RECOVERY_CANDIDATE_RELEASE_CLEARANCE_M
+            )
             enriched["safety_recovery_before_m"] = base.RUNTIME_SAFETY_RECOVERY_BEFORE_M
             enriched["safety_recovery_after_m"] = base.RUNTIME_SAFETY_RECOVERY_AFTER_M
             enriched["safety_recovery_candidate_clearance_m"] = (

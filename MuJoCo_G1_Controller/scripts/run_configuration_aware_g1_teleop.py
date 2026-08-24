@@ -130,8 +130,17 @@ def install_diagnostic_only_voxel_workspace() -> None:
     projector_type._GEOMETRY_REDUNDANCY_WORKSPACE_INSTALLED = True
 
 
+def _final_collision_step_scale(clearance_m: float | None, slowdown_distance_m: float) -> float:
+    if clearance_m is None or clearance_m >= slowdown_distance_m:
+        return 1.0
+    if clearance_m <= 0.0:
+        return 0.0
+    alpha = float(np.clip(clearance_m / slowdown_distance_m, 0.0, 1.0))
+    return alpha * alpha * (3.0 - 2.0 * alpha)
+
+
 def install_configuration_workspace_status() -> None:
-    """Expose the true authority, collision proxy, and legacy voxel hint."""
+    """Expose final guarded collision state, workspace authority, and voxel hint."""
     if getattr(base, "_CONFIGURATION_WORKSPACE_STATUS_INSTALLED", False):
         return
 
@@ -147,6 +156,27 @@ def install_configuration_workspace_status() -> None:
         enriched["right_hand_collision_proxy_enabled"] = bool(
             _RIGHT_HAND_COLLISION_PROXY_ENABLED
         )
+
+        # The distance-aware solver records clearance before the outer hard-floor
+        # guard may alter q. Preserve that inner value for debugging, then expose
+        # the post-guard clearance as the canonical runtime collision clearance.
+        inner_clearance = enriched.get("collision_clearance_m")
+        enriched["inner_solver_collision_clearance_m"] = inner_clearance
+        final_clearance = getattr(base, "RUNTIME_HARD_CLEARANCE_AFTER_M", None)
+        if final_clearance is not None:
+            final_clearance = float(final_clearance)
+            enriched["collision_clearance_m"] = final_clearance
+            slowdown_distance = float(
+                getattr(base, "RUNTIME_COLLISION_SLOWDOWN_DISTANCE_M", 0.015)
+            )
+            enriched["collision_step_scale"] = _final_collision_step_scale(
+                final_clearance,
+                slowdown_distance,
+            )
+            enriched["collision_clearance_source"] = "final_hard_guard_pose"
+        else:
+            enriched["collision_clearance_source"] = "inner_distance_aware_solver"
+
         enriched["voxel_workspace_hint_projected"] = bool(_LAST_VOXEL_HINT_PROJECTED)
         enriched["voxel_workspace_hint_projection_distance_m"] = float(
             _LAST_VOXEL_HINT_DISTANCE_M

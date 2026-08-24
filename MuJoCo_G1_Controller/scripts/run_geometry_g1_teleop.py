@@ -22,6 +22,7 @@ import run_configured_g1_teleop as configured  # noqa: E402
 WRIST_CLEARANCE_REGRESSION_TOLERANCE_M = 0.0001
 HARD_CLEARANCE_FLOOR_M = 0.005
 WRIST_FRAME_CALIBRATION_PATH = PROJECT_ROOT / "config" / "wrist_frame_calibration.json"
+WRIST_FRAME_FREEZE_FLAG_PATH = PROJECT_ROOT / "logs" / "runtime" / "wrist_frame_calibration.freeze"
 
 
 def install_geometry_instead_of_manual_posture(base_module, *, profile_path):
@@ -73,6 +74,7 @@ def install_absolute_safe_wrist_overlay(base_module) -> None:
     base_module.RUNTIME_WRIST_ORIENTATION_OVERLAY_BLOCKED = False
     base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG = 0.0
     base_module.RUNTIME_G1_WRIST_ROTATION_MATRIX = None
+    base_module.RUNTIME_WRIST_FRAME_CALIBRATION_FREEZE_ACTIVE = False
 
     def smooth_wrist_solver(*args, **kwargs):
         adjusted_kwargs = dict(kwargs)
@@ -122,6 +124,20 @@ def install_absolute_safe_wrist_overlay(base_module) -> None:
         mujoco.mj_forward(model, data)
         current_rotation = data.xmat[int(orientation_body)].reshape(3, 3).copy()
         base_module.RUNTIME_G1_WRIST_ROTATION_MATRIX = current_rotation.tolist()
+
+        freeze_active = WRIST_FRAME_FREEZE_FLAG_PATH.exists()
+        base_module.RUNTIME_WRIST_FRAME_CALIBRATION_FREEZE_ACTIVE = freeze_active
+        context["wrist_frame_calibration_freeze_active"] = freeze_active
+        if freeze_active:
+            base_module.RUNTIME_WRIST_ORIENTATION_WEIGHT = 0.0
+            base_module.RUNTIME_WRIST_ORIENTATION_OVERLAY_BLOCKED = False
+            base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG = 0.0
+            context["wrist_orientation_weight"] = 0.0
+            context["wrist_orientation_overlay_blocked"] = False
+            context["wrist_orientation_step_deg"] = 0.0
+            context["wrist_orientation_reference_mode"] = "frame_calibration_freeze"
+            return data.xpos[int(context["position_body"])].copy()
+
         rotation_error = np.asarray(
             base_module.calculate_rotation_error(
                 np.asarray(requested_rotation, dtype=float), current_rotation
@@ -208,7 +224,9 @@ def install_absolute_safe_wrist_overlay(base_module) -> None:
                 base_module.RUNTIME_WRIST_ORIENTATION_STEP_DEG
             )
             enriched["wrist_orientation_reference_mode"] = (
-                base_module.RUNTIME_WRIST_ORIENTATION_REFERENCE_MODE
+                "frame_calibration_freeze"
+                if base_module.RUNTIME_WRIST_FRAME_CALIBRATION_FREEZE_ACTIVE
+                else base_module.RUNTIME_WRIST_ORIENTATION_REFERENCE_MODE
             )
             enriched["wrist_frame_calibrated"] = bool(base_module.RUNTIME_WRIST_FRAME_CALIBRATED)
             enriched["wrist_frame_offset_matrix"] = base_module.RUNTIME_WRIST_FRAME_OFFSET_MATRIX
@@ -216,6 +234,9 @@ def install_absolute_safe_wrist_overlay(base_module) -> None:
                 base_module.RUNTIME_QUEST_HAND_MAPPED_ROTATION_MATRIX
             )
             enriched["g1_wrist_rotation_matrix"] = base_module.RUNTIME_G1_WRIST_ROTATION_MATRIX
+            enriched["wrist_frame_calibration_freeze_active"] = bool(
+                base_module.RUNTIME_WRIST_FRAME_CALIBRATION_FREEZE_ACTIVE
+            )
             original_status_writer(enriched)
 
         base_module.write_runtime_status = wrist_status_writer
@@ -340,6 +361,7 @@ def main() -> None:
     print("Manual torso_front_deg: baseline only, not a live joint target")
     print("Wrist orientation: absolute mapped Quest hand pose + persistent frame offset")
     print(f"Wrist frame calibration: {WRIST_FRAME_CALIBRATION_PATH}")
+    print(f"Wrist calibration freeze flag: {WRIST_FRAME_FREEZE_FLAG_PATH}")
     print(f"Hard robot clearance floor: {HARD_CLEARANCE_FLOOR_M*1000.0:.1f} mm")
     configured.main()
 

@@ -9,6 +9,7 @@ clearance guard own feasibility.
 from __future__ import annotations
 
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import numpy as np
@@ -32,6 +33,57 @@ import run_geometry_g1_teleop as geometry  # noqa: E402
 _LAST_VOXEL_HINT_PROJECTED = False
 _LAST_VOXEL_HINT_DISTANCE_M = 0.0
 _LAST_VOXEL_HINT_TARGET = None
+_RIGHT_HAND_COLLISION_PROXY_ENABLED = False
+
+
+def install_right_hand_collision_proxy_generation() -> None:
+    """Add collision geometry for the stock visual-only G1 rubber hand."""
+    global _RIGHT_HAND_COLLISION_PROXY_ENABLED
+
+    if getattr(base, "_RIGHT_HAND_COLLISION_PROXY_GENERATOR_INSTALLED", False):
+        return
+
+    original_make_demo_xml = base.make_demo_xml
+
+    def make_demo_xml_with_hand_collision(scene_name):
+        global _RIGHT_HAND_COLLISION_PROXY_ENABLED
+
+        original_make_demo_xml(scene_name)
+        tree = ET.parse(base.DEMO_XML)
+        root = tree.getroot()
+        worldbody = root.find("worldbody")
+        robot_body = None if worldbody is None else worldbody.find("body")
+        right_wrist = (
+            None
+            if robot_body is None
+            else base.find_body(robot_body, "right_wrist_yaw_link")
+        )
+        if right_wrist is None:
+            raise RuntimeError("right_wrist_yaw_link not found while adding hand collision proxy")
+
+        existing = right_wrist.find("geom[@name='right_rubber_hand_collision']")
+        if existing is None:
+            ET.SubElement(
+                right_wrist,
+                "geom",
+                {
+                    "name": "right_rubber_hand_collision",
+                    "type": "mesh",
+                    "mesh": "right_rubber_hand",
+                    "pos": "0.0415 -0.003 0",
+                    "density": "0",
+                    "contype": "1",
+                    "conaffinity": "1",
+                    "group": "3",
+                    "rgba": "0 0 0 0",
+                },
+            )
+            tree.write(base.DEMO_XML, encoding="unicode")
+
+        _RIGHT_HAND_COLLISION_PROXY_ENABLED = True
+
+    base.make_demo_xml = make_demo_xml_with_hand_collision
+    base._RIGHT_HAND_COLLISION_PROXY_GENERATOR_INSTALLED = True
 
 
 def install_diagnostic_only_voxel_workspace() -> None:
@@ -79,7 +131,7 @@ def install_diagnostic_only_voxel_workspace() -> None:
 
 
 def install_configuration_workspace_status() -> None:
-    """Expose the true authority and the legacy voxel result separately."""
+    """Expose the true authority, collision proxy, and legacy voxel hint."""
     if getattr(base, "_CONFIGURATION_WORKSPACE_STATUS_INSTALLED", False):
         return
 
@@ -92,6 +144,9 @@ def install_configuration_workspace_status() -> None:
         enriched["workspace_limited"] = False
         enriched["voxel_workspace_authority"] = False
         enriched["runtime_geometry_workspace_authority"] = True
+        enriched["right_hand_collision_proxy_enabled"] = bool(
+            _RIGHT_HAND_COLLISION_PROXY_ENABLED
+        )
         enriched["voxel_workspace_hint_projected"] = bool(_LAST_VOXEL_HINT_PROJECTED)
         enriched["voxel_workspace_hint_projection_distance_m"] = float(
             _LAST_VOXEL_HINT_DISTANCE_M
@@ -113,6 +168,11 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
 
 
 def main() -> None:
+    # The stock right_rubber_hand mesh is visual-only in the Unitree XML. Add a
+    # transparent collision copy every time the generated demo XML is rebuilt so
+    # the visible hand cannot pass through the torso unnoticed.
+    install_right_hand_collision_proxy_generation()
+
     # Install before geometry.main() so the old center-only voxel bypass is
     # suppressed and the voxel map remains diagnostic-only everywhere.
     install_diagnostic_only_voxel_workspace()
@@ -126,6 +186,7 @@ def main() -> None:
 
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")
     print("Voxel workspace: diagnostic hint only; no Cartesian projection")
+    print("Right rubber hand collision proxy: enabled")
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")
     geometry.main()

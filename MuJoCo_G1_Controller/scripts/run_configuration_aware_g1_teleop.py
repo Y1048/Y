@@ -2,8 +2,9 @@
 
 The legacy wrist-only voxel map is retained as a diagnostic hint, but it no
 longer projects the operator target. Actual MuJoCo collision geometry, joint
-limits, adaptive redundancy, emergency escape, a hard clearance boundary, and
-continuous safe-progress reconfiguration own feasibility.
+limits, adaptive redundancy, emergency escape, a hard clearance boundary,
+continuous safe-progress reconfiguration, safe wrist rotation, and a final
+swept-path collision guard own feasibility.
 """
 
 from __future__ import annotations
@@ -34,6 +35,9 @@ from g1_teleop.hard_clearance_boundary_guard import (  # noqa: E402
 from g1_teleop.safe_wrist_rotation_overlay import (  # noqa: E402
     install_safe_wrist_rotation_overlay,
     install_wrist_intent_capture,
+)
+from g1_teleop.swept_path_collision_guard import (  # noqa: E402
+    install_swept_path_collision_guard,
 )
 from g1_teleop.workspace_map import WorkspaceProjection, WorkspaceTargetProjector  # noqa: E402
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
@@ -146,7 +150,7 @@ def _final_collision_step_scale(clearance_m: float | None, slowdown_distance_m: 
 
 
 def install_configuration_workspace_status() -> None:
-    """Expose final guarded collision state, workspace authority, and voxel hint."""
+    """Expose the actually accepted final collision state and workspace authority."""
     if getattr(base, "_CONFIGURATION_WORKSPACE_STATUS_INSTALLED", False):
         return
 
@@ -166,11 +170,14 @@ def install_configuration_workspace_status() -> None:
         inner_clearance = enriched.get("collision_clearance_m")
         enriched["inner_solver_collision_clearance_m"] = inner_clearance
 
+        swept_clearance = getattr(base, "RUNTIME_SWEPT_PATH_AFTER_M", None)
         safe_progress_clearance = getattr(base, "RUNTIME_SAFE_PROGRESS_AFTER_M", None)
         supervisor_clearance = getattr(base, "RUNTIME_SAFETY_RECOVERY_AFTER_M", None)
         hard_guard_clearance = getattr(base, "RUNTIME_HARD_CLEARANCE_AFTER_M", None)
         final_clearance = (
-            safe_progress_clearance
+            swept_clearance
+            if swept_clearance is not None
+            else safe_progress_clearance
             if safe_progress_clearance is not None
             else supervisor_clearance
             if supervisor_clearance is not None
@@ -186,7 +193,9 @@ def install_configuration_workspace_status() -> None:
                 final_clearance,
                 slowdown_distance,
             )
-            if safe_progress_clearance is not None:
+            if swept_clearance is not None:
+                enriched["collision_clearance_source"] = "swept_path_final_pose"
+            elif safe_progress_clearance is not None:
                 enriched["collision_clearance_source"] = "safe_progress_final_pose"
             elif supervisor_clearance is not None:
                 enriched["collision_clearance_source"] = "safety_recovery_supervisor_pose"
@@ -215,12 +224,13 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
 
 
 def install_hard_guard_then_supervisor(base_module) -> None:
-    """Install safety layers while preserving the inner wrist-rotation intent."""
+    """Install safety layers from inner endpoint checks to the final swept-path gate."""
     install_boundary_hard_clearance_floor(base_module)
     install_wrist_intent_capture(base_module)
     install_clearance_recovery_supervisor(base_module)
     install_bounded_reconfigure_escape(base_module)
     install_safe_wrist_rotation_overlay(base_module)
+    install_swept_path_collision_guard(base_module)
 
 
 def main() -> None:
@@ -238,6 +248,7 @@ def main() -> None:
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")
     print("Safe progress: 12 mm soft boundary with null-space + bounded reconfiguration")
     print("Wrist rotation: safe overlay remains active during reconfiguration")
+    print("Swept-path guard: adaptive intermediate collision validation at 5 mm")
     geometry.main()
 
 

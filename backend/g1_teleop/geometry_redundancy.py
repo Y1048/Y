@@ -1,10 +1,9 @@
 """Geometry-aware redundancy resolution for G1 right-arm teleoperation.
 
-The operator commands the wrist Cartesian task. Shoulder/elbow configuration is
-chosen automatically from the one-dimensional proximal null space using the
-actual MuJoCo robot geometry, collision clearance, joint limits, and continuity.
-The captured torso posture remains only a baseline/reference artifact and is not
-used as a live joint target.
+The operator commands wrist Cartesian position. Shoulder/elbow configuration is
+chosen automatically from the proximal null space using MuJoCo collision
+clearance and joint-limit margin. A manually captured posture is not used as a
+live target.
 """
 
 from __future__ import annotations
@@ -28,7 +27,8 @@ PROXIMAL_MAX_STEP_RAD = math.radians(0.20)
 ELBOW_MAX_STEP_RAD = math.radians(0.12)
 MAX_PRIMARY_DRIFT_M = 0.0002
 CLEARANCE_REGRESSION_TOLERANCE_M = 0.0001
-JOINT_CENTER_WEIGHT = 0.10
+JOINT_LIMIT_WEIGHT = 0.45
+JOINT_LIMIT_HARD_FRACTION = 0.05
 LINE_SEARCH_STEPS = 7
 
 
@@ -51,7 +51,6 @@ def posture_region_blend(target_position: np.ndarray, blend_cfg: dict[str, Any])
     z_max = float(blend_cfg["z_max_m"])
     if not (x_min <= x <= x_max and z_min <= z <= z_max):
         return 0.0
-
     enter = float(blend_cfg["centerline_enter_abs_y_m"])
     release = float(blend_cfg["centerline_release_abs_y_m"])
     if release <= enter:
@@ -81,7 +80,6 @@ def _install_configuration_aware_workspace(base: ModuleType, blend_cfg: dict[str
     projector_type = WorkspaceTargetProjector
     if getattr(projector_type, "_GEOMETRY_REDUNDANCY_WORKSPACE_INSTALLED", False):
         return
-
     original_update = projector_type.update
     base.RUNTIME_JOINT_POSTURE_WORKSPACE_BYPASS = False
 
@@ -92,9 +90,6 @@ def _install_configuration_aware_workspace(base: ModuleType, blend_cfg: dict[str
         base.RUNTIME_JOINT_POSTURE_WORKSPACE_BYPASS = bypass
         if not bypass:
             return original_update(self, target)
-        # A wrist-only voxel map cannot distinguish redundant elbow/shoulder
-        # configurations. In the torso-center region, actual joint-space collision
-        # geometry is authoritative instead.
         return WorkspaceProjection(
             operator_target=target.copy(),
             feasible_target=target.copy(),
@@ -106,24 +101,52 @@ def _install_configuration_aware_workspace(base: ModuleType, blend_cfg: dict[str
     projector_type._GEOMETRY_REDUNDANCY_WORKSPACE_INSTALLED = True
 
 
-def _joint_center_direction(model: Any, qpos_ids: np.ndarray, q: np.ndarray) -> np.ndarray:
+def _joint_id_from_qpos(model: Any, qpos_id: int) -> int:
+    for joint_id in range(int(model.njnt)):
+        if int(model.jnt_qposadr[joint_id]) == int(qpos_id):
+            return joint_id
+    return -1
+
+
+def _joint_limit_avoidance_direction(
+    model: Any,
+    qpos_ids: np.ndarray,
+    q: np.ndarray,
+) -> tuple[np.ndarray, list[float]]:
+    """Return a barrier-like direction away from proximal joint limits."""
     direction = np.zeros(4, dtype=float)
+    normalized_positions: list[float] = []
     for index, qpos_id in enumerate(qpos_ids[:4]):
-        joint_id = -1
-        for candidate in range(int(model.njnt)):
-            if int(model.jnt_qposadr[candidate]) == int(qpos_id):
-                joint_id = candidate
-                break
+        joint_id = _joint_id_from_qpos(model, int(qpos_id))
         if joint_id < 0 or not bool(model.jnt_limited[joint_id]):
+            normalized_positions.append(0.0)
             continue
         low, high = (float(v) for v in model.jnt_range[joint_id])
         half = 0.5 * (high - low)
-        if half <= 1e-9:
-            continue
         middle = 0.5 * (low + high)
-        direction[index] = -(float(q[index]) - middle) / half
+        if half <= 1e-9:
+            normalized_positions.append(0.0)
+            continue
+        s = float(np.clip((float(q[index]) - middle) / half, -0.999, 0.999))
+        normalized_positions.append(s)
+        remaining = max(1.0 - s * s, 0.05)
+        direction[index] = -s / (remaining * remaining)
     norm = float(np.linalg.norm(direction))
-    return direction / norm if norm > 1e-9 else direction
+    if norm > 1e-9:
+        direction /= norm
+    return direction, normalized_positions
+
+
+def _within_hard_joint_margin(model: Any, qpos_ids: np.ndarray, q: np.ndarray) -> bool:
+    for index, qpos_id in enumerate(qpos_ids[:4]):
+        joint_id = _joint_id_from_qpos(model, int(qpos_id))
+        if joint_id < 0 or not bool(model.jnt_limited[joint_id]):
+            continue
+        low, high = (float(v) for v in model.jnt_range[joint_id])
+        margin = JOINT_LIMIT_HARD_FRACTION * (high - low)
+        if float(q[index]) < low + margin or float(q[index]) > high - margin:
+            return False
+    return True
 
 
 def _clearance_value(
@@ -190,16 +213,11 @@ def install_geometry_aware_redundancy_resolver(
     *,
     profile_path: str | Path = DEFAULT_PROFILE_PATH,
 ) -> None:
-    """Install automatic geometry-based proximal redundancy resolution."""
     if getattr(base, "_GEOMETRY_REDUNDANCY_RESOLVER_INSTALLED", False):
         return
 
     blend_cfg = _load_blend_config(profile_path)
     _install_configuration_aware_workspace(base, blend_cfg)
-
-    # A manually captured negative elbow is valid in the G1 MuJoCo model. The
-    # geometry resolver uses the model's true joint limits rather than the legacy
-    # hand-authored +5 degree elbow lower bound.
     operational_limits = getattr(base, "RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES", None)
     if isinstance(operational_limits, dict):
         operational_limits.pop("right_elbow_joint", None)
@@ -221,6 +239,8 @@ def install_geometry_aware_redundancy_resolver(
     base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_AFTER_M = None
     base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_PRESSURE = 0.0
     base.RUNTIME_GEOMETRY_REDUNDANCY_GRADIENT = [0.0, 0.0, 0.0, 0.0]
+    base.RUNTIME_GEOMETRY_JOINT_LIMIT_DIRECTION = [0.0, 0.0, 0.0, 0.0]
+    base.RUNTIME_GEOMETRY_JOINT_NORMALIZED = [0.0, 0.0, 0.0, 0.0]
 
     def geometry_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -243,8 +263,6 @@ def install_geometry_aware_redundancy_resolver(
         blend = posture_region_blend(target_position, blend_cfg)
         start_before_primary = data.qpos[qpos_ids].copy()
 
-        # Keep the base solver purely Cartesian: suppress its old posture and
-        # elbow-pole/lateral heuristics. Runtime collision geometry remains active.
         primary_preferred = np.asarray(preferred, dtype=float).copy()
         primary_preferred[:4] = start_before_primary[:4]
         adjusted_kwargs = dict(kwargs)
@@ -307,10 +325,14 @@ def install_geometry_aware_redundancy_resolver(
                 (safe_distance_m - float(raw_clearance_before)) / safe_distance_m
             )
 
-        center_direction = _joint_center_direction(model, qpos_ids, start_q)
+        limit_direction, normalized_positions = _joint_limit_avoidance_direction(
+            model, qpos_ids, start_q
+        )
+        max_limit_use = max((abs(v) for v in normalized_positions), default=0.0)
+        limit_pressure = _smoothstep((max_limit_use - 0.55) / 0.35)
         raw_secondary = (
             clearance_pressure * clearance_direction
-            + JOINT_CENTER_WEIGHT * center_direction
+            + JOINT_LIMIT_WEIGHT * max(0.20, limit_pressure) * limit_direction
         )
         projected = null_projector @ raw_secondary
         projected_norm = float(np.linalg.norm(projected))
@@ -328,6 +350,7 @@ def install_geometry_aware_redundancy_resolver(
 
             saw_collision = False
             saw_clearance_regression = False
+            saw_joint_limit_margin = False
             for line_index in range(LINE_SEARCH_STEPS):
                 scale = 0.5 ** line_index
                 trial_step = scale * step
@@ -336,6 +359,9 @@ def install_geometry_aware_redundancy_resolver(
                 base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
                 mujoco.mj_forward(model, data)
 
+                trial_q = data.qpos[qpos_ids].copy()
+                joint_margin_ok = _within_hard_joint_margin(model, qpos_ids, trial_q)
+                saw_joint_limit_margin = saw_joint_limit_margin or not joint_margin_ok
                 final_error = float(np.linalg.norm(target_position - data.xpos[int(position_body)]))
                 primary_drift = final_error - start_error
                 best_primary_drift = min(best_primary_drift, primary_drift)
@@ -355,7 +381,8 @@ def install_geometry_aware_redundancy_resolver(
                     saw_clearance_regression = saw_clearance_regression or not clearance_ok
 
                 if (
-                    not collision
+                    joint_margin_ok
+                    and not collision
                     and clearance_ok
                     and primary_drift <= MAX_PRIMARY_DRIFT_M
                 ):
@@ -367,7 +394,9 @@ def install_geometry_aware_redundancy_resolver(
             if not accepted:
                 data.qpos[qpos_ids] = start_q
                 mujoco.mj_forward(model, data)
-                if saw_collision:
+                if saw_joint_limit_margin:
+                    blocked_reason = "joint_limit_margin"
+                elif saw_collision:
                     blocked_reason = "collision"
                 elif saw_clearance_regression:
                     blocked_reason = "clearance_regression"
@@ -397,6 +426,8 @@ def install_geometry_aware_redundancy_resolver(
         base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_AFTER_M = raw_clearance_after
         base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_PRESSURE = float(clearance_pressure)
         base.RUNTIME_GEOMETRY_REDUNDANCY_GRADIENT = clearance_gradient.tolist()
+        base.RUNTIME_GEOMETRY_JOINT_LIMIT_DIRECTION = limit_direction.tolist()
+        base.RUNTIME_GEOMETRY_JOINT_NORMALIZED = list(normalized_positions)
 
         context["joint_posture_enabled"] = True
         context["joint_posture_blend"] = float(blend)
@@ -407,11 +438,13 @@ def install_geometry_aware_redundancy_resolver(
         context["joint_posture_secondary_blocked_reason"] = blocked_reason
         context["joint_posture_secondary_primary_drift_m"] = primary_drift_value
         context["joint_posture_legacy_elbow_avoidance_disabled"] = True
-        context["geometry_redundancy_mode"] = "clearance_gradient"
+        context["geometry_redundancy_mode"] = "clearance_plus_joint_limits"
         context["geometry_clearance_before_m"] = raw_clearance_before
         context["geometry_clearance_after_m"] = raw_clearance_after
         context["geometry_clearance_pressure"] = float(clearance_pressure)
         context["geometry_clearance_gradient"] = clearance_gradient.tolist()
+        context["geometry_joint_limit_direction"] = limit_direction.tolist()
+        context["geometry_joint_normalized"] = list(normalized_positions)
         return result
 
     base.solve_right_arm_target = geometry_solver
@@ -434,14 +467,17 @@ def install_geometry_aware_redundancy_resolver(
             )
             enriched["joint_posture_legacy_elbow_avoidance_disabled"] = True
             enriched["joint_posture_elbow_step_cap_deg"] = math.degrees(ELBOW_MAX_STEP_RAD)
-            enriched["geometry_redundancy_mode"] = "clearance_gradient"
+            enriched["geometry_redundancy_mode"] = "clearance_plus_joint_limits"
             enriched["geometry_clearance_before_m"] = base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_BEFORE_M
             enriched["geometry_clearance_after_m"] = base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_AFTER_M
             enriched["geometry_clearance_pressure"] = float(base.RUNTIME_GEOMETRY_REDUNDANCY_CLEARANCE_PRESSURE)
             enriched["geometry_clearance_gradient"] = list(base.RUNTIME_GEOMETRY_REDUNDANCY_GRADIENT)
+            enriched["geometry_joint_limit_direction"] = list(base.RUNTIME_GEOMETRY_JOINT_LIMIT_DIRECTION)
+            enriched["geometry_joint_normalized"] = list(base.RUNTIME_GEOMETRY_JOINT_NORMALIZED)
             enriched["geometry_safe_distance_m"] = float(
                 getattr(base, "RUNTIME_COLLISION_SLOWDOWN_DISTANCE_M", 0.015)
             )
+            enriched["geometry_joint_limit_hard_fraction"] = JOINT_LIMIT_HARD_FRACTION
             enriched["manual_posture_reference_active"] = False
             original_status_writer(enriched)
 

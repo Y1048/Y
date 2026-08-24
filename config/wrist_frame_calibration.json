@@ -1,0 +1,10 @@
+{
+  "right_wrist": {
+    "calibrated": false,
+    "hand_to_g1_local_rotation": [
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0]
+    ]
+  }
+}

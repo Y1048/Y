@@ -31,6 +31,10 @@ from g1_teleop.emergency_clearance_escape import (  # noqa: E402
 from g1_teleop.hard_clearance_boundary_guard import (  # noqa: E402
     install_boundary_hard_clearance_floor,
 )
+from g1_teleop.safe_wrist_rotation_overlay import (  # noqa: E402
+    install_safe_wrist_rotation_overlay,
+    install_wrist_intent_capture,
+)
 from g1_teleop.workspace_map import WorkspaceProjection, WorkspaceTargetProjector  # noqa: E402
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
 import run_geometry_g1_teleop as geometry  # noqa: E402
@@ -211,10 +215,12 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
 
 
 def install_hard_guard_then_supervisor(base_module) -> None:
-    """Install hard floor, continuous safe progress, then bounded reconfigure fallback."""
+    """Install safety layers while preserving the inner wrist-rotation intent."""
     install_boundary_hard_clearance_floor(base_module)
+    install_wrist_intent_capture(base_module)
     install_clearance_recovery_supervisor(base_module)
     install_bounded_reconfigure_escape(base_module)
+    install_safe_wrist_rotation_overlay(base_module)
 
 
 def main() -> None:
@@ -231,6 +237,7 @@ def main() -> None:
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")
     print("Safe progress: 12 mm soft boundary with null-space + bounded reconfiguration")
+    print("Wrist rotation: safe overlay remains active during reconfiguration")
     geometry.main()
 
 

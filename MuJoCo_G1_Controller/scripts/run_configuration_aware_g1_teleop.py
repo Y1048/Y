@@ -65,6 +65,10 @@ def install_diagnostic_only_voxel_workspace() -> None:
 
     projector_type.update = diagnostic_only_update
     projector_type._DIAGNOSTIC_ONLY_VOXEL_WORKSPACE_INSTALLED = True
+    # Prevent the older center-region posture wrapper from replacing this global
+    # diagnostic-only policy. Geometry/joint-space collision checks are now the
+    # sole feasibility authority throughout the right-arm workspace.
+    projector_type._GEOMETRY_REDUNDANCY_WORKSPACE_INSTALLED = True
 
 
 def install_configuration_workspace_status() -> None:
@@ -93,9 +97,8 @@ def install_configuration_workspace_status() -> None:
 
 
 def main() -> None:
-    # Install before geometry.main(). The geometry scheduler may wrap the
-    # projector again for center-region diagnostics, but its fallback path will
-    # call this pass-through update, so the voxel map never regains authority.
+    # Install before geometry.main() so the old center-only voxel bypass is
+    # suppressed and the voxel map remains diagnostic-only everywhere.
     install_diagnostic_only_voxel_workspace()
     install_configuration_workspace_status()
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")

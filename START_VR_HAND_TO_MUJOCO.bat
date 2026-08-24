@@ -7,7 +7,7 @@ set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
 set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_Quest3S"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
-set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_geometry_g1_teleop.py"
+set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_configuration_aware_g1_teleop.py"
 set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
 
 echo ========================================
@@ -27,7 +27,7 @@ if not exist "%UNITY_PROJECT%\Assets\Scenes\SampleScene.unity" (
 )
 
 if not exist "%MUJOCO_SCRIPT%" (
-    echo [ERROR] The geometry-aware MuJoCo controller launcher was not found.
+    echo [ERROR] The configuration-aware MuJoCo controller launcher was not found.
     goto :failed
 )
 
@@ -73,8 +73,8 @@ if /I "%~1"=="--check" (
 )
 
 if "%UDP_RUNNING%"=="0" (
-    echo [START] MuJoCo G1 right-arm geometry-aware controller
-    start "G1 MuJoCo Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 scripts\run_geometry_g1_teleop.py --scene control --view overview
+    echo [START] MuJoCo G1 right-arm configuration-aware runtime geometry controller
+    start "G1 MuJoCo Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 scripts\run_configuration_aware_g1_teleop.py --scene control --view overview
     timeout /t 2 /nobreak >nul
 ) else (
     echo [KEEP] A UDP controller is already listening on port %UDP_PORT%.
@@ -100,6 +100,8 @@ echo.
 echo Redundancy control:
 echo   Hand XYZ is primary.
 echo   Shoulder/elbow posture is selected automatically from G1 collision geometry.
+echo   Runtime MuJoCo geometry is the workspace authority.
+echo   The legacy voxel workspace is diagnostic only and does not project XYZ.
 echo   Manual torso_front_deg is baseline only.
 echo.
 echo Teleop config:
@@ -110,9 +112,8 @@ echo   Cyan   = actual Quest wrist
 echo   White  = waiting for alignment
 echo   Yellow = aligned; hold still to engage
 echo   Green  = teleoperation active
-echo   Orange = backend workspace projection active
-
-echo Workspace map path is configured in config\teleop.json.
+echo.
+echo Legacy workspace map remains available as a diagnostic hint.
 echo Test without Quest: tools\TEST_FAKE_VR_TO_MUJOCO.bat
 echo.
 echo Keep this window open only as a checklist; closing it does not stop the test.

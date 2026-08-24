@@ -2,11 +2,12 @@
 
 Normal tracking owns the arm while robot clearance is healthy. If the final
 solver path approaches the robot closer than the entry threshold, this outer
-supervisor latches a recovery state. During recovery it rejects the inward
-tracking result, holds all three wrist joints, and moves only shoulder/elbow
+supervisor latches a recovery state. During recovery it rejects unsafe tracking
+results, holds all three wrist joints, and moves only shoulder/elbow
 configuration along a clearance-improving direction for several bounded steps
-per control cycle. Tracking resumes only after a larger release clearance is
-reached, providing hysteresis and preventing tracking/escape chatter.
+per control cycle. Tracking resumes only when both the current pose and a fresh
+tracking candidate satisfy the release clearance, preventing recovery/re-entry
+chatter while the operator continues commanding an unsafe target.
 """
 
 from __future__ import annotations
@@ -75,8 +76,6 @@ def _clearance_gradient(
                     context,
                     structural_neighbor_distance,
                 )
-                # Saturate far-away samples so an absent contact does not create
-                # an infinite derivative. Only the near-robot region matters.
                 clearance = min(clearance, RECOVERY_RELEASE_CLEARANCE_M)
                 samples.append((actual, clearance))
             denominator = samples[1][0] - samples[0][0]
@@ -99,6 +98,8 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
     base.RUNTIME_SAFETY_RECOVERY_LATCHED = False
     base.RUNTIME_SAFETY_RECOVERY_BEFORE_M = None
     base.RUNTIME_SAFETY_RECOVERY_AFTER_M = None
+    base.RUNTIME_SAFETY_RECOVERY_CANDIDATE_CLEARANCE_M = None
+    base.RUNTIME_SAFETY_RECOVERY_RELEASE_BLOCKED_BY_CANDIDATE = False
     base.RUNTIME_SAFETY_RECOVERY_STEP_DEG = 0.0
     base.RUNTIME_SAFETY_RECOVERY_SUBSTEPS = 0
     base.RUNTIME_SAFETY_RECOVERY_WRIST_DRIFT_M = 0.0
@@ -134,7 +135,10 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
             structural_neighbor_distance,
         )
 
-        # Run the normal stack first so we can detect an unsafe proposed path.
+        # Always evaluate one fresh normal-tracking candidate. While latched this
+        # candidate is only a probe: it is accepted only if it is itself safely
+        # outside the release threshold. Otherwise the complete candidate is
+        # discarded so tracking cannot pull the robot straight back into danger.
         result = original_solver(*args, **kwargs)
         mujoco.mj_forward(model, data)
         candidate_clearance = _clearance(
@@ -151,8 +155,26 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
         accepted_substeps = 0
         blocked_reason = None
         wrist_drift = 0.0
+        release_blocked_by_candidate = False
 
-        if recovery_latched:
+        # A latched supervisor may release only when BOTH the current accepted
+        # pose and the newly proposed tracking candidate are safely outside the
+        # release threshold. This prevents 18 mm -> unsafe candidate -> 18 mm
+        # oscillation when the operator keeps commanding through the torso.
+        release_candidate_safe = (
+            recovery_latched
+            and before >= RECOVERY_RELEASE_CLEARANCE_M
+            and candidate_clearance >= RECOVERY_RELEASE_CLEARANCE_M
+        )
+
+        if release_candidate_safe:
+            recovery_latched = False
+            final_clearance = candidate_clearance
+            context["safety_recovery_wrist_hold"] = False
+        elif recovery_latched:
+            if before >= RECOVERY_RELEASE_CLEARANCE_M:
+                release_blocked_by_candidate = True
+
             # Reject the tracking/orientation result for this cycle. Recovery
             # starts from the last accepted pose and keeps all wrist joints fixed.
             data.qpos[qpos_ids] = cycle_start_q
@@ -165,8 +187,12 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
                     context,
                     structural_neighbor_distance,
                 )
+
+                # Once enough clearance has been recovered, stop moving farther
+                # away but KEEP THE LATCH. The next cycles continue probing the
+                # operator candidate while holding this safe pose until the
+                # commanded target itself becomes safe.
                 if current_clearance >= RECOVERY_RELEASE_CLEARANCE_M:
-                    recovery_latched = False
                     break
 
                 gradient = _clearance_gradient(
@@ -188,11 +214,7 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
                     blocked_reason = "no_escape_direction"
                     break
 
-                step = (
-                    direction
-                    / max_component
-                    * RECOVERY_PROXIMAL_STEP_RAD
-                )
+                step = direction / max_component * RECOVERY_PROXIMAL_STEP_RAD
                 step[3] = float(
                     np.clip(
                         step[3],
@@ -205,10 +227,7 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
                 accepted = False
                 for line_index in range(RECOVERY_LINE_SEARCH_STEPS):
                     scale = 0.5 ** line_index
-                    data.qpos[qpos_ids[:4]] = (
-                        substep_start_q[:4] + scale * step
-                    )
-                    # Explicitly freeze the three wrist joints during recovery.
+                    data.qpos[qpos_ids[:4]] = substep_start_q[:4] + scale * step
                     data.qpos[qpos_ids[4:]] = cycle_start_q[4:]
                     base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
                     mujoco.mj_forward(model, data)
@@ -228,15 +247,11 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
                         )
                     )
                     if (
-                        trial_clearance
-                        > current_clearance + RECOVERY_MIN_IMPROVEMENT_M
-                        and trial_wrist_drift
-                        <= RECOVERY_MAX_WRIST_DRIFT_PER_CYCLE_M
+                        trial_clearance > current_clearance + RECOVERY_MIN_IMPROVEMENT_M
+                        and trial_wrist_drift <= RECOVERY_MAX_WRIST_DRIFT_PER_CYCLE_M
                     ):
                         accepted = True
-                        accepted_step = (
-                            data.qpos[qpos_ids[:4]] - substep_start_q[:4]
-                        )
+                        accepted_step = data.qpos[qpos_ids[:4]] - substep_start_q[:4]
                         total_step += accepted_step
                         accepted_substeps += 1
                         wrist_drift = trial_wrist_drift
@@ -254,11 +269,7 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
                 context,
                 structural_neighbor_distance,
             )
-            if final_clearance >= RECOVERY_RELEASE_CLEARANCE_M:
-                recovery_latched = False
 
-            # The inner wrist overlay may have reported active authority, but its
-            # joint result was deliberately discarded by this outer supervisor.
             if hasattr(base, "RUNTIME_WRIST_ORIENTATION_WEIGHT"):
                 base.RUNTIME_WRIST_ORIENTATION_WEIGHT = 0.0
             if hasattr(base, "RUNTIME_WRIST_ORIENTATION_STEP_DEG"):
@@ -272,11 +283,15 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
             context["safety_recovery_wrist_hold"] = False
 
         base.RUNTIME_SAFETY_RECOVERY_LATCHED = bool(recovery_latched)
-        base.RUNTIME_SAFETY_RECOVERY_BEFORE_M = (
-            None if math.isinf(before) else float(before)
-        )
+        base.RUNTIME_SAFETY_RECOVERY_BEFORE_M = None if math.isinf(before) else float(before)
         base.RUNTIME_SAFETY_RECOVERY_AFTER_M = (
             None if math.isinf(final_clearance) else float(final_clearance)
+        )
+        base.RUNTIME_SAFETY_RECOVERY_CANDIDATE_CLEARANCE_M = (
+            None if math.isinf(candidate_clearance) else float(candidate_clearance)
+        )
+        base.RUNTIME_SAFETY_RECOVERY_RELEASE_BLOCKED_BY_CANDIDATE = bool(
+            release_blocked_by_candidate
         )
         base.RUNTIME_SAFETY_RECOVERY_STEP_DEG = float(
             np.linalg.norm(np.degrees(total_step))
@@ -284,13 +299,17 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
         base.RUNTIME_SAFETY_RECOVERY_SUBSTEPS = int(accepted_substeps)
         base.RUNTIME_SAFETY_RECOVERY_WRIST_DRIFT_M = float(wrist_drift)
         base.RUNTIME_SAFETY_RECOVERY_BLOCKED_REASON = blocked_reason
-        base.RUNTIME_SAFETY_RECOVERY_WRIST_HOLD = bool(
-            recovery_latched or accepted_substeps > 0
-        )
+        base.RUNTIME_SAFETY_RECOVERY_WRIST_HOLD = bool(recovery_latched)
 
         context["safety_recovery_latched"] = bool(recovery_latched)
         context["safety_recovery_before_m"] = base.RUNTIME_SAFETY_RECOVERY_BEFORE_M
         context["safety_recovery_after_m"] = base.RUNTIME_SAFETY_RECOVERY_AFTER_M
+        context["safety_recovery_candidate_clearance_m"] = (
+            base.RUNTIME_SAFETY_RECOVERY_CANDIDATE_CLEARANCE_M
+        )
+        context["safety_recovery_release_blocked_by_candidate"] = bool(
+            release_blocked_by_candidate
+        )
         context["safety_recovery_step_deg"] = base.RUNTIME_SAFETY_RECOVERY_STEP_DEG
         context["safety_recovery_substeps"] = int(accepted_substeps)
         return result
@@ -307,17 +326,15 @@ def install_clearance_recovery_supervisor(base: ModuleType) -> None:
             enriched["safety_recovery_latched"] = bool(
                 base.RUNTIME_SAFETY_RECOVERY_LATCHED
             )
-            enriched["safety_recovery_enter_clearance_m"] = (
-                RECOVERY_ENTER_CLEARANCE_M
+            enriched["safety_recovery_enter_clearance_m"] = RECOVERY_ENTER_CLEARANCE_M
+            enriched["safety_recovery_release_clearance_m"] = RECOVERY_RELEASE_CLEARANCE_M
+            enriched["safety_recovery_before_m"] = base.RUNTIME_SAFETY_RECOVERY_BEFORE_M
+            enriched["safety_recovery_after_m"] = base.RUNTIME_SAFETY_RECOVERY_AFTER_M
+            enriched["safety_recovery_candidate_clearance_m"] = (
+                base.RUNTIME_SAFETY_RECOVERY_CANDIDATE_CLEARANCE_M
             )
-            enriched["safety_recovery_release_clearance_m"] = (
-                RECOVERY_RELEASE_CLEARANCE_M
-            )
-            enriched["safety_recovery_before_m"] = (
-                base.RUNTIME_SAFETY_RECOVERY_BEFORE_M
-            )
-            enriched["safety_recovery_after_m"] = (
-                base.RUNTIME_SAFETY_RECOVERY_AFTER_M
+            enriched["safety_recovery_release_blocked_by_candidate"] = bool(
+                base.RUNTIME_SAFETY_RECOVERY_RELEASE_BLOCKED_BY_CANDIDATE
             )
             enriched["safety_recovery_step_deg"] = float(
                 base.RUNTIME_SAFETY_RECOVERY_STEP_DEG

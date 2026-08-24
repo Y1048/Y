@@ -3,7 +3,7 @@
 The legacy wrist-only voxel map is retained as a diagnostic hint, but it no
 longer projects the operator target. Actual MuJoCo collision geometry, joint
 limits, adaptive redundancy, emergency escape, a hard clearance boundary, and
-a stateful safety-recovery supervisor own feasibility.
+continuous safe-progress reconfiguration own feasibility.
 """
 
 from __future__ import annotations
@@ -19,6 +19,9 @@ BACKEND_ROOT = PROJECT_ROOT / "backend"
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from g1_teleop.bounded_reconfigure_escape import (  # noqa: E402
+    install_bounded_reconfigure_escape,
+)
 from g1_teleop.clearance_recovery_supervisor import (  # noqa: E402
     install_clearance_recovery_supervisor,
 )
@@ -159,10 +162,13 @@ def install_configuration_workspace_status() -> None:
         inner_clearance = enriched.get("collision_clearance_m")
         enriched["inner_solver_collision_clearance_m"] = inner_clearance
 
+        safe_progress_clearance = getattr(base, "RUNTIME_SAFE_PROGRESS_AFTER_M", None)
         supervisor_clearance = getattr(base, "RUNTIME_SAFETY_RECOVERY_AFTER_M", None)
         hard_guard_clearance = getattr(base, "RUNTIME_HARD_CLEARANCE_AFTER_M", None)
         final_clearance = (
-            supervisor_clearance
+            safe_progress_clearance
+            if safe_progress_clearance is not None
+            else supervisor_clearance
             if supervisor_clearance is not None
             else hard_guard_clearance
         )
@@ -176,11 +182,12 @@ def install_configuration_workspace_status() -> None:
                 final_clearance,
                 slowdown_distance,
             )
-            enriched["collision_clearance_source"] = (
-                "safety_recovery_supervisor_pose"
-                if supervisor_clearance is not None
-                else "final_hard_guard_pose"
-            )
+            if safe_progress_clearance is not None:
+                enriched["collision_clearance_source"] = "safe_progress_final_pose"
+            elif supervisor_clearance is not None:
+                enriched["collision_clearance_source"] = "safety_recovery_supervisor_pose"
+            else:
+                enriched["collision_clearance_source"] = "final_hard_guard_pose"
         else:
             enriched["collision_clearance_source"] = "inner_distance_aware_solver"
 
@@ -204,9 +211,10 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
 
 
 def install_hard_guard_then_supervisor(base_module) -> None:
-    """Install the 5 mm hard boundary, then the hysteretic outer supervisor."""
+    """Install hard floor, continuous safe progress, then bounded reconfigure fallback."""
     install_boundary_hard_clearance_floor(base_module)
     install_clearance_recovery_supervisor(base_module)
+    install_bounded_reconfigure_escape(base_module)
 
 
 def main() -> None:
@@ -222,7 +230,7 @@ def main() -> None:
     print("Right rubber hand collision proxy: enabled")
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")
-    print("Safety recovery supervisor: latch at 12 mm, release at 18 mm")
+    print("Safe progress: 12 mm soft boundary with null-space + bounded reconfiguration")
     geometry.main()
 
 

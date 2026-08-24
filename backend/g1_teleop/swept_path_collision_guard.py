@@ -26,11 +26,15 @@ from .runtime_collision import dangerous_contact_clearance_m
 
 SWEPT_PATH_FLOOR_M = 0.005
 SWEPT_PATH_BOUNDARY_MARGIN_M = 0.00005
-SAMPLE_JOINT_STEP_DEG = 0.15
+# Match the dense reference diagnostic resolution first. Once zero false
+# negatives are demonstrated at this resolution, runtime benchmarking can be
+# used to design a clearance-adaptive refinement scheme without giving up the
+# validated safety baseline.
+SAMPLE_JOINT_STEP_DEG = 0.03
 MIN_SAMPLES = 2
-# Keep the 0.15 deg sampling-resolution contract even for large diagnostic or
-# abnormal joint-space jumps. Live teleop updates are normally sub-degree, so
-# this larger ceiling has essentially no runtime cost during ordinary control.
+# Preserve the requested sampling resolution even for unusually large C-space
+# jumps. Live control normally remains sub-degree, while offline/adversarial
+# diagnostics may require hundreds or thousands of samples.
 MAX_SAMPLES = 4096
 BOUNDARY_BISECTION_STEPS = 12
 RECOVERY_REGRESSION_TOLERANCE_M = 1e-7
@@ -117,7 +121,6 @@ def install_swept_path_collision_guard(base: ModuleType) -> None:
         accepted_scale = 1.0
         blocked_reason = None
 
-        # Restore the accepted start pose before traversing the requested motion.
         data.qpos[qpos_ids] = start_q
         mujoco.mj_forward(model, data)
 
@@ -136,9 +139,6 @@ def install_swept_path_collision_guard(base: ModuleType) -> None:
 
             core_contact = base.has_right_arm_core_contact(model, data, context)
             if start_inside_floor:
-                # Do not prevent emergency recovery when the cycle begins inside
-                # the floor. The path is allowed only when it does not regress
-                # farther into danger and ultimately improves clearance.
                 unsafe = (
                     core_contact
                     or clearance
@@ -193,8 +193,6 @@ def install_swept_path_collision_guard(base: ModuleType) -> None:
             after = _clearance(model, data, context, structural_neighbor_distance)
 
             if start_inside_floor and after <= before + RECOVERY_REGRESSION_TOLERANCE_M:
-                # A path beginning inside the hard floor must actually recover,
-                # not merely avoid further regression.
                 data.qpos[qpos_ids] = start_q
                 mujoco.mj_forward(model, data)
                 after = before

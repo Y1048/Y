@@ -284,6 +284,46 @@ def install_hard_clearance_floor(base_module) -> None:
         base_module._HARD_CLEARANCE_STATUS_INSTALLED = True
 
 
+def install_live_rotation_matrix_capture(base_module) -> None:
+    """Capture calibration matrices from the raw UDP stream and final MuJoCo wrist pose."""
+    if getattr(base_module, "_LIVE_ROTATION_MATRIX_CAPTURE_INSTALLED", False):
+        return
+
+    base_module.RUNTIME_LATEST_QUEST_ROTATION_XYZW = None
+
+    original_receive = base_module.receive_target
+    def receive_with_rotation_capture(*args, **kwargs):
+        result = original_receive(*args, **kwargs)
+        if isinstance(result, tuple) and len(result) >= 3 and bool(result[2]):
+            rotation = np.asarray(result[1], dtype=float)
+            if rotation.shape == (4,) and np.all(np.isfinite(rotation)):
+                base_module.RUNTIME_LATEST_QUEST_ROTATION_XYZW = rotation.tolist()
+                mapped = base_module.operator_rotation_to_robot_matrix(rotation)
+                base_module.RUNTIME_QUEST_HAND_MAPPED_ROTATION_MATRIX = mapped.tolist()
+        return result
+    base_module.receive_target = receive_with_rotation_capture
+
+    original_solver = base_module.solve_right_arm_target
+    def solver_with_wrist_capture(*args, **kwargs):
+        result = original_solver(*args, **kwargs)
+        data = args[1] if len(args) > 1 else kwargs.get("data")
+        context = kwargs.get("context")
+        if context is None and len(args) > 8:
+            context = args[8]
+        if data is not None and isinstance(context, dict) and context.get("orientation_body") is not None:
+            try:
+                orientation_body = int(context["orientation_body"])
+                base_module.RUNTIME_G1_WRIST_ROTATION_MATRIX = (
+                    data.xmat[orientation_body].reshape(3, 3).copy().tolist()
+                )
+            except (IndexError, TypeError, ValueError):
+                pass
+        return result
+    base_module.solve_right_arm_target = solver_with_wrist_capture
+
+    base_module._LIVE_ROTATION_MATRIX_CAPTURE_INSTALLED = True
+
+
 def main() -> None:
     configured.install_joint_space_posture_scheduler = install_geometry_instead_of_manual_posture
     configured.install_calibrated_vr_wrist_orientation = install_absolute_vr_wrist_orientation
@@ -293,6 +333,7 @@ def main() -> None:
     def install_smoother_then_clearance(base_module):
         original_smoother(base_module)
         install_hard_clearance_floor(base_module)
+        install_live_rotation_matrix_capture(base_module)
 
     configured.install_joint_command_smoother = install_smoother_then_clearance
     print("Redundancy mode: automatic G1 geometry / clearance + joint-limit cost")

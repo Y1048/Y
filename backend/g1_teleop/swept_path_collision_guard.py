@@ -28,7 +28,10 @@ SWEPT_PATH_FLOOR_M = 0.005
 SWEPT_PATH_BOUNDARY_MARGIN_M = 0.00005
 SAMPLE_JOINT_STEP_DEG = 0.15
 MIN_SAMPLES = 2
-MAX_SAMPLES = 48
+# Keep the 0.15 deg sampling-resolution contract even for large diagnostic or
+# abnormal joint-space jumps. Live teleop updates are normally sub-degree, so
+# this larger ceiling has essentially no runtime cost during ordinary control.
+MAX_SAMPLES = 4096
 BOUNDARY_BISECTION_STEPS = 12
 RECOVERY_REGRESSION_TOLERANCE_M = 1e-7
 
@@ -119,8 +122,6 @@ def install_swept_path_collision_guard(base: ModuleType) -> None:
         mujoco.mj_forward(model, data)
 
         start_inside_floor = before < SWEPT_PATH_FLOOR_M
-        previous_fraction = 0.0
-        previous_clearance = before
         last_safe_fraction = 0.0
 
         for sample_index in range(1, samples + 1):
@@ -176,8 +177,6 @@ def install_swept_path_collision_guard(base: ModuleType) -> None:
                 break
 
             last_safe_fraction = fraction
-            previous_fraction = fraction
-            previous_clearance = clearance
 
         if clipped:
             data.qpos[qpos_ids] = start_q + accepted_scale * delta_q

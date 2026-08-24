@@ -2,8 +2,8 @@
 
 The legacy wrist-only voxel map is retained as a diagnostic hint, but it no
 longer projects the operator target. Actual MuJoCo collision geometry, joint
-limits, adaptive redundancy, emergency escape, and a boundary-clipping hard
-clearance guard own feasibility.
+limits, adaptive redundancy, emergency escape, a hard clearance boundary, and
+a stateful safety-recovery supervisor own feasibility.
 """
 
 from __future__ import annotations
@@ -19,6 +19,9 @@ BACKEND_ROOT = PROJECT_ROOT / "backend"
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from g1_teleop.clearance_recovery_supervisor import (  # noqa: E402
+    install_clearance_recovery_supervisor,
+)
 from g1_teleop.emergency_clearance_escape import (  # noqa: E402
     install_emergency_clearance_escape,
 )
@@ -110,7 +113,6 @@ def install_diagnostic_only_voxel_workspace() -> None:
             _LAST_VOXEL_HINT_DISTANCE_M = float(hint.distance_m)
             _LAST_VOXEL_HINT_TARGET = np.asarray(hint.feasible_target, dtype=float).tolist()
         except Exception:
-            # A diagnostic hint must never become a control-path failure.
             _LAST_VOXEL_HINT_PROJECTED = False
             _LAST_VOXEL_HINT_DISTANCE_M = 0.0
             _LAST_VOXEL_HINT_TARGET = None
@@ -124,9 +126,6 @@ def install_diagnostic_only_voxel_workspace() -> None:
 
     projector_type.update = diagnostic_only_update
     projector_type._DIAGNOSTIC_ONLY_VOXEL_WORKSPACE_INSTALLED = True
-    # Prevent the older center-region posture wrapper from replacing this global
-    # diagnostic-only policy. Geometry/joint-space collision checks are now the
-    # sole feasibility authority throughout the right-arm workspace.
     projector_type._GEOMETRY_REDUNDANCY_WORKSPACE_INSTALLED = True
 
 
@@ -157,12 +156,16 @@ def install_configuration_workspace_status() -> None:
             _RIGHT_HAND_COLLISION_PROXY_ENABLED
         )
 
-        # The distance-aware solver records clearance before the outer hard-floor
-        # guard may alter q. Preserve that inner value for debugging, then expose
-        # the post-guard clearance as the canonical runtime collision clearance.
         inner_clearance = enriched.get("collision_clearance_m")
         enriched["inner_solver_collision_clearance_m"] = inner_clearance
-        final_clearance = getattr(base, "RUNTIME_HARD_CLEARANCE_AFTER_M", None)
+
+        supervisor_clearance = getattr(base, "RUNTIME_SAFETY_RECOVERY_AFTER_M", None)
+        hard_guard_clearance = getattr(base, "RUNTIME_HARD_CLEARANCE_AFTER_M", None)
+        final_clearance = (
+            supervisor_clearance
+            if supervisor_clearance is not None
+            else hard_guard_clearance
+        )
         if final_clearance is not None:
             final_clearance = float(final_clearance)
             enriched["collision_clearance_m"] = final_clearance
@@ -173,7 +176,11 @@ def install_configuration_workspace_status() -> None:
                 final_clearance,
                 slowdown_distance,
             )
-            enriched["collision_clearance_source"] = "final_hard_guard_pose"
+            enriched["collision_clearance_source"] = (
+                "safety_recovery_supervisor_pose"
+                if supervisor_clearance is not None
+                else "final_hard_guard_pose"
+            )
         else:
             enriched["collision_clearance_source"] = "inner_distance_aware_solver"
 
@@ -189,7 +196,6 @@ def install_configuration_workspace_status() -> None:
 
 
 def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None:
-    """Keep the normal resolver and add recovery only inside the <5 mm zone."""
     geometry.install_geometry_aware_redundancy_resolver(
         base_module,
         profile_path=profile_path,
@@ -197,28 +203,26 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
     install_emergency_clearance_escape(base_module)
 
 
-def main() -> None:
-    # The stock right_rubber_hand mesh is visual-only in the Unitree XML. Add a
-    # transparent collision copy every time the generated demo XML is rebuilt so
-    # the visible hand cannot pass through the torso unnoticed.
-    install_right_hand_collision_proxy_generation()
+def install_hard_guard_then_supervisor(base_module) -> None:
+    """Install the 5 mm hard boundary, then the hysteretic outer supervisor."""
+    install_boundary_hard_clearance_floor(base_module)
+    install_clearance_recovery_supervisor(base_module)
 
-    # Install before geometry.main() so the old center-only voxel bypass is
-    # suppressed and the voxel map remains diagnostic-only everywhere.
+
+def main() -> None:
+    install_right_hand_collision_proxy_generation()
     install_diagnostic_only_voxel_workspace()
     install_configuration_workspace_status()
 
-    # Keep the normal geometry solver and emergency escape. The outer hard-floor
-    # guard clips any update that would cross from >=5 mm to <5 mm at the largest
-    # safe joint-space fraction instead of reverting the whole control cycle.
     geometry.install_geometry_instead_of_manual_posture = install_geometry_with_emergency_escape
-    geometry.install_hard_clearance_floor = install_boundary_hard_clearance_floor
+    geometry.install_hard_clearance_floor = install_hard_guard_then_supervisor
 
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")
     print("Voxel workspace: diagnostic hint only; no Cartesian projection")
     print("Right rubber hand collision proxy: enabled")
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")
+    print("Safety recovery supervisor: latch at 12 mm, release at 18 mm")
     geometry.main()
 
 

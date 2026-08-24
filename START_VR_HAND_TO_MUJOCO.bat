@@ -7,7 +7,7 @@ set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
 set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_Quest3S"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
-set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_configured_g1_teleop.py"
+set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_geometry_g1_teleop.py"
 set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
 
 echo ========================================
@@ -27,7 +27,7 @@ if not exist "%UNITY_PROJECT%\Assets\Scenes\SampleScene.unity" (
 )
 
 if not exist "%MUJOCO_SCRIPT%" (
-    echo [ERROR] The configured MuJoCo controller launcher was not found.
+    echo [ERROR] The geometry-aware MuJoCo controller launcher was not found.
     goto :failed
 )
 
@@ -73,8 +73,8 @@ if /I "%~1"=="--check" (
 )
 
 if "%UDP_RUNNING%"=="0" (
-    echo [START] MuJoCo G1 right-arm configured projected-workspace controller
-    start "G1 MuJoCo Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 scripts\run_configured_g1_teleop.py --scene control --view overview
+    echo [START] MuJoCo G1 right-arm geometry-aware controller
+    start "G1 MuJoCo Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 scripts\run_geometry_g1_teleop.py --scene control --view overview
     timeout /t 2 /nobreak >nul
 ) else (
     echo [KEEP] A UDP controller is already listening on port %UDP_PORT%.
@@ -96,6 +96,11 @@ echo   4. Put on Quest and move the cyan wrist marker to the white target.
 echo   5. Hold it inside the target for around 0.55 seconds while it turns yellow.
 echo   6. After the target turns green, move and rotate your right wrist.
 echo   7. Confirm that MuJoCo prints "ACTIVE" and the right arm moves.
+echo.
+echo Redundancy control:
+echo   Hand XYZ is primary.
+echo   Shoulder/elbow posture is selected automatically from G1 collision geometry.
+echo   Manual torso_front_deg is baseline only.
 echo.
 echo Teleop config:
 echo   config\teleop.json

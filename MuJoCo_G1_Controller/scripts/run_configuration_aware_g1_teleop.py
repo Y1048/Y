@@ -2,7 +2,8 @@
 
 The legacy wrist-only voxel map is retained as a diagnostic hint, but it no
 longer projects the operator target. Actual MuJoCo collision geometry, joint
-limits, adaptive redundancy, and recovery-aware clearance guards own feasibility.
+limits, adaptive redundancy, emergency escape, and a boundary-clipping hard
+clearance guard own feasibility.
 """
 
 from __future__ import annotations
@@ -19,7 +20,9 @@ if str(BACKEND_ROOT) not in sys.path:
 
 from g1_teleop.emergency_clearance_escape import (  # noqa: E402
     install_emergency_clearance_escape,
-    install_recovery_aware_hard_clearance_floor,
+)
+from g1_teleop.hard_clearance_boundary_guard import (  # noqa: E402
+    install_boundary_hard_clearance_floor,
 )
 from g1_teleop.workspace_map import WorkspaceProjection, WorkspaceTargetProjector  # noqa: E402
 import g1_right_arm_udp_ik_demo as base  # noqa: E402
@@ -115,15 +118,16 @@ def main() -> None:
     install_diagnostic_only_voxel_workspace()
     install_configuration_workspace_status()
 
-    # Replace only the installation hooks. The normal geometry solver remains
-    # unchanged; the escape layer is dormant unless robot clearance falls below
-    # 5 mm, and the hard floor then permits strictly improving recovery steps.
+    # Keep the normal geometry solver and emergency escape. The outer hard-floor
+    # guard clips any update that would cross from >=5 mm to <5 mm at the largest
+    # safe joint-space fraction instead of reverting the whole control cycle.
     geometry.install_geometry_instead_of_manual_posture = install_geometry_with_emergency_escape
-    geometry.install_hard_clearance_floor = install_recovery_aware_hard_clearance_floor
+    geometry.install_hard_clearance_floor = install_boundary_hard_clearance_floor
 
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")
     print("Voxel workspace: diagnostic hint only; no Cartesian projection")
     print("Emergency clearance recovery: enabled below 5 mm")
+    print("Hard clearance guard: joint-space boundary clipping at 5 mm")
     geometry.main()
 
 

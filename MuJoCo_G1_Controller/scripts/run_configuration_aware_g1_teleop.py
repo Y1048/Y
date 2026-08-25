@@ -39,6 +39,7 @@ from g1_teleop.hard_clearance_boundary_guard import (  # noqa: E402
 from g1_teleop.no_progress_joint_guard import (  # noqa: E402
     install_no_progress_joint_guard,
 )
+from g1_teleop.orientation_recovery import install_orientation_recovery  # noqa: E402
 from g1_teleop.reachability_supervisor import (  # noqa: E402
     install_reachability_supervisor,
 )
@@ -245,28 +246,24 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
         base_module,
         profile_path=profile_path,
     )
-    # Reject branch wandering before any safety-recovery layer is installed.
-    # Near obstacles the guard bypasses itself so collision recovery keeps full authority.
     install_no_progress_joint_guard(base_module)
     install_emergency_clearance_escape(base_module)
 
 
 def install_hard_guard_then_supervisor(base_module) -> None:
     """Install safety layers from inner endpoint checks to final timing instrumentation."""
+    install_orientation_recovery(base_module)
     install_boundary_hard_clearance_floor(base_module)
     install_wrist_intent_capture(base_module)
     install_clearance_recovery_supervisor(base_module)
     install_bounded_reconfigure_escape(base_module)
     install_safe_wrist_rotation_overlay(base_module)
     install_swept_path_collision_guard(base_module)
-    # Install last so one timing sample covers the complete solver/safety chain.
     install_controller_cycle_benchmark(base_module)
 
 
 def main() -> None:
     install_right_hand_collision_proxy_generation()
-    # Install before the configuration status wrapper so reachability can
-    # override workspace feedback after the wrapper enriches the packet.
     install_reachability_supervisor(base)
     install_configuration_workspace_status()
 
@@ -277,6 +274,7 @@ def main() -> None:
     print("Reachability pre-check: voxel gate only for gross excursions (5 cm enter / 2.5 cm release)")
     print("Voxel workspace: diagnostic during normal motion; coarse gate only when grossly unreachable")
     print("No-progress guard: suppress large shoulder/elbow motion without Cartesian improvement")
+    print("Orientation recovery: proximal null-space assist above 20 deg wrist error")
     print("Right rubber hand collision proxy: enabled")
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")

@@ -186,7 +186,19 @@ def install_absolute_safe_wrist_overlay(base_module) -> None:
                 structural_neighbor_distance=structural_neighbor_distance,
             )
             trial_clearance = safe_distance if trial_raw is None else float(trial_raw)
-            if trial_clearance < clearance_before - WRIST_CLEARANCE_REGRESSION_TOLERANCE_M:
+
+            # In free space, allow wrist rotation to use the available clearance
+            # reserve as long as it stays outside the normal 15 mm safety zone.
+            # Once at/inside that zone, keep the previous conservative no-regression
+            # behavior. The outer swept-path guard still validates the final joint path.
+            if clearance_before > safe_distance:
+                minimum_clearance = safe_distance
+            else:
+                minimum_clearance = max(
+                    HARD_CLEARANCE_FLOOR_M,
+                    clearance_before - WRIST_CLEARANCE_REGRESSION_TOLERANCE_M,
+                )
+            if trial_clearance < minimum_clearance:
                 continue
 
             accepted = True

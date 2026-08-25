@@ -322,6 +322,8 @@ def _state_packet(configuration, right_qpos_ids, active, target_position, refere
             "active": bool(active),
             "wrist_delta": wrist_delta.tolist(),
             "target_delta": target_delta.tolist(),
+            "wrist_position": wrist_position.tolist(),
+            "target_position": np.asarray(target_position, dtype=float).tolist(),
             "position_error": float(np.linalg.norm(target_position - wrist_position)),
             "workspace_limited": False,
             "collision_limited": bool(collision_limited),

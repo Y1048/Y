@@ -8,7 +8,7 @@ It only subscribes to ``rt/lowstate``, reports the seven right-arm joints, and
 optionally forwards those measured joint angles as ordinary UDP telemetry to
 the teleoperation PC for startup synchronization.
 
-Expected environment: Linux with Unitree ``unitree_sdk2_python`` installed.
+Expected environment: Linux/WSL2 with Unitree ``unitree_sdk2_python`` installed.
 """
 
 from __future__ import annotations
@@ -25,13 +25,20 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
+from hardware_state import (
+    FaultCode,
+    HardwarePhase,
+    build_status,
+    write_status as write_runtime_status,
+)
+
 try:
     from unitree_sdk2py.core.channel import ChannelFactoryInitialize, ChannelSubscriber
     from unitree_sdk2py.idl.unitree_hg.msg.dds_ import LowState_
 except ImportError as exc:
     raise SystemExit(
         "unitree_sdk2py is not installed. Install Unitree's official "
-        "unitree_sdk2_python package on the Linux machine connected to G1."
+        "unitree_sdk2_python package in the Linux/WSL2 environment connected to G1."
     ) from exc
 
 
@@ -101,12 +108,21 @@ def _read_right_arm(state: LowState_) -> list[JointSample]:
     ]
 
 
-def _write_status(path: Path, received: int, age_s: float, samples: list[JointSample]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+def _write_status(
+    path: Path,
+    *,
+    phase: HardwarePhase,
+    network_interface: str,
+    received: int,
+    age_s: float | None,
+    samples: list[JointSample],
+    fault_code: FaultCode = FaultCode.NONE,
+    fault_message: str = "",
+) -> None:
+    details = {
         "mode": "READ_ONLY",
         "topic": TOPIC_LOWSTATE,
+        "network_interface": network_interface,
         "received_packets": received,
         "last_packet_age_s": age_s,
         "right_arm": [
@@ -121,9 +137,16 @@ def _write_status(path: Path, received: int, age_s: float, samples: list[JointSa
             for item in samples
         ],
     }
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    temporary.replace(path)
+    payload = build_status(
+        phase=phase,
+        component="read_only_lowstate",
+        command_output_enabled=False,
+        publisher_present=False,
+        fault_code=fault_code,
+        fault_message=fault_message,
+        details=details,
+    )
+    write_runtime_status(path, payload)
 
 
 def _print_samples(received: int, age_s: float, samples: list[JointSample]) -> None:
@@ -139,7 +162,13 @@ def _print_samples(received: int, age_s: float, samples: list[JointSample]) -> N
         )
 
 
-def _forward_snapshot(sock: socket.socket, host: str, port: int, received: int, samples: list[JointSample]) -> None:
+def _forward_snapshot(
+    sock: socket.socket,
+    host: str,
+    port: int,
+    received: int,
+    samples: list[JointSample],
+) -> None:
     payload = {
         "mode": "READ_ONLY_LOWSTATE",
         "received_packets": received,
@@ -147,7 +176,10 @@ def _forward_snapshot(sock: socket.socket, host: str, port: int, received: int, 
         "right_arm_q_rad": [item.q_rad for item in samples],
         "right_arm_dq_rad_s": [item.dq_rad_s for item in samples],
     }
-    sock.sendto(json.dumps(payload, separators=(",", ":")).encode("utf-8"), (host, port))
+    sock.sendto(
+        json.dumps(payload, separators=(",", ":")).encode("utf-8"),
+        (host, port),
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -189,14 +221,21 @@ def main() -> int:
     print("DDS publishers: NONE")
     print("Motor command:  IMPOSSIBLE from this process")
     if args.forward_host:
-        print(f"UDP telemetry:  {args.forward_host}:{args.forward_port} @ {args.forward_hz:.1f} Hz")
+        print(
+            f"UDP telemetry:  {args.forward_host}:{args.forward_port} "
+            f"@ {args.forward_hz:.1f} Hz"
+        )
 
     ChannelFactoryInitialize(args.domain_id, args.network_interface)
     monitor = ReadOnlyG1LowState()
     subscriber = ChannelSubscriber(TOPIC_LOWSTATE, LowState_)
     subscriber.Init(monitor.callback, 10)
 
-    telemetry_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) if args.forward_host else None
+    telemetry_sock = (
+        socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if args.forward_host
+        else None
+    )
     stop = threading.Event()
 
     def request_stop(_signum, _frame) -> None:
@@ -210,6 +249,8 @@ def main() -> int:
     next_report = time.monotonic()
     next_forward = time.monotonic()
     ever_received = False
+    last_samples: list[JointSample] = []
+    last_age_s: float | None = None
 
     try:
         while not stop.is_set():
@@ -220,9 +261,18 @@ def main() -> int:
             if state is not None:
                 ever_received = True
                 samples = _read_right_arm(state)
+                last_samples = samples
+                last_age_s = age_s
                 if now >= next_report:
                     _print_samples(received, age_s, samples)
-                    _write_status(args.status_json, received, age_s, samples)
+                    _write_status(
+                        args.status_json,
+                        phase=HardwarePhase.READ_ONLY_ACTIVE,
+                        network_interface=args.network_interface,
+                        received=received,
+                        age_s=age_s,
+                        samples=samples,
+                    )
                     next_report = now + print_period
                 if telemetry_sock is not None and now >= next_forward:
                     _forward_snapshot(
@@ -235,12 +285,32 @@ def main() -> int:
                     next_forward = now + forward_period
             elif now >= next_report:
                 print("[WAIT] No rt/lowstate packet received yet.")
+                _write_status(
+                    args.status_json,
+                    phase=HardwarePhase.READ_ONLY_WAIT,
+                    network_interface=args.network_interface,
+                    received=received,
+                    age_s=None,
+                    samples=[],
+                )
                 next_report = now + print_period
 
             if ever_received and age_s > args.timeout:
+                message = (
+                    f"LowState heartbeat stale: {age_s:.3f}s > {args.timeout:.3f}s"
+                )
+                _write_status(
+                    args.status_json,
+                    phase=HardwarePhase.FAULT,
+                    network_interface=args.network_interface,
+                    received=received,
+                    age_s=age_s,
+                    samples=last_samples,
+                    fault_code=FaultCode.LOWSTATE_TIMEOUT,
+                    fault_message=message,
+                )
                 print(
-                    f"[FAULT] LowState heartbeat stale: {age_s:.3f}s > "
-                    f"{args.timeout:.3f}s. Still READ ONLY; no command was sent."
+                    f"[FAULT] {message}. Still READ ONLY; no command was sent."
                 )
                 return 2
 
@@ -249,6 +319,14 @@ def main() -> int:
         if telemetry_sock is not None:
             telemetry_sock.close()
 
+    _write_status(
+        args.status_json,
+        phase=HardwarePhase.OFFLINE,
+        network_interface=args.network_interface,
+        received=monitor.snapshot()[1],
+        age_s=last_age_s,
+        samples=last_samples,
+    )
     print("\nStopped. No robot command was sent.")
     return 0
 

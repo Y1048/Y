@@ -26,6 +26,9 @@ from g1_teleop.bounded_reconfigure_escape import (  # noqa: E402
 from g1_teleop.clearance_recovery_supervisor import (  # noqa: E402
     install_clearance_recovery_supervisor,
 )
+from g1_teleop.controller_cycle_benchmark import (  # noqa: E402
+    install_controller_cycle_benchmark,
+)
 from g1_teleop.emergency_clearance_escape import (  # noqa: E402
     install_emergency_clearance_escape,
 )
@@ -224,13 +227,15 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
 
 
 def install_hard_guard_then_supervisor(base_module) -> None:
-    """Install safety layers from inner endpoint checks to the final swept-path gate."""
+    """Install safety layers from inner endpoint checks to final timing instrumentation."""
     install_boundary_hard_clearance_floor(base_module)
     install_wrist_intent_capture(base_module)
     install_clearance_recovery_supervisor(base_module)
     install_bounded_reconfigure_escape(base_module)
     install_safe_wrist_rotation_overlay(base_module)
     install_swept_path_collision_guard(base_module)
+    # Install last so one timing sample covers the complete solver/safety chain.
+    install_controller_cycle_benchmark(base_module)
 
 
 def main() -> None:
@@ -249,6 +254,7 @@ def main() -> None:
     print("Safe progress: 12 mm soft boundary with null-space + bounded reconfiguration")
     print("Wrist rotation: safe overlay remains active during reconfiguration")
     print("Swept-path guard: adaptive intermediate collision validation at 5 mm")
+    print("Controller benchmark: rolling full-chain latency instrumentation enabled")
     geometry.main()
 
 

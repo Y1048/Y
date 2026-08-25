@@ -31,7 +31,9 @@ def install_reachability_supervisor(base: ModuleType) -> None:
     base.RUNTIME_REACHABILITY_GATE_ACTIVE = False
     base.RUNTIME_REACHABILITY_HINT_PROJECTED = False
     base.RUNTIME_REACHABILITY_PROJECTION_DISTANCE_M = 0.0
+    base.RUNTIME_REACHABILITY_HINT_REPORTED_DISTANCE_M = 0.0
     base.RUNTIME_REACHABILITY_FEASIBLE_TARGET = None
+    base.RUNTIME_REACHABILITY_INPUT_TARGET = None
     base.RUNTIME_REACHABILITY_ENTER_DISTANCE_M = REACHABILITY_ENTER_DISTANCE_M
     base.RUNTIME_REACHABILITY_RELEASE_DISTANCE_M = REACHABILITY_RELEASE_DISTANCE_M
     base.RUNTIME_REACHABILITY_BLOCKED_REASON = None
@@ -44,7 +46,9 @@ def install_reachability_supervisor(base: ModuleType) -> None:
             base.RUNTIME_REACHABILITY_GATE_ACTIVE = False
             base.RUNTIME_REACHABILITY_HINT_PROJECTED = False
             base.RUNTIME_REACHABILITY_PROJECTION_DISTANCE_M = 0.0
+            base.RUNTIME_REACHABILITY_HINT_REPORTED_DISTANCE_M = 0.0
             base.RUNTIME_REACHABILITY_FEASIBLE_TARGET = None
+            base.RUNTIME_REACHABILITY_INPUT_TARGET = target.tolist()
             base.RUNTIME_REACHABILITY_BLOCKED_REASON = (
                 "workspace_hint_error:" + type(exc).__name__
             )
@@ -55,9 +59,16 @@ def install_reachability_supervisor(base: ModuleType) -> None:
                 distance_m=0.0,
             )
 
-        projected = bool(hint.projected)
-        distance_m = float(hint.distance_m)
         feasible_target = np.asarray(hint.feasible_target, dtype=float)
+        # The workspace projector is stateful and may use a previous feasible
+        # target as its local projection anchor.  For a reachability gate, the
+        # only unambiguous distance is the Euclidean separation between the
+        # target entering this wrapper and the feasible target returned for that
+        # exact call.  Recompute it instead of trusting any upstream cached or
+        # locally anchored distance metadata.
+        distance_m = float(np.linalg.norm(feasible_target - target))
+        hint_reported_distance_m = float(hint.distance_m)
+        projected = bool(hint.projected or distance_m > 1e-9)
         was_active = bool(base.RUNTIME_REACHABILITY_GATE_ACTIVE)
 
         if was_active:
@@ -68,7 +79,9 @@ def install_reachability_supervisor(base: ModuleType) -> None:
         base.RUNTIME_REACHABILITY_GATE_ACTIVE = bool(active)
         base.RUNTIME_REACHABILITY_HINT_PROJECTED = projected
         base.RUNTIME_REACHABILITY_PROJECTION_DISTANCE_M = distance_m
+        base.RUNTIME_REACHABILITY_HINT_REPORTED_DISTANCE_M = hint_reported_distance_m
         base.RUNTIME_REACHABILITY_FEASIBLE_TARGET = feasible_target.tolist()
+        base.RUNTIME_REACHABILITY_INPUT_TARGET = target.tolist()
         base.RUNTIME_REACHABILITY_BLOCKED_REASON = (
             "gross_workspace_excursion" if active else None
         )
@@ -81,6 +94,14 @@ def install_reachability_supervisor(base: ModuleType) -> None:
                 distance_m=distance_m,
             )
 
+        # During normal motion the voxel map remains a diagnostic/pre-check only.
+        # Keep the projector object's public state consistent with the pass-through
+        # result so a later call does not accidentally retain a hidden authority
+        # state that differs from what the runtime actually accepted.
+        self.operator_target = target.copy()
+        self.feasible_target = target.copy()
+        self.projection_distance_m = 0.0
+        self.workspace_limited = False
         return WorkspaceProjection(
             operator_target=target.copy(),
             feasible_target=target.copy(),
@@ -103,6 +124,10 @@ def install_reachability_supervisor(base: ModuleType) -> None:
             enriched["reachability_enter_distance_m"] = REACHABILITY_ENTER_DISTANCE_M
             enriched["reachability_release_distance_m"] = REACHABILITY_RELEASE_DISTANCE_M
             enriched["reachability_projection_distance_m"] = distance_m
+            enriched["reachability_hint_reported_distance_m"] = float(
+                base.RUNTIME_REACHABILITY_HINT_REPORTED_DISTANCE_M
+            )
+            enriched["reachability_input_target"] = base.RUNTIME_REACHABILITY_INPUT_TARGET
             enriched["reachability_feasible_target"] = (
                 base.RUNTIME_REACHABILITY_FEASIBLE_TARGET
             )

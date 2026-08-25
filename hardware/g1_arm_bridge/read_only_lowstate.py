@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Read-only Unitree G1 right-arm LowState monitor.
+"""Read-only Unitree G1 right-arm LowState monitor and optional UDP forwarder.
 
 SAFETY CONTRACT
 ---------------
 This module intentionally creates NO DDS publisher and sends NO robot command.
-It only subscribes to ``rt/lowstate`` and reports the seven right-arm joints.
-Use this as the first hardware connectivity test before any arm_sdk integration.
+It only subscribes to ``rt/lowstate``, reports the seven right-arm joints, and
+optionally forwards those measured joint angles as ordinary UDP telemetry to
+the teleoperation PC for startup synchronization.
 
 Expected environment: Linux with Unitree ``unitree_sdk2_python`` installed.
 """
@@ -16,6 +17,7 @@ import argparse
 import json
 import math
 import signal
+import socket
 import sys
 import threading
 import time
@@ -34,8 +36,6 @@ except ImportError as exc:
 
 
 TOPIC_LOWSTATE: Final[str] = "rt/lowstate"
-
-# Official G1 29-DoF joint order used by Unitree SDK2 examples.
 RIGHT_ARM_JOINTS: Final[tuple[tuple[str, int], ...]] = (
     ("right_shoulder_pitch", 22),
     ("right_shoulder_roll", 23),
@@ -48,6 +48,8 @@ RIGHT_ARM_JOINTS: Final[tuple[tuple[str, int], ...]] = (
 
 DEFAULT_PRINT_HZ: Final[float] = 5.0
 DEFAULT_TIMEOUT_S: Final[float] = 1.0
+DEFAULT_FORWARD_HZ: Final[float] = 30.0
+DEFAULT_FORWARD_PORT: Final[int] = 5007
 
 
 @dataclass(frozen=True)
@@ -60,8 +62,6 @@ class JointSample:
 
 
 class ReadOnlyG1LowState:
-    """Thread-safe, read-only snapshot of G1 LowState."""
-
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._latest: LowState_ | None = None
@@ -83,26 +83,22 @@ class ReadOnlyG1LowState:
 def _motor_value(state: LowState_, index: int, field: str) -> float:
     motor = state.motor_state[index]
     value = getattr(motor, field)
-    # SDK2 Python IDL fields are normally exposed as attributes. Keep support
-    # for generated accessor callables as a defensive compatibility fallback.
     if callable(value):
         value = value()
     return float(value)
 
 
 def _read_right_arm(state: LowState_) -> list[JointSample]:
-    samples: list[JointSample] = []
-    for name, index in RIGHT_ARM_JOINTS:
-        samples.append(
-            JointSample(
-                name=name,
-                index=index,
-                q_rad=_motor_value(state, index, "q"),
-                dq_rad_s=_motor_value(state, index, "dq"),
-                tau_est_nm=_motor_value(state, index, "tau_est"),
-            )
+    return [
+        JointSample(
+            name=name,
+            index=index,
+            q_rad=_motor_value(state, index, "q"),
+            dq_rad_s=_motor_value(state, index, "dq"),
+            tau_est_nm=_motor_value(state, index, "tau_est"),
         )
-    return samples
+        for name, index in RIGHT_ARM_JOINTS
+    ]
 
 
 def _write_status(path: Path, received: int, age_s: float, samples: list[JointSample]) -> None:
@@ -143,9 +139,20 @@ def _print_samples(received: int, age_s: float, samples: list[JointSample]) -> N
         )
 
 
+def _forward_snapshot(sock: socket.socket, host: str, port: int, received: int, samples: list[JointSample]) -> None:
+    payload = {
+        "mode": "READ_ONLY_LOWSTATE",
+        "received_packets": received,
+        "sent_at_unix": time.time(),
+        "right_arm_q_rad": [item.q_rad for item in samples],
+        "right_arm_dq_rad_s": [item.dq_rad_s for item in samples],
+    }
+    sock.sendto(json.dumps(payload, separators=(",", ":")).encode("utf-8"), (host, port))
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="READ-ONLY G1 right-arm rt/lowstate monitor; sends no commands"
+        description="READ-ONLY G1 right-arm rt/lowstate monitor; sends no robot commands"
     )
     parser.add_argument(
         "network_interface",
@@ -159,13 +166,19 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("logs/runtime/g1_hardware_lowstate.json"),
     )
+    parser.add_argument(
+        "--forward-host",
+        help="Optional teleoperation-PC IPv4 address for READ-ONLY startup telemetry",
+    )
+    parser.add_argument("--forward-port", type=int, default=DEFAULT_FORWARD_PORT)
+    parser.add_argument("--forward-hz", type=float, default=DEFAULT_FORWARD_HZ)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    if args.print_hz <= 0.0:
-        raise SystemExit("--print-hz must be > 0")
+    if args.print_hz <= 0.0 or args.forward_hz <= 0.0:
+        raise SystemExit("--print-hz and --forward-hz must be > 0")
     if args.timeout <= 0.0:
         raise SystemExit("--timeout must be > 0")
 
@@ -173,15 +186,17 @@ def main() -> int:
     print("-----------------------------------------")
     print(f"DDS interface: {args.network_interface}")
     print(f"DDS topic:     {TOPIC_LOWSTATE}")
-    print("Publishers:    NONE")
-    print("Motor command: IMPOSSIBLE from this process")
+    print("DDS publishers: NONE")
+    print("Motor command:  IMPOSSIBLE from this process")
+    if args.forward_host:
+        print(f"UDP telemetry:  {args.forward_host}:{args.forward_port} @ {args.forward_hz:.1f} Hz")
 
     ChannelFactoryInitialize(args.domain_id, args.network_interface)
-
     monitor = ReadOnlyG1LowState()
     subscriber = ChannelSubscriber(TOPIC_LOWSTATE, LowState_)
     subscriber.Init(monitor.callback, 10)
 
+    telemetry_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) if args.forward_host else None
     stop = threading.Event()
 
     def request_stop(_signum, _frame) -> None:
@@ -190,34 +205,49 @@ def main() -> int:
     signal.signal(signal.SIGINT, request_stop)
     signal.signal(signal.SIGTERM, request_stop)
 
-    period = 1.0 / args.print_hz
+    print_period = 1.0 / args.print_hz
+    forward_period = 1.0 / args.forward_hz
     next_report = time.monotonic()
+    next_forward = time.monotonic()
     ever_received = False
 
-    while not stop.is_set():
-        now = time.monotonic()
-        state, received, last_rx = monitor.snapshot()
-        age_s = now - last_rx
+    try:
+        while not stop.is_set():
+            now = time.monotonic()
+            state, received, last_rx = monitor.snapshot()
+            age_s = now - last_rx
 
-        if state is not None:
-            ever_received = True
-            if now >= next_report:
+            if state is not None:
+                ever_received = True
                 samples = _read_right_arm(state)
-                _print_samples(received, age_s, samples)
-                _write_status(args.status_json, received, age_s, samples)
-                next_report = now + period
-        elif now >= next_report:
-            print("[WAIT] No rt/lowstate packet received yet.")
-            next_report = now + period
+                if now >= next_report:
+                    _print_samples(received, age_s, samples)
+                    _write_status(args.status_json, received, age_s, samples)
+                    next_report = now + print_period
+                if telemetry_sock is not None and now >= next_forward:
+                    _forward_snapshot(
+                        telemetry_sock,
+                        args.forward_host,
+                        args.forward_port,
+                        received,
+                        samples,
+                    )
+                    next_forward = now + forward_period
+            elif now >= next_report:
+                print("[WAIT] No rt/lowstate packet received yet.")
+                next_report = now + print_period
 
-        if ever_received and age_s > args.timeout:
-            print(
-                f"[FAULT] LowState heartbeat stale: {age_s:.3f}s > "
-                f"{args.timeout:.3f}s. Still READ ONLY; no command was sent."
-            )
-            return 2
+            if ever_received and age_s > args.timeout:
+                print(
+                    f"[FAULT] LowState heartbeat stale: {age_s:.3f}s > "
+                    f"{args.timeout:.3f}s. Still READ ONLY; no command was sent."
+                )
+                return 2
 
-        time.sleep(min(0.02, period))
+            time.sleep(min(0.02, print_period, forward_period))
+    finally:
+        if telemetry_sock is not None:
+            telemetry_sock.close()
 
     print("\nStopped. No robot command was sent.")
     return 0

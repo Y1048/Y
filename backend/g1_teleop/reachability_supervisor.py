@@ -60,12 +60,6 @@ def install_reachability_supervisor(base: ModuleType) -> None:
             )
 
         feasible_target = np.asarray(hint.feasible_target, dtype=float)
-        # The workspace projector is stateful and may use a previous feasible
-        # target as its local projection anchor.  For a reachability gate, the
-        # only unambiguous distance is the Euclidean separation between the
-        # target entering this wrapper and the feasible target returned for that
-        # exact call.  Recompute it instead of trusting any upstream cached or
-        # locally anchored distance metadata.
         distance_m = float(np.linalg.norm(feasible_target - target))
         hint_reported_distance_m = float(hint.distance_m)
         projected = bool(hint.projected or distance_m > 1e-9)
@@ -94,10 +88,6 @@ def install_reachability_supervisor(base: ModuleType) -> None:
                 distance_m=distance_m,
             )
 
-        # During normal motion the voxel map remains a diagnostic/pre-check only.
-        # Keep the projector object's public state consistent with the pass-through
-        # result so a later call does not accidentally retain a hidden authority
-        # state that differs from what the runtime actually accepted.
         self.operator_target = target.copy()
         self.feasible_target = target.copy()
         self.projection_distance_m = 0.0
@@ -111,6 +101,30 @@ def install_reachability_supervisor(base: ModuleType) -> None:
 
     projector_type.update = supervised_update
     projector_type._REACHABILITY_SUPERVISOR_INSTALLED = True
+
+    # Runtime status was already gate-aware, but Unity receives a separate 5006
+    # state packet. Mirror the same gate into that packet so its target marker
+    # can turn orange whenever the backend is limiting gross reachability.
+    original_send_robot_state = getattr(base, "send_robot_state", None)
+    if callable(original_send_robot_state) and not getattr(
+        base, "_REACHABILITY_UNITY_STATE_INSTALLED", False
+    ):
+        def send_robot_state_with_reachability(*args: Any, **kwargs: Any):
+            gate_active = bool(base.RUNTIME_REACHABILITY_GATE_ACTIVE)
+            if "workspace_limited" in kwargs:
+                adjusted_kwargs = dict(kwargs)
+                adjusted_kwargs["workspace_limited"] = bool(
+                    adjusted_kwargs["workspace_limited"] or gate_active
+                )
+                return original_send_robot_state(*args, **adjusted_kwargs)
+
+            adjusted_args = list(args)
+            if len(adjusted_args) > 8:
+                adjusted_args[8] = bool(adjusted_args[8] or gate_active)
+            return original_send_robot_state(*adjusted_args, **kwargs)
+
+        base.send_robot_state = send_robot_state_with_reachability
+        base._REACHABILITY_UNITY_STATE_INSTALLED = True
 
     original_writer = getattr(base, "write_runtime_status", None)
     if callable(original_writer) and not getattr(

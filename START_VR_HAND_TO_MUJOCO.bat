@@ -65,7 +65,7 @@ if not errorlevel 1 set "UDP_RUNNING=1"
 
 rem Detect THIS Unity project, not merely any Unity.exe process.
 set "UNITY_PROJECT_RUNNING=0"
-powershell -NoProfile -Command "$u='%UNITY_PROJECT%'.ToLowerInvariant(); $p=Get-CimInstance Win32_Process -ErrorAction SilentlyContinue ^| Where-Object { $_.Name -eq 'Unity.exe' -and $_.CommandLine -and $_.CommandLine.ToLowerInvariant().Contains($u) }; if($p){exit 0}else{exit 1}" >nul 2>&1
+powershell -NoProfile -Command "$u='%UNITY_PROJECT%'.ToLowerInvariant(); $p=Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq 'Unity.exe' -and $_.CommandLine -and $_.CommandLine.ToLowerInvariant().Contains($u) }; if($p){exit 0}else{exit 1}" >nul 2>&1
 if not errorlevel 1 set "UNITY_PROJECT_RUNNING=1"
 
 if /I "%~1"=="--check" (

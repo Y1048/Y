@@ -4,6 +4,10 @@ This guard is intentionally installed outside the normal geometry-aware solver
 but inside emergency/collision recovery layers. It protects against IK branch
 wandering when a difficult target causes shoulder/elbow motion without meaningful
 wrist-position progress. Safety recovery remains authoritative near obstacles.
+
+The guard owns only the proximal shoulder/elbow motion. Wrist roll/pitch/yaw
+remain at the inner solver candidate so Quest wrist rotation is never scaled or
+rolled back by this guard.
 """
 
 from __future__ import annotations
@@ -40,6 +44,7 @@ def install_no_progress_joint_guard(base: ModuleType) -> None:
     base.RUNTIME_NO_PROGRESS_GUARD_PROXIMAL_STEP_DEG = 0.0
     base.RUNTIME_NO_PROGRESS_GUARD_CLEARANCE_M = None
     base.RUNTIME_NO_PROGRESS_GUARD_BLOCKED_REASON = None
+    base.RUNTIME_NO_PROGRESS_GUARD_WRIST_PRESERVED = True
 
     def guarded_solver(*args: Any, **kwargs: Any):
         model = args[0] if len(args) > 0 else kwargs.get("model")
@@ -101,12 +106,16 @@ def install_no_progress_joint_guard(base: ModuleType) -> None:
         blocked_reason = None
 
         if active:
-            delta_q = candidate_q - start_q
+            proximal_delta = candidate_q[:4] - start_q[:4]
+            candidate_wrist_q = candidate_q[4:].copy()
             best_scale = 0.0
             best_error = start_error
             for line_index in range(1, LINE_SEARCH_STEPS + 1):
                 scale = 0.5 ** line_index
-                data.qpos[qpos_ids] = start_q + scale * delta_q
+                # Restrict only shoulder/elbow motion. Preserve the inner
+                # solver's wrist intent exactly so hand rotation remains live.
+                data.qpos[qpos_ids[:4]] = start_q[:4] + scale * proximal_delta
+                data.qpos[qpos_ids[4:]] = candidate_wrist_q
                 base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
                 mujoco.mj_forward(model, data)
                 trial_error = float(
@@ -121,15 +130,21 @@ def install_no_progress_joint_guard(base: ModuleType) -> None:
                 accepted_scale = best_scale
                 after_error = best_error
                 result = data.xpos[int(position_body)].copy()
-                blocked_reason = "scaled_for_tracking_progress"
+                blocked_reason = "scaled_proximal_for_tracking_progress"
             else:
-                data.qpos[qpos_ids] = start_q
+                # Revert only the proximal joints. Wrist joints keep the
+                # candidate produced by the inner orientation solver.
+                data.qpos[qpos_ids[:4]] = start_q[:4]
+                data.qpos[qpos_ids[4:]] = candidate_wrist_q
+                base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
                 mujoco.mj_forward(model, data)
                 accepted_scale = 0.0
-                after_error = start_error
+                after_error = float(
+                    np.linalg.norm(target_position - data.xpos[int(position_body)])
+                )
                 reverted = True
                 result = data.xpos[int(position_body)].copy()
-                blocked_reason = "no_cartesian_progress"
+                blocked_reason = "no_cartesian_progress_proximal_only"
 
         base.RUNTIME_NO_PROGRESS_GUARD_ACTIVE = active
         base.RUNTIME_NO_PROGRESS_GUARD_REVERTED = reverted
@@ -140,11 +155,13 @@ def install_no_progress_joint_guard(base: ModuleType) -> None:
         base.RUNTIME_NO_PROGRESS_GUARD_PROXIMAL_STEP_DEG = float(proximal_step_deg)
         base.RUNTIME_NO_PROGRESS_GUARD_CLEARANCE_M = clearance_value
         base.RUNTIME_NO_PROGRESS_GUARD_BLOCKED_REASON = blocked_reason
+        base.RUNTIME_NO_PROGRESS_GUARD_WRIST_PRESERVED = True
 
         context["no_progress_guard_active"] = active
         context["no_progress_guard_reverted"] = reverted
         context["no_progress_guard_scale"] = float(accepted_scale)
         context["no_progress_guard_after_error_m"] = float(after_error)
+        context["no_progress_guard_wrist_preserved"] = True
         return result
 
     base.solve_right_arm_target = guarded_solver
@@ -168,6 +185,9 @@ def install_no_progress_joint_guard(base: ModuleType) -> None:
             enriched["no_progress_guard_min_proximal_step_deg"] = MIN_PROXIMAL_STEP_DEG
             enriched["no_progress_guard_min_error_improvement_m"] = MIN_ERROR_IMPROVEMENT_M
             enriched["no_progress_guard_safety_bypass_clearance_m"] = SAFETY_BYPASS_CLEARANCE_M
+            enriched["no_progress_guard_wrist_preserved"] = bool(
+                base.RUNTIME_NO_PROGRESS_GUARD_WRIST_PRESERVED
+            )
             enriched["no_progress_guard_blocked_reason"] = base.RUNTIME_NO_PROGRESS_GUARD_BLOCKED_REASON
             original_writer(enriched)
 

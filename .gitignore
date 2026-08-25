@@ -52,6 +52,11 @@ logs/
 *.log
 
 # ==============================
+# Generated MuJoCo runtime models
+# ==============================
+**/_generated_*.xml
+
+# ==============================
 # Old backups / archives
 # ==============================
 archive/

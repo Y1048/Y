@@ -6,7 +6,9 @@ controller and, temporarily, the legacy controller while the latter is retired.
 
 from __future__ import annotations
 
+import json
 import math
+import os
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -26,9 +28,37 @@ from g1_teleop import add_g1_d435i_camera  # noqa: E402
 G1_DIR = ROOT / "external" / "unitree_mujoco" / "unitree_robots" / "g1"
 G1_XML = G1_DIR / "g1_29dof.xml"
 DEMO_XML = G1_DIR / "_generated_g1_right_arm_udp_ik.xml"
+HARDWARE_INITIAL_STATE_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_hardware_initial_state.json"
 
 LEFT_ARM_READY_DEGREES = np.array([10.0, 22.0, 0.0, 55.0, 0.0, 0.0, 0.0])
-RIGHT_ARM_READY_DEGREES = np.array([10.0, -22.0, 0.0, 55.0, 0.0, 0.0, 0.0])
+DEFAULT_RIGHT_ARM_READY_DEGREES = np.array([10.0, -22.0, 0.0, 55.0, 0.0, 0.0, 0.0])
+
+
+def _load_hardware_initial_right_arm_degrees() -> np.ndarray | None:
+    if os.environ.get("G1_USE_HARDWARE_INITIAL_STATE") != "1":
+        return None
+    try:
+        payload = json.loads(HARDWARE_INITIAL_STATE_PATH.read_text(encoding="utf-8"))
+        joints = np.asarray(payload["right_arm_q_rad"], dtype=float)
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            f"Hardware initial state requested but invalid: {HARDWARE_INITIAL_STATE_PATH}"
+        ) from exc
+    if joints.shape != (7,) or not np.all(np.isfinite(joints)):
+        raise RuntimeError("Hardware initial right-arm state must contain 7 finite joint values")
+    print(
+        "[SYNC] Mink initial right-arm posture loaded from G1 LowState: "
+        + ", ".join(f"{value:.2f}" for value in np.degrees(joints))
+        + " deg"
+    )
+    return np.degrees(joints)
+
+
+RIGHT_ARM_READY_DEGREES = (
+    _load_hardware_initial_right_arm_degrees()
+    if os.environ.get("G1_USE_HARDWARE_INITIAL_STATE") == "1"
+    else DEFAULT_RIGHT_ARM_READY_DEGREES.copy()
+)
 
 RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES = {
     "right_elbow_joint": (5.0, 120.0),

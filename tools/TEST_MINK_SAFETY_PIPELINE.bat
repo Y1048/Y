@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0.."
 
 echo ============================================================
-echo   G1 Mink -> Hardware Safety Gate - END-TO-END OFFLINE TEST
+echo   G1 Mink to Hardware Safety Gate - END-TO-END OFFLINE TEST
 echo   - No Unity required
 echo   - No MuJoCo required
 echo   - No Unitree SDK

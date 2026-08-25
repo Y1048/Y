@@ -130,7 +130,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             "tracked_wrist_material",
             new Color(0.0f, 0.90f, 1.0f, 1.0f));
         target_hand_material = CreateUnlitMaterial(
-            "g1_target_wrist_material",
+            "operator_hand_target_material",
             new Color(0.15f, 1.0f, 0.25f, 1.0f));
         engagement_waiting_material = CreateUnlitMaterial(
             "g1_engagement_waiting_material",
@@ -139,7 +139,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             "g1_engagement_ready_material",
             new Color(1.0f, 0.85f, 0.05f, 1.0f));
         workspace_limit_material = CreateUnlitMaterial(
-            "g1_workspace_limit_material",
+            "operator_hand_target_workspace_limit_material",
             new Color(1.0f, 0.55f, 0.05f, 1.0f));
         axis_x_material = CreateUnlitMaterial(
             "wrist_axis_x_material",
@@ -159,13 +159,13 @@ public class G1UnityRightArmPreview : MonoBehaviour
             tracked_hand_material,
             Vector3.one * 0.060f);
         target_hand_marker = CreateSphere(
-            "g1_engagement_target_marker",
+            "operator_hand_target_marker",
             target_hand_material,
             Vector3.one * 0.045f);
         target_hand_renderer = target_hand_marker.GetComponent<Renderer>();
         tracked_hand_axes = CreateOrientationAxes("tracked_quest_wrist_axes");
         mapped_hand_axes = CreateOrientationAxes("mapped_quest_command_axes");
-        target_hand_axes = CreateOrientationAxes("g1_target_wrist_axes");
+        target_hand_axes = CreateOrientationAxes("operator_hand_target_axes");
         mapping_line = CreateMappingLine();
     }
 
@@ -263,23 +263,27 @@ public class G1UnityRightArmPreview : MonoBehaviour
         Vector3 robot_position = robot_reference_available
             ? robot_position_reference.position
             : hand_binder.EngagementTargetPosition;
-        Quaternion robot_rotation = robot_reference_available
-            ? robot_orientation_reference.rotation
+
+        Vector3 command_position = command_active && target_sender != null
+            ? hand_binder.EngagementTargetPosition
+                + hand_binder.OperatorHeading
+                * target_sender.LastOperatorTargetDelta
+            : hand_binder.EngagementTargetPosition;
+        Quaternion command_rotation = command_active
+            ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
-        target_hand_marker.position = robot_position;
-        target_hand_marker.rotation = robot_rotation;
-        target_hand_axes.position = robot_position;
-        target_hand_axes.rotation = robot_rotation;
+
+        // The visible target represents the operator command, not the current
+        // G1 wrist. This keeps reachability feedback visible even when the robot
+        // is held at the feasible boundary.
+        target_hand_marker.position = command_position;
+        target_hand_marker.rotation = command_rotation;
+        target_hand_axes.position = command_position;
+        target_hand_axes.rotation = command_rotation;
 
         if (tracking_visible)
         {
             Vector3 raw_hand_position = hand_binder.TrackedWristPosition;
-            Vector3 command_position = command_active
-                && target_sender != null
-                ? hand_binder.EngagementTargetPosition
-                    + hand_binder.OperatorHeading
-                    * target_sender.LastOperatorTargetDelta
-                : raw_hand_position;
             tracked_hand_marker.position = raw_hand_position;
             tracked_hand_marker.rotation = hand_binder.TrackedWristRotation;
             tracked_hand_axes.position = raw_hand_position;
@@ -310,11 +314,11 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
         bool local_workspace_limited = target_sender != null
             && target_sender.IsWorkspaceLimited;
-        bool backend_safety_limited = state_receiver != null
-            && (state_receiver.IsWorkspaceLimited
-                || state_receiver.IsCollisionLimited);
+        bool backend_workspace_limited = command_active
+            && state_receiver != null
+            && state_receiver.IsWorkspaceLimited;
         bool workspace_limited = local_workspace_limited
-            || (command_active && backend_safety_limited);
+            || backend_workspace_limited;
 
         if (workspace_limited)
         {

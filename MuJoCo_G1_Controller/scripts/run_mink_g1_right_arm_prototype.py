@@ -7,6 +7,7 @@ live in g1_right_arm_common and no legacy IK implementation is imported here.
 QP structure:
 - full 6D right wrist FrameTask,
 - posture regularization,
+- DoF-weighted velocity damping that prefers wrist motion over proximal motion,
 - hard MuJoCo joint-position limits,
 - right-arm velocity limits,
 - MuJoCo geometry CollisionAvoidanceLimit,
@@ -66,6 +67,12 @@ POSTURE_COST = 0.04
 FRAME_GAIN = 0.35
 LM_DAMPING = 1e-5
 QP_DAMPING = 1e-8
+
+# Prefer the three wrist joints for pure orientation changes. Proximal joints
+# are still free to move when the Cartesian position task requires them.
+PROXIMAL_DAMPING_COST = 0.25
+WRIST_DAMPING_COST = 0.015
+ORIENTATION_TARGET_MAX_RATE_RAD_S = math.radians(120.0)
 
 COLLISION_MIN_DISTANCE_M = 0.012
 COLLISION_DETECTION_DISTANCE_M = 0.040
@@ -230,6 +237,15 @@ def _frozen_dof_indices(model: mujoco.MjModel, right_dofs: list[int]) -> list[in
     return [index for index in range(int(model.nv)) if index not in right_set]
 
 
+def _damping_costs(model: mujoco.MjModel) -> np.ndarray:
+    costs = np.zeros(int(model.nv), dtype=float)
+    for joint_name in g1.RIGHT_ARM_JOINTS[:4]:
+        costs[int(model.jnt_dofadr[_joint_id(model, joint_name)])] = PROXIMAL_DAMPING_COST
+    for joint_name in g1.RIGHT_ARM_JOINTS[4:]:
+        costs[int(model.jnt_dofadr[_joint_id(model, joint_name)])] = WRIST_DAMPING_COST
+    return costs
+
+
 def _initial_configuration(model: mujoco.MjModel) -> np.ndarray:
     data = mujoco.MjData(model)
     data.qpos[:] = model.qpos0.copy()
@@ -255,6 +271,37 @@ def _matrix_to_se3(rotation: np.ndarray, position: np.ndarray):
     matrix[:3, :3] = np.asarray(rotation, dtype=float)
     matrix[:3, 3] = np.asarray(position, dtype=float)
     return mink.SE3.from_matrix(matrix)
+
+
+def _rotation_error_radians(target: np.ndarray, current: np.ndarray) -> float:
+    delta = np.asarray(target, dtype=float) @ np.asarray(current, dtype=float).T
+    cosine = float(np.clip((np.trace(delta) - 1.0) * 0.5, -1.0, 1.0))
+    return math.acos(cosine)
+
+
+def _limit_rotation_step(current: np.ndarray, desired: np.ndarray, max_angle: float) -> np.ndarray:
+    current = np.asarray(current, dtype=float)
+    desired = np.asarray(desired, dtype=float)
+    delta = desired @ current.T
+    angle = _rotation_error_radians(desired, current)
+    if angle <= max_angle or angle < 1e-9:
+        return desired.copy()
+
+    axis_skew = np.array(
+        [delta[2, 1] - delta[1, 2], delta[0, 2] - delta[2, 0], delta[1, 0] - delta[0, 1]],
+        dtype=float,
+    )
+    sin_angle = float(np.linalg.norm(axis_skew) * 0.5)
+    if sin_angle < 1e-8:
+        return current.copy()
+    axis = axis_skew / (2.0 * sin_angle)
+    step = float(max_angle)
+    k = np.array(
+        [[0.0, -axis[2], axis[1]], [axis[2], 0.0, -axis[0]], [-axis[1], axis[0], 0.0]],
+        dtype=float,
+    )
+    step_rotation = np.eye(3) + math.sin(step) * k + (1.0 - math.cos(step)) * (k @ k)
+    return step_rotation @ current
 
 
 def _min_pair_distance(model: mujoco.MjModel, data: mujoco.MjData, geom_pairs: list[tuple[int, int]], distmax: float = 0.20) -> float | None:
@@ -360,6 +407,7 @@ def main() -> None:
     wrist_task.set_target_from_configuration(configuration)
     posture_task = mink.PostureTask(model, cost=POSTURE_COST)
     posture_task.set_target(configuration.q.copy())
+    damping_task = mink.DampingTask(model, cost=_damping_costs(model))
 
     velocity_limits = {name: RIGHT_ARM_MAX_VELOCITY_RAD_S for name in g1.RIGHT_ARM_JOINTS}
     limits = [
@@ -385,6 +433,7 @@ def main() -> None:
     next_status = time.monotonic()
     next_state = time.monotonic()
     cycle_times: list[float] = []
+    target_rotation = configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body").rotation().as_matrix().copy()
 
     print("Mink G1 right-arm controller")
     print("----------------------------")
@@ -393,6 +442,8 @@ def main() -> None:
     print(f"Frozen non-right-arm DOFs: {len(frozen_dofs)}")
     print(f"Collision geom pairs: {len(collision_pairs)}")
     print(f"Collision limit: min={COLLISION_MIN_DISTANCE_M*1000:.1f} mm, detect={COLLISION_DETECTION_DISTANCE_M*1000:.1f} mm")
+    print(f"Proximal/wrist damping: {PROXIMAL_DAMPING_COST:.3f} / {WRIST_DAMPING_COST:.3f}")
+    print("Orientation mapping: absolute semantic frame with rate-limited engagement alignment.")
     print("Hardware output: disabled in this process.")
     print(f"Safety dry-run mirror: udp://{SAFETY_DRY_RUN_HOST}:{SAFETY_DRY_RUN_PORT}")
 
@@ -412,25 +463,36 @@ def main() -> None:
                 if active and not last_active:
                     clutch_reference = {
                         "input_position": raw_target.copy(),
-                        "input_rotation": g1.operator_rotation_to_robot_matrix(raw_rotation),
                         "robot_position": wrist_pose.translation().copy(),
-                        "robot_rotation": wrist_pose.rotation().as_matrix().copy(),
                     }
+                    target_rotation = wrist_pose.rotation().as_matrix().copy()
                     posture_task.set_target(configuration.q.copy())
-                    print("\nMink clutch engaged without a target jump.")
+                    print("\nMink clutch engaged; position is jump-free and wrist orientation is aligning smoothly.")
 
                 if active and clutch_reference is not None:
                     target_position = clutch_reference["robot_position"] + raw_target - clutch_reference["input_position"]
-                    input_rotation_matrix = g1.operator_rotation_to_robot_matrix(raw_rotation)
-                    rotation_delta = input_rotation_matrix @ clutch_reference["input_rotation"].T
-                    target_rotation = rotation_delta @ clutch_reference["robot_rotation"]
+                    desired_rotation = g1.operator_rotation_to_robot_matrix(raw_rotation)
+                    target_rotation = _limit_rotation_step(
+                        target_rotation,
+                        desired_rotation,
+                        ORIENTATION_TARGET_MAX_RATE_RAD_S * DT,
+                    )
                     wrist_task.set_target(_matrix_to_se3(target_rotation, target_position))
-                    velocity = mink.solve_ik(configuration=configuration, tasks=[wrist_task, posture_task], dt=DT, solver=solver, damping=QP_DAMPING, limits=limits, constraints=constraints)
+                    velocity = mink.solve_ik(
+                        configuration=configuration,
+                        tasks=[wrist_task, posture_task, damping_task],
+                        dt=DT,
+                        solver=solver,
+                        damping=QP_DAMPING,
+                        limits=limits,
+                        constraints=constraints,
+                    )
                     configuration.integrate_inplace(velocity, DT)
                     data = configuration.data
                     data.mocap_pos[target_mocap_id] = target_position
                 else:
                     target_position = wrist_pose.translation().copy()
+                    target_rotation = wrist_pose.rotation().as_matrix().copy()
                     clutch_reference = None
                     wrist_task.set_target_from_configuration(configuration)
                     posture_task.set_target(configuration.q.copy())
@@ -453,7 +515,9 @@ def main() -> None:
 
                 if now >= next_status:
                     current_pose = configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
+                    current_rotation = current_pose.rotation().as_matrix()
                     position_error = float(np.linalg.norm(target_position - current_pose.translation()))
+                    orientation_error_deg = math.degrees(_rotation_error_radians(target_rotation, current_rotation))
                     stats = np.asarray(cycle_times, dtype=float)
                     _write_status({
                         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -469,6 +533,9 @@ def main() -> None:
                         "target_position": target_position.tolist(),
                         "wrist_position": current_pose.translation().tolist(),
                         "position_error_m": position_error,
+                        "orientation_error_deg": orientation_error_deg,
+                        "proximal_damping_cost": PROXIMAL_DAMPING_COST,
+                        "wrist_damping_cost": WRIST_DAMPING_COST,
                         "right_arm_q_deg": np.degrees(configuration.q[right_qpos_ids]).tolist(),
                         "cycle_last_ms": cycle_ms,
                         "cycle_mean_ms": float(np.mean(stats)),

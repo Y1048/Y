@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Keeps the engagement spheres visible while suppressing orientation-axis and
-/// mapping-line debug geometry. This is presentation-only: tracking, engage,
-/// UDP, IK, and diagnostics are unchanged.
+/// Keeps engagement spheres visible, centers them on the operator palm, and
+/// suppresses orientation-axis / mapping-line debug geometry. Wrist-based robot
+/// control, UDP targets, and Mink IK are unchanged.
 /// </summary>
 [DefaultExecutionOrder(10000)]
 public sealed class G1EngagementMarkerVisibility : MonoBehaviour
@@ -32,16 +32,75 @@ public sealed class G1EngagementMarkerVisibility : MonoBehaviour
 
         foreach (G1UnityRightArmPreview preview in previews)
         {
-            // The spheres are part of the operator engage workflow and must stay
-            // visible. G1UnityRightArmPreview may initialize this false, so this
-            // policy restores it before the next rendered frame.
             preview.show_tracking_markers = true;
+            CenterMarkersOnPalm(preview);
         }
 
         HideDebugObject("tracked_quest_wrist_axes");
         HideDebugObject("mapped_quest_command_axes");
         HideDebugObject("operator_hand_target_axes");
         HideDebugObject("tracked_to_target_line");
+    }
+
+    private static void CenterMarkersOnPalm(G1UnityRightArmPreview preview)
+    {
+        G1ExistingHandTargetBinder binder = preview.hand_binder;
+        if (binder == null || !binder.IsEngagementFrameLocked)
+        {
+            return;
+        }
+
+        if (!TryGetPalmCenter(binder, out Vector3 palmCenter))
+        {
+            return;
+        }
+
+        GameObject trackedMarker = GameObject.Find("tracked_quest_wrist_marker");
+        if (trackedMarker != null && binder.IsTrackingValid)
+        {
+            trackedMarker.transform.position = palmCenter;
+        }
+
+        GameObject targetMarker = GameObject.Find("operator_hand_target_marker");
+        if (targetMarker == null)
+        {
+            return;
+        }
+
+        Vector3 localPalmOffset = Quaternion.Inverse(binder.TrackedWristRotation)
+            * (palmCenter - binder.TrackedWristPosition);
+
+        // G1UnityRightArmPreview resets this marker to the target wrist pose in
+        // its own LateUpdate. Apply the corresponding wrist->palm offset after
+        // that update, so this does not accumulate between frames.
+        targetMarker.transform.position += targetMarker.transform.rotation
+            * localPalmOffset;
+    }
+
+    private static bool TryGetPalmCenter(
+        G1ExistingHandTargetBinder binder,
+        out Vector3 palmCenter)
+    {
+        palmCenter = binder.TrackedWristPosition;
+        if (binder.ovr_skeleton == null || binder.ovr_skeleton.Bones == null)
+        {
+            return false;
+        }
+
+        foreach (OVRBone boneValue in binder.ovr_skeleton.Bones)
+        {
+            if (boneValue != null
+                && boneValue.Id == OVRSkeleton.BoneId.Hand_Middle1)
+            {
+                palmCenter = Vector3.Lerp(
+                    binder.TrackedWristPosition,
+                    boneValue.Transform.position,
+                    0.50f);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void HideDebugObject(string objectName)

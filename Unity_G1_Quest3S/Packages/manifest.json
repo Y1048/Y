@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
-    "com.meta.xr.sdk.all": "67.0.0",
+    "com.meta.xr.sdk.all": "205.0.0",
     "com.unity.ai.navigation": "2.0.13",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.feature.development": "1.0.2",

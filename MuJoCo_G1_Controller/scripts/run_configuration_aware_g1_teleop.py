@@ -3,9 +3,9 @@
 The legacy wrist-only voxel map is retained as a coarse reachability pre-check.
 Normal motion passes through unchanged; only gross workspace excursions are
 projected before IK. Actual MuJoCo collision geometry, joint limits, adaptive
-redundancy, emergency escape, a hard clearance boundary, continuous safe-progress
-reconfiguration, safe wrist rotation, and a final swept-path collision guard own
-fine-grained feasibility.
+redundancy, no-progress suppression, emergency escape, a hard clearance boundary,
+continuous safe-progress reconfiguration, safe wrist rotation, and a final
+swept-path collision guard own fine-grained feasibility.
 """
 
 from __future__ import annotations
@@ -35,6 +35,9 @@ from g1_teleop.emergency_clearance_escape import (  # noqa: E402
 )
 from g1_teleop.hard_clearance_boundary_guard import (  # noqa: E402
     install_boundary_hard_clearance_floor,
+)
+from g1_teleop.no_progress_joint_guard import (  # noqa: E402
+    install_no_progress_joint_guard,
 )
 from g1_teleop.reachability_supervisor import (  # noqa: E402
     install_reachability_supervisor,
@@ -242,6 +245,9 @@ def install_geometry_with_emergency_escape(base_module, *, profile_path) -> None
         base_module,
         profile_path=profile_path,
     )
+    # Reject branch wandering before any safety-recovery layer is installed.
+    # Near obstacles the guard bypasses itself so collision recovery keeps full authority.
+    install_no_progress_joint_guard(base_module)
     install_emergency_clearance_escape(base_module)
 
 
@@ -270,6 +276,7 @@ def main() -> None:
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")
     print("Reachability pre-check: voxel gate only for gross excursions (5 cm enter / 2.5 cm release)")
     print("Voxel workspace: diagnostic during normal motion; coarse gate only when grossly unreachable")
+    print("No-progress guard: suppress large shoulder/elbow motion without Cartesian improvement")
     print("Right rubber hand collision proxy: enabled")
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")

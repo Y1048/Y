@@ -19,7 +19,7 @@ if not exist "%UNITY_EXE%" (
     goto :fail
 )
 
-powershell -NoProfile -Command "$p = Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" ^| Where-Object { $_.CommandLine -like '*Unity_G1_Quest3S*' }; if ($p) { exit 1 } else { exit 0 }"
+powershell -NoProfile -Command "$p = Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { $_.CommandLine -like '*Unity_G1_Quest3S*' }; if ($p) { exit 1 } else { exit 0 }"
 if errorlevel 1 (
     echo [ERROR] Unity_G1_Quest3S is currently open.
     echo         Close Unity completely and run this test again.

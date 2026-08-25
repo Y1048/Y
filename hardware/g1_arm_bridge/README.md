@@ -2,6 +2,8 @@
 
 This directory is the hardware boundary between the teleoperation controller and a physical Unitree G1.
 
+The required physical bring-up order is documented in [`HARDWARE_BRINGUP_CHECKLIST.md`](HARDWARE_BRINGUP_CHECKLIST.md). Do not skip gates when moving from read-only validation toward command-capable operation.
+
 ## Phase 1: read-only bring-up
 
 `read_only_lowstate.py` is intentionally incapable of commanding the robot:
@@ -38,6 +40,31 @@ Motor command:  IMPOSSIBLE from this process
 ```
 
 After DDS packets arrive, the script prints the seven right-arm joint states.
+
+## Runtime state and fault schema
+
+`hardware_state.py` defines the common fail-closed status format used during hardware bring-up. Every status document records:
+
+- schema version and timestamp;
+- component name;
+- explicit hardware phase;
+- whether a publisher exists;
+- whether command output is enabled;
+- fail-closed flag;
+- structured fault code/message;
+- component-specific details.
+
+Current phases are:
+
+`OFFLINE`, `READ_ONLY_WAIT`, `READ_ONLY_ACTIVE`, `SYNCED`, `HOLD_READY`, `HOLD_ACTIVE`, `TELEOP_READY`, `TELEOP_ACTIVE`, and `FAULT`.
+
+The read-only bridge always reports both `publisher_present=false` and `command_output_enabled=false`. A stale LowState after traffic has started is written as `FAULT / LOWSTATE_TIMEOUT` before the process exits.
+
+Offline schema tests:
+
+```powershell
+.\tools\TEST_G1_HARDWARE_STATE.bat
+```
 
 ## Hardware pose synchronization
 
@@ -108,7 +135,8 @@ Passing these tests does **not** authorize robot command output. The command-cap
 
 1. **READ ONLY + INITIAL SYNC** — validate DDS, mapping, heartbeat, and initialize Mink/Unity from measured G1 pose.
 2. **SAFETY GATE OFFLINE** — validate fail-closed joint/heartbeat/rate-limit logic without a publisher.
-3. **HOLD** — separate publisher process, seed target from measured state and hold current pose only through the safety gate.
-4. **MINK TARGET** — feed rate-limited Mink targets through the same safety gate.
+3. **REAL LOWSTATE DRY RUN** — feed actual measured G1 state through the Safety Gate while requested target equals measured pose, still with no publisher.
+4. **HOLD** — separate publisher process, seed target from measured state and hold current pose only through the safety gate.
+5. **MINK TARGET** — feed rate-limited Mink targets through the same safety gate only after HOLD is independently validated.
 
 The command-capable bridge must additionally implement controlled arm-SDK acquire/release and must never bypass the safety gate.

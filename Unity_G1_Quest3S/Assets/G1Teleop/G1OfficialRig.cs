@@ -45,12 +45,12 @@ public class G1OfficialRig : MonoBehaviour
             {
                 joint_nodes[node_value.joint_name] = node_value;
 
-                if (node_value.joint_name == "right_wrist_roll_joint")
+                if (node_value.joint_name == "right_wrist_yaw_joint")
                 {
+                    // Use one authoritative wrist frame for both position and
+                    // orientation so Unity engagement/replay matches Mink's
+                    // right_wrist_yaw_link 6D FrameTask exactly.
                     right_wrist_position_reference = node_value.transform;
-                }
-                else if (node_value.joint_name == "right_wrist_yaw_joint")
-                {
                     right_wrist_orientation_reference = node_value.transform;
                 }
             }

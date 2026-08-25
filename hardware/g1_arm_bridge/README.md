@@ -18,21 +18,15 @@ Do **not** add command publishing to this file. Command output belongs in a sepa
 
 ## Environment
 
-Use a Linux machine connected to the G1 network with Unitree's official `unitree_sdk2_python` installed.
+The current Unitree SDK2 bridge is intended to run inside the Linux environment used for Unitree DDS. On a Windows-only development PC, the planned deployment is WSL2 once the local Windows virtualization/WSL installation is healthy.
 
-Find the wired interface, for example:
-
-```bash
-ip -br link
-```
-
-Basic read-only test:
+Basic read-only test inside that environment:
 
 ```bash
 python3 hardware/g1_arm_bridge/read_only_lowstate.py eth0
 ```
 
-Replace `eth0` with the interface physically connected to G1, such as `enp3s0`.
+Replace `eth0` with the interface connected to G1.
 
 Expected startup text includes:
 
@@ -43,13 +37,13 @@ DDS publishers: NONE
 Motor command:  IMPOSSIBLE from this process
 ```
 
-After DDS packets arrive, the script prints the seven right-arm joint states. The values should change when the arm is moved by an approved Unitree mode/controller.
+After DDS packets arrive, the script prints the seven right-arm joint states.
 
 ## Hardware pose synchronization
 
-Before any command-capable phase, the Windows teleoperation PC can initialize Mink and Unity from the actual measured G1 posture.
+Before any command-capable phase, Mink and Unity initialize from the actual measured G1 posture.
 
-On the Linux G1-side machine, forward the read-only state to the Windows PC:
+Forward the read-only state to the Windows teleoperation side:
 
 ```bash
 python3 hardware/g1_arm_bridge/read_only_lowstate.py eth0 --forward-host <WINDOWS_PC_IP>
@@ -74,6 +68,30 @@ The startup sequence is:
 
 At this phase there is still **no robot command publisher**.
 
+## Hardware Safety Gate
+
+`safety_gate.py` is a pure-Python, fail-closed gate with no DDS dependency and no command output. A future HOLD/Mink publisher is only allowed to use the `command_q_rad` returned by an `allowed=True` decision.
+
+Current checks:
+
+- LowState age must be <= 250 ms;
+- measured and requested vectors must contain exactly seven finite values;
+- measured and requested joints must remain inside G1 joint ranges with a 2-degree safety margin;
+- the teleoperation elbow policy is tightened to 5-120 degrees before the 2-degree margin;
+- requested target may be at most 10 degrees away from measured state on any joint;
+- output rate is limited to 15 deg/s per joint;
+- any failure returns no command vector.
+
+The underlying right-arm joint limits are taken from the official Unitree MuJoCo G1 29-DoF model used by this repository, with the existing elbow operational restriction applied on top.
+
+Run the offline tests on Windows without Unitree SDK or G1 hardware:
+
+```powershell
+.\tools\TEST_G1_HARDWARE_SAFETY_GATE.bat
+```
+
+Passing these tests does **not** authorize robot command output. The command-capable bridge remains a separate later phase.
+
 ## Joint mapping
 
 | Index | Joint |
@@ -89,7 +107,8 @@ At this phase there is still **no robot command publisher**.
 ## Planned phases
 
 1. **READ ONLY + INITIAL SYNC** — validate DDS, mapping, heartbeat, and initialize Mink/Unity from measured G1 pose.
-2. **HOLD** — separate publisher process, seed target from measured state and hold current pose only.
-3. **MINK TARGET** — feed rate-limited Mink targets through a hardware safety gate.
+2. **SAFETY GATE OFFLINE** — validate fail-closed joint/heartbeat/rate-limit logic without a publisher.
+3. **HOLD** — separate publisher process, seed target from measured state and hold current pose only through the safety gate.
+4. **MINK TARGET** — feed rate-limited Mink targets through the same safety gate.
 
-The first command-capable bridge must independently enforce heartbeat, measured/target error, joint limits, command-rate limits and controlled arm-SDK release.
+The command-capable bridge must additionally implement controlled arm-SDK acquire/release and must never bypass the safety gate.

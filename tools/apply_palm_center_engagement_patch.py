@@ -18,12 +18,23 @@ class PatchError(RuntimeError):
     pass
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
-    if new in text:
-        return text
-    count = text.count(old)
-    if count != 1:
-        raise PatchError(f"{label}: expected one source pattern, found {count}")
+    if old not in text:
+        if new in text:
+            return text
+        raise PatchError(f"{label}: source pattern not found")
+    if text.count(old) != 1:
+        raise PatchError(f"{label}: expected one source pattern, found {text.count(old)}")
     return text.replace(old, new, 1)
+
+def replace_exact_count(text: str, old: str, new: str, expected: int, label: str) -> str:
+    count = text.count(old)
+    if count == 0:
+        if text.count(new) == expected:
+            return text
+        raise PatchError(f"{label}: source pattern not found")
+    if count != expected:
+        raise PatchError(f"{label}: expected {expected} source patterns, found {count}")
+    return text.replace(old, new)
 
 def apply_patch(text: str) -> str:
     text = replace_once(text,
@@ -50,18 +61,15 @@ def apply_patch(text: str) -> str:
         "        AlignmentPositionError = Vector3.Distance(\n            TrackedWristPosition,\n            EngagementTargetPosition);\n",
         "        AlignmentPositionError = Vector3.Distance(\n            EngagementTrackingPosition,\n            EngagementTargetAlignmentPosition);\n",
         "engagement distance")
-    text = replace_once(text,
+    text = replace_exact_count(text,
         "                alignment_reference_position = TrackedWristPosition;\n",
         "                alignment_reference_position = EngagementTrackingPosition;\n",
-        "stability start")
+        2,
+        "stability references")
     text = replace_once(text,
         "            float position_change = Vector3.Distance(\n                alignment_reference_position,\n                TrackedWristPosition);\n",
         "            float position_change = Vector3.Distance(\n                alignment_reference_position,\n                EngagementTrackingPosition);\n",
         "stability motion")
-    text = replace_once(text,
-        "                alignment_reference_position = TrackedWristPosition;\n",
-        "                alignment_reference_position = EngagementTrackingPosition;\n",
-        "stability reset")
     text = replace_once(text,
         "        TrackedHandPosition = GetPalmCenterPosition();\n",
         "        TrackedHandPosition = GetPalmCenterPosition();\n        UpdateEngagementPalmReference();\n",
@@ -86,6 +94,10 @@ def validate(text: str) -> None:
     missing = [x for x in required if x not in text]
     if missing:
         raise PatchError("validation failed: " + ", ".join(missing))
+    if text.count("alignment_reference_position = EngagementTrackingPosition;") != 2:
+        raise PatchError("validation failed: both stability references were not patched")
+    if "AlignmentPositionError = Vector3.Distance(\n            EngagementTrackingPosition,\n            EngagementTargetAlignmentPosition);" not in text:
+        raise PatchError("validation failed: engagement distance is not palm-centered")
 
 def main() -> int:
     if not SOURCE.exists():

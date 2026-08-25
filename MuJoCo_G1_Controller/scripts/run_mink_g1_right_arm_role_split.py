@@ -1,10 +1,13 @@
-"""Experimental G1 right-arm Mink controller with kinematic role separation.
+"""Experimental G1 right-arm Mink controller with soft kinematic role separation.
 
 This keeps the normal Mink controller untouched and changes only the Jacobian
 used by the 6D right_wrist_yaw_link task:
 
-- Cartesian position rows may use shoulder pitch/roll/yaw + elbow only.
-- Orientation rows may use wrist roll/pitch/yaw only.
+- Cartesian position is dominated by shoulder pitch/roll/yaw + elbow.
+- Orientation is dominated by wrist roll/pitch/yaw.
+- The non-primary group keeps a small continuous assist gain so joint limits and
+  collision avoidance retain an escape route instead of producing a hard 90 deg
+  orientation failure near wrist saturation.
 
 There is deliberately NO speed threshold, mode switch, or hard-freeze based on
 operator motion. Slow/millimetric translation remains a normal position task.
@@ -22,10 +25,17 @@ from mink.tasks.task import Task
 import run_mink_g1_right_arm_prototype as base
 
 
-# Keep only light instantaneous regularization in this experiment. The role
-# split itself prevents shoulder/elbow from helping the orientation objective.
+# Keep only light instantaneous regularization in this experiment. The soft role
+# split itself strongly prefers shoulder/elbow for position and the three wrist
+# joints for orientation without making either assignment mathematically rigid.
 base.PROXIMAL_DAMPING_COST = 0.03
 base.WRIST_DAMPING_COST = 0.015
+
+# Continuous Jacobian assist factors. Primary-role columns stay at 1.0.
+# These small non-zero values preserve the desired teleoperation feel while
+# allowing the QP to escape wrist saturation and collision-constrained poses.
+WRIST_POSITION_ASSIST_GAIN = 0.10
+PROXIMAL_ORIENTATION_ASSIST_GAIN = 0.12
 
 # Preserve one-to-one low-speed/millimetric control, but soften abrupt operator
 # motions by clipping the QP joint velocity. The base controller uses 75 deg/s;
@@ -40,7 +50,7 @@ _original_write_status = base._write_status
 
 
 class RoleSplitFrameTask(Task):
-    """FrameTask whose translational/rotational Jacobian columns are role-masked."""
+    """FrameTask with continuously weighted proximal/wrist Jacobian roles."""
 
     def __init__(
         self,
@@ -101,17 +111,23 @@ class RoleSplitFrameTask(Task):
         jacobian = self._frame_task.compute_jacobian(configuration).copy()
 
         # Mink FrameTask error ordering is [translation(3), rotation(3)].
-        # Position is solved only by shoulder(3)+elbow(1).
-        jacobian[0:3, self._wrist_dofs] = 0.0
-        # Orientation is solved only by wrist roll/pitch/yaw.
-        jacobian[3:6, self._proximal_dofs] = 0.0
+        # Position is dominated by shoulder(3)+elbow(1), with only a small wrist
+        # contribution retained for feasibility/collision escape.
+        jacobian[0:3, self._wrist_dofs] *= WRIST_POSITION_ASSIST_GAIN
+
+        # Orientation is dominated by wrist roll/pitch/yaw, with a small proximal
+        # contribution retained so wrist limits do not cause a hard orientation
+        # failure. This is a continuous preference, not a mode switch.
+        jacobian[3:6, self._proximal_dofs] *= PROXIMAL_ORIENTATION_ASSIST_GAIN
         return jacobian
 
 
 def _write_role_split_status(payload: dict) -> None:
-    payload["kinematic_role_split"] = "proximal_position__wrist_orientation"
+    payload["kinematic_role_split"] = "soft_proximal_position__wrist_orientation"
     payload["position_joints"] = base.g1.RIGHT_ARM_JOINTS[:4]
     payload["orientation_joints"] = base.g1.RIGHT_ARM_JOINTS[4:]
+    payload["wrist_position_assist_gain"] = WRIST_POSITION_ASSIST_GAIN
+    payload["proximal_orientation_assist_gain"] = PROXIMAL_ORIENTATION_ASSIST_GAIN
     payload["speed_based_mode_switch"] = False
     payload["proximal_hard_freeze"] = False
     payload["max_joint_velocity_deg_s"] = ROLE_SPLIT_MAX_JOINT_VELOCITY_DEG_S
@@ -125,9 +141,9 @@ def main() -> None:
     base._write_status = _write_role_split_status
 
     print("============================================================")
-    print("G1 Mink role-split IK experiment")
-    print("Position    : shoulder 3 + elbow")
-    print("Orientation : wrist roll + pitch + yaw")
+    print("G1 Mink SOFT role-split IK experiment")
+    print("Position    : proximal 100%, wrist assist 10%")
+    print("Orientation : wrist 100%, proximal assist 12%")
     print("Speed modes : NONE")
     print("Hard freeze : NONE")
     print(

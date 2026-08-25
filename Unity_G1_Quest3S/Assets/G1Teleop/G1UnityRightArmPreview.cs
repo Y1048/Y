@@ -273,12 +273,32 @@ public class G1UnityRightArmPreview : MonoBehaviour
             ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
 
-        // The visible target represents the operator command, not the current
-        // G1 wrist. This keeps reachability feedback visible even when the robot
-        // is held at the feasible boundary.
-        target_hand_marker.position = command_position;
+        bool local_workspace_limited = target_sender != null
+            && target_sender.IsWorkspaceLimited;
+        bool backend_workspace_limited = command_active
+            && state_receiver != null
+            && state_receiver.HasRecentState
+            && state_receiver.IsWorkspaceLimited;
+        bool workspace_limited = local_workspace_limited
+            || backend_workspace_limited;
+
+        // Follow the operator command while reachable. Once the backend reports
+        // a reachability limit, pin the visible target to the actual target the
+        // G1 is being asked to reach. The blue tracked-hand marker can continue
+        // moving outside the workspace, making the boundary immediately visible.
+        Vector3 displayed_target_position = command_position;
+        if (backend_workspace_limited
+            && calibration_reference_captured
+            && state_receiver.HasMotionDiagnostics)
+        {
+            displayed_target_position = robot_wrist_at_calibration
+                + hand_binder.OperatorHeading
+                * state_receiver.LatestTargetOperatorDelta;
+        }
+
+        target_hand_marker.position = displayed_target_position;
         target_hand_marker.rotation = command_rotation;
-        target_hand_axes.position = command_position;
+        target_hand_axes.position = displayed_target_position;
         target_hand_axes.rotation = command_rotation;
 
         if (tracking_visible)
@@ -311,14 +331,6 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 }
             }
         }
-
-        bool local_workspace_limited = target_sender != null
-            && target_sender.IsWorkspaceLimited;
-        bool backend_workspace_limited = command_active
-            && state_receiver != null
-            && state_receiver.IsWorkspaceLimited;
-        bool workspace_limited = local_workspace_limited
-            || backend_workspace_limited;
 
         if (workspace_limited)
         {

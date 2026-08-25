@@ -21,6 +21,10 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public float workspace_exit_confirm_seconds = 0.80f;
     public float workspace_exit_margin = 0.02f;
 
+    [Header("Pinch disengage")]
+    public bool enable_pinch_disengage = true;
+    public float pinch_disengage_hold_seconds = 0.50f;
+
     // Live Quest hand tracking is noisier than the deterministic fake sender.
     // Keep the backend's 0.08 m/s reference limiter authoritative, but remove
     // small frame-to-frame tracking noise before it becomes an IK target.
@@ -37,6 +41,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public Vector3 LastOperatorTargetDelta { get; private set; }
     public bool IsWorkspaceLimited { get; private set; }
     public bool IsCommandValid { get; private set; }
+    public bool IsPinchDisengaged { get; private set; }
+    public float PinchDisengageProgress { get; private set; }
 
     private UdpClient udp_client;
     private IPEndPoint udp_endpoint;
@@ -55,6 +61,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     private bool live_filter_initialized;
     private Vector3 filtered_operator_delta;
     private Quaternion filtered_operator_rotation = Quaternion.identity;
+    private float pinch_hold_duration;
+    private bool pinch_triggered_until_release;
 
     private void Awake()
     {
@@ -63,6 +71,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             state_receiver = GetComponent<G1RobotStateUdpReceiver>();
         }
         workspace_exit_margin = Mathf.Max(0.0f, workspace_exit_margin);
+        pinch_disengage_hold_seconds = Mathf.Max(0.10f, pinch_disengage_hold_seconds);
         live_position_filter_time_constant_s = Mathf.Max(0.001f, live_position_filter_time_constant_s);
         live_rotation_filter_time_constant_s = Mathf.Max(0.001f, live_rotation_filter_time_constant_s);
         operator_forward_scale = Mathf.Clamp(operator_forward_scale, 0.10f, 1.0f);
@@ -78,10 +87,58 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     {
         if (!Application.isPlaying || shutdown_complete) return;
         if (hand_binder == null && right_hand_target == null) return;
+
+        UpdatePinchDisengage();
+
         send_timer += Time.deltaTime;
         if (send_timer < send_interval) return;
         send_timer = 0.0f;
         SendTarget();
+    }
+
+    private void UpdatePinchDisengage()
+    {
+        PinchDisengageProgress = 0.0f;
+        if (!enable_pinch_disengage
+            || hand_binder == null
+            || hand_binder.ovr_hand == null)
+        {
+            pinch_hold_duration = 0.0f;
+            pinch_triggered_until_release = false;
+            return;
+        }
+
+        bool pinching = hand_binder.ovr_hand.IsTracked
+            && hand_binder.ovr_hand.GetFingerIsPinching(OVRHand.HandFinger.Index);
+        if (!pinching)
+        {
+            pinch_hold_duration = 0.0f;
+            pinch_triggered_until_release = false;
+            return;
+        }
+
+        if (!hand_binder.IsCalibrated || pinch_triggered_until_release)
+        {
+            return;
+        }
+
+        pinch_hold_duration += Time.deltaTime;
+        PinchDisengageProgress = Mathf.Clamp01(
+            pinch_hold_duration / pinch_disengage_hold_seconds);
+        if (pinch_hold_duration < pinch_disengage_hold_seconds)
+        {
+            return;
+        }
+
+        pinch_triggered_until_release = true;
+        pinch_hold_duration = 0.0f;
+        PinchDisengageProgress = 1.0f;
+        IsPinchDisengaged = true;
+        live_filter_initialized = false;
+        hand_binder.ResetCalibration();
+        Debug.Log(
+            "G1 teleoperation disengaged by thumb-index pinch. "
+            + "Return the hand to the engagement target and hold still to reconnect.");
     }
 
     private void SendTarget()
@@ -102,6 +159,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             IsWorkspaceLimited = false;
             workspace_violation_hold_active = false;
             live_filter_initialized = false;
+            IsPinchDisengaged = false;
             Debug.Log("G1 teleoperation engagement accepted; stale workspace feedback is being rearmed.");
         }
 
@@ -232,7 +290,11 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         IsCommandValid = command_valid;
         Vector3 send_position = command_valid ? clamped_robot_target : LastRobotTarget;
         Quaternion send_rotation = target_rotation;
-        string command_state = workspace_exit_latched ? "workspace_exit" : (command_valid ? "active" : "idle");
+        string command_state = workspace_exit_latched
+            ? "workspace_exit"
+            : IsPinchDisengaged && !command_valid
+                ? "pinch_disengaged"
+                : command_valid ? "active" : "idle";
         string json_text = BuildPacket(send_position, send_rotation, command_valid, command_state);
         if (!SendPacket(json_text)) return;
         packet_count++;
@@ -313,6 +375,10 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         backend_workspace_rearm_revision = 0;
         IsWorkspaceLimited = false;
         IsCommandValid = false;
+        IsPinchDisengaged = false;
+        PinchDisengageProgress = 0.0f;
+        pinch_hold_duration = 0.0f;
+        pinch_triggered_until_release = false;
         shutdown_complete = false;
         workspace_violation_hold_active = false;
         live_filter_initialized = false;

@@ -11,6 +11,7 @@ public sealed class G1BackendWorkspaceAuthority : MonoBehaviour
     private const float DisabledWorkspaceExtent = 1000.0f;
 
     private G1ExistingTargetUdpSender configuredSender;
+    private G1PinchTeleopDisengage pinchDisengage;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Install()
@@ -28,20 +29,41 @@ public sealed class G1BackendWorkspaceAuthority : MonoBehaviour
     private void Update()
     {
         G1ExistingTargetUdpSender sender = FindObjectOfType<G1ExistingTargetUdpSender>();
-        if (sender == null || sender == configuredSender)
+        if (sender != null && sender != configuredSender)
+        {
+            ApplyBackendAuthority(sender);
+            configuredSender = sender;
+        }
+
+        EnsurePinchDisengage();
+    }
+
+    private void EnsurePinchDisengage()
+    {
+        G1ExistingHandTargetBinder binder = FindObjectOfType<G1ExistingHandTargetBinder>();
+        if (binder == null)
         {
             return;
         }
 
-        ApplyBackendAuthority(sender);
-        configuredSender = sender;
+        if (pinchDisengage == null)
+        {
+            pinchDisengage = GetComponent<G1PinchTeleopDisengage>();
+            if (pinchDisengage == null)
+            {
+                pinchDisengage = gameObject.AddComponent<G1PinchTeleopDisengage>();
+            }
+        }
+
+        pinchDisengage.hand_binder = binder;
+        pinchDisengage.ovr_hand = binder.ovr_hand;
     }
 
     private static void ApplyBackendAuthority(G1ExistingTargetUdpSender sender)
     {
         // Do not turn backend workspace feedback into a Unity-side clutch release.
-        // This also prevents the old excursion-cleared path from repeatedly
-        // ResetCalibration()/Calibrate()-ing and shrinking OperatorTargetDelta.
+        // The backend reachability supervisor keeps the robot target on the feasible
+        // boundary while Unity continues to show the operator's requested direction.
         sender.disengage_on_workspace_exit = false;
 
         // The sender still calls ClampToRobotWorkspace internally. Widening these
@@ -57,7 +79,7 @@ public sealed class G1BackendWorkspaceAuthority : MonoBehaviour
             DisabledWorkspaceExtent);
 
         Debug.Log(
-            "G1 backend voxel workspace authority enabled: Unity rectangular "
-            + "workspace clamp/disengage disabled for teleoperation.");
+            "G1 backend reachability authority enabled: workspace excursions hold "
+            + "the robot at the feasible boundary and are shown by backend feedback.");
     }
 }

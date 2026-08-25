@@ -113,9 +113,6 @@ public static class G1OfficialModelImporter
                 mesh_values,
                 material_values);
 
-            Transform wrist_position_transform = FindChild(
-                prefab_root.transform,
-                "right_wrist_roll_link");
             Transform wrist_transform = FindChild(
                 prefab_root.transform,
                 "right_wrist_yaw_link");
@@ -125,9 +122,9 @@ public static class G1OfficialModelImporter
             Transform head_visual_transform = FindChild(
                 prefab_root.transform,
                 "head_link_visual");
-            if (wrist_position_transform == null || wrist_transform == null)
+            if (wrist_transform == null)
             {
-                throw new InvalidDataException("The official G1 right wrist body was not found.");
+                throw new InvalidDataException("The official G1 right wrist-yaw body was not found.");
             }
             if (torso_transform == null || head_visual_transform == null)
             {
@@ -147,7 +144,11 @@ public static class G1OfficialModelImporter
                 new Vector3(0.105f, 0.029f, 0.200f));
             contact_object.transform.localRotation = Quaternion.identity;
             rig_value.right_hand_contact_point = contact_object.transform;
-            rig_value.right_wrist_position_reference = wrist_position_transform;
+
+            // Mink controls right_wrist_yaw_link as one full 6D frame. Persist
+            // that same body as Unity's position and orientation reference so a
+            // prefab rebuild cannot silently reintroduce the old roll/yaw split.
+            rig_value.right_wrist_position_reference = wrist_transform;
             rig_value.right_wrist_orientation_reference = wrist_transform;
 
             GameObject semantic_reference_object = new GameObject(

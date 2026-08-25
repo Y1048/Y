@@ -21,9 +21,9 @@ if not exist "%UNITY_EXE%" (
 
 powershell -NoProfile -Command "$p = Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { $_.CommandLine -like '*Unity_G1_Quest3S*' }; if ($p) { exit 1 } else { exit 0 }"
 if errorlevel 1 (
-    echo [ERROR] Unity_G1_Quest3S is currently open.
-    echo         Close Unity completely and run this test again.
-    goto :fail
+    echo [BLOCKED] Unity_G1_Quest3S is currently open.
+    echo           Save your work, close Unity completely, then run this test again.
+    exit /b 2
 )
 
 echo [1/2] Exporting MuJoCo right_wrist_yaw_link FK samples...

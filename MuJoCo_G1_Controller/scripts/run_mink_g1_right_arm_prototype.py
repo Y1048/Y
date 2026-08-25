@@ -1,8 +1,8 @@
-"""Mink-based right-arm-only G1 teleoperation prototype.
+"""Mink-based right-arm-only G1 teleoperation controller.
 
-This is an A/B prototype. It intentionally does not replace the production
-configuration-aware controller. Unity keeps sending the existing UDP target
-format on port 5005; this script solves one 7-DoF right-arm QP using Mink.
+Unity keeps sending the existing UDP target format on port 5005; this script
+solves one 7-DoF right-arm QP using Mink. Shared G1 model/joint/frame utilities
+live in g1_right_arm_common and no legacy IK implementation is imported here.
 
 QP structure:
 - full 6D right wrist FrameTask,
@@ -11,8 +11,6 @@ QP structure:
 - right-arm velocity limits,
 - MuJoCo geometry CollisionAvoidanceLimit,
 - exact zero-velocity equality constraints on every non-right-arm DOF.
-
-No legacy clearance-gradient/reconfigure/wrist-overlay layers are installed here.
 """
 
 from __future__ import annotations
@@ -49,7 +47,7 @@ PROJECT_ROOT = ROOT.parent
 RUNTIME_STATUS_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_mink_status.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import g1_right_arm_udp_ik_demo as base  # noqa: E402
+import g1_right_arm_common as g1  # noqa: E402
 
 
 CONTROL_HZ = 60.0
@@ -88,8 +86,8 @@ def _find_body(element: ET.Element, name: str) -> ET.Element | None:
 
 def _prepare_mink_xml() -> None:
     """Generate the fixed-base demo and name its collision-enabled robot geoms."""
-    base.make_demo_xml("control")
-    tree = ET.parse(base.DEMO_XML)
+    g1.make_demo_xml("control")
+    tree = ET.parse(g1.DEMO_XML)
     root = tree.getroot()
     worldbody = root.find("worldbody")
     if worldbody is None:
@@ -120,9 +118,6 @@ def _prepare_mink_xml() -> None:
             },
         )
 
-    # Mink CollisionAvoidanceLimit addresses geoms by name. The official Unitree
-    # MJCF has useful collision geoms, but many are intentionally unnamed. Name
-    # only collision-enabled geoms; visual-only meshes stay untouched.
     name_counter = 0
     for body in robot_body.iter("body"):
         body_name = body.get("name") or "body"
@@ -140,7 +135,7 @@ def _prepare_mink_xml() -> None:
             local_index += 1
             name_counter += 1
 
-    tree.write(base.DEMO_XML, encoding="unicode")
+    tree.write(g1.DEMO_XML, encoding="unicode")
 
 
 def _joint_id(model: mujoco.MjModel, joint_name: str) -> int:
@@ -152,7 +147,7 @@ def _joint_id(model: mujoco.MjModel, joint_name: str) -> int:
 
 def _apply_operational_joint_limits(model: mujoco.MjModel) -> None:
     """Make Mink and MuJoCo share one authoritative live joint range."""
-    for joint_name, limits_deg in base.RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES.items():
+    for joint_name, limits_deg in g1.RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES.items():
         joint_id = _joint_id(model, joint_name)
         low_deg, high_deg = limits_deg
         model.jnt_range[joint_id, 0] = math.radians(low_deg)
@@ -200,10 +195,10 @@ def _collision_geom_records(model: mujoco.MjModel) -> list[tuple[int, str]]:
 
 
 def _build_collision_pairs(model: mujoco.MjModel) -> tuple[list[tuple[list[str], list[str]]], list[tuple[int, int]]]:
-    """Mirror the current body-pair policy without finite-difference gradients."""
+    """Build collision pairs involving the right arm and non-neighbor robot bodies."""
     right_arm_body_ids = {
-        base.get_body_id(model, body_name)
-        for body_name in base.RIGHT_ARM_BODY_NAMES
+        g1.get_body_id(model, body_name)
+        for body_name in g1.RIGHT_ARM_BODY_NAMES
         if mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name) >= 0
     }
     records = _collision_geom_records(model)
@@ -222,9 +217,6 @@ def _build_collision_pairs(model: mujoco.MjModel) -> tuple[list[tuple[list[str],
             if distance is not None and distance <= STRUCTURAL_NEIGHBOR_DISTANCE:
                 continue
 
-            # For this first prototype, all non-neighbor robot bodies are treated
-            # as forbidden. This covers torso, opposite arm and lower body without
-            # hand-written pair lists. Task-contact exceptions come later.
             geom1_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, geom1_name)
             geom2_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, geom2_name)
             key = tuple(sorted((int(geom1_id), int(geom2_id))))
@@ -238,7 +230,7 @@ def _build_collision_pairs(model: mujoco.MjModel) -> tuple[list[tuple[list[str],
 
 
 def _right_arm_dof_indices(model: mujoco.MjModel) -> list[int]:
-    return [int(model.jnt_dofadr[_joint_id(model, name)]) for name in base.RIGHT_ARM_JOINTS]
+    return [int(model.jnt_dofadr[_joint_id(model, name)]) for name in g1.RIGHT_ARM_JOINTS]
 
 
 def _frozen_dof_indices(model: mujoco.MjModel, right_dofs: list[int]) -> list[int]:
@@ -250,11 +242,11 @@ def _initial_configuration(model: mujoco.MjModel) -> np.ndarray:
     data = mujoco.MjData(model)
     q = model.qpos0.copy()
     data.qpos[:] = q
-    for name, value in zip(base.RIGHT_ARM_JOINTS, np.radians(base.RIGHT_ARM_READY_DEGREES)):
-        base.set_joint(model, data, name, float(value))
-    for name, value in zip(base.LEFT_ARM_JOINTS, np.radians(base.LEFT_ARM_READY_DEGREES)):
-        base.set_joint(model, data, name, float(value))
-    base.clamp_joint_angles(model, data, base.RIGHT_ARM_JOINTS)
+    for name, value in zip(g1.RIGHT_ARM_JOINTS, np.radians(g1.RIGHT_ARM_READY_DEGREES)):
+        g1.set_joint(model, data, name, float(value))
+    for name, value in zip(g1.LEFT_ARM_JOINTS, np.radians(g1.LEFT_ARM_READY_DEGREES)):
+        g1.set_joint(model, data, name, float(value))
+    g1.clamp_joint_angles(model, data, g1.RIGHT_ARM_JOINTS)
     mujoco.mj_forward(model, data)
     return data.qpos.copy()
 
@@ -302,7 +294,12 @@ def _open_udp_socket() -> socket.socket:
     return sock
 
 
-def _receive_latest(sock: socket.socket, fallback_pos: np.ndarray, fallback_rot: np.ndarray, fallback_valid: bool):
+def _receive_latest(
+    sock: socket.socket,
+    fallback_pos: np.ndarray,
+    fallback_rot: np.ndarray,
+    fallback_valid: bool,
+):
     latest_pos = fallback_pos
     latest_rot = fallback_rot
     latest_valid = fallback_valid
@@ -326,7 +323,7 @@ def _receive_latest(sock: socket.socket, fallback_pos: np.ndarray, fallback_rot:
                 if not np.all(np.isfinite(pos)) or not np.all(np.isfinite(rot)):
                     continue
                 latest_pos = pos
-                latest_rot = base.normalize_quaternion_xyzw(rot)
+                latest_rot = g1.normalize_quaternion_xyzw(rot)
             latest_valid = valid
             received += 1
         except (TypeError, ValueError, UnicodeDecodeError, json.JSONDecodeError):
@@ -344,7 +341,7 @@ def _send_unity_state(
     collision_limited: bool,
 ) -> None:
     data = configuration.data
-    wrist_body = base.get_body_id(configuration.model, "right_wrist_roll_link")
+    wrist_body = g1.get_body_id(configuration.model, "right_wrist_roll_link")
     wrist_position = data.xpos[wrist_body].copy()
     if active and reference_position is not None:
         wrist_delta = wrist_position - reference_position
@@ -379,7 +376,7 @@ def _write_status(payload: dict) -> None:
 
 def main() -> None:
     _prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(base.DEMO_XML))
+    model = mujoco.MjModel.from_xml_path(str(g1.DEMO_XML))
     _apply_operational_joint_limits(model)
 
     configuration = mink.Configuration(model)
@@ -387,7 +384,9 @@ def main() -> None:
     data = configuration.data
 
     right_dofs = _right_arm_dof_indices(model)
-    right_qpos_ids = [int(model.jnt_qposadr[_joint_id(model, name)]) for name in base.RIGHT_ARM_JOINTS]
+    right_qpos_ids = [
+        int(model.jnt_qposadr[_joint_id(model, name)]) for name in g1.RIGHT_ARM_JOINTS
+    ]
     frozen_dofs = _frozen_dof_indices(model, right_dofs)
     collision_pairs, collision_geom_ids = _build_collision_pairs(model)
 
@@ -405,7 +404,7 @@ def main() -> None:
     posture_task.set_target(configuration.q.copy())
 
     velocity_limits = {
-        name: RIGHT_ARM_MAX_VELOCITY_RAD_S for name in base.RIGHT_ARM_JOINTS
+        name: RIGHT_ARM_MAX_VELOCITY_RAD_S for name in g1.RIGHT_ARM_JOINTS
     }
     limits = [
         mink.ConfigurationLimit(model=model),
@@ -426,7 +425,7 @@ def main() -> None:
     udp = _open_udp_socket()
     state_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    raw_target = data.xpos[base.get_body_id(model, "right_wrist_roll_link")].copy()
+    raw_target = data.xpos[g1.get_body_id(model, "right_wrist_roll_link")].copy()
     raw_rotation = np.array([0.0, 0.0, 0.0, 1.0])
     raw_valid = False
     last_packet_time = float("-inf")
@@ -437,8 +436,8 @@ def main() -> None:
     next_state = time.monotonic()
     cycle_times: list[float] = []
 
-    print("Mink G1 right-arm prototype")
-    print("---------------------------")
+    print("Mink G1 right-arm controller")
+    print("----------------------------")
     print(f"UDP input: {UDP_HOST}:{UDP_PORT}")
     print(f"QP solver: {solver}")
     print(f"Frozen non-right-arm DOFs: {len(frozen_dofs)}")
@@ -448,7 +447,7 @@ def main() -> None:
         f"min={COLLISION_MIN_DISTANCE_M*1000:.1f} mm, "
         f"detect={COLLISION_DETECTION_DISTANCE_M*1000:.1f} mm"
     )
-    print("Production controller is NOT installed or modified by this prototype.")
+    print("Hardware output: disabled in this process.")
 
     try:
         with mujoco.viewer.launch_passive(model, data) as viewer:
@@ -470,7 +469,7 @@ def main() -> None:
                 if active and not last_active:
                     clutch_reference = {
                         "input_position": raw_target.copy(),
-                        "input_rotation": base.operator_rotation_to_robot_matrix(raw_rotation),
+                        "input_rotation": g1.operator_rotation_to_robot_matrix(raw_rotation),
                         "robot_position": wrist_pose.translation().copy(),
                         "robot_rotation": wrist_pose.rotation().as_matrix().copy(),
                     }
@@ -483,7 +482,7 @@ def main() -> None:
                         + raw_target
                         - clutch_reference["input_position"]
                     )
-                    input_rotation_matrix = base.operator_rotation_to_robot_matrix(raw_rotation)
+                    input_rotation_matrix = g1.operator_rotation_to_robot_matrix(raw_rotation)
                     rotation_delta = (
                         input_rotation_matrix @ clutch_reference["input_rotation"].T
                     )
@@ -523,7 +522,9 @@ def main() -> None:
                         right_qpos_ids,
                         active,
                         target_position,
-                        None if clutch_reference is None else clutch_reference["robot_position"],
+                        None
+                        if clutch_reference is None
+                        else clutch_reference["robot_position"],
                         collision_limited,
                     )
                     next_state = now + DT
@@ -544,7 +545,7 @@ def main() -> None:
                     _write_status(
                         {
                             "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
-                            "prototype": "mink_right_arm_qp",
+                            "controller": "mink_right_arm_qp",
                             "input_active": active,
                             "received_packets": received_total,
                             "solver": solver,

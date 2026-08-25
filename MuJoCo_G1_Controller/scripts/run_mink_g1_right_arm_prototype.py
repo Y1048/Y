@@ -308,7 +308,7 @@ def _receive_latest(sock: socket.socket, fallback_pos: np.ndarray, fallback_rot:
 
 def _state_packet(configuration, right_qpos_ids, active, target_position, reference_position, collision_limited):
     data = configuration.data
-    wrist_body = g1.get_body_id(configuration.model, "right_wrist_roll_link")
+    wrist_body = g1.get_body_id(configuration.model, "right_wrist_yaw_link")
     wrist_position = data.xpos[wrist_body].copy()
     if active and reference_position is not None:
         wrist_delta = wrist_position - reference_position
@@ -373,7 +373,7 @@ def main() -> None:
     state_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     dry_run_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    raw_target = data.xpos[g1.get_body_id(model, "right_wrist_roll_link")].copy()
+    raw_target = data.xpos[g1.get_body_id(model, "right_wrist_yaw_link")].copy()
     raw_rotation = np.array([0.0, 0.0, 0.0, 1.0])
     raw_valid = False
     last_packet_time = float("-inf")

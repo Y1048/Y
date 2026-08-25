@@ -12,7 +12,7 @@ echo   - Does NOT replace START_VR_HAND_TO_MUJOCO.bat
 echo ============================================================
 echo.
 
-powershell -NoProfile -Command "$p = Get-NetUDPEndpoint -LocalPort 5005 -ErrorAction SilentlyContinue; if ($p) { Write-Host '[ERROR] UDP 5005 is already in use. Stop the production controller first.' -ForegroundColor Red; $p ^| Select-Object LocalAddress,LocalPort,OwningProcess ^| Format-Table; exit 1 }"
+powershell -NoProfile -Command "$p = Get-NetUDPEndpoint -LocalPort 5005 -ErrorAction SilentlyContinue; if ($p) { Write-Host '[ERROR] UDP 5005 is already in use. Stop the production controller first.' -ForegroundColor Red; $p | Select-Object LocalAddress,LocalPort,OwningProcess | Format-Table; exit 1 }"
 if errorlevel 1 goto :end
 
 py -3.11 -c "import mujoco; print('MuJoCo', mujoco.__version__)" >nul 2>&1

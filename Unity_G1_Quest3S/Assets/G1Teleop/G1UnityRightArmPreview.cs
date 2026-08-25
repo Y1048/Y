@@ -75,10 +75,6 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void Awake()
     {
-        // Production teleoperation no longer displays the diagnostic wrist
-        // spheres, RGB orientation axes, or mapping line. Keep the underlying
-        // tracking/diagnostic calculations intact for logs and safety checks.
-        show_tracking_markers = false;
         CreatePreview();
     }
 

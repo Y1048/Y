@@ -4,8 +4,10 @@ cd /d "%~dp0.."
 
 echo ============================================================
 echo   G1 Mink Role-Split IK Experiment
-echo   - Position: shoulder 3 + elbow
-echo   - Orientation: wrist roll + pitch + yaw
+echo   - Position: shoulder 3 + elbow dominant
+echo   - Orientation: wrist roll + pitch + yaw dominant
+echo   - Normal proximal orientation assist: 0%%
+echo   - Wrist-limit hysteresis escape assist
 echo   - No speed mode switching
 echo   - No proximal hard freeze
 echo ============================================================
@@ -23,8 +25,8 @@ if errorlevel 1 (
 )
 
 echo.
-echo [RUN] Role-split Mink controller
-py -3.11 MuJoCo_G1_Controller\scripts\run_mink_g1_right_arm_role_split.py
+echo [RUN] Role-split Mink controller with wrist-limit hysteresis
+py -3.11 MuJoCo_G1_Controller\scripts\run_mink_g1_right_arm_role_split_hysteresis.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Role-split Mink controller exited with an error.

@@ -1,18 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// Keeps the visible operator target at the last reachable location while the
-/// backend reachability gate is active. The blue tracked-hand marker may keep
-/// moving beyond the reachable workspace, so the separation is obvious in VR.
+/// Keeps the visible operator target on the backend-feasible boundary while the
+/// reachability gate is active. The blue tracked-hand marker may continue moving
+/// outside the workspace, while the orange target follows changes in the actual
+/// feasible target without jumping to the current G1 wrist.
 /// </summary>
 [DefaultExecutionOrder(10000)]
 public sealed class G1ReachabilityTargetLatch : MonoBehaviour
 {
     private const string TargetMarkerName = "operator_hand_target_marker";
     private const string TargetAxesName = "operator_hand_target_axes";
+    private const float BackendDeltaRebaseThresholdM = 0.10f;
 
     private G1ExistingTargetUdpSender sender;
     private G1RobotStateUdpReceiver stateReceiver;
+    private G1ExistingHandTargetBinder handBinder;
     private Transform targetMarker;
     private Transform targetAxes;
 
@@ -20,6 +23,8 @@ public sealed class G1ReachabilityTargetLatch : MonoBehaviour
     private Vector3 lastReachablePosition;
     private Quaternion lastReachableRotation = Quaternion.identity;
     private bool latchActive;
+    private bool hasBackendTargetDelta;
+    private Vector3 previousBackendTargetDelta;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Install()
@@ -49,8 +54,7 @@ public sealed class G1ReachabilityTargetLatch : MonoBehaviour
 
         if (!commandActive)
         {
-            latchActive = false;
-            hasLastReachablePose = false;
+            ResetLatch();
             return;
         }
 
@@ -62,21 +66,50 @@ public sealed class G1ReachabilityTargetLatch : MonoBehaviour
             lastReachableRotation = targetMarker.rotation;
             hasLastReachablePose = true;
             latchActive = false;
+            hasBackendTargetDelta = false;
             return;
         }
 
         if (!latchActive)
         {
-            // Never use the backend target delta here. It can be rebased and may
-            // coincide with the current G1 wrist. Hold the last target that was
-            // visibly reachable immediately before the limit became active.
+            // Enter the limited state exactly where the visible target last was.
+            // Do not reconstruct an absolute backend target here: its clutch
+            // reference may differ from Unity's calibration reference.
             if (!hasLastReachablePose)
             {
                 lastReachablePosition = targetMarker.position;
                 lastReachableRotation = targetMarker.rotation;
                 hasLastReachablePose = true;
             }
+
             latchActive = true;
+            if (stateReceiver.HasMotionDiagnostics)
+            {
+                previousBackendTargetDelta = stateReceiver.LatestTargetOperatorDelta;
+                hasBackendTargetDelta = true;
+            }
+        }
+        else if (stateReceiver.HasMotionDiagnostics)
+        {
+            Vector3 currentBackendTargetDelta = stateReceiver.LatestTargetOperatorDelta;
+            if (hasBackendTargetDelta)
+            {
+                Vector3 deltaChange = currentBackendTargetDelta - previousBackendTargetDelta;
+
+                // A large discontinuity means the backend clutch reference was
+                // rebased. Use the new value as a baseline without moving the UI
+                // marker so the target can never teleport to the robot wrist.
+                if (deltaChange.magnitude <= BackendDeltaRebaseThresholdM)
+                {
+                    Quaternion operatorHeading = handBinder == null
+                        ? Quaternion.identity
+                        : handBinder.OperatorHeading;
+                    lastReachablePosition += operatorHeading * deltaChange;
+                }
+            }
+
+            previousBackendTargetDelta = currentBackendTargetDelta;
+            hasBackendTargetDelta = true;
         }
 
         targetMarker.position = lastReachablePosition;
@@ -88,6 +121,13 @@ public sealed class G1ReachabilityTargetLatch : MonoBehaviour
         }
     }
 
+    private void ResetLatch()
+    {
+        latchActive = false;
+        hasLastReachablePose = false;
+        hasBackendTargetDelta = false;
+    }
+
     private void ResolveReferences()
     {
         if (sender == null)
@@ -97,6 +137,10 @@ public sealed class G1ReachabilityTargetLatch : MonoBehaviour
         if (stateReceiver == null)
         {
             stateReceiver = FindObjectOfType<G1RobotStateUdpReceiver>();
+        }
+        if (handBinder == null)
+        {
+            handBinder = FindObjectOfType<G1ExistingHandTargetBinder>();
         }
         if (targetMarker == null)
         {

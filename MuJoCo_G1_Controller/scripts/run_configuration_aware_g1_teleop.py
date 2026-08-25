@@ -1,10 +1,11 @@
 """Run G1 teleoperation with runtime joint-space geometry as workspace authority.
 
-The legacy wrist-only voxel map is retained as a diagnostic hint, but it no
-longer projects the operator target. Actual MuJoCo collision geometry, joint
-limits, adaptive redundancy, emergency escape, a hard clearance boundary,
-continuous safe-progress reconfiguration, safe wrist rotation, and a final
-swept-path collision guard own feasibility.
+The legacy wrist-only voxel map is retained as a coarse reachability pre-check.
+Normal motion passes through unchanged; only gross workspace excursions are
+projected before IK. Actual MuJoCo collision geometry, joint limits, adaptive
+redundancy, emergency escape, a hard clearance boundary, continuous safe-progress
+reconfiguration, safe wrist rotation, and a final swept-path collision guard own
+fine-grained feasibility.
 """
 
 from __future__ import annotations
@@ -34,6 +35,9 @@ from g1_teleop.emergency_clearance_escape import (  # noqa: E402
 )
 from g1_teleop.hard_clearance_boundary_guard import (  # noqa: E402
     install_boundary_hard_clearance_floor,
+)
+from g1_teleop.reachability_supervisor import (  # noqa: E402
+    install_reachability_supervisor,
 )
 from g1_teleop.safe_wrist_rotation_overlay import (  # noqa: E402
     install_safe_wrist_rotation_overlay,
@@ -104,7 +108,7 @@ def install_right_hand_collision_proxy_generation() -> None:
 
 
 def install_diagnostic_only_voxel_workspace() -> None:
-    """Keep the voxel map as a hint while passing operator XYZ through unchanged."""
+    """Legacy helper retained for old launchers; not used by this launcher."""
     global _LAST_VOXEL_HINT_PROJECTED
     global _LAST_VOXEL_HINT_DISTANCE_M
     global _LAST_VOXEL_HINT_TARGET
@@ -153,7 +157,7 @@ def _final_collision_step_scale(clearance_m: float | None, slowdown_distance_m: 
 
 
 def install_configuration_workspace_status() -> None:
-    """Expose the actually accepted final collision state and workspace authority."""
+    """Expose final collision state plus coarse reachability-gate authority."""
     if getattr(base, "_CONFIGURATION_WORKSPACE_STATUS_INSTALLED", False):
         return
 
@@ -161,10 +165,23 @@ def install_configuration_workspace_status() -> None:
 
     def status_writer(status_value):
         enriched = dict(status_value)
-        enriched["workspace_source"] = "configuration_aware_runtime_geometry"
-        enriched["workspace_projection_distance_m"] = 0.0
-        enriched["workspace_limited"] = False
+        reachability_active = bool(
+            getattr(base, "RUNTIME_REACHABILITY_GATE_ACTIVE", False)
+        )
+        reachability_distance = float(
+            getattr(base, "RUNTIME_REACHABILITY_PROJECTION_DISTANCE_M", 0.0)
+        )
+        enriched["workspace_source"] = (
+            "configuration_aware_runtime_geometry+gross_reachability_gate"
+            if reachability_active
+            else "configuration_aware_runtime_geometry"
+        )
+        enriched["workspace_projection_distance_m"] = (
+            reachability_distance if reachability_active else 0.0
+        )
+        enriched["workspace_limited"] = reachability_active
         enriched["voxel_workspace_authority"] = False
+        enriched["reachability_precheck_authority"] = True
         enriched["runtime_geometry_workspace_authority"] = True
         enriched["right_hand_collision_proxy_enabled"] = bool(
             _RIGHT_HAND_COLLISION_PROXY_ENABLED
@@ -207,11 +224,13 @@ def install_configuration_workspace_status() -> None:
         else:
             enriched["collision_clearance_source"] = "inner_distance_aware_solver"
 
-        enriched["voxel_workspace_hint_projected"] = bool(_LAST_VOXEL_HINT_PROJECTED)
-        enriched["voxel_workspace_hint_projection_distance_m"] = float(
-            _LAST_VOXEL_HINT_DISTANCE_M
+        enriched["voxel_workspace_hint_projected"] = bool(
+            getattr(base, "RUNTIME_REACHABILITY_HINT_PROJECTED", False)
         )
-        enriched["voxel_workspace_hint_target"] = _LAST_VOXEL_HINT_TARGET
+        enriched["voxel_workspace_hint_projection_distance_m"] = reachability_distance
+        enriched["voxel_workspace_hint_target"] = getattr(
+            base, "RUNTIME_REACHABILITY_FEASIBLE_TARGET", None
+        )
         original_writer(enriched)
 
     base.write_runtime_status = status_writer
@@ -240,14 +259,17 @@ def install_hard_guard_then_supervisor(base_module) -> None:
 
 def main() -> None:
     install_right_hand_collision_proxy_generation()
-    install_diagnostic_only_voxel_workspace()
+    # Install before the configuration status wrapper so reachability can
+    # override workspace feedback after the wrapper enriches the packet.
+    install_reachability_supervisor(base)
     install_configuration_workspace_status()
 
     geometry.install_geometry_instead_of_manual_posture = install_geometry_with_emergency_escape
     geometry.install_hard_clearance_floor = install_hard_guard_then_supervisor
 
     print("Workspace authority: configuration-aware MuJoCo runtime geometry")
-    print("Voxel workspace: diagnostic hint only; no Cartesian projection")
+    print("Reachability pre-check: voxel gate only for gross excursions (5 cm enter / 2.5 cm release)")
+    print("Voxel workspace: diagnostic during normal motion; coarse gate only when grossly unreachable")
     print("Right rubber hand collision proxy: enabled")
     print("Emergency clearance recovery: enabled below 5 mm")
     print("Hard clearance guard: joint-space boundary clipping at 5 mm")

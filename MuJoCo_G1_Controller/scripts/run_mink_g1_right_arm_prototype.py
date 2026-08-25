@@ -7,7 +7,7 @@ live in g1_right_arm_common and no legacy IK implementation is imported here.
 QP structure:
 - full 6D right wrist FrameTask,
 - posture regularization,
-- DoF-weighted velocity damping that prefers wrist motion over proximal motion,
+- proximal-vs-wrist damping to prefer local wrist motion during rotation,
 - hard MuJoCo joint-position limits,
 - right-arm velocity limits,
 - MuJoCo geometry CollisionAvoidanceLimit,
@@ -68,17 +68,14 @@ FRAME_GAIN = 0.35
 LM_DAMPING = 1e-5
 QP_DAMPING = 1e-8
 
-# Prefer the three wrist joints for pure orientation changes. Proximal joints
-# are still free to move when the Cartesian position task requires them.
-PROXIMAL_DAMPING_COST = 0.25
-WRIST_DAMPING_COST = 0.015
-ORIENTATION_TARGET_MAX_RATE_RAD_S = math.radians(120.0)
-
 COLLISION_MIN_DISTANCE_M = 0.012
 COLLISION_DETECTION_DISTANCE_M = 0.040
 COLLISION_GAIN = 0.85
 STRUCTURAL_NEIGHBOR_DISTANCE = 2
 RIGHT_ARM_MAX_VELOCITY_RAD_S = math.radians(75.0)
+
+PROXIMAL_DAMPING_COST = 0.25
+WRIST_DAMPING_COST = 0.015
 
 RIGHT_HAND_COLLISION_NAME = "mink_right_rubber_hand_collision"
 
@@ -239,10 +236,9 @@ def _frozen_dof_indices(model: mujoco.MjModel, right_dofs: list[int]) -> list[in
 
 def _damping_costs(model: mujoco.MjModel) -> np.ndarray:
     costs = np.zeros(int(model.nv), dtype=float)
-    for joint_name in g1.RIGHT_ARM_JOINTS[:4]:
-        costs[int(model.jnt_dofadr[_joint_id(model, joint_name)])] = PROXIMAL_DAMPING_COST
-    for joint_name in g1.RIGHT_ARM_JOINTS[4:]:
-        costs[int(model.jnt_dofadr[_joint_id(model, joint_name)])] = WRIST_DAMPING_COST
+    for index, name in enumerate(g1.RIGHT_ARM_JOINTS):
+        dof = int(model.jnt_dofadr[_joint_id(model, name)])
+        costs[dof] = PROXIMAL_DAMPING_COST if index < 4 else WRIST_DAMPING_COST
     return costs
 
 
@@ -277,31 +273,6 @@ def _rotation_error_radians(target: np.ndarray, current: np.ndarray) -> float:
     delta = np.asarray(target, dtype=float) @ np.asarray(current, dtype=float).T
     cosine = float(np.clip((np.trace(delta) - 1.0) * 0.5, -1.0, 1.0))
     return math.acos(cosine)
-
-
-def _limit_rotation_step(current: np.ndarray, desired: np.ndarray, max_angle: float) -> np.ndarray:
-    current = np.asarray(current, dtype=float)
-    desired = np.asarray(desired, dtype=float)
-    delta = desired @ current.T
-    angle = _rotation_error_radians(desired, current)
-    if angle <= max_angle or angle < 1e-9:
-        return desired.copy()
-
-    axis_skew = np.array(
-        [delta[2, 1] - delta[1, 2], delta[0, 2] - delta[2, 0], delta[1, 0] - delta[0, 1]],
-        dtype=float,
-    )
-    sin_angle = float(np.linalg.norm(axis_skew) * 0.5)
-    if sin_angle < 1e-8:
-        return current.copy()
-    axis = axis_skew / (2.0 * sin_angle)
-    step = float(max_angle)
-    k = np.array(
-        [[0.0, -axis[2], axis[1]], [axis[2], 0.0, -axis[0]], [-axis[1], axis[0], 0.0]],
-        dtype=float,
-    )
-    step_rotation = np.eye(3) + math.sin(step) * k + (1.0 - math.cos(step)) * (k @ k)
-    return step_rotation @ current
 
 
 def _min_pair_distance(model: mujoco.MjModel, data: mujoco.MjData, geom_pairs: list[tuple[int, int]], distmax: float = 0.20) -> float | None:
@@ -403,7 +374,14 @@ def main() -> None:
     frozen_dofs = _frozen_dof_indices(model, right_dofs)
     collision_pairs, collision_geom_ids = _build_collision_pairs(model)
 
-    wrist_task = mink.FrameTask(frame_name="right_wrist_yaw_link", frame_type="body", position_cost=POSITION_COST, orientation_cost=ORIENTATION_COST, gain=FRAME_GAIN, lm_damping=LM_DAMPING)
+    wrist_task = mink.FrameTask(
+        frame_name="right_wrist_yaw_link",
+        frame_type="body",
+        position_cost=POSITION_COST,
+        orientation_cost=ORIENTATION_COST,
+        gain=FRAME_GAIN,
+        lm_damping=LM_DAMPING,
+    )
     wrist_task.set_target_from_configuration(configuration)
     posture_task = mink.PostureTask(model, cost=POSTURE_COST)
     posture_task.set_target(configuration.q.copy())
@@ -413,7 +391,14 @@ def main() -> None:
     limits = [
         mink.ConfigurationLimit(model=model),
         mink.VelocityLimit(model, velocity_limits),
-        mink.CollisionAvoidanceLimit(model=model, geom_pairs=collision_pairs, minimum_distance_from_collisions=COLLISION_MIN_DISTANCE_M, collision_detection_distance=COLLISION_DETECTION_DISTANCE_M, gain=COLLISION_GAIN, broadphase=True),
+        mink.CollisionAvoidanceLimit(
+            model=model,
+            geom_pairs=collision_pairs,
+            minimum_distance_from_collisions=COLLISION_MIN_DISTANCE_M,
+            collision_detection_distance=COLLISION_DETECTION_DISTANCE_M,
+            gain=COLLISION_GAIN,
+            broadphase=True,
+        ),
     ]
     constraints = [mink.DofFreezingTask(model=model, dof_indices=frozen_dofs)]
     solver = _select_solver()
@@ -433,7 +418,9 @@ def main() -> None:
     next_status = time.monotonic()
     next_state = time.monotonic()
     cycle_times: list[float] = []
-    target_rotation = configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body").rotation().as_matrix().copy()
+    target_rotation = configuration.get_transform_frame_to_world(
+        "right_wrist_yaw_link", "body"
+    ).rotation().as_matrix().copy()
 
     print("Mink G1 right-arm controller")
     print("----------------------------")
@@ -441,9 +428,15 @@ def main() -> None:
     print(f"QP solver: {solver}")
     print(f"Frozen non-right-arm DOFs: {len(frozen_dofs)}")
     print(f"Collision geom pairs: {len(collision_pairs)}")
-    print(f"Collision limit: min={COLLISION_MIN_DISTANCE_M*1000:.1f} mm, detect={COLLISION_DETECTION_DISTANCE_M*1000:.1f} mm")
-    print(f"Proximal/wrist damping: {PROXIMAL_DAMPING_COST:.3f} / {WRIST_DAMPING_COST:.3f}")
-    print("Orientation mapping: absolute semantic frame with rate-limited engagement alignment.")
+    print(
+        f"Collision limit: min={COLLISION_MIN_DISTANCE_M*1000:.1f} mm, "
+        f"detect={COLLISION_DETECTION_DISTANCE_M*1000:.1f} mm"
+    )
+    print(
+        f"Proximal/wrist damping: {PROXIMAL_DAMPING_COST:.3f} / "
+        f"{WRIST_DAMPING_COST:.3f}"
+    )
+    print("Orientation mapping: clutch-relative Quest rotation -> G1 wrist-yaw frame.")
     print("Hardware output: disabled in this process.")
     print(f"Safety dry-run mirror: udp://{SAFETY_DRY_RUN_HOST}:{SAFETY_DRY_RUN_PORT}")
 
@@ -452,31 +445,40 @@ def main() -> None:
             while viewer.is_running():
                 cycle_start = time.perf_counter()
                 now = time.monotonic()
-                raw_target, raw_rotation, raw_valid, received = _receive_latest(udp, raw_target, raw_rotation, raw_valid)
+                raw_target, raw_rotation, raw_valid, received = _receive_latest(
+                    udp, raw_target, raw_rotation, raw_valid
+                )
                 if received:
                     received_total += received
                     last_packet_time = now
 
                 active = bool(raw_valid and now - last_packet_time < INPUT_TIMEOUT_S)
-                wrist_pose = configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
+                wrist_pose = configuration.get_transform_frame_to_world(
+                    "right_wrist_yaw_link", "body"
+                )
 
                 if active and not last_active:
+                    input_rotation = g1.operator_rotation_to_robot_matrix(raw_rotation)
                     clutch_reference = {
                         "input_position": raw_target.copy(),
+                        "input_rotation": input_rotation.copy(),
                         "robot_position": wrist_pose.translation().copy(),
+                        "robot_rotation": wrist_pose.rotation().as_matrix().copy(),
                     }
-                    target_rotation = wrist_pose.rotation().as_matrix().copy()
+                    target_rotation = clutch_reference["robot_rotation"].copy()
                     posture_task.set_target(configuration.q.copy())
-                    print("\nMink clutch engaged; position is jump-free and wrist orientation is aligning smoothly.")
+                    print("\nMink clutch engaged without position or orientation jump.")
 
                 if active and clutch_reference is not None:
-                    target_position = clutch_reference["robot_position"] + raw_target - clutch_reference["input_position"]
-                    desired_rotation = g1.operator_rotation_to_robot_matrix(raw_rotation)
-                    target_rotation = _limit_rotation_step(
-                        target_rotation,
-                        desired_rotation,
-                        ORIENTATION_TARGET_MAX_RATE_RAD_S * DT,
+                    target_position = (
+                        clutch_reference["robot_position"]
+                        + raw_target
+                        - clutch_reference["input_position"]
                     )
+                    input_rotation = g1.operator_rotation_to_robot_matrix(raw_rotation)
+                    rotation_delta = input_rotation @ clutch_reference["input_rotation"].T
+                    target_rotation = rotation_delta @ clutch_reference["robot_rotation"]
+
                     wrist_task.set_target(_matrix_to_se3(target_rotation, target_position))
                     velocity = mink.solve_ik(
                         configuration=configuration,
@@ -500,12 +502,27 @@ def main() -> None:
 
                 mujoco.mj_fwdPosition(model, data)
                 min_clearance = _min_pair_distance(model, data, collision_geom_ids)
-                collision_limited = bool(min_clearance is not None and min_clearance <= COLLISION_DETECTION_DISTANCE_M)
+                collision_limited = bool(
+                    min_clearance is not None
+                    and min_clearance <= COLLISION_DETECTION_DISTANCE_M
+                )
 
                 if now >= next_state:
-                    packet = _state_packet(configuration, right_qpos_ids, active, target_position, None if clutch_reference is None else clutch_reference["robot_position"], collision_limited)
+                    packet = _state_packet(
+                        configuration,
+                        right_qpos_ids,
+                        active,
+                        target_position,
+                        None if clutch_reference is None else clutch_reference["robot_position"],
+                        collision_limited,
+                    )
                     _send_state(state_sock, packet, UNITY_STATE_HOST, UNITY_STATE_PORT)
-                    _send_state(dry_run_sock, packet, SAFETY_DRY_RUN_HOST, SAFETY_DRY_RUN_PORT)
+                    _send_state(
+                        dry_run_sock,
+                        packet,
+                        SAFETY_DRY_RUN_HOST,
+                        SAFETY_DRY_RUN_PORT,
+                    )
                     next_state = now + DT
 
                 cycle_ms = (time.perf_counter() - cycle_start) * 1000.0
@@ -514,35 +531,46 @@ def main() -> None:
                     del cycle_times[:-600]
 
                 if now >= next_status:
-                    current_pose = configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
+                    current_pose = configuration.get_transform_frame_to_world(
+                        "right_wrist_yaw_link", "body"
+                    )
                     current_rotation = current_pose.rotation().as_matrix()
-                    position_error = float(np.linalg.norm(target_position - current_pose.translation()))
-                    orientation_error_deg = math.degrees(_rotation_error_radians(target_rotation, current_rotation))
+                    position_error = float(
+                        np.linalg.norm(target_position - current_pose.translation())
+                    )
+                    orientation_error_deg = math.degrees(
+                        _rotation_error_radians(target_rotation, current_rotation)
+                    )
                     stats = np.asarray(cycle_times, dtype=float)
-                    _write_status({
-                        "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
-                        "controller": "mink_right_arm_qp",
-                        "input_active": active,
-                        "received_packets": received_total,
-                        "solver": solver,
-                        "collision_pair_count": len(collision_pairs),
-                        "collision_min_distance_m": COLLISION_MIN_DISTANCE_M,
-                        "collision_detection_distance_m": COLLISION_DETECTION_DISTANCE_M,
-                        "minimum_clearance_m": min_clearance,
-                        "collision_limit_nearby": collision_limited,
-                        "target_position": target_position.tolist(),
-                        "wrist_position": current_pose.translation().tolist(),
-                        "position_error_m": position_error,
-                        "orientation_error_deg": orientation_error_deg,
-                        "proximal_damping_cost": PROXIMAL_DAMPING_COST,
-                        "wrist_damping_cost": WRIST_DAMPING_COST,
-                        "right_arm_q_deg": np.degrees(configuration.q[right_qpos_ids]).tolist(),
-                        "cycle_last_ms": cycle_ms,
-                        "cycle_mean_ms": float(np.mean(stats)),
-                        "cycle_p95_ms": float(np.percentile(stats, 95)),
-                        "cycle_p99_ms": float(np.percentile(stats, 99)),
-                        "cycle_worst_ms": float(np.max(stats)),
-                    })
+                    _write_status(
+                        {
+                            "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                            "controller": "mink_right_arm_qp",
+                            "input_active": active,
+                            "received_packets": received_total,
+                            "solver": solver,
+                            "collision_pair_count": len(collision_pairs),
+                            "collision_min_distance_m": COLLISION_MIN_DISTANCE_M,
+                            "collision_detection_distance_m": COLLISION_DETECTION_DISTANCE_M,
+                            "minimum_clearance_m": min_clearance,
+                            "collision_limit_nearby": collision_limited,
+                            "target_position": target_position.tolist(),
+                            "wrist_position": current_pose.translation().tolist(),
+                            "position_error_m": position_error,
+                            "orientation_error_deg": orientation_error_deg,
+                            "orientation_mapping": "clutch_relative",
+                            "proximal_damping_cost": PROXIMAL_DAMPING_COST,
+                            "wrist_damping_cost": WRIST_DAMPING_COST,
+                            "right_arm_q_deg": np.degrees(
+                                configuration.q[right_qpos_ids]
+                            ).tolist(),
+                            "cycle_last_ms": cycle_ms,
+                            "cycle_mean_ms": float(np.mean(stats)),
+                            "cycle_p95_ms": float(np.percentile(stats, 95)),
+                            "cycle_p99_ms": float(np.percentile(stats, 99)),
+                            "cycle_worst_ms": float(np.max(stats)),
+                        }
+                    )
                     next_status = now + 0.5
 
                 last_active = active

@@ -26,15 +26,15 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public float pinch_disengage_hold_seconds = 0.50f;
 
     // Live Quest hand tracking is noisier than the deterministic fake sender.
-    // Keep the backend's 0.08 m/s reference limiter authoritative, but remove
-    // small frame-to-frame tracking noise before it becomes an IK target.
+    // Keep the backend limiter authoritative, but remove small frame-to-frame
+    // tracking noise before it becomes an IK target.
     public float live_position_filter_time_constant_s = 0.060f;
     public float live_rotation_filter_time_constant_s = 0.050f;
 
-    // Forward hand travel is reduced slightly so normal operator reach does not
-    // immediately drive the G1 elbow toward full extension. Lateral/vertical
-    // travel remain 1:1.
-    public float operator_forward_scale = 0.75f;
+    // Keep Quest wrist translation one-to-one on all three operator axes. Reach
+    // feasibility is handled by Mink joint/collision limits and the safety layer,
+    // not by silently scaling only the operator's forward motion.
+    public float operator_forward_scale = 1.00f;
 
     public Vector3 LastRobotTarget { get; private set; }
     public Vector3 UnclampedRobotTarget { get; private set; }

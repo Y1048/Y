@@ -13,6 +13,7 @@ Joint, velocity and collision limits are still handled by the normal Mink QP.
 
 from __future__ import annotations
 
+import math
 import numpy as np
 
 import mink
@@ -25,6 +26,14 @@ import run_mink_g1_right_arm_prototype as base
 # split itself prevents shoulder/elbow from helping the orientation objective.
 base.PROXIMAL_DAMPING_COST = 0.03
 base.WRIST_DAMPING_COST = 0.015
+
+# Preserve one-to-one low-speed/millimetric control, but soften abrupt operator
+# motions by clipping the QP joint velocity. The base controller uses 75 deg/s;
+# 50 deg/s is intentionally only a moderate reduction, not a smoothing filter.
+ROLE_SPLIT_MAX_JOINT_VELOCITY_DEG_S = 50.0
+base.RIGHT_ARM_MAX_VELOCITY_RAD_S = math.radians(
+    ROLE_SPLIT_MAX_JOINT_VELOCITY_DEG_S
+)
 
 _OriginalFrameTask = mink.FrameTask
 _original_write_status = base._write_status
@@ -105,6 +114,7 @@ def _write_role_split_status(payload: dict) -> None:
     payload["orientation_joints"] = base.g1.RIGHT_ARM_JOINTS[4:]
     payload["speed_based_mode_switch"] = False
     payload["proximal_hard_freeze"] = False
+    payload["max_joint_velocity_deg_s"] = ROLE_SPLIT_MAX_JOINT_VELOCITY_DEG_S
     _original_write_status(payload)
 
 
@@ -120,6 +130,10 @@ def main() -> None:
     print("Orientation : wrist roll + pitch + yaw")
     print("Speed modes : NONE")
     print("Hard freeze : NONE")
+    print(
+        "Joint speed  : max "
+        f"{ROLE_SPLIT_MAX_JOINT_VELOCITY_DEG_S:.0f} deg/s"
+    )
     print("============================================================")
     base.main()
 

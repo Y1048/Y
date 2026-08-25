@@ -13,6 +13,8 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
         public bool active;
         public float[] wrist_delta;
         public float[] target_delta;
+        public float[] wrist_position;
+        public float[] target_position;
         public float position_error;
         public bool workspace_limited;
         public bool collision_limited;
@@ -41,10 +43,13 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
     public float[] LatestRightArmJoints => latest_right_arm_joints;
     public Vector3 LatestWristOperatorDelta { get; private set; }
     public Vector3 LatestTargetOperatorDelta { get; private set; }
+    public Vector3 LatestWristRobotPosition { get; private set; }
+    public Vector3 LatestTargetRobotPosition { get; private set; }
     public float LatestPositionError { get; private set; }
     public bool IsWorkspaceLimited { get; private set; }
     public bool IsCollisionLimited { get; private set; }
     public bool HasMotionDiagnostics { get; private set; }
+    public bool HasAbsoluteMinkPositions { get; private set; }
     public ulong StateRevision { get; private set; }
 
     private UdpClient udp_client;
@@ -85,6 +90,7 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
                 LatestPositionError = packet_value.right_arm.position_error;
                 IsWorkspaceLimited = packet_value.right_arm.workspace_limited;
                 IsCollisionLimited = packet_value.right_arm.collision_limited;
+
                 HasMotionDiagnostics = HasVector(packet_value.right_arm.wrist_delta)
                     && HasVector(packet_value.right_arm.target_delta);
                 if (HasMotionDiagnostics)
@@ -98,6 +104,19 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
                 {
                     LatestWristOperatorDelta = Vector3.zero;
                     LatestTargetOperatorDelta = Vector3.zero;
+                }
+
+                HasAbsoluteMinkPositions = HasVector(packet_value.right_arm.wrist_position)
+                    && HasVector(packet_value.right_arm.target_position);
+                if (HasAbsoluteMinkPositions)
+                {
+                    LatestWristRobotPosition = ToVector3(packet_value.right_arm.wrist_position);
+                    LatestTargetRobotPosition = ToVector3(packet_value.right_arm.target_position);
+                }
+                else
+                {
+                    LatestWristRobotPosition = Vector3.zero;
+                    LatestTargetRobotPosition = Vector3.zero;
                 }
 
                 latest_packet_time = Time.realtimeSinceStartup;
@@ -176,10 +195,13 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
         IsTeleoperationActive = false;
         LatestWristOperatorDelta = Vector3.zero;
         LatestTargetOperatorDelta = Vector3.zero;
+        LatestWristRobotPosition = Vector3.zero;
+        LatestTargetRobotPosition = Vector3.zero;
         LatestPositionError = 0.0f;
         IsWorkspaceLimited = false;
         IsCollisionLimited = false;
         HasMotionDiagnostics = false;
+        HasAbsoluteMinkPositions = false;
 
         if (clear_joint_state)
         {
@@ -191,6 +213,11 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
     private static bool HasVector(float[] vector_value)
     {
         return vector_value != null && vector_value.Length >= 3;
+    }
+
+    private static Vector3 ToVector3(float[] value)
+    {
+        return new Vector3(value[0], value[1], value[2]);
     }
 
     private static Vector3 RobotToOperatorDelta(float[] robot_delta)

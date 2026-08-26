@@ -2,6 +2,31 @@
 
 Last updated: 2026-08-26
 
+## 0. Operating rules for any ChatGPT conversation
+
+This file is the canonical cross-chat handoff for the project.
+
+Any ChatGPT conversation that continues work on this project should follow these rules automatically after this file is provided or read:
+
+1. Read this file first, then read `docs/ARCHITECTURE.md` before making project changes.
+2. Treat the project state, protected local changes, safety constraints, and unresolved cautions recorded here as binding unless the user explicitly changes them.
+3. Inspect the current Git/project state before destructive operations such as reset, checkout, stash cleanup, bulk restore, or conflict resolution.
+4. After any meaningful milestone, design decision, debugging conclusion, important code change, environment change, or hardware-integration progress, update this file so it reflects the latest state.
+5. Keep this document concise and state-oriented. Do not turn it into a raw conversation log.
+6. Preserve important existing information when updating. Remove or rewrite stale information only when a newer verified state supersedes it.
+7. Keep `docs/ARCHITECTURE.md` for long-lived architecture/design truth and use this file for the current operational checkpoint and handoff state.
+8. When a task changes the repository through GitHub, include the handoff update in the same working session whenever practical.
+
+For a new chat, the user should only need to say something equivalent to:
+
+```text
+Read docs/CHAT_HANDOFF.md and continue the project from there.
+```
+
+No additional explanation of the handoff workflow should be required once this file has been read.
+
+---
+
 This document is the operational handoff for continuing work across ChatGPT conversations.
 Read this file together with `docs/ARCHITECTURE.md` before making project changes.
 After meaningful work, update this file with the current state, important decisions, unresolved issues, protected local changes, and next steps.
@@ -326,22 +351,18 @@ When that resumes, begin from Ethernet/NIC state verification, not actuator comm
 
 OpenXR migration is a separate later stabilization/refactor task and is not the current blocking issue.
 
-## 11. Rules for future ChatGPT conversations
+## 11. Handoff maintenance
 
-At the start of a new conversation, instruct the assistant to:
+The operating rules at the top of this file are the authoritative instructions for future ChatGPT conversations.
 
-1. Read `docs/CHAT_HANDOFF.md`.
-2. Read `docs/ARCHITECTURE.md`.
-3. Treat the protected local modifications in this file as non-negotiable unless the user explicitly changes them.
-4. Inspect current Git/project state before destructive Git operations.
-5. Update `docs/CHAT_HANDOFF.md` after meaningful milestones, design decisions, debugging conclusions, or hardware-integration progress.
-6. Keep this document concise and current rather than turning it into a raw chat log.
+Future updates should maintain this document as the current project checkpoint, including:
 
-Suggested new-chat opener:
+- completed work
+- current work in progress
+- important design decisions
+- protected local changes
+- unresolved issues and cautions
+- environment/hardware state
+- next steps
 
-```text
-GitHub의 Y1048/Y 저장소 refactor/teleop-architecture 브랜치 작업을 계속한다.
-docs/CHAT_HANDOFF.md와 docs/ARCHITECTURE.md를 먼저 읽고 현재 상태를 파악해.
-이후 중요한 작업이 끝날 때마다 CHAT_HANDOFF.md도 최신 상태로 갱신해.
-기존 protected local changes와 safety constraints는 임의로 덮어쓰지 마.
-```
+A new chat should not require the user to restate these rules. Reading this file is sufficient.

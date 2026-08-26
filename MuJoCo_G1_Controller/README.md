@@ -24,7 +24,7 @@ scripts/run_mink_g1_right_arm_virtual_center_live.py
 | `scripts/run_mink_g1_right_arm_prototype.py` | 공통 Mink QP, UDP, collision, state packet 기반 |
 | `scripts/g1_right_arm_common.py` | G1 joint/frame/model/좌표계 공통 정의 |
 
-Legacy custom DLS/Jacobian controller인 `g1_right_arm_udp_ik_demo.py`는 참고용으로 남아 있지만 현재 Mink controller는 이 파일을 import하지 않는다.
+Legacy custom DLS/Jacobian controller인 `g1_right_arm_udp_ik_demo.py`는 카메라 기반 검증과 회귀 테스트 지원용으로만 남겨 두며, 현재 Mink controller는 이 파일을 import하지 않는다.
 
 ---
 
@@ -474,16 +474,13 @@ external_target_position = yaw_pose.translation() + center_error
 VR 없이 IK를 검증할 수 있다.
 
 ```powershell
-.\tools\TEST_MINK_ROLE_SPLIT_REGRESSION.bat
-.\tools\TEST_MINK_VIRTUAL_WRIST_CENTER_COMPARE.bat
-.\tools\TEST_MINK_VIRTUAL_WRIST_CENTER_SWEEP.bat
-.\tools\TEST_MINK_BASELINE_COLLISIONS.bat
-.\tools\TEST_MINK_COLLISION_INFLUENCE.bat
-.\tools\TEST_MINK_VIRTUAL_CENTER_COLLISION_INFLUENCE.bat
-.\tools\TEST_MINK_VIRTUAL_CENTER_YAW_COLLISION_GEOMETRY.bat
+.\tools\TEST_MINK_WRIST_FRAME.bat
+.\tools\TEST_G1_MINK_FK_PARITY.bat
+.\tools\TEST_MINK_SAFETY_PIPELINE.bat
+.\tools\TEST_G1_STARTUP_RECOVERY_OFFLINE.bat
 ```
 
-A/B 소규모 비교에서는 virtual-center가 평균 proximal wrist-rotation motion을 약 67% 줄였다. 광범위 sweep에서도 평균 proximal motion은 current formulation보다 virtual-center가 낮았다. 단, sweep의 `tracking/collision` 집계 일부는 trajectory collision flag와 tracking pass가 결합된 진단용 지표였으므로 단독 안전성 지표로 사용하지 않는다.
+과거 A/B 탐색 스크립트는 현재 정책이 결정된 뒤 제거했다. 현재 유지하는 테스트는 wrist frame 계약, G1/Mink FK 일치, 안전 파이프라인, startup recovery 검증이다.
 
 ---
 

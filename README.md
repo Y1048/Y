@@ -122,17 +122,13 @@ MuJoCo collision geometry 사이 거리를 사용하며, 오른팔과 다른 rob
 
 VR을 매번 켜지 않고 Python + MuJoCo + Mink만으로 회귀 테스트한다.
 
-대표 도구:
+현재 유지하는 대표 검증 도구:
 
 ```powershell
-.\tools\TEST_MINK_ROLE_SPLIT_REGRESSION.bat
-.\tools\TEST_MINK_VIRTUAL_WRIST_CENTER_COMPARE.bat
-.\tools\TEST_MINK_VIRTUAL_WRIST_CENTER_SWEEP.bat
-.\tools\TEST_MINK_BASELINE_COLLISIONS.bat
-.\tools\TEST_MINK_COLLISION_INFLUENCE.bat
-.\tools\TEST_MINK_VIRTUAL_CENTER_COLLISION_INFLUENCE.bat
-.\tools\TEST_MINK_VIRTUAL_CENTER_YAW_COLLISION_GEOMETRY.bat
+.\tools\TEST_MINK_WRIST_FRAME.bat
 .\tools\TEST_G1_MINK_FK_PARITY.bat
+.\tools\TEST_MINK_SAFETY_PIPELINE.bat
+.\tools\TEST_G1_STARTUP_RECOVERY_OFFLINE.bat
 ```
 
 자세한 도구 분류는 [`tools/README.md`](tools/README.md)를 참고한다.

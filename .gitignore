@@ -16,6 +16,7 @@ Unity_*_TEST/
 # Unity generated files
 *.csproj
 *.sln
+*.slnx
 *.suo
 *.user
 *.userprefs

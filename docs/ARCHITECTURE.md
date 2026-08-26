@@ -507,8 +507,6 @@ while running:
 
 ```text
 MuJoCo_G1_Controller/external/unitree_mujoco/
-Unity_G1_VR/Assets/Bhaptics/
-Unity_G1_VR/Assets/Plugins/InControl/
 Unity Package Manager dependencies
 ```
 

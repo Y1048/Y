@@ -132,7 +132,7 @@ Virtual-center live controller에서도 외부 state frame은 `right_wrist_yaw_l
 현재 최신 virtual-center IK를 직접 시험할 때는 Mink controller를 별도로:
 
 ```powershell
-.\tools\TEST_MINK_G1_VIRTUAL_CENTER_LIVE.bat
+.\START_MUJOCO_ONLY.bat
 ```
 
 실행하고 Unity 프로젝트에서 Play한다.

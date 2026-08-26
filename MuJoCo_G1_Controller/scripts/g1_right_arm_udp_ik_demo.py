@@ -1148,7 +1148,7 @@ def main():
         '"right": {"pos": [0.42, -0.16, 1.05], '
         '"rot": [0, 0, 0, 1], "valid": true}}'
     )
-    print("Run tools\\TEST_FAKE_VR_TO_MUJOCO.bat to test without VR.")
+    print("This legacy receiver is retained for camera and regression checks only.")
     print("Initial ready pose: both arms down; clutch motion is relative to this pose.")
     print(
         f"Publishing right-arm joint state to "

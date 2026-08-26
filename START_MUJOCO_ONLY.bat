@@ -5,11 +5,10 @@ title G1 MuJoCo Only
 
 set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
-set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_configured_g1_teleop.py"
-set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
+set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_virtual_center_live.py"
 
 echo ========================================
-echo G1 MuJoCo configured teleoperation only
+echo G1 MuJoCo Mink teleoperation only
 echo ========================================
 echo.
 
@@ -19,25 +18,19 @@ if not exist "%MUJOCO_SCRIPT%" (
     goto :failed
 )
 
-if not exist "%TELEOP_CONFIG%" (
-    echo [ERROR] Teleoperation config was not found.
-    echo %TELEOP_CONFIG%
-    goto :failed
-)
-
-py -3.11 -c "import mujoco, numpy" >nul 2>&1
+py -3.11 -c "import mujoco, mink, numpy" >nul 2>&1
 if errorlevel 1 (
-    echo [ERROR] Python 3.11 or MuJoCo is not ready.
+    echo [ERROR] Python 3.11, MuJoCo, or Mink is not ready.
     goto :failed
 )
 
-echo [START] MuJoCo G1 right-arm configured controller only
+echo [START] MuJoCo G1 right-arm Mink controller only
 echo [INFO] Unity and Meta Horizon Link will not be started.
 echo [INFO] Scene: control
 
 echo.
 cd /d "%CONTROLLER_ROOT%"
-py -3.11 scripts\run_configured_g1_teleop.py --scene control --view overview
+py -3.11 scripts\run_mink_g1_right_arm_virtual_center_live.py --scene control --view overview
 
 set "EXIT_CODE=%ERRORLEVEL%"
 echo.

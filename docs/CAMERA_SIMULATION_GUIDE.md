@@ -57,19 +57,9 @@ RealSense D435i
 - `logs/camera/g1_head_camera_preview.bmp`
 - `logs/camera/camera_validation_report.json`
 
-### 실시간 MuJoCo 머리 시점
-
-`tools/START_HEAD_CAMERA_SIMULATION.bat`
-
-- MuJoCo 창 자체가 G1 머리 카메라 시점으로 열린다.
-- 같은 영상을 `isaac_head_image_shm`에 30 fps로 내보낸다.
-- 기존 UDP 오른팔 제어도 그대로 받을 수 있다.
-
-### 미리보기 한 장
-
-`tools/CAPTURE_HEAD_CAMERA_PREVIEW.bat`
-
-카메라 검증 자세로 팔을 먼저 수렴시킨 뒤 한 장을 저장하고 연다.
+이전 실시간 카메라 실행기와 단일 미리보기 실행기는 현재 controller 구조와
+연결되지 않아 제거했다. 카메라 기반 기능을 다시 연결하기 전까지는 위의
+foundation 검증만 사용한다.
 
 ## 설정 파일
 

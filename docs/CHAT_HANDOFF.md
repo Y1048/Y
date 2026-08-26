@@ -921,6 +921,32 @@ Fourth live inspection run at 42 degrees per second:
   engineering dry-run values, not approved physical-G1 limits. Repeat from
   multiple fresh rest-pose captures and obtain hardware-side approval before a
   publisher is introduced.
+- Tool cleanup on 2026-08-26 removed 17 obsolete BAT wrappers: broken launchers
+  whose `scripts/...` targets no longer exist, one-time palm-center patching,
+  superseded role-split/A-B experiments, and old torso-posture helpers. The
+  superseded Python diagnostics tied only to those experiments were also removed.
+- `tools/` now retains 20 BAT entry points covering the current VR launcher
+  support, frame/FK checks, hardware read-only synchronization, safety dry-run,
+  network setup/recovery, APK build, and camera foundation validation.
+- Documentation no longer references the deleted BAT names, `git diff --check`
+  passes, and `START_VR_HAND_TO_MUJOCO.bat --check` passes. Meta Horizon Link,
+  Unity, and the Mink controller were not running during this static check.
+- Unused Unity legacy assets were removed after checking active scene and code
+  GUID references: DSManipulator, bHaptics, InControl, MathNet/FSharp, imported
+  XR samples, and imported TextMesh Pro essentials.
+- Non-G1 Unitree robot assets and superseded IK comparison/diagnostic scripts
+  were removed. `START_MUJOCO_ONLY.bat` now launches the current virtual-center
+  Mink controller.
+- Unreferenced backend monkey-patch modules from retired controller experiments
+  and their obsolete joint-posture profile were removed. The active protocol,
+  command stream, Mink controller, collision diagnostics, hardware bridge, and
+  camera foundation remain intact.
+- Post-cleanup validation: Python compileall passed, 12 hardware bridge tests
+  passed, `START_VR_HAND_TO_MUJOCO.bat --check` passed, and the Unity 6000.5.4f1
+  batch validator passed after reimporting the reduced asset set.
+- Backend tests remain at 144/145: the pre-existing fake-VR trajectory test
+  reports 0.021299 m maximum tracking error against a 0.01 m diagnostic limit.
+  This cleanup did not change that result or relax the threshold.
 
 The operating rules at the top of this file are the authoritative instructions for future ChatGPT conversations.
 

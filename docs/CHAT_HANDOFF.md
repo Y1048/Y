@@ -944,9 +944,15 @@ Fourth live inspection run at 42 degrees per second:
 - Post-cleanup validation: Python compileall passed, 12 hardware bridge tests
   passed, `START_VR_HAND_TO_MUJOCO.bat --check` passed, and the Unity 6000.5.4f1
   batch validator passed after reimporting the reduced asset set.
-- Backend tests remain at 144/145: the pre-existing fake-VR trajectory test
-  reports 0.021299 m maximum tracking error against a 0.01 m diagnostic limit.
-  This cleanup did not change that result or relax the threshold.
+- The first post-cleanup backend run was 144/145: the retained fake-VR
+  trajectory test reported 0.021299 m maximum tracking error against a 0.01 m
+  diagnostic limit.
+- Follow-up diagnosis showed that failure belonged to the retained legacy DLS
+  path: after a closed trajectory it remained in a path-dependent local solution
+  with 0.0213 m position error, despite no collision, joint limit, or singularity.
+  The obsolete DLS trajectory test and its private fake sender were replaced by
+  a current virtual-center Mink convergence and velocity-limit regression test.
+- Final validation is 145/145 backend tests and 12/12 hardware bridge tests.
 
 The operating rules at the top of this file are the authoritative instructions for future ChatGPT conversations.
 

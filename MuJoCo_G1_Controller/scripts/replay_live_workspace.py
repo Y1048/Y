@@ -18,7 +18,7 @@ if str(BACKEND_ROOT) not in sys.path:
 from g1_teleop import VoxelWorkspaceMap, WorkspaceTargetProjector
 
 CONFIG_PATH = PROJECT_ROOT / "config" / "teleop.json"
-DEFAULT_TRACE = PROJECT_ROOT / "Unity_G1_Quest3S" / "Logs" / "live_quest_trace.csv"
+DEFAULT_TRACE = PROJECT_ROOT / "Unity_G1_VR" / "Logs" / "live_quest_trace.csv"
 DEFAULT_REPORT = PROJECT_ROOT / "logs" / "workspace" / "live_workspace_replay.csv"
 _NEIGHBORS = [
     (dx, dy, dz)

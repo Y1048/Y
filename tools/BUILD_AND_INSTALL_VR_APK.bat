@@ -2,12 +2,12 @@
 setlocal
 
 for %%I in ("%~dp0..") do set "PROJECT_ROOT=%%~fI"
-set "PROJECT_DIR=%PROJECT_ROOT%\Unity_G1_Quest3S"
+set "PROJECT_DIR=%PROJECT_ROOT%\Unity_G1_VR"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "ADB_EXE=C:\Program Files\Meta Quest Developer Hub\resources\bin\adb.exe"
-set "APK_PATH=%PROJECT_ROOT%\Builds\G1Quest3STeleop.apk"
+set "APK_PATH=%PROJECT_ROOT%\Builds\G1TeleopVR.apk"
 set "LOG_DIR=%PROJECT_ROOT%\logs\unity"
-set "LOG_PATH=%LOG_DIR%\unity_quest_apk_build.log"
+set "LOG_PATH=%LOG_DIR%\unity_vr_apk_build.log"
 
 if not exist "%UNITY_EXE%" (
     echo Unity 6000.5.4f1 was not found:
@@ -26,12 +26,12 @@ if not exist "%ADB_EXE%" (
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
 
 echo.
-echo Building Quest 3S APK...
+echo Building VR APK...
 echo Project: %PROJECT_DIR%
 echo Log: %LOG_PATH%
 echo.
 
-"%UNITY_EXE%" -batchmode -quit -projectPath "%PROJECT_DIR%" -executeMethod G1QuestBuild.BuildApk -logFile "%LOG_PATH%"
+"%UNITY_EXE%" -batchmode -quit -projectPath "%PROJECT_DIR%" -executeMethod G1VRBuild.BuildApk -logFile "%LOG_PATH%"
 if not %errorlevel%==0 (
     echo.
     echo Unity APK build failed. Open the log below:
@@ -63,6 +63,6 @@ if not %errorlevel%==0 (
 )
 
 echo.
-echo Done. In Quest, open Apps > Unknown Sources > G1 Quest3S Teleop.
+echo Done. In Quest, open Apps > Unknown Sources > G1 Teleop VR.
 echo.
 pause

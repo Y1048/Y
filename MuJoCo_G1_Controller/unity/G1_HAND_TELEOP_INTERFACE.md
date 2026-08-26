@@ -21,15 +21,15 @@ Quest 3S / Unity
 Current Unity project:
 
 ```text
-C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_Quest3S
+C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_VR
 ```
 
 Main scripts:
 
 ```text
-C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_Quest3S\Assets\G1Teleop\G1ExistingTargetUdpSender.cs
-C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_Quest3S\Assets\G1Teleop\G1ExistingHandTargetBinder.cs
-C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_Quest3S\Assets\G1Teleop\G1UnityRightArmPreview.cs
+C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_VR\Assets\G1Teleop\G1ExistingTargetUdpSender.cs
+C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_VR\Assets\G1Teleop\G1ExistingHandTargetBinder.cs
+C:\Users\user\Desktop\G1_Teleop_Project\Unity_G1_VR\Assets\G1Teleop\G1UnityRightArmPreview.cs
 ```
 
 ## Input Modes

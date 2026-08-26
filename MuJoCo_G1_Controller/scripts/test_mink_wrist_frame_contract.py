@@ -12,8 +12,8 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MINK_CONTROLLER = PROJECT_ROOT / "MuJoCo_G1_Controller" / "scripts" / "run_mink_g1_right_arm_prototype.py"
-UNITY_RIG = PROJECT_ROOT / "Unity_G1_Quest3S" / "Assets" / "G1Teleop" / "G1OfficialRig.cs"
-UNITY_SENDER = PROJECT_ROOT / "Unity_G1_Quest3S" / "Assets" / "G1Teleop" / "G1ExistingTargetUdpSender.cs"
+UNITY_RIG = PROJECT_ROOT / "Unity_G1_VR" / "Assets" / "G1Teleop" / "G1OfficialRig.cs"
+UNITY_SENDER = PROJECT_ROOT / "Unity_G1_VR" / "Assets" / "G1Teleop" / "G1ExistingTargetUdpSender.cs"
 
 MINK_FRAME = "right_wrist_yaw_link"
 UNITY_JOINT = "right_wrist_yaw_joint"

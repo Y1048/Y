@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "Unity_G1_Quest3S" / "Assets" / "G1Teleop" / "G1ExistingHandTargetBinder.cs"
+SOURCE = ROOT / "Unity_G1_VR" / "Assets" / "G1Teleop" / "G1ExistingHandTargetBinder.cs"
 BACKUP_DIR = ROOT / "logs" / "runtime"
 
 class PatchError(RuntimeError):

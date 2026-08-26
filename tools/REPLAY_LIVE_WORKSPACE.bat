@@ -3,7 +3,7 @@ setlocal EnableExtensions
 
 set "PROJECT_ROOT=%~dp0.."
 set "SCRIPT=%PROJECT_ROOT%\MuJoCo_G1_Controller\scripts\replay_live_workspace.py"
-set "TRACE=%PROJECT_ROOT%\Unity_G1_Quest3S\Logs\live_quest_trace.csv"
+set "TRACE=%PROJECT_ROOT%\Unity_G1_VR\Logs\live_quest_trace.csv"
 
 echo G1 live workspace replay diagnostic
 echo ===================================

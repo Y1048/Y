@@ -4,10 +4,10 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-public static class G1QuestBuild
+public static class G1VRBuild
 {
     private const string scene_path = "Assets/Scenes/SampleScene.unity";
-    private const string output_path = "../Builds/G1Quest3STeleop.apk";
+    private const string output_path = "../Builds/G1TeleopVR.apk";
 
     public static void BuildApk()
     {
@@ -15,8 +15,8 @@ public static class G1QuestBuild
 
         PlayerSettings.SetApplicationIdentifier(
             NamedBuildTarget.Android,
-            "kr.kaeri.g1quest3steleop");
-        PlayerSettings.productName = "G1 Quest3S Teleop";
+            "kr.kaeri.g1teleopvr");
+        PlayerSettings.productName = "G1 Teleop VR";
         PlayerSettings.companyName = "KAERI";
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel29;
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
@@ -40,9 +40,9 @@ public static class G1QuestBuild
         BuildReport report = BuildPipeline.BuildPlayer(build_options);
         if (report.summary.result != BuildResult.Succeeded)
         {
-            throw new System.Exception("Quest APK build failed: " + report.summary.result);
+            throw new System.Exception("VR APK build failed: " + report.summary.result);
         }
 
-        Debug.Log("Quest APK build succeeded: " + absolute_output_path);
+        Debug.Log("VR APK build succeeded: " + absolute_output_path);
     }
 }

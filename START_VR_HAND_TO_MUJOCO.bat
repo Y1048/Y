@@ -5,7 +5,7 @@ title G1 Quest Hand Tracking + Mink
 
 set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
-set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_Quest3S"
+set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_VR"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype.py"
 set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
@@ -71,16 +71,16 @@ if not errorlevel 1 set "UNITY_PROJECT_RUNNING=1"
 if /I "%~1"=="--check" (
     echo [OK] Required project files, config, and programs are ready.
     if "%UDP_RUNNING%"=="1" (echo [STATUS] UDP port %UDP_PORT% is already in use.) else (echo [STATUS] Mink controller is not running.)
-    if "%UNITY_PROJECT_RUNNING%"=="1" (echo [STATUS] Unity G1 Quest project is already open.) else (echo [STATUS] Unity G1 Quest project is not running.)
+    if "%UNITY_PROJECT_RUNNING%"=="1" (echo [STATUS] Unity G1 VR project is already open.) else (echo [STATUS] Unity G1 VR project is not running.)
     exit /b 0
 )
 
 if "%UNITY_PROJECT_RUNNING%"=="0" (
-    echo [START] Unity G1 Quest project
-    start "G1 Quest Unity" "%UNITY_EXE%" -projectPath "%UNITY_PROJECT%"
+    echo [START] Unity G1 VR project
+    start "G1 VR Unity" "%UNITY_EXE%" -projectPath "%UNITY_PROJECT%"
     timeout /t 2 /nobreak >nul
 ) else (
-    echo [KEEP] Unity G1 Quest project is already open.
+    echo [KEEP] Unity G1 VR project is already open.
 )
 
 if "%UDP_RUNNING%"=="0" (

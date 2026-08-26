@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0.."
 
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
-set "UNITY_PROJECT=%CD%\Unity_G1_Quest3S"
+set "UNITY_PROJECT=%CD%\Unity_G1_VR"
 
 echo ============================================================
 echo   G1 Unity vs MuJoCo Wrist-Yaw FK Parity Test
@@ -19,9 +19,9 @@ if not exist "%UNITY_EXE%" (
     goto :fail
 )
 
-powershell -NoProfile -Command "$p = Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { $_.CommandLine -like '*Unity_G1_Quest3S*' }; if ($p) { exit 1 } else { exit 0 }"
+powershell -NoProfile -Command "$p = Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { $_.CommandLine -like '*Unity_G1_VR*' }; if ($p) { exit 1 } else { exit 0 }"
 if errorlevel 1 (
-    echo [BLOCKED] Unity_G1_Quest3S is currently open.
+    echo [BLOCKED] Unity_G1_VR is currently open.
     echo           Save your work, close Unity completely, then run this test again.
     exit /b 2
 )

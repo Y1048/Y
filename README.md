@@ -1,13 +1,13 @@
-# G1 Quest 3S Teleoperation
+# G1 VR Teleoperation
 
-Meta Quest 3S 오른손 hand tracking을 Unity에서 수집하고, Mink + MuJoCo 기반 differential QP IK로 Unitree G1 오른팔 7DoF를 제어하는 텔레오퍼레이션 프로젝트다.
+VR 오른손 hand tracking을 Unity에서 수집하고, Mink + MuJoCo 기반 differential QP IK로 Unitree G1 오른팔 7DoF를 제어하는 텔레오퍼레이션 프로젝트다.
 
-> **현재 상태:** Unity/Quest ↔ Mink/MuJoCo 텔레오퍼레이션과 하드웨어 안전 dry-run 경로를 개발 중이다. **실제 G1 모터에 명령을 보내는 Unitree command publisher는 아직 구현/활성화하지 않았다.**
+> **현재 상태:** Unity/VR ↔ Mink/MuJoCo 텔레오퍼레이션과 하드웨어 안전 dry-run 경로를 개발 중이다. **실제 G1 모터에 명령을 보내는 Unitree command publisher는 아직 구현/활성화하지 않았다.**
 
 ## 현재 시스템
 
 ```text
-Meta Quest 3S
+VR headset
     │ right-hand pose
     ▼
 Unity 6.5 / Meta XR
@@ -26,7 +26,7 @@ G1 rt/lowstate → WSL2 Unitree SDK2/DDS → UDP 5007 → Windows teleop
 
 | Port | 방향 | 용도 |
 | ---: | --- | --- |
-| `5005` | Unity → Mink | Quest 오른손 position/orientation target |
+| `5005` | Unity → Mink | VR 오른손 position/orientation target |
 | `5006` | Mink → Unity | G1 오른팔 joint/wrist state |
 | `5007` | WSL/G1 → Windows | 실제 G1 LowState 초기 동기화용 telemetry |
 | `5008` | Mink → Safety dry-run | 하드웨어 safety pipeline 검증 |
@@ -98,7 +98,7 @@ MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py
 | `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py` | 최신 virtual-center IK 정책 |
 | `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py` | Mink QP, UDP, collision 등 공통 기반 |
 | `MuJoCo_G1_Controller/scripts/g1_right_arm_common.py` | G1 model/joint/frame/좌표계 공통 정의 |
-| `Unity_G1_Quest3S/Assets/G1Teleop/` | Quest wrist target, engagement, UDP, G1 preview |
+| `Unity_G1_VR/Assets/G1Teleop/` | VR wrist target, engagement, UDP, G1 preview |
 | `hardware/g1_arm_bridge/` | 실제 G1 LowState, pose sync, safety gate, dry-run |
 | `tools/` | 실행/회귀/진단용 BAT |
 
@@ -142,20 +142,20 @@ VR을 매번 켜지 않고 Python + MuJoCo + Mink만으로 회귀 테스트한�
 Unity 프로젝트:
 
 ```text
-Unity_G1_Quest3S/
+Unity_G1_VR/
 ```
 
 현재 기준:
 
 - Unity `6000.5.4f1`
 - Meta XR SDK `205.x`
-- Quest wrist position source와 anatomical orientation을 분리해 사용
-- cyan = Quest wrist
+- VR wrist position source와 anatomical orientation을 분리해 사용
+- cyan = VR wrist
 - green = Mink target
 - magenta = Unity-replayed G1 `right_wrist_yaw_link`
 - Unity/MuJoCo wrist-yaw FK parity 검증 통과
 
-자세한 내용은 [`Unity_G1_Quest3S/README.md`](Unity_G1_Quest3S/README.md)를 참고한다.
+자세한 내용은 [`Unity_G1_VR/README.md`](Unity_G1_VR/README.md)를 참고한다.
 
 ## 실제 G1 Hardware 상태
 
@@ -171,7 +171,7 @@ READ ONLY → INITIAL SYNC → SAFETY DRY RUN → HOLD → TELEOP
 
 ```text
 .
-├─ Unity_G1_Quest3S/          # Quest 3S / Unity frontend
+├─ Unity_G1_VR/               # VR / Unity frontend
 ├─ MuJoCo_G1_Controller/      # Mink + MuJoCo IK controller
 ├─ backend/                   # shared Python utilities
 ├─ config/                    # runtime/calibration config
@@ -186,7 +186,7 @@ READ ONLY → INITIAL SYNC → SAFETY DRY RUN → HOLD → TELEOP
 
 - [`README.md`](README.md): 전체 프로젝트와 현재 상태
 - [`MuJoCo_G1_Controller/README.md`](MuJoCo_G1_Controller/README.md): IK/QP/MuJoCo 상세
-- [`Unity_G1_Quest3S/README.md`](Unity_G1_Quest3S/README.md): Quest/Unity/frame/marker 상세
+- [`Unity_G1_VR/README.md`](Unity_G1_VR/README.md): VR/Unity/frame/marker 상세
 - [`hardware/g1_arm_bridge/README.md`](hardware/g1_arm_bridge/README.md): 실제 G1 안전 bring-up
 - [`tools/README.md`](tools/README.md): 실행 및 진단 도구
 

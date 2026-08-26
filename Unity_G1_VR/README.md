@@ -1,13 +1,13 @@
-# Unity G1 Quest 3S Frontend
+# Unity G1 VR Frontend
 
-이 Unity 프로젝트는 Meta Quest 3S 오른손 tracking을 받아 G1 teleoperation target을 만들고, Mink/MuJoCo에서 돌아오는 G1 오른팔 state를 시각화한다.
+이 Unity 프로젝트는 VR 오른손 tracking을 받아 G1 teleoperation target을 만들고, Mink/MuJoCo에서 돌아오는 G1 오른팔 state를 시각화한다.
 
 ## 현재 환경
 
 ```text
 Unity            : 6000.5.4f1
 Meta XR SDK      : 205.x
-Target headset   : Meta Quest 3S
+Target headset   : VR headset
 Scene            : Assets/Scenes/SampleScene.unity
 ```
 
@@ -16,7 +16,7 @@ Scene            : Assets/Scenes/SampleScene.unity
 ## 데이터 흐름
 
 ```text
-Quest right hand
+VR right hand
    ↓
 Unity hand/wrist source
    ↓ engagement/clutch
@@ -47,11 +47,11 @@ Unity와 MuJoCo의 동일 joint configuration에 대한 wrist-yaw FK parity 검�
 .\tools\TEST_G1_MINK_FK_PARITY.bat
 ```
 
-## Quest wrist source
+## VR wrist source
 
 현재 위치와 orientation source의 역할을 구분한다.
 
-- wrist position: Quest rig의 `source_hand`를 우선 사용
+- wrist position: VR rig의 `source_hand`를 우선 사용
 - anatomical orientation: hand skeleton 기반 semantic orientation 사용
 - skeleton wrist 위치가 palm 안쪽으로 보이던 문제 때문에 position source는 별도 compatibility layer로 처리
 
@@ -70,7 +70,7 @@ Assets/G1Teleop/G1ExistingHandTargetBinder.cs
 
 | Marker | 의미 |
 | --- | --- |
-| Cyan | 실제 Quest wrist |
+| Cyan | 실제 VR wrist |
 | Green | Mink target |
 | Magenta | Unity에 replay된 실제 G1 `right_wrist_yaw_link` |
 
@@ -78,12 +78,12 @@ Assets/G1Teleop/G1ExistingHandTargetBinder.cs
 
 ## Engagement
 
-사용자는 Quest wrist marker를 G1 engagement target에 맞춘 뒤 일정 시간 유지해 clutch를 활성화한다.
+사용자는 VR wrist marker를 G1 engagement target에 맞춘 뒤 일정 시간 유지해 clutch를 활성화한다.
 
-Engage 순간의 Quest pose와 G1 pose를 기준으로 저장하므로 controller가 absolute Quest pose를 로봇에 바로 대입하지 않는다. Mink 측에서도 같은 철학으로 clutch-relative target을 생성한다.
+Engage 순간의 VR pose와 G1 pose를 기준으로 저장하므로 controller가 absolute VR pose를 로봇에 바로 대입하지 않는다. Mink 측에서도 같은 철학으로 clutch-relative target을 생성한다.
 
 ```text
-engage Quest pose
+engage VR pose
 engage G1 pose
       ↓
 relative hand movement / rotation
@@ -180,10 +180,10 @@ collision_limit_nearby
 1. Mink orientation_error_deg
 2. wrist joint-limit margin
 3. collision status
-4. Quest anatomical orientation validity
+4. VR anatomical orientation validity
 ```
 
-Mink error가 작은데 Unity/Quest visual만 다르면 frame/source 쪽 문제이고, Mink error 자체가 크면 IK feasibility/joint-limit/collision 쪽 문제다.
+Mink error가 작은데 Unity/VR visual만 다르면 frame/source 쪽 문제이고, Mink error 자체가 크면 IK feasibility/joint-limit/collision 쪽 문제다.
 
 ## 주의
 

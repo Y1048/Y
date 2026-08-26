@@ -162,11 +162,11 @@ Quest APK build/install, frame calibration 등 Unity 관련 BAT도 이 폴더에
 예:
 
 ```powershell
-.\tools\BUILD_AND_INSTALL_QUEST3S_APK.bat
+.\tools\BUILD_AND_INSTALL_VR_APK.bat
 .\tools\CALIBRATE_WRIST_FRAME.bat
 ```
 
-Unity project 자체 설명은 `Unity_G1_Quest3S/README.md`를 참고한다.
+Unity project 자체 설명은 `Unity_G1_VR/README.md`를 참고한다.
 
 ## 8. Camera / 기타 검증
 

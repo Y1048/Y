@@ -50,7 +50,7 @@ Quest right wrist pose
 
 루트의 `START_VR_HAND_TO_MUJOCO.bat`이 현재 실행 진입점이며, 다음 두 프로세스를 연다.
 
-- Unity 프로젝트 `Unity_G1_Quest3S`
+- Unity 프로젝트 `Unity_G1_VR`
 - MuJoCo 실행기 `MuJoCo_G1_Controller/scripts/g1_right_arm_udp_ik_demo.py`
 
 ---
@@ -62,7 +62,7 @@ Quest right wrist pose
 주요 경로:
 
 ```text
-Unity_G1_Quest3S/Assets/G1Teleop/
+Unity_G1_VR/Assets/G1Teleop/
 ```
 
 책임:
@@ -454,8 +454,8 @@ while running:
 
 ```text
 MuJoCo_G1_Controller/external/unitree_mujoco/
-Unity_G1_Quest3S/Assets/Bhaptics/
-Unity_G1_Quest3S/Assets/Plugins/InControl/
+Unity_G1_VR/Assets/Bhaptics/
+Unity_G1_VR/Assets/Plugins/InControl/
 Unity Package Manager dependencies
 ```
 

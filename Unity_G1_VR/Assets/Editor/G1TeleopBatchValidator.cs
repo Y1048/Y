@@ -90,19 +90,11 @@ public static class G1TeleopBatchValidator
             sender_value.hand_binder == binder_value,
             "UDP sender is not connected to the hand binder.");
         AssertCondition(
-            sender_value.disengage_on_workspace_exit,
-            "Workspace exit must disengage teleoperation.");
+            !sender_value.disengage_on_workspace_exit,
+            "Automatic workspace disengagement must remain disabled.");
         AssertCondition(
-            sender_value.workspace_exit_confirm_seconds >= 0.15f,
-            "Workspace exit must be confirmed across multiple frames.");
-        AssertVector(
-            sender_value.robot_min,
-            new Vector3(0.28f, -0.38f, 0.82f),
-            "Robot workspace minimum changed unexpectedly.");
-        AssertVector(
-            sender_value.robot_max,
-            new Vector3(0.58f, 0.22f, 1.34f),
-            "Robot workspace maximum changed unexpectedly.");
+            !sender_value.use_rectangular_workspace_fallback,
+            "Disabled rectangular workspace fallback must not clamp UDP targets.");
     }
 
     private static void ValidateOfficialRig()
@@ -213,6 +205,16 @@ public static class G1TeleopBatchValidator
         AssertCondition(
             !G1ExistingTargetUdpSender.GetCommandValidity(false, true),
             "Tracking alone must not activate an uncalibrated command.");
+        AssertCondition(
+            !G1ExistingHandTargetBinder.IsTrackingOriginJump(
+                new Vector3(0.02f, 0.01f, 0.01f),
+                0.20f),
+            "Normal hand motion must not be treated as a tracking-origin jump.");
+        AssertCondition(
+            G1ExistingHandTargetBinder.IsTrackingOriginJump(
+                new Vector3(0.0f, 0.0f, 0.78f),
+                0.20f),
+            "A tracking-origin discontinuity must be rejected.");
         AssertCondition(
             !G1ExistingTargetUdpSender.ShouldDisengageForWorkspace(
                 false,

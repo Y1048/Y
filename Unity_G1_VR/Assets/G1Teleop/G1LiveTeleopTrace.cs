@@ -82,6 +82,18 @@ public class G1LiveTeleopTrace : MonoBehaviour
         float backend_position_error = backend_recent
             ? state_receiver.LatestPositionError
             : 0.0f;
+        float backend_orientation_error = backend_recent
+            ? state_receiver.LatestOrientationErrorDegrees
+            : 0.0f;
+        float orientation_assist_gain = backend_recent
+            ? state_receiver.LatestOrientationAssistGain
+            : 0.0f;
+        float orientation_cost_scale = backend_recent
+            ? state_receiver.LatestOrientationCostScale
+            : 1.0f;
+        float wrist_limit_margin_deg = backend_recent
+            ? state_receiver.LatestWristLimitMarginDegrees
+            : 0.0f;
         bool workspace_limited = backend_recent && state_receiver.IsWorkspaceLimited;
         bool collision_limited = backend_recent && state_receiver.IsCollisionLimited;
         float[] joints = backend_recent ? state_receiver.LatestRightArmJoints : null;
@@ -105,8 +117,8 @@ public class G1LiveTeleopTrace : MonoBehaviour
             "{20},{21},{22}," +
             "{23:F6},{24:F6},{25:F6}," +
             "{26:F6},{27:F6},{28:F6}," +
-            "{29:F6}," +
-            "{30:F6},{31:F6},{32:F6},{33:F6},{34:F6},{35:F6},{36:F6}",
+            "{29:F6},{30:F6},{31:F6},{32:F6},{33:F6}," +
+            "{34:F6},{35:F6},{36:F6},{37:F6},{38:F6},{39:F6},{40:F6}",
             Time.realtimeSinceStartupAsDouble,
             tracked ? 1 : 0,
             calibrated ? 1 : 0,
@@ -123,6 +135,10 @@ public class G1LiveTeleopTrace : MonoBehaviour
             backend_target_delta.x, backend_target_delta.y, backend_target_delta.z,
             backend_wrist_delta.x, backend_wrist_delta.y, backend_wrist_delta.z,
             backend_position_error,
+            backend_orientation_error,
+            orientation_assist_gain,
+            orientation_cost_scale,
+            wrist_limit_margin_deg,
             shoulder_pitch, shoulder_roll, shoulder_yaw, elbow,
             wrist_roll, wrist_pitch, wrist_yaw));
         writer.Flush();
@@ -152,7 +168,9 @@ public class G1LiveTeleopTrace : MonoBehaviour
                 "backend_recent,workspace_limited,collision_limited," +
                 "backend_target_dx,backend_target_dy,backend_target_dz," +
                 "backend_wrist_dx,backend_wrist_dy,backend_wrist_dz," +
-                "backend_position_error," +
+                "backend_position_error,backend_orientation_error_deg," +
+                "orientation_assist_gain,orientation_cost_scale," +
+                "wrist_limit_margin_deg," +
                 "shoulder_pitch,shoulder_roll,shoulder_yaw,elbow," +
                 "wrist_roll,wrist_pitch,wrist_yaw");
             writer.Flush();

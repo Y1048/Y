@@ -1,74 +1,43 @@
 using UnityEngine;
 
 /// <summary>
-/// Makes the MuJoCo voxel workspace the single workspace authority during Play mode.
-/// Unity keeps generating the operator target, but does not clamp or disengage on its
-/// legacy rectangular workspace. The backend remains responsible for projection,
-/// boundary sliding, collision handling, and workspace feedback.
+/// Optional experimental mode that delegates workspace authority to the backend.
+/// It is deliberately opt-in and is not installed automatically at runtime.
 /// </summary>
+[DisallowMultipleComponent]
 public sealed class G1BackendWorkspaceAuthority : MonoBehaviour
 {
     private const float DisabledWorkspaceExtent = 1000.0f;
 
-    private G1ExistingTargetUdpSender configuredSender;
-    private G1PinchTeleopDisengage pinchDisengage;
+    public bool enable_backend_workspace_authority;
+    public G1ExistingTargetUdpSender target_sender;
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void Install()
+    private void Awake()
     {
-        if (FindObjectOfType<G1BackendWorkspaceAuthority>() != null)
+        if (!enable_backend_workspace_authority)
         {
             return;
         }
 
-        GameObject authorityObject = new GameObject("G1BackendWorkspaceAuthority");
-        DontDestroyOnLoad(authorityObject);
-        authorityObject.AddComponent<G1BackendWorkspaceAuthority>();
-    }
-
-    private void Update()
-    {
-        G1ExistingTargetUdpSender sender = FindObjectOfType<G1ExistingTargetUdpSender>();
-        if (sender != null && sender != configuredSender)
+        if (target_sender == null)
         {
-            ApplyBackendAuthority(sender);
-            configuredSender = sender;
+            target_sender = GetComponent<G1ExistingTargetUdpSender>();
         }
 
-        EnsurePinchDisengage();
-    }
-
-    private void EnsurePinchDisengage()
-    {
-        G1ExistingHandTargetBinder binder = FindObjectOfType<G1ExistingHandTargetBinder>();
-        if (binder == null)
+        if (target_sender == null)
         {
+            Debug.LogWarning(
+                "G1 backend workspace authority requires an assigned target sender.");
+            enabled = false;
             return;
         }
 
-        if (pinchDisengage == null)
-        {
-            pinchDisengage = GetComponent<G1PinchTeleopDisengage>();
-            if (pinchDisengage == null)
-            {
-                pinchDisengage = gameObject.AddComponent<G1PinchTeleopDisengage>();
-            }
-        }
-
-        pinchDisengage.hand_binder = binder;
-        pinchDisengage.ovr_hand = binder.ovr_hand;
+        ApplyBackendAuthority(target_sender);
     }
 
     private static void ApplyBackendAuthority(G1ExistingTargetUdpSender sender)
     {
-        // Do not turn backend workspace feedback into a Unity-side clutch release.
-        // The backend reachability supervisor keeps the robot target on the feasible
-        // boundary while Unity continues to show the operator's requested direction.
         sender.disengage_on_workspace_exit = false;
-
-        // The sender still calls ClampToRobotWorkspace internally. Widening these
-        // legacy transport bounds makes that clamp a no-op for any realistic hand
-        // motion while leaving the original code path available for legacy scenes.
         sender.robot_min = new Vector3(
             -DisabledWorkspaceExtent,
             -DisabledWorkspaceExtent,
@@ -79,7 +48,7 @@ public sealed class G1BackendWorkspaceAuthority : MonoBehaviour
             DisabledWorkspaceExtent);
 
         Debug.Log(
-            "G1 backend reachability authority enabled: workspace excursions hold "
-            + "the robot at the feasible boundary and are shown by backend feedback.");
+            "Experimental backend workspace authority enabled explicitly."
+            + " Unity workspace disengagement is disabled for this sender.");
     }
 }

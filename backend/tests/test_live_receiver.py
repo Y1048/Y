@@ -42,6 +42,21 @@ def legacy_packet(sequence: int, x: float = 0.42) -> bytes:
     return json.dumps(value).encode("utf-8")
 
 
+def legacy_disengage_packet(sequence: int) -> bytes:
+    value = {
+        "session_id": "legacy-session",
+        "sequence": sequence,
+        "command_state": "pinch_disengaged",
+        "right": {
+            "pos": [0.42, -0.16, 1.05],
+            "rot": [0.0, 0.0, 0.0, 1.0],
+            "valid": False,
+        },
+        "source": "quest3s_head_relative",
+    }
+    return json.dumps(value).encode("utf-8")
+
+
 def v2_packet(sequence: int) -> bytes:
     pose = {
         "valid": True,
@@ -95,6 +110,18 @@ class LiveReceiverTest(unittest.TestCase):
         self.assertEqual(batch.accepted_count, 1)
         self.assertEqual(batch.rejected_count, 1)
         self.assertEqual(batch.latest_command.sequence, 3)
+
+    def test_pinch_disengage_is_accepted_and_reported(self):
+        sock = FakeSocket([legacy_disengage_packet(1)])
+        watchdog = SessionSequenceWatchdog(takeover_after_s=0.75)
+        state = TeleopRuntimeStateMachine()
+
+        batch = receive_available_commands(sock, watchdog, state)
+
+        self.assertEqual(batch.accepted_count, 1)
+        self.assertTrue(batch.operator_disengage)
+        self.assertEqual(batch.latest_command.mode, "pinch_disengaged")
+        self.assertEqual(state.state, "idle")
 
     def test_v2_is_parsed_but_not_allowed_to_take_live_control_yet(self):
         sock = FakeSocket([v2_packet(1)])

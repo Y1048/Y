@@ -8,6 +8,7 @@ prevents the operator/Unity/Mink wrist frame from silently drifting apart.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -24,6 +25,11 @@ def require(text: str, needle: str, label: str) -> None:
         raise AssertionError(f"{label}: missing {needle!r}")
 
 
+def require_pattern(text: str, pattern: str, label: str) -> None:
+    if re.search(pattern, text) is None:
+        raise AssertionError(f"{label}: missing pattern {pattern!r}")
+
+
 def forbid(text: str, needle: str, label: str) -> None:
     if needle in text:
         raise AssertionError(f"{label}: forbidden legacy reference {needle!r}")
@@ -34,9 +40,9 @@ def main() -> int:
     rig_text = UNITY_RIG.read_text(encoding="utf-8")
     sender_text = UNITY_SENDER.read_text(encoding="utf-8")
 
-    require(
+    require_pattern(
         mink_text,
-        'FrameTask(frame_name="right_wrist_yaw_link"',
+        r'mink\.FrameTask\(\s*frame_name="right_wrist_yaw_link"',
         "Mink 6D task frame",
     )
     require(

@@ -11,7 +11,7 @@ scripts/run_mink_g1_right_arm_virtual_center_live.py
 이며 실행은 프로젝트 루트에서:
 
 ```powershell
-.\tools\TEST_MINK_G1_VIRTUAL_CENTER_LIVE.bat
+.\START_VR_HAND_TO_MUJOCO.bat --smooth
 ```
 
 으로 한다.
@@ -336,7 +336,7 @@ QP_DAMPING = 1e-8
 Virtual-center live controller는 추가로:
 
 ```python
-MAX_JOINT_VELOCITY_DEG_S = 50.0
+MAX_JOINT_VELOCITY_DEG_S = 45.0
 base.PROXIMAL_DAMPING_COST = 0.03
 base.WRIST_DAMPING_COST = 0.015
 ```
@@ -369,7 +369,7 @@ RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES = {
 }
 ```
 
-Virtual-center live에서는 오른팔 7축 최대속도를 `50 deg/s`로 제한한다.
+Virtual-center live에서는 오른팔 7축 최대속도를 `45 deg/s`로 제한한다.
 
 ---
 

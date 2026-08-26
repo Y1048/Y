@@ -63,6 +63,11 @@ class TeleopRuntimeStateMachine:
             self._workspace_reset_armed = True
             return RuntimeTransition(previous, self.state, "workspace exit acknowledged")
 
+        if command.mode == "pinch_disengaged":
+            self.state = "idle"
+            self._workspace_reset_armed = False
+            return RuntimeTransition(previous, self.state, "manual pinch disengage")
+
         if self.state == "workspace_fault":
             if command.mode == "active" and command.valid and self._workspace_reset_armed:
                 self.state = "active"

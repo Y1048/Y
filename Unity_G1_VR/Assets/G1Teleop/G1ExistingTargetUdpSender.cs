@@ -17,11 +17,10 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public Vector3 position_offset = Vector3.zero;
     public Vector3 robot_min = new Vector3(0.22f, -0.50f, 0.70f);
     public Vector3 robot_max = new Vector3(0.70f, 0.30f, 1.50f);
-    public bool disengage_on_workspace_exit = true;
+    public bool disengage_on_workspace_exit = false;
     public float workspace_exit_confirm_seconds = 0.80f;
     public float workspace_exit_margin = 0.02f;
-
-    [Header("Pinch disengage")]
+    public bool use_rectangular_workspace_fallback = false;
     public bool enable_pinch_disengage = true;
     public float pinch_disengage_hold_seconds = 0.50f;
 
@@ -38,12 +37,14 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
 
     public Vector3 LastRobotTarget { get; private set; }
     public Vector3 UnclampedRobotTarget { get; private set; }
+    public Vector3 ClampedRobotTarget { get; private set; }
     public Vector3 LastOperatorTargetDelta { get; private set; }
     public bool IsWorkspaceLimited { get; private set; }
-    public bool IsCommandValid { get; private set; }
+    public bool IsWorkspaceExitPending { get; private set; }
+    public float WorkspaceExitProgress { get; private set; }
     public bool IsPinchDisengaged { get; private set; }
     public float PinchDisengageProgress { get; private set; }
-
+    public bool IsCommandValid { get; private set; }
     private UdpClient udp_client;
     private IPEndPoint udp_endpoint;
     private float send_interval;
@@ -61,9 +62,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     private bool live_filter_initialized;
     private Vector3 filtered_operator_delta;
     private Quaternion filtered_operator_rotation = Quaternion.identity;
-    private float pinch_hold_duration;
-    private bool pinch_triggered_until_release;
-
+    private float pinch_disengage_duration;
+    private bool pinch_wait_for_release;
     private void Awake()
     {
         if (state_receiver == null)
@@ -78,6 +78,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         send_interval = 1.0f / Mathf.Max(1.0f, send_hz);
         LastRobotTarget = robot_center + position_offset;
         UnclampedRobotTarget = LastRobotTarget;
+        ClampedRobotTarget = LastRobotTarget;
         LastOperatorTargetDelta = Vector3.zero;
     }
 
@@ -88,67 +89,22 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         if (!Application.isPlaying || shutdown_complete) return;
         if (hand_binder == null && right_hand_target == null) return;
 
-        UpdatePinchDisengage();
-
         send_timer += Time.deltaTime;
         if (send_timer < send_interval) return;
         send_timer = 0.0f;
         SendTarget();
     }
 
-    private void UpdatePinchDisengage()
-    {
-        PinchDisengageProgress = 0.0f;
-        if (!enable_pinch_disengage
-            || hand_binder == null
-            || hand_binder.ovr_hand == null)
-        {
-            pinch_hold_duration = 0.0f;
-            pinch_triggered_until_release = false;
-            return;
-        }
-
-        bool pinching = hand_binder.ovr_hand.IsTracked
-            && hand_binder.ovr_hand.GetFingerIsPinching(OVRHand.HandFinger.Index);
-        if (!pinching)
-        {
-            pinch_hold_duration = 0.0f;
-            pinch_triggered_until_release = false;
-            return;
-        }
-
-        if (!hand_binder.IsCalibrated || pinch_triggered_until_release)
-        {
-            return;
-        }
-
-        pinch_hold_duration += Time.deltaTime;
-        PinchDisengageProgress = Mathf.Clamp01(
-            pinch_hold_duration / pinch_disengage_hold_seconds);
-        if (pinch_hold_duration < pinch_disengage_hold_seconds)
-        {
-            return;
-        }
-
-        pinch_triggered_until_release = true;
-        pinch_hold_duration = 0.0f;
-        PinchDisengageProgress = 1.0f;
-        IsPinchDisengaged = true;
-        live_filter_initialized = false;
-        hand_binder.ResetCalibration();
-        Debug.Log(
-            "G1 teleoperation disengaged by thumb-index pinch. "
-            + "Return the hand to the engagement target and hold still to reconnect.");
-    }
-
     private void SendTarget()
     {
+        UpdatePinchDisengage();
         bool calibrated = hand_binder == null || hand_binder.IsCalibrated;
         bool calibration_started = calibrated && !previous_calibrated;
         previous_calibrated = calibrated;
 
         if (calibration_started)
         {
+            IsPinchDisengaged = false;
             bool stale_backend_limit = state_receiver != null
                 && state_receiver.HasRecentState
                 && state_receiver.IsWorkspaceLimited;
@@ -159,7 +115,6 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             IsWorkspaceLimited = false;
             workspace_violation_hold_active = false;
             live_filter_initialized = false;
-            IsPinchDisengaged = false;
             Debug.Log("G1 teleoperation engagement accepted; stale workspace feedback is being rearmed.");
         }
 
@@ -214,8 +169,13 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         Quaternion target_rotation = filtered_operator_rotation;
 
         UnclampedRobotTarget = OperatorToRobot(operator_delta);
-        Vector3 clamped_robot_target = ClampToRobotWorkspace(UnclampedRobotTarget);
-        bool local_workspace_exit = command_valid && IsOutsideRobotWorkspace(UnclampedRobotTarget);
+        Vector3 clamped_robot_target = use_rectangular_workspace_fallback
+            ? ClampToRobotWorkspace(UnclampedRobotTarget)
+            : UnclampedRobotTarget;
+        ClampedRobotTarget = clamped_robot_target;
+        bool local_workspace_exit = use_rectangular_workspace_fallback
+            && command_valid
+            && IsOutsideRobotWorkspace(UnclampedRobotTarget);
         bool backend_workspace_exit = command_valid
             && state_receiver != null
             && state_receiver.HasRecentState
@@ -226,6 +186,10 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             && ShouldDisengageForWorkspace(local_workspace_exit, backend_workspace_exit, backend_feedback_armed);
         workspace_exit_duration = UpdateWorkspaceExitDuration(workspace_exit_candidate, workspace_exit_duration, send_interval);
         bool workspace_exit_confirmed = IsWorkspaceExitConfirmed(workspace_exit_duration, workspace_exit_confirm_seconds);
+        IsWorkspaceExitPending = workspace_exit_candidate && !workspace_exit_confirmed;
+        WorkspaceExitProgress = workspace_exit_candidate
+            ? Mathf.Clamp01(workspace_exit_duration / Mathf.Max(0.01f, workspace_exit_confirm_seconds))
+            : 0.0f;
 
         if (workspace_exit_confirmed)
         {
@@ -249,22 +213,13 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             if (workspace_exit_candidate && !workspace_violation_hold_active)
             {
                 workspace_violation_hold_active = true;
-                Debug.Log("G1 workspace excursion detected; continuing with workspace-clipped targets and will rebase on recovery.");
+                Debug.Log("G1 workspace excursion detected; clipping the target while preserving the original mapping.");
             }
 
             if (!workspace_exit_candidate && workspace_violation_hold_active)
             {
                 workspace_violation_hold_active = false;
-                Debug.Log("G1 workspace excursion cleared; re-centering hand-to-robot mapping.");
-                if (hand_binder != null && hand_binder.IsTrackingValid && hand_binder.IsCalibrated)
-                {
-                    hand_binder.ResetCalibration();
-                    hand_binder.Calibrate();
-                    live_filter_initialized = false;
-                    raw_operator_rotation = Quaternion.Inverse(hand_binder.OperatorHeading)
-                        * hand_binder.TrackedWristRotation;
-                    target_rotation = raw_operator_rotation;
-                }
+                Debug.Log("G1 workspace excursion cleared; preserving the original hand-to-robot mapping.");
             }
 
             bool received_fresh_backend_clear = backend_workspace_rearm_pending
@@ -292,9 +247,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         Quaternion send_rotation = target_rotation;
         string command_state = workspace_exit_latched
             ? "workspace_exit"
-            : IsPinchDisengaged && !command_valid
-                ? "pinch_disengaged"
-                : command_valid ? "active" : "idle";
+            : IsPinchDisengaged ? "pinch_disengaged"
+            : command_valid ? "active" : "idle";
         string json_text = BuildPacket(send_position, send_rotation, command_valid, command_state);
         if (!SendPacket(json_text)) return;
         packet_count++;
@@ -341,6 +295,62 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         return workspace_exit_duration >= Mathf.Max(0.01f, confirm_seconds);
     }
 
+    private void UpdatePinchDisengage()
+    {
+        OVRHand ovr_hand = hand_binder == null ? null : hand_binder.ovr_hand;
+        if (!enable_pinch_disengage || hand_binder == null || ovr_hand == null)
+        {
+            ResetPinchProgress();
+            return;
+        }
+
+        bool pinching = ovr_hand.GetFingerIsPinching(OVRHand.HandFinger.Index);
+        if (pinch_wait_for_release)
+        {
+            if (hand_binder.IsCalibrated)
+            {
+                hand_binder.ResetCalibration();
+            }
+
+            PinchDisengageProgress = pinching ? 1.0f : 0.0f;
+            if (!pinching)
+            {
+                pinch_wait_for_release = false;
+                pinch_disengage_duration = 0.0f;
+                Debug.Log("G1 pinch disengage released; align with the engagement target to reconnect.");
+            }
+            return;
+        }
+
+        if (!hand_binder.IsCalibrated || !hand_binder.IsTrackingValid || !pinching)
+        {
+            pinch_disengage_duration = 0.0f;
+            PinchDisengageProgress = 0.0f;
+            return;
+        }
+
+        pinch_disengage_duration += send_interval;
+        PinchDisengageProgress = Mathf.Clamp01(
+            pinch_disengage_duration / pinch_disengage_hold_seconds);
+        if (pinch_disengage_duration < pinch_disengage_hold_seconds)
+        {
+            return;
+        }
+
+        hand_binder.ResetCalibration();
+        pinch_wait_for_release = true;
+        IsPinchDisengaged = true;
+        PinchDisengageProgress = 1.0f;
+        live_filter_initialized = false;
+        Debug.Log("G1 teleoperation disengaged by sustained thumb-index pinch.");
+    }
+
+    private void ResetPinchProgress()
+    {
+        pinch_disengage_duration = 0.0f;
+        PinchDisengageProgress = 0.0f;
+    }
+
     private bool IsOutsideRobotWorkspace(Vector3 robot_target)
     {
         return robot_target.x < robot_min.x - workspace_exit_margin
@@ -374,11 +384,13 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         backend_workspace_rearm_pending = false;
         backend_workspace_rearm_revision = 0;
         IsWorkspaceLimited = false;
+        IsWorkspaceExitPending = false;
+        WorkspaceExitProgress = 0.0f;
         IsCommandValid = false;
         IsPinchDisengaged = false;
         PinchDisengageProgress = 0.0f;
-        pinch_hold_duration = 0.0f;
-        pinch_triggered_until_release = false;
+        pinch_disengage_duration = 0.0f;
+        pinch_wait_for_release = false;
         shutdown_complete = false;
         workspace_violation_hold_active = false;
         live_filter_initialized = false;

@@ -27,6 +27,10 @@ class InternalCommand:
     def workspace_exit(self) -> bool:
         return self.mode == "workspace_exit"
 
+    @property
+    def operator_disengage(self) -> bool:
+        return self.mode == "pinch_disengaged"
+
 
 def _decode_object(payload: bytes | str, label: str) -> tuple[str, dict[str, object]]:
     try:
@@ -75,7 +79,7 @@ def _parse_legacy_value(value: dict[str, object]) -> InternalCommand:
     mode = value.get("command_state")
     if mode is None:
         mode = "active" if valid else "idle"
-    if mode not in {"active", "idle", "workspace_exit"}:
+    if mode not in {"active", "idle", "workspace_exit", "pinch_disengaged"}:
         raise ProtocolError("legacy command_state is invalid")
     if mode == "active" and not valid:
         raise ProtocolError("active legacy command requires right.valid=true")

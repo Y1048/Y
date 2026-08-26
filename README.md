@@ -77,10 +77,10 @@ Other G1 DOFs          : frozen
 .\START_VR_HAND_TO_MUJOCO.bat --check
 ```
 
-### 현재 Virtual-Center 실험본
+### 현재 Virtual-Center smooth 실험본
 
 ```powershell
-.\tools\TEST_MINK_G1_VIRTUAL_CENTER_LIVE.bat
+.\START_VR_HAND_TO_MUJOCO.bat --smooth
 ```
 
 이 런처가 현재 최신 IK 정책인:
@@ -89,7 +89,7 @@ Other G1 DOFs          : frozen
 MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py
 ```
 
-를 실행한다. 최신 실험본을 메인 런처로 승격하기 전에는 두 실행 경로를 구분한다.
+를 실행한다. 별도 BAT를 늘리지 않고 메인 런처 옵션으로 두 실행 경로를 구분한다.
 
 ## 핵심 코드 경로
 

@@ -7,6 +7,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
     public G1RobotStateUdpReceiver state_receiver;
     public Transform wrist_target;
     public bool show_tracking_markers = true;
+    public bool show_orientation_axes = false;
     public float tracking_axis_length = 0.10f;
 
     private static readonly float[] fallback_right_arm_positions =
@@ -46,24 +47,31 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private GameObject official_g1_object;
     private G1OfficialRig official_g1_rig;
     private Transform tracked_hand_marker;
+    private Transform robot_wrist_marker;
     private Transform target_hand_marker;
     private Transform tracked_hand_axes;
     private Transform mapped_hand_axes;
     private Transform target_hand_axes;
     private Material tracked_hand_material;
+    private Material robot_wrist_material;
     private Material target_hand_material;
     private Material engagement_waiting_material;
     private Material engagement_ready_material;
-    private Material workspace_limit_material;
     private Material axis_x_material;
     private Material axis_y_material;
     private Material axis_z_material;
     private Material mapping_line_material;
     private LineRenderer mapping_line;
     private Renderer target_hand_renderer;
+    private Transform inspection_panel;
+    private Transform inspection_target_marker;
+    private Renderer inspection_target_renderer;
+    private Material inspection_panel_material;
+    private Material inspection_target_material;
     private bool robot_anchored;
     private bool robot_state_pose_applied;
     private bool calibration_reference_captured;
+    private bool previous_preview_calibrated;
     private Vector3 robot_wrist_at_calibration;
     private float alignment_log_timer;
 
@@ -104,6 +112,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
         UpdateCalibrationReference(robot_position_reference);
         UpdateTrackingMarkers();
+        UpdateInspectionDemo();
     }
 
     private void CreatePreview()
@@ -129,6 +138,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
         tracked_hand_material = CreateUnlitMaterial(
             "tracked_wrist_material",
             new Color(0.0f, 0.90f, 1.0f, 1.0f));
+        robot_wrist_material = CreateUnlitMaterial(
+            "g1_actual_wrist_material",
+            new Color(1.0f, 0.18f, 0.60f, 1.0f));
         target_hand_material = CreateUnlitMaterial(
             "operator_hand_target_material",
             new Color(0.15f, 1.0f, 0.25f, 1.0f));
@@ -138,9 +150,6 @@ public class G1UnityRightArmPreview : MonoBehaviour
         engagement_ready_material = CreateUnlitMaterial(
             "g1_engagement_ready_material",
             new Color(1.0f, 0.85f, 0.05f, 1.0f));
-        workspace_limit_material = CreateUnlitMaterial(
-            "operator_hand_target_workspace_limit_material",
-            new Color(1.0f, 0.55f, 0.05f, 1.0f));
         axis_x_material = CreateUnlitMaterial(
             "wrist_axis_x_material",
             new Color(1.0f, 0.12f, 0.12f, 1.0f));
@@ -158,15 +167,119 @@ public class G1UnityRightArmPreview : MonoBehaviour
             "tracked_quest_wrist_marker",
             tracked_hand_material,
             Vector3.one * 0.060f);
+        robot_wrist_marker = CreateSphere(
+            "g1_actual_wrist_marker",
+            robot_wrist_material,
+            Vector3.one * 0.035f);
         target_hand_marker = CreateSphere(
-            "operator_hand_target_marker",
+            "g1_feasible_motion_target_marker",
             target_hand_material,
-            Vector3.one * 0.045f);
+            Vector3.one * 0.055f);
         target_hand_renderer = target_hand_marker.GetComponent<Renderer>();
         tracked_hand_axes = CreateOrientationAxes("tracked_quest_wrist_axes");
         mapped_hand_axes = CreateOrientationAxes("mapped_quest_command_axes");
-        target_hand_axes = CreateOrientationAxes("operator_hand_target_axes");
+        target_hand_axes = CreateOrientationAxes("g1_feasible_motion_target_axes");
         mapping_line = CreateMappingLine();
+        CreateInspectionDemoVisuals();
+    }
+
+    private void CreateInspectionDemoVisuals()
+    {
+        inspection_panel_material = CreateUnlitMaterial(
+            "inspection_panel_material",
+            new Color(0.16f, 0.18f, 0.20f, 1.0f));
+        inspection_target_material = CreateUnlitMaterial(
+            "inspection_demo_target_material",
+            InspectionStateColor("waiting"));
+
+        GameObject panel_object = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        panel_object.name = "inspection_panel";
+        panel_object.transform.SetParent(preview_root, false);
+        panel_object.GetComponent<Renderer>().sharedMaterial = inspection_panel_material;
+        DestroyCollider(panel_object);
+        inspection_panel = panel_object.transform;
+
+        inspection_target_marker = CreateSphere(
+            "inspection_demo_target_marker",
+            inspection_target_material,
+            Vector3.one * 0.09f);
+        inspection_target_renderer = inspection_target_marker.GetComponent<Renderer>();
+        inspection_panel.gameObject.SetActive(false);
+        inspection_target_marker.gameObject.SetActive(false);
+    }
+
+    private void UpdateInspectionDemo()
+    {
+        bool visible = robot_anchored
+            && official_g1_object != null
+            && official_g1_rig != null
+            && state_receiver != null
+            && state_receiver.HasRecentState
+            && state_receiver.HasInspectionState;
+        inspection_panel.gameObject.SetActive(visible);
+        inspection_target_marker.gameObject.SetActive(visible);
+        if (!visible)
+        {
+            return;
+        }
+
+        Transform wrist_reference = GetRobotStateWristReference();
+        if (wrist_reference == null)
+        {
+            return;
+        }
+
+        Quaternion robot_rotation = official_g1_object.transform.rotation;
+        Vector3 wrist_robot_position = state_receiver.LatestWristRobotPosition;
+        inspection_target_marker.position = wrist_reference.position
+            + robot_rotation * RobotVectorToUnity(
+                state_receiver.LatestInspectionTargetRobotPosition
+                - wrist_robot_position);
+        inspection_panel.position = wrist_reference.position
+            + robot_rotation * RobotVectorToUnity(
+                state_receiver.LatestInspectionPanelRobotPosition
+                - wrist_robot_position);
+        inspection_panel.rotation = robot_rotation;
+
+        Vector3 panel_half_size = state_receiver.LatestInspectionPanelHalfSize;
+        inspection_panel.localScale = new Vector3(
+            panel_half_size.y * 2.0f,
+            panel_half_size.z * 2.0f,
+            panel_half_size.x * 2.0f);
+
+        Color state_color = InspectionStateColor(
+            state_receiver.LatestInspectionState);
+        inspection_target_material.color = state_color;
+        if (inspection_target_material.HasProperty("_BaseColor"))
+        {
+            inspection_target_material.SetColor("_BaseColor", state_color);
+        }
+        inspection_target_renderer.sharedMaterial = inspection_target_material;
+
+        float progress_scale = state_receiver.LatestInspectionState == "holding"
+            ? 1.0f + 0.35f * state_receiver.LatestInspectionHoldProgress
+            : 1.0f;
+        inspection_target_marker.localScale = Vector3.one * 0.09f * progress_scale;
+    }
+
+    private static Color InspectionStateColor(string state_value)
+    {
+        switch (state_value)
+        {
+            case "approach":
+                return new Color(1.0f, 0.82f, 0.05f, 1.0f);
+            case "holding":
+                return new Color(1.0f, 0.35f, 0.05f, 1.0f);
+            case "complete":
+                return new Color(0.10f, 1.0f, 0.25f, 1.0f);
+            default:
+                return new Color(0.05f, 0.65f, 1.0f, 1.0f);
+        }
+    }
+
+    private static Vector3 RobotVectorToUnity(Vector3 robot_vector)
+    {
+        return new Vector3(-robot_vector.y, robot_vector.z, robot_vector.x);
     }
 
     private void UpdateOfficialRobotPose()
@@ -248,7 +361,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             && target_sender.IsCommandValid;
         bool mapping_visible = tracking_visible && command_active;
 
-        SetTargetTrackingObjectsActive(target_visible);
+        SetTargetTrackingObjectsActive(target_visible, command_active);
         SetActualTrackingObjectsActive(tracking_visible, mapping_visible);
         if (!target_visible)
         {
@@ -273,33 +386,19 @@ public class G1UnityRightArmPreview : MonoBehaviour
             ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
 
-        bool local_workspace_limited = target_sender != null
-            && target_sender.IsWorkspaceLimited;
-        bool backend_workspace_limited = command_active
-            && state_receiver != null
-            && state_receiver.HasRecentState
-            && state_receiver.IsWorkspaceLimited;
-        bool workspace_limited = local_workspace_limited
-            || backend_workspace_limited;
+        // Blue and green are local input/command visuals, so network round-trip
+        // latency cannot make the green marker trail or pass the operator hand.
+        // Pink alone follows the joint state returned by MuJoCo.
+        Vector3 command_target_position = command_position;
 
-        // Follow the operator command while reachable. Once the backend reports
-        // a reachability limit, pin the visible target to the actual target the
-        // G1 is being asked to reach. The blue tracked-hand marker can continue
-        // moving outside the workspace, making the boundary immediately visible.
-        Vector3 displayed_target_position = command_position;
-        if (backend_workspace_limited
-            && calibration_reference_captured
-            && state_receiver.HasMotionDiagnostics)
-        {
-            displayed_target_position = robot_wrist_at_calibration
-                + hand_binder.OperatorHeading
-                * state_receiver.LatestTargetOperatorDelta;
-        }
-
-        target_hand_marker.position = displayed_target_position;
+        target_hand_marker.position = command_target_position;
         target_hand_marker.rotation = command_rotation;
-        target_hand_axes.position = displayed_target_position;
+        target_hand_axes.position = command_target_position;
         target_hand_axes.rotation = command_rotation;
+        robot_wrist_marker.position = robot_position;
+        robot_wrist_marker.rotation = robot_orientation_reference == null
+            ? command_rotation
+            : robot_orientation_reference.rotation;
 
         if (tracking_visible)
         {
@@ -313,7 +412,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
             {
                 mapped_hand_axes.position = command_position;
                 mapped_hand_axes.rotation = hand_binder.MappedHandRotation;
-                mapping_line.SetPosition(0, command_position);
+                mapping_line.startColor = Color.white;
+                mapping_line.endColor = Color.white;
+                mapping_line.SetPosition(0, raw_hand_position);
                 mapping_line.SetPosition(1, robot_position);
             }
 
@@ -332,23 +433,18 @@ public class G1UnityRightArmPreview : MonoBehaviour
             }
         }
 
-        if (workspace_limited)
-        {
-            target_hand_renderer.sharedMaterial = workspace_limit_material;
-            target_hand_marker.localScale = Vector3.one * 0.045f;
-        }
-        else if (!command_active)
+        if (!command_active)
         {
             target_hand_renderer.sharedMaterial = hand_binder.IsAlignmentReady
                 ? engagement_ready_material
                 : engagement_waiting_material;
             float progress_scale = 1.0f + 0.35f * hand_binder.EngagementProgress;
-            target_hand_marker.localScale = Vector3.one * 0.045f * progress_scale;
+            target_hand_marker.localScale = Vector3.one * 0.055f * progress_scale;
         }
         else
         {
             target_hand_renderer.sharedMaterial = target_hand_material;
-            target_hand_marker.localScale = Vector3.one * 0.045f;
+            target_hand_marker.localScale = Vector3.one * 0.055f;
         }
     }
 
@@ -357,15 +453,18 @@ public class G1UnityRightArmPreview : MonoBehaviour
         bool mapping_active)
     {
         tracked_hand_marker.gameObject.SetActive(tracking_active);
-        tracked_hand_axes.gameObject.SetActive(tracking_active);
-        mapped_hand_axes.gameObject.SetActive(mapping_active);
+        tracked_hand_axes.gameObject.SetActive(show_orientation_axes && tracking_active);
+        mapped_hand_axes.gameObject.SetActive(show_orientation_axes && mapping_active);
         mapping_line.gameObject.SetActive(mapping_active);
     }
 
-    private void SetTargetTrackingObjectsActive(bool active_value)
+    private void SetTargetTrackingObjectsActive(
+        bool target_active,
+        bool robot_active)
     {
-        target_hand_marker.gameObject.SetActive(active_value);
-        target_hand_axes.gameObject.SetActive(active_value);
+        robot_wrist_marker.gameObject.SetActive(robot_active);
+        target_hand_marker.gameObject.SetActive(target_active);
+        target_hand_axes.gameObject.SetActive(show_orientation_axes && target_active);
     }
 
     private Transform GetRobotPositionReference()
@@ -391,13 +490,16 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateCalibrationReference(Transform robot_position_reference)
     {
-        if (hand_binder == null || !hand_binder.IsCalibrated)
+        if (hand_binder == null)
         {
-            calibration_reference_captured = false;
             return;
         }
 
-        if (!calibration_reference_captured
+        bool calibrated = hand_binder.IsCalibrated;
+        bool calibration_started = calibrated && !previous_preview_calibrated;
+        previous_preview_calibrated = calibrated;
+        if ((calibration_started || !calibration_reference_captured)
+            && calibrated
             && robot_position_reference != null)
         {
             robot_wrist_at_calibration = robot_position_reference.position;
@@ -517,7 +619,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private LineRenderer CreateMappingLine()
     {
-        GameObject line_object = new GameObject("tracked_to_target_line");
+        GameObject line_object = new GameObject("operator_to_g1_wrist_path");
         line_object.transform.SetParent(preview_root, false);
         LineRenderer line_value = line_object.AddComponent<LineRenderer>();
         line_value.positionCount = 2;
@@ -525,8 +627,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
         line_value.startWidth = 0.004f;
         line_value.endWidth = 0.004f;
         line_value.sharedMaterial = mapping_line_material;
-        line_value.startColor = new Color(0.0f, 0.90f, 1.0f, 0.85f);
-        line_value.endColor = new Color(0.15f, 1.0f, 0.25f, 0.85f);
+        line_value.startColor = Color.white;
+        line_value.endColor = Color.white;
         return line_value;
     }
 

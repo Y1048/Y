@@ -31,6 +31,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public float engagement_position_stability = 0.025f;
     public float engagement_rotation_stability_degrees = 16.0f;
     public float engagement_frame_initialization_delay = 0.25f;
+    public float tracking_origin_jump_threshold = 0.20f;
 
     public bool IsTrackingValid { get; private set; }
     public bool IsCalibrated { get; private set; }
@@ -69,6 +70,9 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     private Transform middle_finger_base_transform;
     private Transform index_finger_base_transform;
     private Transform pinky_finger_base_transform;
+    private Vector3 previous_tracked_wrist_position;
+    private Quaternion previous_tracked_wrist_rotation = Quaternion.identity;
+    private bool tracked_wrist_position_initialized;
 
     private void Awake()
     {
@@ -102,7 +106,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             if (IsCalibrated)
             {
                 // Hold the last valid target during temporary hand-tracking loss.
-                // Workspace exit is the only automatic disengagement condition.
+                // Workspace exit is the only automatic disengagement condition;
+                // sustained pinch remains an intentional manual disengagement.
                 IsAlignmentReady = true;
                 EngagementProgress = 1.0f;
                 EngagementState = "active-hold-tracking-unavailable";
@@ -404,10 +409,43 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
-        TrackedWristPosition = tracked_wrist_transform.position;
-        TrackedWristRotation = GetAnatomicalHandRotation(
+        Vector3 current_wrist_position = tracked_wrist_transform.position;
+        TrackedWristPosition = current_wrist_position;
+        Quaternion current_wrist_rotation = GetAnatomicalHandRotation(
             tracked_wrist_transform.rotation);
+        if (tracked_wrist_position_initialized)
+        {
+            Vector3 tracking_jump = current_wrist_position
+                - previous_tracked_wrist_position;
+            if (IsCalibrated && IsTrackingOriginJump(
+                tracking_jump,
+                tracking_origin_jump_threshold))
+            {
+                neutral_wrist_position += tracking_jump;
+                CalibratedWristPosition = neutral_wrist_position;
+                neutral_hand_rotation = neutral_hand_rotation
+                    * Quaternion.Inverse(previous_tracked_wrist_rotation)
+                    * current_wrist_rotation;
+                CalibratedWristRotation = neutral_hand_rotation;
+                Debug.LogWarning(
+                    "G1 hand tracking origin jump rejected: "
+                    + (tracking_jump.magnitude * 100.0f).ToString("F1")
+                    + " cm. Preserving the current robot target.");
+            }
+        }
+
+        previous_tracked_wrist_position = current_wrist_position;
+        previous_tracked_wrist_rotation = current_wrist_rotation;
+        tracked_wrist_position_initialized = true;
+        TrackedWristRotation = current_wrist_rotation;
         TrackedHandPosition = GetPalmCenterPosition();
+    }
+
+    public static bool IsTrackingOriginJump(
+        Vector3 tracking_delta,
+        float threshold)
+    {
+        return tracking_delta.magnitude > Mathf.Max(0.05f, threshold);
     }
 
     private Quaternion GetAnatomicalHandRotation(Quaternion fallback_rotation)
@@ -446,8 +484,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             palm_across,
             finger_direction).normalized;
         Vector3 palm_normal = Vector3.Cross(
-            palm_across,
-            finger_direction).normalized;
+            finger_direction,
+            palm_across).normalized;
         if (palm_normal.sqrMagnitude < 0.000001f)
         {
             return fallback_rotation;

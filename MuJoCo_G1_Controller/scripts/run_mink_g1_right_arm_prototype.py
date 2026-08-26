@@ -50,6 +50,10 @@ RUNTIME_STATUS_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_mink_status.json"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import g1_right_arm_common as g1  # noqa: E402
 
+sys.path.insert(0, str(PROJECT_ROOT / "backend"))
+from g1_teleop.mink_command_stream import MinkCommandStream  # noqa: E402
+from g1_teleop.motion_reference import step_position, step_rotation  # noqa: E402
+
 
 CONTROL_HZ = 60.0
 DT = 1.0 / CONTROL_HZ
@@ -71,13 +75,40 @@ QP_DAMPING = 1e-8
 COLLISION_MIN_DISTANCE_M = 0.012
 COLLISION_DETECTION_DISTANCE_M = 0.040
 COLLISION_GAIN = 0.85
+# Ignore only direct and two-hop kinematic neighbors.  Three-hop pairs include
+# torso-to-shoulder-roll and must stay in the self-collision constraint set.
 STRUCTURAL_NEIGHBOR_DISTANCE = 2
 RIGHT_ARM_MAX_VELOCITY_RAD_S = math.radians(75.0)
+POSITION_MAX_SPEED_MPS = 0.12
+ROTATION_MAX_SPEED_RAD_S = math.radians(70.0)
+REACHABILITY_POSITION_ENTER_M = 0.035
+REACHABILITY_POSITION_RELEASE_M = 0.018
+REACHABILITY_ROTATION_ENTER_DEG = 15.0
+REACHABILITY_ROTATION_RELEASE_DEG = 8.0
 
 PROXIMAL_DAMPING_COST = 0.25
 WRIST_DAMPING_COST = 0.015
 
 RIGHT_HAND_COLLISION_NAME = "mink_right_rubber_hand_collision"
+
+
+def _update_reachability_limit(
+    limited: bool,
+    active: bool,
+    position_error_m: float,
+    rotation_error_deg: float,
+) -> bool:
+    if not active:
+        return limited
+    if limited:
+        return not (
+            position_error_m <= REACHABILITY_POSITION_RELEASE_M
+            and rotation_error_deg <= REACHABILITY_ROTATION_RELEASE_DEG
+        )
+    return bool(
+        position_error_m >= REACHABILITY_POSITION_ENTER_M
+        or rotation_error_deg >= REACHABILITY_ROTATION_ENTER_DEG
+    )
 
 
 def _find_body(element: ET.Element, name: str) -> ET.Element | None:
@@ -275,16 +306,31 @@ def _rotation_error_radians(target: np.ndarray, current: np.ndarray) -> float:
     return math.acos(cosine)
 
 
-def _min_pair_distance(model: mujoco.MjModel, data: mujoco.MjData, geom_pairs: list[tuple[int, int]], distmax: float = 0.20) -> float | None:
-    nearest: float | None = None
+def _nearest_pair_distance(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    geom_pairs: list[tuple[int, int]],
+    distmax: float = 0.20,
+) -> tuple[float, int, int] | None:
+    nearest: tuple[float, int, int] | None = None
     fromto = np.zeros(6, dtype=float)
     for geom1, geom2 in geom_pairs:
         distance = float(mujoco.mj_geomDistance(model, data, geom1, geom2, distmax, fromto))
         if distance >= distmax:
             continue
-        if nearest is None or distance < nearest:
-            nearest = distance
+        if nearest is None or distance < nearest[0]:
+            nearest = (distance, int(geom1), int(geom2))
     return nearest
+
+
+def _min_pair_distance(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    geom_pairs: list[tuple[int, int]],
+    distmax: float = 0.20,
+) -> float | None:
+    nearest = _nearest_pair_distance(model, data, geom_pairs, distmax)
+    return None if nearest is None else nearest[0]
 
 
 def _open_udp_socket() -> socket.socket:
@@ -294,37 +340,19 @@ def _open_udp_socket() -> socket.socket:
     return sock
 
 
-def _receive_latest(sock: socket.socket, fallback_pos: np.ndarray, fallback_rot: np.ndarray, fallback_valid: bool):
-    latest_pos, latest_rot, latest_valid = fallback_pos, fallback_rot, fallback_valid
-    received = 0
-    while True:
-        try:
-            payload, _ = sock.recvfrom(4096)
-        except BlockingIOError:
-            break
-        try:
-            msg = json.loads(payload.decode("utf-8"))
-            right = msg.get("right")
-            if not isinstance(right, dict):
-                continue
-            valid = right.get("valid") is True
-            if valid:
-                pos = np.asarray(right.get("pos"), dtype=float)
-                rot = np.asarray(right.get("rot"), dtype=float)
-                if pos.shape != (3,) or rot.shape != (4,):
-                    continue
-                if not np.all(np.isfinite(pos)) or not np.all(np.isfinite(rot)):
-                    continue
-                latest_pos = pos
-                latest_rot = g1.normalize_quaternion_xyzw(rot)
-            latest_valid = valid
-            received += 1
-        except (TypeError, ValueError, UnicodeDecodeError, json.JSONDecodeError):
-            continue
-    return latest_pos, latest_rot, latest_valid, received
-
-
-def _state_packet(configuration, right_qpos_ids, active, target_position, reference_position, collision_limited):
+def _state_packet(
+    configuration,
+    right_qpos_ids,
+    active,
+    target_position,
+    reference_position,
+    collision_limited,
+    *,
+    workspace_limited=False,
+    control_state="idle",
+    session_id=None,
+    input_packet_age_s=None,
+):
     data = configuration.data
     wrist_body = g1.get_body_id(configuration.model, "right_wrist_yaw_link")
     wrist_position = data.xpos[wrist_body].copy()
@@ -343,9 +371,12 @@ def _state_packet(configuration, right_qpos_ids, active, target_position, refere
             "wrist_position": wrist_position.tolist(),
             "target_position": np.asarray(target_position, dtype=float).tolist(),
             "position_error": float(np.linalg.norm(target_position - wrist_position)),
-            "workspace_limited": False,
+            "workspace_limited": bool(workspace_limited),
             "collision_limited": bool(collision_limited),
+            "command_state": str(control_state),
         },
+        "session_id": session_id,
+        "input_packet_age_s": input_packet_age_s,
         "timestamp": time.time(),
     }
 
@@ -410,17 +441,23 @@ def main() -> None:
 
     raw_target = data.xpos[g1.get_body_id(model, "right_wrist_yaw_link")].copy()
     raw_rotation = np.array([0.0, 0.0, 0.0, 1.0])
-    raw_valid = False
-    last_packet_time = float("-inf")
+    command_stream = MinkCommandStream(
+        raw_target,
+        raw_rotation,
+        input_timeout_s=INPUT_TIMEOUT_S,
+    )
     clutch_reference = None
-    last_active = False
     received_total = 0
+    rejected_total = 0
     next_status = time.monotonic()
     next_state = time.monotonic()
     cycle_times: list[float] = []
     target_rotation = configuration.get_transform_frame_to_world(
         "right_wrist_yaw_link", "body"
     ).rotation().as_matrix().copy()
+    commanded_target_position = raw_target.copy()
+    commanded_target_rotation = target_rotation.copy()
+    reachability_limited = False
 
     print("Mink G1 right-arm controller")
     print("----------------------------")
@@ -445,19 +482,21 @@ def main() -> None:
             while viewer.is_running():
                 cycle_start = time.perf_counter()
                 now = time.monotonic()
-                raw_target, raw_rotation, raw_valid, received = _receive_latest(
-                    udp, raw_target, raw_rotation, raw_valid
-                )
-                if received:
-                    received_total += received
-                    last_packet_time = now
-
-                active = bool(raw_valid and now - last_packet_time < INPUT_TIMEOUT_S)
+                command_update = command_stream.poll(udp)
+                raw_target = command_update.target_position_m
+                raw_rotation = command_update.target_quaternion_xyzw
+                received_total += command_update.accepted_count
+                rejected_total += command_update.rejected_count
+                active = command_update.command_active
                 wrist_pose = configuration.get_transform_frame_to_world(
                     "right_wrist_yaw_link", "body"
                 )
 
-                if active and not last_active:
+                if command_update.reset_clutch:
+                    clutch_reference = None
+                    reachability_limited = False
+
+                if command_update.engage_clutch:
                     input_rotation = g1.operator_rotation_to_robot_matrix(raw_rotation)
                     clutch_reference = {
                         "input_position": raw_target.copy(),
@@ -466,18 +505,34 @@ def main() -> None:
                         "robot_rotation": wrist_pose.rotation().as_matrix().copy(),
                     }
                     target_rotation = clutch_reference["robot_rotation"].copy()
+                    commanded_target_position = clutch_reference["robot_position"].copy()
+                    commanded_target_rotation = target_rotation.copy()
                     posture_task.set_target(configuration.q.copy())
                     print("\nMink clutch engaged without position or orientation jump.")
 
                 if active and clutch_reference is not None:
-                    target_position = (
+                    desired_target_position = (
                         clutch_reference["robot_position"]
                         + raw_target
                         - clutch_reference["input_position"]
                     )
                     input_rotation = g1.operator_rotation_to_robot_matrix(raw_rotation)
                     rotation_delta = input_rotation @ clutch_reference["input_rotation"].T
-                    target_rotation = rotation_delta @ clutch_reference["robot_rotation"]
+                    desired_target_rotation = rotation_delta @ clutch_reference["robot_rotation"]
+                    commanded_target_position = step_position(
+                        commanded_target_position,
+                        desired_target_position,
+                        POSITION_MAX_SPEED_MPS,
+                        DT,
+                    )
+                    commanded_target_rotation = step_rotation(
+                        commanded_target_rotation,
+                        desired_target_rotation,
+                        ROTATION_MAX_SPEED_RAD_S,
+                        DT,
+                    )
+                    target_position = commanded_target_position
+                    target_rotation = commanded_target_rotation
 
                     wrist_task.set_target(_matrix_to_se3(target_rotation, target_position))
                     velocity = mink.solve_ik(
@@ -495,12 +550,29 @@ def main() -> None:
                 else:
                     target_position = wrist_pose.translation().copy()
                     target_rotation = wrist_pose.rotation().as_matrix().copy()
-                    clutch_reference = None
+                    commanded_target_position = target_position.copy()
+                    commanded_target_rotation = target_rotation.copy()
                     wrist_task.set_target_from_configuration(configuration)
                     posture_task.set_target(configuration.q.copy())
                     data.mocap_pos[target_mocap_id] = target_position
 
                 mujoco.mj_fwdPosition(model, data)
+                current_pose = configuration.get_transform_frame_to_world(
+                    "right_wrist_yaw_link", "body"
+                )
+                current_rotation = current_pose.rotation().as_matrix()
+                position_error = float(
+                    np.linalg.norm(target_position - current_pose.translation())
+                )
+                orientation_error_deg = math.degrees(
+                    _rotation_error_radians(target_rotation, current_rotation)
+                )
+                reachability_limited = _update_reachability_limit(
+                    reachability_limited,
+                    active,
+                    position_error,
+                    orientation_error_deg,
+                )
                 min_clearance = _min_pair_distance(model, data, collision_geom_ids)
                 collision_limited = bool(
                     min_clearance is not None
@@ -515,6 +587,12 @@ def main() -> None:
                         target_position,
                         None if clutch_reference is None else clutch_reference["robot_position"],
                         collision_limited,
+                        workspace_limited=(
+                            command_update.workspace_fault or reachability_limited
+                        ),
+                        control_state=command_update.control_state,
+                        session_id=command_update.session_id,
+                        input_packet_age_s=command_update.packet_age_s,
                     )
                     _send_state(state_sock, packet, UNITY_STATE_HOST, UNITY_STATE_PORT)
                     _send_state(
@@ -531,23 +609,20 @@ def main() -> None:
                     del cycle_times[:-600]
 
                 if now >= next_status:
-                    current_pose = configuration.get_transform_frame_to_world(
-                        "right_wrist_yaw_link", "body"
-                    )
-                    current_rotation = current_pose.rotation().as_matrix()
-                    position_error = float(
-                        np.linalg.norm(target_position - current_pose.translation())
-                    )
-                    orientation_error_deg = math.degrees(
-                        _rotation_error_radians(target_rotation, current_rotation)
-                    )
                     stats = np.asarray(cycle_times, dtype=float)
                     _write_status(
                         {
                             "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
                             "controller": "mink_right_arm_qp",
                             "input_active": active,
+                            "input_control_state": command_update.control_state,
+                            "input_session_id": command_update.session_id,
+                            "input_packet_age_s": command_update.packet_age_s,
+                            "clutch_engaged": command_update.clutch_engaged,
+                            "workspace_fault": command_update.workspace_fault,
+                            "reachability_limited": reachability_limited,
                             "received_packets": received_total,
+                            "rejected_packets": rejected_total,
                             "solver": solver,
                             "collision_pair_count": len(collision_pairs),
                             "collision_min_distance_m": COLLISION_MIN_DISTANCE_M,
@@ -573,7 +648,6 @@ def main() -> None:
                     )
                     next_status = now + 0.5
 
-                last_active = active
                 viewer.sync()
                 elapsed = time.perf_counter() - cycle_start
                 if elapsed < DT:

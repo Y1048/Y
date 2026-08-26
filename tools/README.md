@@ -9,7 +9,7 @@
 ### Virtual Wrist Center
 
 ```powershell
-.\tools\TEST_MINK_G1_VIRTUAL_CENTER_LIVE.bat
+.\START_VR_HAND_TO_MUJOCO.bat --smooth
 ```
 
 현재 최신 실험 controller:
@@ -146,12 +146,21 @@ Quest 없이 synthetic hand/UDP input으로 controller path를 확인한다.
 실제 G1 command publisher는 아직 없다. 아래 도구는 read-only/sync/safety/dry-run 용도다.
 
 ```powershell
+.\tools\START_G1_READ_ONLY.bat
+.\tools\ALLOW_G1_LOWSTATE_TO_WINDOWS.bat
 .\tools\START_MINK_G1_HARDWARE_SYNC.bat
 .\tools\START_MINK_G1_SAFETY_DRY_RUN.bat
 .\tools\TEST_G1_HARDWARE_SAFETY_GATE.bat
 .\tools\TEST_G1_HARDWARE_STATE.bat
 .\tools\TEST_FAKE_MINK_SAFETY_E2E.bat
+.\tools\TEST_G1_STARTUP_RECOVERY_OFFLINE.bat
 ```
+
+`START_G1_READ_ONLY.bat`는 WSL에서 `192.168.123.99`가 설정된 interface를 자동 탐색하고 `rt/lowstate`만 구독한다. DDS publisher와 motor command output은 없다.
+
+`TEST_G1_STARTUP_RECOVERY_OFFLINE.bat`는 캡처된 실제 rest pose에서
+Mink QP의 body-escape 및 ready-pose 수렴을 MuJoCo 안에서만 검증한다.
+네트워크 소켓, Unitree SDK, DDS publisher, motor command를 사용하지 않는다.
 
 실기 순서는 `hardware/g1_arm_bridge/HARDWARE_BRINGUP_CHECKLIST.md`를 따른다.
 

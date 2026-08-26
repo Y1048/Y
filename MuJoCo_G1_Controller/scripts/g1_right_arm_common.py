@@ -111,6 +111,10 @@ SCENES = {
         "panel_pos": (0.46, 0.0, 1.08),
         "panel_size": (0.025, 0.48, 0.34),
         "target_pos": (0.42, -0.16, 1.05),
+        # Place the right-hand task slightly outboard.  Offline replay of the
+        # live inspection wrist orientation kept the elbow near 20 degrees
+        # here instead of collapsing onto its 5 degree extension limit.
+        "inspection_target_pos": (0.435, -0.28, 1.05),
     },
     "camera_validation": {
         "panel_pos": (0.58, 0.0, 0.78),
@@ -173,6 +177,30 @@ def make_demo_xml(scene_name: str = "control") -> None:
             "type": "plane",
             "size": "4 4 0.05",
             "rgba": "0.74 0.82 0.88 1",
+            "contype": "0",
+            "conaffinity": "0",
+        },
+    )
+    inspection_target = ET.SubElement(
+        worldbody,
+        "body",
+        {
+            "name": "inspection_demo_target",
+            "pos": " ".join(
+                str(value) for value in scene.get(
+                    "inspection_target_pos", scene["target_pos"]
+                )
+            ),
+        },
+    )
+    ET.SubElement(
+        inspection_target,
+        "geom",
+        {
+            "name": "inspection_demo_target_marker",
+            "type": "sphere",
+            "size": "0.045",
+            "rgba": "0.05 0.65 1.0 0.75",
             "contype": "0",
             "conaffinity": "0",
         },

@@ -19,9 +19,11 @@ class DatagramSocket(Protocol):
 @dataclass(frozen=True)
 class ReceiveBatch:
     latest_command: InternalCommand | None
+    latest_active_command: InternalCommand | None
     accepted_count: int
     rejected_count: int
     workspace_exit: bool
+    operator_disengage: bool
     transition: RuntimeTransition | None
 
 
@@ -41,9 +43,11 @@ def receive_available_commands(
     being mistaken for the legacy robot-target coordinates.
     """
     latest: InternalCommand | None = None
+    latest_active: InternalCommand | None = None
     accepted_count = 0
     rejected_count = 0
     workspace_exit = False
+    operator_disengage = False
     transition: RuntimeTransition | None = None
 
     while True:
@@ -74,15 +78,20 @@ def receive_available_commands(
             continue
 
         latest = command
+        if command.mode == "active" and command.valid:
+            latest_active = command
         accepted_count += 1
         workspace_exit = workspace_exit or command.workspace_exit
+        operator_disengage = operator_disengage or command.operator_disengage
         if runtime_state is not None:
             transition = runtime_state.apply(command)
 
     return ReceiveBatch(
         latest_command=latest,
+        latest_active_command=latest_active,
         accepted_count=accepted_count,
         rejected_count=rejected_count,
         workspace_exit=workspace_exit,
+        operator_disengage=operator_disengage,
         transition=transition,
     )

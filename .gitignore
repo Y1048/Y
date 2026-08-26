@@ -10,6 +10,8 @@
 **/[Uu]ser[Ss]ettings/
 **/[Mm]emoryCaptures/
 **/[Rr]ecordings/
+**/Library_BACKUP_*/
+Unity_*_TEST/
 
 # Unity generated files
 *.csproj

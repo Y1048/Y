@@ -71,6 +71,7 @@ python3 hardware/g1_arm_bridge/read_only_lowstate.py eth0 --forward-host <WINDOW
 Windows:
 
 ```powershell
+.\tools\ALLOW_G1_LOWSTATE_TO_WINDOWS.bat
 .\tools\START_MINK_G1_HARDWARE_SYNC.bat
 ```
 
@@ -88,6 +89,10 @@ G1 rt/lowstate
 ```
 
 이 단계에서도 G1 command output은 없다.
+
+`verify_initial_pose_sync.py`는 viewer나 DDS publisher를 만들지 않고,
+캡처한 7개 관절값이 현재 Mink 모델과 Unity state packet까지 그대로
+유지되는지 검사한다.
 
 ## 3. Safety Gate
 
@@ -176,6 +181,36 @@ test_mink_safety_pipeline.py
 
 현재까지 HOLD dry-run과 synthetic Mink target safety pipeline을 command publisher 없이 검증했다.
 
+### 실제 rest pose에서 startup recovery 검증
+
+```powershell
+.\tools\TEST_G1_STARTUP_RECOVERY_OFFLINE.bat
+```
+
+이 검사는 캡처된 실제 G1 관절값으로 Mink를 초기화한 뒤 다음 상태를
+오프라인으로 재현한다.
+
+```text
+REST_HOLD
+→ Cartesian escape_body
+→ initial proximity group clears 40 mm
+→ escape_brake_hold
+→ transition_to_ready
+→ ready_brake_hold
+→ ready_fine_positioning
+→ TELEOP_READY 후보
+```
+
+QP가 제안한 각 스텝은 startup 전용 0.001도 swept-path 검사로 확인한다.
+초기 proximity group 밖의 새 body pair가 12 mm 안으로 들어오거나,
+40 mm recovery latch 이후 어떤 pair가 12 mm 안으로 재진입하면 중단한다.
+결과는 `logs/runtime/g1_startup_mink_recovery.json`에 기록된다.
+
+현재 캡처 자세에 대한 500 Hz dry-run은 속도 8 deg/s, 가속도 30 deg/s^2,
+jerk 300 deg/s^3 제한과 독립 replay를 통과했다. 이 수치는 아직 실제 G1
+승인 기준이 아니므로 결과의 `hardware_ready`는 `false`이며 실제
+publisher나 command output은 없다.
+
 ## Mink → Safety mirror
 
 Windows Mink controller는 하드웨어 safety dry-run 검증을 위해 robot state/target 정보를 UDP `5008`에도 mirror할 수 있다.
@@ -223,10 +258,12 @@ Unitree arm control topic/SDK 경로는 실제 read-only bring-up을 통과한 �
 | --- | --- |
 | `read_only_lowstate.py` | G1 DDS LowState read-only |
 | `receive_initial_state.py` | UDP 5007 초기 pose 수신 |
+| `verify_initial_pose_sync.py` | G1 pose → Mink → Unity packet 일치 검사 |
 | `safety_gate.py` | fail-closed target safety validation |
 | `hardware_state.py` | phase/fault schema |
 | `hold_dry_run.py` | measured pose HOLD 검증 |
 | `mink_target_dry_run.py` | Mink target safety dry-run |
+| `simulate_startup_recovery.py` | measured rest-to-ready Mink QP offline recovery |
 | `HARDWARE_BRINGUP_CHECKLIST.md` | 실제 하드웨어 단계별 체크리스트 |
 
 ## 금지 사항

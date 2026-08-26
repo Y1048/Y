@@ -287,11 +287,16 @@ MonoBehaviour:
   send_hz: 60
   robot_center: {x: 0.42, y: -0.16, z: 1.05}
   position_offset: {x: 0, y: 0, z: 0}
-  robot_min: {x: 0.22, y: -0.50, z: 0.70}
-  robot_max: {x: 0.70, y: 0.30, z: 1.50}
-  disengage_on_workspace_exit: 1
+  robot_min: {x: 0.22, y: -0.5, z: 0.7}
+  robot_max: {x: 0.7, y: 0.3, z: 1.5}
+  disengage_on_workspace_exit: 0
   workspace_exit_confirm_seconds: 0.8
   workspace_exit_margin: 0.02
+  enable_pinch_disengage: 1
+  pinch_disengage_hold_seconds: 0.5
+  live_position_filter_time_constant_s: 0.06
+  live_rotation_filter_time_constant_s: 0.05
+  operator_forward_scale: 1
 --- !u!114 &539268364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,6 +314,7 @@ MonoBehaviour:
   state_receiver: {fileID: 539268367}
   wrist_target: {fileID: 539268355}
   show_tracking_markers: 1
+  show_orientation_axes: 0
   tracking_axis_length: 0.1
 --- !u!114 &539268365
 MonoBehaviour:
@@ -348,6 +354,7 @@ MonoBehaviour:
   engagement_position_stability: 0.025
   engagement_rotation_stability_degrees: 16
   engagement_frame_initialization_delay: 0.25
+  tracking_origin_jump_threshold: 0.2
 --- !u!114 &539268367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -574,7 +581,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3642352042163518208, guid: f54012181eacade4ea242c65f804720f, type: 3}
       propertyPath: m_Name
-      value: Quest3S_XR_Rig
+      value: VR_XR_Rig
       objectReference: {fileID: 0}
     - target: {fileID: 3642352042163518208, guid: f54012181eacade4ea242c65f804720f, type: 3}
       propertyPath: m_IsActive

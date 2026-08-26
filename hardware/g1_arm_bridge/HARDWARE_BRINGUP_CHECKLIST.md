@@ -17,14 +17,14 @@ Do not skip a gate. A failed gate returns the system to a non-commanding state.
 
 Run only `read_only_lowstate.py` first.
 
-- [ ] `unitree_sdk2py` imports successfully in WSL2.
-- [ ] Correct G1-facing network interface selected.
-- [ ] `rt/lowstate` packets are received continuously.
-- [ ] Runtime phase becomes `READ_ONLY_ACTIVE`.
-- [ ] `publisher_present` is `false`.
-- [ ] `command_output_enabled` is `false`.
-- [ ] Packet age remains comfortably below the configured timeout.
-- [ ] Stopping/disconnecting LowState produces `FAULT / LOWSTATE_TIMEOUT` after traffic has started.
+- [x] `unitree_sdk2py` imports successfully in WSL2.
+- [x] Correct G1-facing network interface selected.
+- [x] `rt/lowstate` packets are received continuously.
+- [x] Runtime phase becomes `READ_ONLY_ACTIVE`.
+- [x] `publisher_present` is `false`.
+- [x] `command_output_enabled` is `false`.
+- [x] Packet age remains comfortably below the configured timeout.
+- [x] Stopping/disconnecting LowState produces `FAULT / LOWSTATE_TIMEOUT` after traffic has started.
 
 Status file: `logs/runtime/g1_hardware_lowstate.json`
 
@@ -32,16 +32,18 @@ Status file: `logs/runtime/g1_hardware_lowstate.json`
 
 ## Gate 2 — Right-arm joint mapping sanity
 
-Verify indices 22–28 while moving only small, intentional amounts under normal robot operation.
+Use Unitree's official G1 7-DoF arm mapping for indices 22-28. The elbow and
+wrist-roll indices were additionally spot-checked by small manual motions while
+the robot was suspended.
 
-- [ ] 22 = right shoulder pitch.
-- [ ] 23 = right shoulder roll.
-- [ ] 24 = right shoulder yaw.
-- [ ] 25 = right elbow.
-- [ ] 26 = right wrist roll.
-- [ ] 27 = right wrist pitch.
-- [ ] 28 = right wrist yaw.
-- [ ] Sign/direction of each reported angle is understood.
+- [x] 22 = right shoulder pitch (official SDK mapping).
+- [x] 23 = right shoulder roll (official SDK mapping).
+- [x] 24 = right shoulder yaw (official SDK mapping).
+- [x] 25 = right elbow.
+- [x] 26 = right wrist roll.
+- [x] 27 = right wrist pitch (official SDK mapping).
+- [x] 28 = right wrist yaw (official SDK mapping).
+- [x] Model and hardware use the same official joint-coordinate convention.
 - [ ] No unexpected discontinuities, NaN/Inf values, or implausible velocities appear.
 
 **Command authority:** NONE.
@@ -50,11 +52,30 @@ Verify indices 22–28 while moving only small, intentional amounts under normal
 
 Forward read-only telemetry to Windows UDP 5007 and run the hardware-sync launcher.
 
-- [ ] Fresh seven-joint snapshot received from G1.
-- [ ] `g1_hardware_initial_state.json` contains the same measured joint vector.
-- [ ] Mink initializes from measured G1 `q`, not the fallback ready pose.
-- [ ] Unity avatar initializes to the same seven measured joint angles.
+- [x] Fresh seven-joint snapshot received from G1.
+- [x] `g1_hardware_initial_state.json` contains the same measured joint vector.
+- [x] Mink initializes from measured G1 `q`, not the fallback ready pose.
+- [x] Unity avatar initializes to the same seven measured joint angles.
 - [ ] No visible target jump occurs when the teleop clutch first becomes active.
+
+The captured arm-down rest pose may begin inside conservative Mink collision
+geometry. Preserve it exactly during read-only sync/HOLD. Do not enable teleop
+IK until a separately validated collision-aware transition reaches the clear
+configured ready pose; direct joint interpolation is not approved.
+
+- [x] Offline Mink startup recovery reaches the configured ready pose from the captured rest pose.
+- [x] Recovery uses a separate Cartesian body-escape phase before posture convergence.
+- [x] Every accepted recovery step passes a 0.001-degree startup swept-path check.
+- [x] Safety Gate accepts the offline samples and rejects stale LowState.
+- [x] Velocity, acceleration, and jerk limits are implemented and pass offline replay.
+- [ ] Velocity, acceleration, and jerk limits are approved for hardware.
+- [ ] Startup recovery is repeatable from multiple real rest-pose captures.
+
+Latest offline result: 22.354 s at 500 Hz, 0.302-degree maximum ready-pose
+error, 7.468 deg/s maximum velocity, 30.000 deg/s^2 maximum acceleration, and
+300.000 deg/s^3 maximum jerk, with 50.395 mm final model clearance. The complete 11,178-sample replay passed the
+0.001-degree startup swept-path validation and Safety Gate. This remains
+offline evidence and does not authorize a motor command.
 
 **Command authority:** NONE.
 
@@ -112,6 +133,7 @@ Only after HOLD is independently validated may the project proceed to live Mink 
 | `READ_ONLY_WAIT` | Waiting for first LowState | No |
 | `READ_ONLY_ACTIVE` | Fresh LowState is being observed | No |
 | `SYNCED` | Mink/Unity seeded from measured G1 pose | No |
+| `STARTUP_RECOVERY` | Future collision-aware rest-to-ready transition | No, until command gates are approved |
 | `HOLD_READY` | Preconditions for a future HOLD publisher satisfied | No, until explicit command phase |
 | `HOLD_ACTIVE` | Future command-capable HOLD mode | Future only |
 | `TELEOP_READY` | Future live-target prerequisites satisfied | Future only |

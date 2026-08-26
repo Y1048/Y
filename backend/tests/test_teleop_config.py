@@ -35,7 +35,7 @@ VALID_CONFIG = {
         "neutral_solve_iterations": 600,
     },
     "motion": {
-        "position_max_speed_mps": 0.08,
+        "position_max_speed_mps": 0.12,
         "rotation_max_speed_deg_s": 70.0,
     },
     "ik": {
@@ -85,7 +85,7 @@ class TeleopConfigTest(unittest.TestCase):
         config = self._load(VALID_CONFIG)
         self.assertEqual(config.network.udp_port, 5005)
         self.assertEqual(config.workspace.allowed_classes, (1, 2))
-        self.assertAlmostEqual(config.motion.position_max_speed_mps, 0.08)
+        self.assertAlmostEqual(config.motion.position_max_speed_mps, 0.12)
         self.assertEqual(config.collision.structural_neighbor_distance, 2)
         self.assertTrue(config.collision.environment_obstacles_enabled)
         self.assertTrue(config.collision.tangential_slide_enabled)
@@ -132,7 +132,7 @@ class TeleopConfigTest(unittest.TestCase):
         base = types.SimpleNamespace()
         apply_to_base_module(base, config)
         self.assertEqual(base.UDP_PORT, 5005)
-        self.assertAlmostEqual(base.POSITION_MAX_SPEED, 0.08)
+        self.assertAlmostEqual(base.POSITION_MAX_SPEED, 0.12)
         self.assertAlmostEqual(base.IK_STEP_GAIN, 0.5)
         self.assertEqual(tuple(base.CLUTCH_POSITION_DELTA_MAX), (0.2, 0.45, 0.34))
         runtime = types.SimpleNamespace()

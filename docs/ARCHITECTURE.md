@@ -39,11 +39,12 @@ flowchart LR
 Quest right wrist pose
 → Unity hand binding and engagement UI
 → legacy UDP JSON command
-→ session/sequence watchdog
+→ strict legacy packet adapter
+→ session/sequence ownership watchdog
+→ active/hold/workspace-fault command state
 → clutch-relative target calculation
-→ position/rotation rate limiter
-→ G1 right-arm damped IK
-→ joint limit and collision line search
+→ G1 right-arm Mink 6D QP IK
+→ joint/velocity/collision constraints and non-arm DOF freeze
 → MuJoCo state update
 → UDP state feedback to Unity
 ```
@@ -51,7 +52,7 @@ Quest right wrist pose
 루트의 `START_VR_HAND_TO_MUJOCO.bat`이 현재 실행 진입점이며, 다음 두 프로세스를 연다.
 
 - Unity 프로젝트 `Unity_G1_VR`
-- MuJoCo 실행기 `MuJoCo_G1_Controller/scripts/g1_right_arm_udp_ik_demo.py`
+- MuJoCo 실행기 `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py`
 
 ---
 
@@ -98,6 +99,10 @@ backend/g1_teleop/
 | `calibration.py` | 중립 pose, 안정성 검사, workspace scale, rigid registration |
 | `transforms.py` | pose matrix, quaternion, 좌표 변환 |
 | `protocol.py` | 버전이 명시된 command/state JSON 계약과 검증 |
+| `command_adapter.py` | 현재 legacy command와 V2 packet을 공통 내부 명령으로 변환 |
+| `live_receiver.py` | non-blocking UDP queue drain, strict parsing, session/sequence 적용 |
+| `runtime_state.py` | idle, active, hold, workspace-fault 상태 전이 |
+| `mink_command_stream.py` | Mink 실행기용 clutch 보존, timeout hold, session 인계 처리 |
 | `watchdog.py` | sequence/session 감시, timeout, workspace debounce/fault latch |
 | `camera.py` | 공통 camera frame/intrinsics 계약 |
 | `camera_factory.py` | simulation과 real D435i source 선택 |
@@ -108,28 +113,33 @@ backend/g1_teleop/
 
 ### 3.3 MuJoCo control layer
 
-현재 핵심 파일:
+현재 launcher가 사용하는 핵심 파일:
 
 ```text
-MuJoCo_G1_Controller/scripts/g1_right_arm_udp_ik_demo.py
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py
 ```
 
-현재 한 파일이 맡는 책임:
+별도 실험 실행기:
+
+```text
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py
+```
+
+현재 제어 계층의 책임:
 
 - command-line argument 처리
 - G1 XML 읽기와 demo scene 생성
-- 카메라 추가
-- UDP socket과 packet parsing
-- session watchdog
+- UDP socket과 공통 command stream 연결
 - clutch reference 생성
-- safe position/rotation reference 생성
-- 오른팔 IK
-- joint/workspace/collision 제한
+- 오른팔 Mink QP task와 constraint 구성
+- joint/velocity/collision 제한
+- 비오른팔 DOF freeze
 - runtime status 저장
 - Unity state feedback
-- MuJoCo viewer와 camera publication
+- MuJoCo viewer
 
-기능은 충분하지만 책임이 과도하게 집중되어 있다. 다음 리팩터링 단계에서는 pure math, transport, scene, orchestration을 분리해야 한다.
+packet 검증과 상태 관리는 `backend/g1_teleop`으로 분리되었다. scene 생성과
+Mink task orchestration은 아직 실행기에 남아 있으므로 이후 단계에서 추가 분리한다.
 
 ### 3.4 Configuration and operations
 
@@ -206,44 +216,53 @@ target_position
 
 회전도 engagement 이후의 상대 회전만 적용한다. 따라서 사용자가 target에 손을 맞추는 동안의 절대 오프셋이 로봇에 갑자기 전달되지 않는다.
 
+G1 손목의 engagement marker에 손을 맞추고 0.55초 유지하면 engage한다.
+Engagement 순간의 사용자 손 pose와 G1의 현재 손목 pose를 별도 기준으로
+저장하므로 target jump가 없다. Engage 후 엄지-검지 pinch를 0.50초 유지하면
+수동으로 disengage한다.
+
 ---
 
 ## 5. 오른팔 제어 구조
 
-### 5.1 Position task
+### 5.1 기본 6D task
 
-기본 position body는 `right_wrist_roll_link`다.
+launcher가 사용하는 prototype은 `right_wrist_yaw_link`에 하나의 Mink
+`FrameTask`를 둔다.
 
-- 사용 관절: shoulder pitch/roll/yaw + elbow
-- 계산: damped pseudoinverse
-- 보조 목적:
-  - preferred posture
-  - elbow lateral avoidance
-  - elbow pole reference
+- position cost: `8.0`
+- orientation cost: `2.0`
+- gain: `0.35`
+- LM damping: `1e-5`
+- solver: DAQP 우선
 
-position task가 우선이며 보조 목적은 null space에서 적용된다.
+오른팔 7개 관절 전체로 손목 위치와 회전을 동시에 풀며, engagement 때 저장한
+사용자 손목과 실제 G1 손목의 상대 변화만 목표로 사용한다.
 
-### 5.2 Orientation task
+### 5.2 자연스러운 해 선택
 
-기본 orientation body는 `right_wrist_yaw_link`다.
+`PostureTask`가 engagement 시점 자세를 기준으로 불필요한 관절 이동을 줄인다.
+별도 `DampingTask`는 shoulder/elbow 쪽 비용을 손목보다 크게 두어 단순 손목
+회전에서 팔꿈치가 과도하게 따라오는 해를 억제한다.
 
-- 사용 관절: wrist roll/pitch/yaw
-- 위치 task가 만든 arm rotation 영향을 뺀 뒤 wrist residual을 계산
-- 손목 회전 때문에 elbow가 따라가는 현상을 억제
+### 5.3 QP 제약
 
-### 5.3 Step acceptance
+각 60 Hz step에서 다음 제약을 함께 푼다.
 
-각 IK update는 다음 순서를 따른다.
+1. MuJoCo 관절 위치 범위인 `ConfigurationLimit`
+2. 오른팔 최대 관절 속도 75 deg/s인 `VelocityLimit`
+3. geometry 간 최소 거리와 감지 거리를 사용하는 `CollisionAvoidanceLimit`
+4. 오른팔 외 모든 DOF 속도를 0으로 만드는 `DofFreezingTask`
 
-1. damped IK delta 계산
-2. 최대 관절 스텝으로 clipping
-3. 현재 qpos 저장
-4. step gain을 줄이는 line search 수행
-5. joint limit 적용
-6. 오른팔-몸통 접촉 검사
-7. 안전한 후보가 없으면 이전 qpos 복원
+목표를 먼저 계산한 뒤 사후 clamp하는 구조가 아니라 task와 제한을 같은 QP에
+포함한다.
 
-이 구조는 목표 추종보다 충돌 없는 상태 유지를 우선한다.
+### 5.4 Virtual-center 실험
+
+`run_mink_g1_right_arm_virtual_center_live.py`는 위치 task를
+`right_wrist_roll_link`, 회전 task를 `right_wrist_yaw_link`로 분리한다. 손목
+한계 근처에서만 proximal orientation assist를 켜는 실험이며 현재 메인
+launcher 경로는 아니다.
 
 ---
 
@@ -254,16 +273,15 @@ position task가 우선이며 보조 목적은 null space에서 적용된다.
 ```mermaid
 stateDiagram-v2
     [*] --> Idle
-    Idle --> Aligning: wrist enters engagement target
-    Aligning --> Active: stable hold completed
-    Aligning --> Idle: alignment lost
+    Idle --> Active: Unity alignment and calibration completed
     Active --> Hold: short tracking loss / idle packet
     Hold --> Active: tracking recovers
-    Active --> WorkspacePending: workspace violation detected
-    WorkspacePending --> Active: violation clears before debounce
-    WorkspacePending --> Disengaged: violation persists
-    Disengaged --> Aligning: operator returns to target
+    Active --> Idle: sustained pinch manual disengage
 ```
+
+`MinkCommandStream`은 hold에서 마지막 target과 clutch reference를 유지한다.
+tracking loss나 packet timeout만으로 재정렬하지 않는다. 사용자의 sustained
+pinch와 오래된 sender를 대체하는 새 session만 clutch reference를 초기화한다.
 
 ### 6.2 안전 메커니즘
 
@@ -271,18 +289,47 @@ stateDiagram-v2
 | --- | --- |
 | sequence watchdog | 중복·역순 packet 거부 |
 | session watchdog | 동시에 실행된 오래된 Unity sender와 충돌 방지 |
-| timeout hold/disarm | 입력 중단 시 안전 상태 전환 |
-| workspace clamp | 순간적인 범위 초과가 큰 target jump로 이어지는 것을 방지 |
-| workspace debounce | 짧은 tracking noise 때문에 즉시 disengage되는 것을 방지 |
-| workspace fault latch | 재정렬 없이 fault가 임의로 해제되지 않도록 함 |
-| position/rotation rate limit | packet 간 큰 목표 변화 제한 |
-| joint clamp | MuJoCo joint range와 운영 범위 준수 |
-| torso keep-out | 손목·팔꿈치가 몸통 안쪽으로 진입하는 것을 제한 |
-| collision line search | 충돌 후보 step을 줄여 재시도하고 실패 시 이전 상태 유지 |
+| timeout hold | 입력 중단 시 새 목표 갱신을 멈추고 마지막 관절 상태 유지 |
+| continuous Cartesian reference | 초록 목표를 사용자 손 방향으로 끊김 없이 속도 제한하여 이동 |
+| sustained pinch disengage | 사용자가 의도적으로 즉시 clutch를 해제 |
+| direct Cartesian target | 초록 목표는 필터링된 사용자 손 목표를 즉시 표시하고 IK에 전달 |
+| Mink velocity limit | 관절 속도를 QP 내부에서 제한 |
+| configuration limit | MuJoCo 관절 범위 준수 |
+| collision avoidance | 지정 geometry 간 거리를 QP 내부에서 제한 |
+| non-arm DOF freeze | 오른팔 외 관절의 의도치 않은 이동 차단 |
 
 ### 6.3 현재 safety authority 문제
 
-현재 workspace 판단과 일부 re-engagement 로직이 Unity와 MuJoCo 양쪽에 존재한다. 두 구현의 값이나 상태 전이가 달라지면 UI 상태와 실제 제어 상태가 어긋날 수 있다.
+현재 live 경로는 Unity의 직육면체 workspace와 주황 경고를 사용하지 않는다.
+backend는 초록 목표를 필터링된 사용자 손 목표에 즉시 배치한다. 별도의
+Cartesian 속도 제한이나 오차 임계값으로 초록 목표를 지연·승인·되돌리지 않는다.
+로봇만 Mink의 joint velocity, configuration, collision constraint 아래에서
+초록 목표를 추종한다.
+
+외부 위치 계약은 `right_wrist_yaw_link`이다. 내부 위치 Task는
+`right_wrist_roll_link`를 사용하므로 매 제어 주기마다 현재
+`yaw_position - roll_position` 오프셋을 외부 목표에서 빼 내부 중심 목표를
+만든다. 따라서 손목 회전으로 링크 간 오프셋이 바뀌어도 초록 목표는 Unity가
+보낸 손목 위치를 지나치거나 뒤처지지 않는다.
+`use_rectangular_workspace_fallback=false`이면 Unity UDP 송신기 역시 직육면체
+clamp를 적용하지 않으며, 화면에 표시한 목표와 같은 값을 보낸다.
+
+Quest 손 추적이 재획득되며 손목 위치가 한 프레임에 20 cm를 넘게 순간이동하면
+실제 손동작으로 사용하지 않는다. 중립 손목 기준을 동일한 이동량만큼 보정해
+현재 로봇 목표를 유지한다. 같은 재획득 구간의 회전 중립 기준도 함께 보정하고,
+이후 프레임부터 연속적인 상대 위치와 회전만 반영한다.
+
+따라서 현재 동작 계약은 다음과 같다.
+
+```text
+tracking loss / idle / UDP timeout -> hold, clutch 유지
+sustained pinch                    -> idle, clutch 초기화
+return and explicit realignment     -> 새 clutch 기준으로 active
+```
+
+Unity 시각화는 파란 원을 사용자 손목, 초록 원을 필터링된 직접 명령 목표,
+분홍 원을 실제 G1 손목으로 표시한다. 흰 선은 파란 원과 분홍 원을 연결해 현재
+이동 방향을 보여준다.
 
 목표 구조:
 
@@ -308,15 +355,21 @@ Unity가 보내는 `active` 요청은 명령일 뿐이며, controller가 최종�
 
 ## 7. 현재 통신 경계
 
-현재 live command는 `G1ExistingTargetUdpSender.cs`가 생성하는 legacy packet을 사용한다. 반면 `backend/g1_teleop/protocol.py`에는 `PosePacketV1`과 `StatePacketV1`이 별도로 정의되어 있다.
+현재 live command는 `G1ExistingTargetUdpSender.cs`가 생성하는 legacy packet을
+사용한다. 이 packet도 `command_adapter.py`에서 `session_id`, `sequence`,
+`command_state`, pose 형식까지 엄격하게 검증한다. 반면
+`backend/g1_teleop/protocol.py`에는 versioned V1/V2 계약이 별도로 정의되어
+있다.
 
 두 계약은 아직 동일하지 않다.
 
 - live packet에는 `session_id`, `command_state`, `right.pos`, `right.rot`이 있다.
-- `PosePacketV1`에는 `schema`, `frame_id`, `head`, 양쪽 wrist, `armed`, `clutch`가 있다.
-- 현재 session ownership은 live packet에 의존하지만 `PosePacketV1`에는 `session_id`가 없다.
+- V2에는 `schema`, `session_id`, `frame_id`, head, 양쪽 wrist, `armed`, `clutch`가 있다.
+- V2 packet은 strict parse할 수 있지만 현재 raw tracking-frame mapping이 완료되지 않아 live control 권한은 비활성화되어 있다.
 
-따라서 V1을 즉시 live packet으로 교체하면 현재 watchdog 의미가 사라질 수 있다. 호환 마이그레이션은 [`PROTOCOL.md`](PROTOCOL.md)를 따른다.
+따라서 V2를 즉시 live packet으로 교체하지 않는다. 좌표 mapping과 장비 회귀
+검증을 마친 뒤 호환 마이그레이션을 [`PROTOCOL.md`](PROTOCOL.md)에 따라
+진행한다.
 
 또한 MuJoCo UDP receiver는 현재 `0.0.0.0:5005`에 bind한다. 로컬 PC에서만 사용할 경우 `127.0.0.1` bind 또는 firewall 제한이 더 안전하다. 현재 UDP packet에는 인증·암호화가 없으므로 외부 네트워크에 그대로 노출하면 안 된다.
 
@@ -352,7 +405,7 @@ backend/g1_teleop/
    └─ camera.py
 
 MuJoCo_G1_Controller/scripts/
-└─ g1_right_arm_udp_ik_demo.py  # orchestration only
+└─ run_mink_g1_right_arm.py  # future orchestration-only entry point
 ```
 
 목표 실행기의 책임은 다음 수준으로 줄인다.
@@ -442,7 +495,7 @@ while running:
 
 - Quest Link tracking continuity
 - engagement 시 target jump 여부
-- workspace 경계에서 clamp/disengage 동작
+- workspace 경계에서 초록 목표 projection과 관절 제한 동작
 - 실제 D435i frame와 simulation frame 교체
 - 장시간 실행 중 session 재시작과 recovery
 

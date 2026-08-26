@@ -16,6 +16,10 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
         public float[] wrist_position;
         public float[] target_position;
         public float position_error;
+        public float orientation_error_deg;
+        public float orientation_assist_gain;
+        public float orientation_cost_scale;
+        public float min_wrist_limit_margin_deg;
         public bool workspace_limited;
         public bool collision_limited;
     }
@@ -24,7 +28,24 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
     private class RobotStatePacket
     {
         public RightArmState right_arm;
+        public InspectionState inspection;
         public double timestamp;
+    }
+
+    [Serializable]
+    private class InspectionState
+    {
+        public string state;
+        public string target_source;
+        public float[] target_position;
+        public float[] tool_tip_position;
+        public float[] panel_position;
+        public float[] panel_half_size;
+        public float distance_m;
+        public float hold_progress;
+        public float elapsed_s;
+        public float minimum_distance_m;
+        public bool complete;
     }
 
     public int udp_port = 5006;
@@ -46,10 +67,25 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
     public Vector3 LatestWristRobotPosition { get; private set; }
     public Vector3 LatestTargetRobotPosition { get; private set; }
     public float LatestPositionError { get; private set; }
+    public float LatestOrientationErrorDegrees { get; private set; }
+    public float LatestOrientationAssistGain { get; private set; }
+    public float LatestOrientationCostScale { get; private set; }
+    public float LatestWristLimitMarginDegrees { get; private set; }
     public bool IsWorkspaceLimited { get; private set; }
     public bool IsCollisionLimited { get; private set; }
     public bool HasMotionDiagnostics { get; private set; }
     public bool HasAbsoluteMinkPositions { get; private set; }
+    public bool HasInspectionState { get; private set; }
+    public string LatestInspectionState { get; private set; } = "waiting";
+    public string LatestInspectionTargetSource { get; private set; } = "";
+    public Vector3 LatestInspectionTargetRobotPosition { get; private set; }
+    public Vector3 LatestInspectionToolTipRobotPosition { get; private set; }
+    public Vector3 LatestInspectionPanelRobotPosition { get; private set; }
+    public Vector3 LatestInspectionPanelHalfSize { get; private set; }
+    public float LatestInspectionDistance { get; private set; }
+    public float LatestInspectionHoldProgress { get; private set; }
+    public float LatestInspectionElapsedSeconds { get; private set; }
+    public bool IsInspectionComplete { get; private set; }
     public ulong StateRevision { get; private set; }
 
     private UdpClient udp_client;
@@ -88,6 +124,10 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
                 latest_right_arm_joints = packet_value.right_arm.joints;
                 IsTeleoperationActive = packet_value.right_arm.active;
                 LatestPositionError = packet_value.right_arm.position_error;
+                LatestOrientationErrorDegrees = packet_value.right_arm.orientation_error_deg;
+                LatestOrientationAssistGain = packet_value.right_arm.orientation_assist_gain;
+                LatestOrientationCostScale = packet_value.right_arm.orientation_cost_scale;
+                LatestWristLimitMarginDegrees = packet_value.right_arm.min_wrist_limit_margin_deg;
                 IsWorkspaceLimited = packet_value.right_arm.workspace_limited;
                 IsCollisionLimited = packet_value.right_arm.collision_limited;
 
@@ -117,6 +157,34 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
                 {
                     LatestWristRobotPosition = Vector3.zero;
                     LatestTargetRobotPosition = Vector3.zero;
+                }
+
+                HasInspectionState = packet_value.inspection != null
+                    && HasVector(packet_value.inspection.target_position)
+                    && HasVector(packet_value.inspection.tool_tip_position)
+                    && HasVector(packet_value.inspection.panel_position)
+                    && HasVector(packet_value.inspection.panel_half_size);
+                if (HasInspectionState)
+                {
+                    LatestInspectionState = packet_value.inspection.state;
+                    LatestInspectionTargetSource = packet_value.inspection.target_source;
+                    LatestInspectionTargetRobotPosition = ToVector3(
+                        packet_value.inspection.target_position);
+                    LatestInspectionToolTipRobotPosition = ToVector3(
+                        packet_value.inspection.tool_tip_position);
+                    LatestInspectionPanelRobotPosition = ToVector3(
+                        packet_value.inspection.panel_position);
+                    LatestInspectionPanelHalfSize = ToVector3(
+                        packet_value.inspection.panel_half_size);
+                    LatestInspectionDistance = packet_value.inspection.distance_m;
+                    LatestInspectionHoldProgress = Mathf.Clamp01(
+                        packet_value.inspection.hold_progress);
+                    LatestInspectionElapsedSeconds = packet_value.inspection.elapsed_s;
+                    IsInspectionComplete = packet_value.inspection.complete;
+                }
+                else
+                {
+                    ResetInspectionState();
                 }
 
                 latest_packet_time = Time.realtimeSinceStartup;
@@ -198,16 +266,36 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
         LatestWristRobotPosition = Vector3.zero;
         LatestTargetRobotPosition = Vector3.zero;
         LatestPositionError = 0.0f;
+        LatestOrientationErrorDegrees = 0.0f;
+        LatestOrientationAssistGain = 0.0f;
+        LatestOrientationCostScale = 1.0f;
+        LatestWristLimitMarginDegrees = 0.0f;
         IsWorkspaceLimited = false;
         IsCollisionLimited = false;
         HasMotionDiagnostics = false;
         HasAbsoluteMinkPositions = false;
+        ResetInspectionState();
 
         if (clear_joint_state)
         {
             latest_right_arm_joints = null;
             latest_packet_time = float.NegativeInfinity;
         }
+    }
+
+    private void ResetInspectionState()
+    {
+        HasInspectionState = false;
+        LatestInspectionState = "waiting";
+        LatestInspectionTargetSource = "";
+        LatestInspectionTargetRobotPosition = Vector3.zero;
+        LatestInspectionToolTipRobotPosition = Vector3.zero;
+        LatestInspectionPanelRobotPosition = Vector3.zero;
+        LatestInspectionPanelHalfSize = Vector3.zero;
+        LatestInspectionDistance = 0.0f;
+        LatestInspectionHoldProgress = 0.0f;
+        LatestInspectionElapsedSeconds = 0.0f;
+        IsInspectionComplete = false;
     }
 
     private static bool HasVector(float[] vector_value)

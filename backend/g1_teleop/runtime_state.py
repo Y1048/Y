@@ -1,4 +1,4 @@
-"""Runtime teleoperation state machine shared by simulation and real control."""
+"""시뮬레이션과 실제 제어가 공유하는 텔레오퍼레이션 상위 상태 머신."""
 
 from __future__ import annotations
 
@@ -19,11 +19,10 @@ class RuntimeTransition:
 
 
 class TeleopRuntimeStateMachine:
-    """Deterministic high-level state machine for teleoperation intent.
+    """동일 입력에 항상 같은 전이를 내는 텔레오퍼레이션 의도 상태 머신.
 
-    The controller, not Unity, remains the final safety authority. A workspace
-    fault cannot be cleared by a normal active packet until an explicit reset
-    acknowledgement has been recorded.
+    최종 안전 권한은 Unity가 아니라 제어기에 있다. workspace fault는 명시적 reset
+    확인이 기록되기 전까지 일반 active 패킷만으로 해제할 수 없다.
     """
 
     def __init__(self) -> None:
@@ -67,6 +66,11 @@ class TeleopRuntimeStateMachine:
             self.state = "idle"
             self._workspace_reset_armed = False
             return RuntimeTransition(previous, self.state, "manual pinch disengage")
+
+        if command.mode == "tracking_disengaged":
+            self.state = "idle"
+            self._workspace_reset_armed = False
+            return RuntimeTransition(previous, self.state, "confirmed tracking loss")
 
         if self.state == "workspace_fault":
             if command.mode == "active" and command.valid and self._workspace_reset_armed:

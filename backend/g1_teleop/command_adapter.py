@@ -1,4 +1,8 @@
-"""Compatibility adapter from legacy and V2 wire packets to one command model."""
+"""기존 Unity 패킷과 V2 패킷을 하나의 내부 명령 모델로 엄격하게 변환한다.
+
+알 수 없는 schema를 기존 형식으로 추측하지 않으며, active/valid 조합과 벡터 크기를
+경계에서 검증해 잘못된 네트워크 입력이 IK 계층으로 넘어가지 않게 한다.
+"""
 
 from __future__ import annotations
 
@@ -29,7 +33,7 @@ class InternalCommand:
 
     @property
     def operator_disengage(self) -> bool:
-        return self.mode == "pinch_disengaged"
+        return self.mode in {"pinch_disengaged", "tracking_disengaged"}
 
 
 def _decode_object(payload: bytes | str, label: str) -> tuple[str, dict[str, object]]:
@@ -79,7 +83,13 @@ def _parse_legacy_value(value: dict[str, object]) -> InternalCommand:
     mode = value.get("command_state")
     if mode is None:
         mode = "active" if valid else "idle"
-    if mode not in {"active", "idle", "workspace_exit", "pinch_disengaged"}:
+    if mode not in {
+        "active",
+        "idle",
+        "workspace_exit",
+        "pinch_disengaged",
+        "tracking_disengaged",
+    }:
         raise ProtocolError("legacy command_state is invalid")
     if mode == "active" and not valid:
         raise ProtocolError("active legacy command requires right.valid=true")

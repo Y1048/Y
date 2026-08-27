@@ -11,6 +11,8 @@
 **/[Mm]emoryCaptures/
 **/[Rr]ecordings/
 **/Library_BACKUP_*/
+**/Assets/_Recovery/
+**/Assets/_Recovery.meta
 Unity_*_TEST/
 
 # Unity generated files

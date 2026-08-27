@@ -1,0 +1,15 @@
+{
+  "safe_ready_pose_deg": {
+    "right_shoulder_pitch": 0.0,
+    "right_shoulder_roll": -7.0,
+    "right_shoulder_yaw": 2.0,
+    "right_elbow": 57.0,
+    "right_wrist_roll": 0.0,
+    "right_wrist_pitch": 0.0,
+    "right_wrist_yaw": 0.0
+  },
+  "viewer": {
+    "playback_speed": 1.0,
+    "initial_hold_s": 2.0
+  }
+}

@@ -64,16 +64,16 @@ IK until a separately validated collision-aware transition reaches the clear
 configured ready pose; direct joint interpolation is not approved.
 
 - [x] Offline Mink startup recovery reaches the configured ready pose from the captured rest pose.
-- [x] Recovery uses a separate Cartesian body-escape phase before posture convergence.
+- [x] Recovery solves contact release and ready-posture convergence concurrently.
 - [x] Every accepted recovery step passes a 0.001-degree startup swept-path check.
 - [x] Safety Gate accepts the offline samples and rejects stale LowState.
 - [x] Velocity, acceleration, and jerk limits are implemented and pass offline replay.
 - [ ] Velocity, acceleration, and jerk limits are approved for hardware.
 - [ ] Startup recovery is repeatable from multiple real rest-pose captures.
 
-Latest offline result: 22.354 s at 500 Hz, 0.302-degree maximum ready-pose
-error, 7.468 deg/s maximum velocity, 30.000 deg/s^2 maximum acceleration, and
-300.000 deg/s^3 maximum jerk, with 50.395 mm final model clearance. The complete 11,178-sample replay passed the
+Latest offline result: 3.828 s at 500 Hz, zero final ready-pose error,
+7.528 deg/s maximum velocity, 30.000 deg/s^2 maximum acceleration, and
+300.000 deg/s^3 maximum jerk, with 20.417 mm final model clearance. The complete 1,915-sample replay passed the
 0.001-degree startup swept-path validation and Safety Gate. This remains
 offline evidence and does not authorize a motor command.
 
@@ -100,11 +100,23 @@ Required offline tests must remain green before any command-capable process is i
 
 Use actual measured G1 state as the Safety Gate measurement source while the requested target is the measured pose itself.
 
+Implementation and offline regression are ready:
+
+- [x] `gate5_lowstate_safety_monitor.py` imports no Unitree SDK and creates no DDS publisher.
+- [x] UDP telemetry carries a schema, bridge session ID, increasing sequence, source timestamp, measured `q`, and measured `dq`.
+- [x] `TEST_G1_GATE5_READ_ONLY.bat` accepts a fresh measured-pose HOLD candidate and produces no candidate after a synthetic 250 ms heartbeat loss.
+
+Physical-G1 verification (run `START_G1_GATE5_READ_ONLY.bat`):
+
 - [ ] Gate accepts a stationary measured-pose HOLD candidate.
 - [ ] Real LowState heartbeat loss causes immediate fail-closed denial.
 - [ ] Measured joints remain inside safety-margin limits.
 - [ ] Logs clearly show phase, packet age, fault code, measured q and candidate q.
 - [ ] No Unitree command DDS publisher exists in the process.
+
+Status: `logs/runtime/g1_gate5_lowstate_safety.json`
+
+Append-only events: `logs/runtime/g1_gate5_lowstate_safety.jsonl`
 
 **Command authority:** NONE.
 

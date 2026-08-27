@@ -130,6 +130,23 @@ class MinkCommandStreamTest(unittest.TestCase):
         self.assertTrue(reengaged.engage_clutch)
         self.assertTrue(reengaged.command_active)
 
+    def test_confirmed_tracking_loss_resets_clutch_before_reengagement(self):
+        self.sock.queue(packet(1))
+        self.stream.poll(self.sock)
+        self.sock.queue(packet(2, mode="tracking_disengaged"))
+
+        disengaged = self.stream.poll(self.sock)
+
+        self.assertEqual(disengaged.control_state, "idle")
+        self.assertTrue(disengaged.reset_clutch)
+        self.assertFalse(disengaged.clutch_engaged)
+        self.assertFalse(disengaged.workspace_fault)
+
+        self.sock.queue(packet(3, position=(0.44, -0.15, 1.06)))
+        reengaged = self.stream.poll(self.sock)
+        self.assertTrue(reengaged.engage_clutch)
+        self.assertTrue(reengaged.command_active)
+
     def test_duplicate_is_rejected_without_changing_target(self):
         self.sock.queue(packet(4, position=(0.46, -0.11, 1.09)))
         self.stream.poll(self.sock)

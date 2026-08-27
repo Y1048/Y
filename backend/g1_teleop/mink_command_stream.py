@@ -1,4 +1,4 @@
-"""Stateful command intake shared by the live Mink controllers."""
+"""실시간 Mink 제어기가 공통으로 사용하는 상태 보존형 UDP 명령 입력 계층."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from .watchdog import SessionSequenceWatchdog
 
 @dataclass(frozen=True)
 class MinkCommandUpdate:
-    """One control-loop view of the validated UDP command stream."""
+    """검증된 UDP 명령을 한 제어 주기에서 사용할 수 있게 고정한 스냅샷."""
 
     target_position_m: np.ndarray
     target_quaternion_xyzw: np.ndarray
@@ -32,11 +32,11 @@ class MinkCommandUpdate:
 
 
 class MinkCommandStream:
-    """Validate UDP ownership while preserving clutch state during short holds.
+    """UDP 송신자/순서를 검증하면서 짧은 hold 동안 clutch 기준을 보존한다.
 
-    An idle packet or an input timeout stops target updates but keeps the
-    engagement reference. A confirmed ``workspace_exit``, an intentional pinch
-    disengage, or ownership transfer to a new sender resets that reference.
+    idle 패킷이나 입력 timeout은 목표 갱신만 멈추고 engage 기준은 유지한다.
+    확인된 workspace_exit, 의도적인 pinch 해제, 확인된 손 추적 손실,
+    새 송신자에게 소유권이 넘어가는 경우에만 clutch 기준을 초기화한다.
     """
 
     def __init__(

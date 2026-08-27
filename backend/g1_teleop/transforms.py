@@ -1,4 +1,8 @@
-"""Small SE(3) helpers with explicit Unity, OpenXR, and G1 conventions."""
+"""Unity, OpenXR, G1 좌표 규약을 명시한 작은 SE(3) 변환 함수 모음.
+
+모든 자세는 4x4 동차변환 또는 xyzw quaternion으로 다루며, 위치와 회전에 동일한
+기저 변환을 적용한다. 좌표 축을 호출부에서 임의로 다시 뒤집지 않는다.
+"""
 
 from __future__ import annotations
 

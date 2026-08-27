@@ -17,11 +17,14 @@ set "exit_code=%errorlevel%"
 echo.
 if not "%exit_code%"=="0" (
     echo [FAIL] Startup recovery remains blocked.
+    echo [ACTION] Open logs\runtime\g1_startup_mink_recovery.json and read failure plus failure_details.
+    echo [ACTION] If the captured pose is stale, reconnect read-only and run START_MINK_G1_HARDWARE_SYNC.bat before retrying.
+    echo [ACTION] If the ready pose is invalid, run EDIT_G1_STARTUP_READY_POSE.bat and save a collision-clear pose.
 ) else (
     echo [PASS] Kinematic recovery passed offline.
     echo [NOTE] Acceleration and jerk are not hardware-approved.
 )
-echo Result: logs\runtime\g1_startup_mink_recovery.json
+echo Result saved to: %CD%\logs\runtime\g1_startup_mink_recovery.json
 echo Robot command: NONE
 echo.
 pause

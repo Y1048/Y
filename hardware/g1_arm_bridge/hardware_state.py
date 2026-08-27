@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Shared runtime state/fault schema for G1 hardware bring-up.
+"""G1 하드웨어 bring-up 과정이 공유하는 실행 상태와 fault 문서 형식.
 
-This module is deliberately transport-agnostic. It imports no Unitree SDK,
-creates no DDS publisher, and cannot command a robot. Hardware-facing processes
-use it only to report their current phase and fail-closed fault state.
+통신 방식과 독립적이며 Unitree SDK를 import하거나 DDS publisher를 만들지 않는다.
+로봇을 제어할 수 없고, 각 하드웨어 프로세스의 단계와 fail-closed fault 상태를
+일관된 JSON 형태로 기록하는 데만 사용한다.
 """
 
 from __future__ import annotations

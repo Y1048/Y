@@ -20,13 +20,17 @@ public static class G1TeleopBatchValidator
             FindSceneComponent<G1ExistingTargetUdpSender>();
         G1UnityRightArmPreview preview_value =
             FindSceneComponent<G1UnityRightArmPreview>();
+        G1HeadLockedCamera camera_lock_value =
+            FindSceneComponent<G1HeadLockedCamera>();
 
         AssertCondition(binder_value != null, "Hand target binder is missing.");
         AssertCondition(sender_value != null, "UDP sender is missing.");
         AssertCondition(preview_value != null, "Unity arm preview is missing.");
+        AssertCondition(camera_lock_value != null, "G1 head-locked camera is missing.");
 
         ValidateBinder(binder_value);
         ValidateSender(sender_value, binder_value);
+        ValidateHeadLockedCamera(camera_lock_value, preview_value);
         ValidateOfficialRig();
         ValidatePositionOnlyEngagement();
         ValidateTriggerRelativeRotation();
@@ -80,6 +84,25 @@ public static class G1TeleopBatchValidator
         AssertCondition(
             binder_value.reference_transform != null,
             "Binder heading reference is missing.");
+        AssertCondition(
+            binder_value.tracked_wrist_max_speed_mps > 0.0f,
+            "Tracked wrist outlier speed gate must be enabled.");
+        AssertCondition(
+            G1ExistingHandTargetBinder.IsTrackedWristStepPlausible(
+                new Vector3(0.02f, 0.0f, 0.0f),
+                Vector3.zero,
+                0.02f,
+                1.10f,
+                0.020f),
+            "A normal tracked wrist step was rejected.");
+        AssertCondition(
+            !G1ExistingHandTargetBinder.IsTrackedWristStepPlausible(
+                new Vector3(0.04f, 0.0f, 0.0f),
+                Vector3.zero,
+                0.02f,
+                1.10f,
+                0.020f),
+            "An implausible tracked wrist step was accepted.");
     }
 
     private static void ValidateSender(
@@ -95,6 +118,12 @@ public static class G1TeleopBatchValidator
         AssertCondition(
             !sender_value.use_rectangular_workspace_fallback,
             "Disabled rectangular workspace fallback must not clamp UDP targets.");
+        AssertCondition(
+            sender_value.disengage_on_tracking_loss,
+            "Confirmed hand-tracking loss must disengage teleoperation.");
+        AssertCondition(
+            sender_value.tracking_loss_confirm_seconds >= 0.30f,
+            "Tracking-loss disengagement debounce is too short.");
     }
 
     private static void ValidateOfficialRig()
@@ -130,6 +159,100 @@ public static class G1TeleopBatchValidator
         finally
         {
             UnityEngine.Object.DestroyImmediate(instance_value);
+        }
+    }
+
+    private static void ValidateHeadLockedCamera(
+        G1HeadLockedCamera camera_lock_value,
+        G1UnityRightArmPreview preview_value)
+    {
+        AssertCondition(
+            camera_lock_value.xr_center_eye != null,
+            "Head-locked camera CenterEyeAnchor reference is missing.");
+        AssertCondition(
+            camera_lock_value.TrackingSpace != null,
+            "Head-locked camera TrackingSpace reference is missing.");
+        AssertCondition(
+            camera_lock_value.robot_preview == preview_value,
+            "Head-locked camera is not connected to the active G1 preview.");
+        AssertCondition(
+            camera_lock_value.align_position_once,
+            "G1 head camera must align to the robot head once at startup.");
+        AssertCondition(
+            !camera_lock_value.lock_position,
+            "Continuous G1 head camera position lock must be disabled for VR comfort.");
+
+        GameObject tracking_space_object = new GameObject("tracking_space_lock_test");
+        GameObject camera_object = new GameObject("camera_position_lock_test");
+        GameObject hand_object = new GameObject("hand_position_lock_test");
+        try
+        {
+            Quaternion tracked_rotation = Quaternion.Euler(18.0f, 42.0f, -7.0f);
+            Vector3 mount_position = new Vector3(1.2f, 1.6f, -0.4f);
+            tracking_space_object.transform.SetPositionAndRotation(
+                new Vector3(-0.3f, 0.2f, 0.1f),
+                Quaternion.identity);
+            camera_object.transform.SetParent(tracking_space_object.transform, false);
+            hand_object.transform.SetParent(tracking_space_object.transform, false);
+            camera_object.transform.SetLocalPositionAndRotation(
+                new Vector3(0.1f, 1.6f, 0.2f),
+                tracked_rotation);
+            hand_object.transform.localPosition = new Vector3(0.4f, 1.2f, 0.5f);
+            Vector3 hand_to_head_before = hand_object.transform.position
+                - camera_object.transform.position;
+
+            G1HeadLockedCamera.LockTrackingSpacePosition(
+                tracking_space_object.transform,
+                camera_object.transform,
+                mount_position);
+
+            AssertVector(
+                camera_object.transform.position,
+                mount_position,
+                "Initial camera alignment did not adopt the G1 head position.");
+            AssertCondition(
+                Quaternion.Angle(camera_object.transform.rotation, tracked_rotation)
+                    < 0.001f,
+                "Initial camera alignment must preserve tracked HMD rotation.");
+            AssertVector(
+                hand_object.transform.position - camera_object.transform.position,
+                hand_to_head_before,
+                "Initial TrackingSpace alignment changed the hand-to-head relative position.");
+
+            Vector3 operator_step = new Vector3(0.025f, 0.0f, 0.0f);
+            Vector3 common_body_step =
+                G1ExistingHandTargetBinder.GetCommonBodyTranslationStep(
+                    operator_step,
+                    operator_step,
+                    0.0005f,
+                    0.85f,
+                    0.55f,
+                    0.012f);
+            AssertVector(
+                common_body_step,
+                operator_step,
+                "Equal head and wrist motion was not recognized as body translation.");
+            AssertVector(
+                G1ExistingHandTargetBinder.CalculateBodyCompensatedTrackingDelta(
+                    new Vector3(0.3f, 1.2f, 0.5f) + operator_step,
+                    new Vector3(0.3f, 1.2f, 0.5f),
+                    common_body_step),
+                Vector3.zero,
+                "Operator body translation leaked into the robot hand target frame.");
+            AssertVector(
+                G1ExistingHandTargetBinder.GetCommonBodyTranslationStep(
+                    Vector3.zero,
+                    operator_step,
+                    0.0005f,
+                    0.85f,
+                    0.55f,
+                    0.012f),
+                Vector3.zero,
+                "Head-only translation was incorrectly classified as body motion.");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(tracking_space_object);
         }
     }
 
@@ -205,16 +328,6 @@ public static class G1TeleopBatchValidator
         AssertCondition(
             !G1ExistingTargetUdpSender.GetCommandValidity(false, true),
             "Tracking alone must not activate an uncalibrated command.");
-        AssertCondition(
-            !G1ExistingHandTargetBinder.IsTrackingOriginJump(
-                new Vector3(0.02f, 0.01f, 0.01f),
-                0.20f),
-            "Normal hand motion must not be treated as a tracking-origin jump.");
-        AssertCondition(
-            G1ExistingHandTargetBinder.IsTrackingOriginJump(
-                new Vector3(0.0f, 0.0f, 0.78f),
-                0.20f),
-            "A tracking-origin discontinuity must be rejected.");
         AssertCondition(
             !G1ExistingTargetUdpSender.ShouldDisengageForWorkspace(
                 false,

@@ -16,6 +16,7 @@ public static class G1ExistingSceneSetup
             "target");
         GameObject camera_rig_object = GetObjectByAnyName(
             scene_value,
+            "VR_XR_Rig",
             "Quest3S_XR_Rig",
             "OVRCameraRigInteraction");
         GameObject center_eye_object = camera_rig_object == null
@@ -93,7 +94,11 @@ public static class G1ExistingSceneSetup
         binder_value.engagement_position_stability = 0.015f;
         binder_value.engagement_rotation_stability_degrees = 10.0f;
         binder_value.engagement_frame_initialization_delay = 0.25f;
+        binder_value.tracked_wrist_max_speed_mps = 1.10f;
+        binder_value.tracked_wrist_min_step_allowance = 0.020f;
         sender_value.hand_binder = binder_value;
+        sender_value.disengage_on_tracking_loss = true;
+        sender_value.tracking_loss_confirm_seconds = 0.35f;
 
         G1RobotStateUdpReceiver receiver_value =
             target_object.GetComponent<G1RobotStateUdpReceiver>();
@@ -119,6 +124,10 @@ public static class G1ExistingSceneSetup
         preview_value.wrist_target = target_object.transform;
         preview_value.show_tracking_markers = true;
         preview_value.tracking_axis_length = 0.10f;
+        ConfigureHeadLockedCamera(
+            target_object,
+            center_eye_object,
+            preview_value);
 
         if (camera_rig_object != null)
         {
@@ -136,6 +145,81 @@ public static class G1ExistingSceneSetup
         EditorSceneManager.MarkSceneDirty(scene_value);
         EditorSceneManager.SaveScene(scene_value);
         Debug.Log("G1 existing scene setup complete.");
+    }
+
+    [MenuItem("G1 Teleop/Setup Head-Locked Camera")]
+    public static void SetupHeadLockedCamera()
+    {
+        UnityEngine.SceneManagement.Scene scene_value =
+            EditorSceneManager.OpenScene(scene_path);
+        GameObject target_object = GetObjectByAnyName(
+            scene_value,
+            "G1_Teleoperation_System",
+            "target");
+        GameObject camera_rig_object = GetObjectByAnyName(
+            scene_value,
+            "VR_XR_Rig",
+            "Quest3S_XR_Rig",
+            "OVRCameraRigInteraction");
+        G1ExistingHandTargetBinder binder_value = target_object == null
+            ? null
+            : target_object.GetComponent<G1ExistingHandTargetBinder>();
+        GameObject center_eye_object = binder_value != null
+            && binder_value.reference_transform != null
+            ? binder_value.reference_transform.gameObject
+            : camera_rig_object == null
+                ? null
+                : GetChildObjectByName(
+                    camera_rig_object.transform,
+                    "CenterEyeAnchor");
+        G1UnityRightArmPreview preview_value = target_object == null
+            ? null
+            : target_object.GetComponent<G1UnityRightArmPreview>();
+
+        G1HeadLockedCamera camera_lock_value = ConfigureHeadLockedCamera(
+            target_object,
+            center_eye_object,
+            preview_value);
+        if (camera_lock_value == null)
+        {
+            throw new MissingReferenceException(
+                "G1 head-locked camera references could not be configured.");
+        }
+
+        EditorSceneManager.MarkSceneDirty(scene_value);
+        EditorSceneManager.SaveScene(scene_value);
+        Debug.Log("G1 head-locked camera setup complete.");
+    }
+
+    private static G1HeadLockedCamera ConfigureHeadLockedCamera(
+        GameObject target_object,
+        GameObject center_eye_object,
+        G1UnityRightArmPreview preview_value)
+    {
+        if (target_object == null
+            || center_eye_object == null
+            || preview_value == null)
+        {
+            Debug.LogError(
+                "G1 head-locked camera setup requires the teleoperation system, "
+                + "CenterEyeAnchor, and G1 preview.");
+            return null;
+        }
+
+        G1HeadLockedCamera camera_lock_value =
+            target_object.GetComponent<G1HeadLockedCamera>();
+        if (camera_lock_value == null)
+        {
+            camera_lock_value = target_object.AddComponent<G1HeadLockedCamera>();
+        }
+
+        camera_lock_value.xr_center_eye = center_eye_object.transform;
+        camera_lock_value.xr_tracking_space = center_eye_object.transform.parent;
+        camera_lock_value.robot_preview = preview_value;
+        camera_lock_value.align_position_once = true;
+        camera_lock_value.lock_position = false;
+        EditorUtility.SetDirty(camera_lock_value);
+        return camera_lock_value;
     }
 
     private static GameObject GetObjectByAnyName(
@@ -169,7 +253,8 @@ public static class G1ExistingSceneSetup
                 || component_value is G1ExistingTargetUdpSender
                 || component_value is G1ExistingHandTargetBinder
                 || component_value is G1UnityRightArmPreview
-                || component_value is G1RobotStateUdpReceiver)
+                || component_value is G1RobotStateUdpReceiver
+                || component_value is G1HeadLockedCamera)
             {
                 continue;
             }

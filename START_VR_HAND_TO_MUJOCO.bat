@@ -31,43 +31,49 @@ echo.
 if not exist "%UNITY_EXE%" (
     echo [ERROR] Unity 6000.5.4f1 was not found.
     echo %UNITY_EXE%
+    echo [ACTION] Install Unity 6000.5.4f1 in Unity Hub, or update UNITY_EXE in this BAT to its actual path.
     goto :failed
 )
 
 if not exist "%UNITY_PROJECT%\Assets\Scenes\SampleScene.unity" (
     echo [ERROR] The Unity test scene was not found.
+    echo [ACTION] Restore Unity_G1_VR\Assets\Scenes\SampleScene.unity from Git before starting teleoperation.
     goto :failed
 )
 
 if not exist "%MUJOCO_SCRIPT%" (
     echo [ERROR] The Mink MuJoCo controller was not found.
     echo %MUJOCO_SCRIPT%
+    echo [ACTION] Restore the missing controller script from Git, then run this BAT again.
     goto :failed
 )
 
 if not exist "%TELEOP_CONFIG%" (
     echo [ERROR] Teleoperation config was not found.
     echo %TELEOP_CONFIG%
+    echo [ACTION] Restore config\teleop.json from Git; do not create an unverified replacement during a hardware test.
     goto :failed
 )
 
 py -3.11 -c "import mujoco, numpy, mink, qpsolvers" >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] Python 3.11 Mink/MuJoCo environment is not ready.
-    echo [INFO] Run: py -3.11 -m pip install mink daqp
+    echo [ACTION] Run: py -3.11 -m pip install mujoco mink daqp qpsolvers numpy
+    echo [ACTION] Then run this BAT again.
     goto :failed
 )
 
 for /f %%P in ('py -3.11 -c "import json; print(json.load(open(r'%TELEOP_CONFIG%', encoding='utf-8'))['network']['udp_port'])"') do set "UDP_PORT=%%P"
 if not defined UDP_PORT (
     echo [ERROR] Could not read network.udp_port from config\teleop.json.
+    echo [ACTION] Validate config\teleop.json as JSON and restore its network.udp_port value.
     goto :failed
 )
 
 tasklist /FI "IMAGENAME eq OVRServer_x64.exe" 2>nul | find /I "OVRServer_x64.exe" >nul
 if errorlevel 1 (
     echo [WARNING] Meta Horizon Link is not running.
-    echo           Open Meta Horizon Link and connect Quest Link first.
+    echo [ACTION] Open Meta Horizon Link, connect Quest Link, and confirm the headset is active before Unity Play Mode.
 ) else (
     echo [OK] Meta Horizon Link runtime is running.
 )
@@ -144,6 +150,7 @@ exit /b 0
 
 :failed
 echo.
-echo The test was not started.
+echo [FAIL] The test was not started.
+echo [ACTION] Complete the action shown immediately above, then run this BAT again.
 pause
 exit /b 1

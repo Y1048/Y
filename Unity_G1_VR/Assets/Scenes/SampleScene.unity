@@ -245,6 +245,7 @@ GameObject:
   - component: {fileID: 539268365}
   - component: {fileID: 539268364}
   - component: {fileID: 539268367}
+  - component: {fileID: 539268368}
   m_Layer: 0
   m_Name: G1_Teleoperation_System
   m_TagString: Untagged
@@ -277,7 +278,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22a4ed705fa3eb64dbb4d479c3a71c9b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1ExistingTargetUdpSender
   hand_binder: {fileID: 539268365}
   state_receiver: {fileID: 539268367}
@@ -292,8 +293,11 @@ MonoBehaviour:
   disengage_on_workspace_exit: 0
   workspace_exit_confirm_seconds: 0.8
   workspace_exit_margin: 0.02
+  use_rectangular_workspace_fallback: 0
   enable_pinch_disengage: 1
   pinch_disengage_hold_seconds: 0.5
+  disengage_on_tracking_loss: 1
+  tracking_loss_confirm_seconds: 0.35
   live_position_filter_time_constant_s: 0.06
   live_rotation_filter_time_constant_s: 0.05
   operator_forward_scale: 1
@@ -354,7 +358,8 @@ MonoBehaviour:
   engagement_position_stability: 0.025
   engagement_rotation_stability_degrees: 16
   engagement_frame_initialization_delay: 0.25
-  tracking_origin_jump_threshold: 0.2
+  tracked_wrist_max_speed_mps: 1.1
+  tracked_wrist_min_step_allowance: 0.02
 --- !u!114 &539268367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,6 +374,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::G1RobotStateUdpReceiver
   udp_port: 5006
   state_timeout: 0.5
+--- !u!114 &539268368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539268351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c912bf0c826844d28808e60a41de83dd, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::G1HeadLockedCamera
+  xr_center_eye: {fileID: 1503043336}
+  robot_preview: {fileID: 539268364}
+  align_position_once: 1
+  lock_position: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

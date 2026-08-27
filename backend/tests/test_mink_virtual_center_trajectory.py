@@ -17,9 +17,11 @@ if str(SCRIPT_ROOT) not in sys.path:
 
 import run_mink_g1_right_arm_prototype as base  # noqa: E402
 from run_mink_g1_right_arm_virtual_center_live import (  # noqa: E402
-    MAX_JOINT_VELOCITY_DEG_S,
+    PROXIMAL_MAX_JOINT_VELOCITY_DEG_S,
+    WRIST_MAX_JOINT_VELOCITY_DEG_S,
     VirtualCenterOrientationTask,
     virtual_center_damping_costs,
+    virtual_center_velocity_limits,
 )
 
 
@@ -58,10 +60,7 @@ class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
             cost=virtual_center_damping_costs(model),
         )
 
-        velocity_limits = {
-            name: math.radians(MAX_JOINT_VELOCITY_DEG_S)
-            for name in base.g1.RIGHT_ARM_JOINTS
-        }
+        velocity_limits = virtual_center_velocity_limits()
         limits = [
             mink.ConfigurationLimit(model=model),
             mink.VelocityLimit(model, velocity_limits),
@@ -110,7 +109,8 @@ class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
         ))
 
         solver = base._select_solver()
-        maximum_joint_velocity = 0.0
+        maximum_proximal_velocity = 0.0
+        maximum_wrist_velocity = 0.0
         for _ in range(180):
             velocity = mink.solve_ik(
                 configuration=configuration,
@@ -126,9 +126,13 @@ class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
                 limits=limits,
                 constraints=constraints,
             )
-            maximum_joint_velocity = max(
-                maximum_joint_velocity,
-                float(np.max(np.abs(velocity[right_dofs]))),
+            maximum_proximal_velocity = max(
+                maximum_proximal_velocity,
+                float(np.max(np.abs(velocity[right_dofs[:4]]))),
+            )
+            maximum_wrist_velocity = max(
+                maximum_wrist_velocity,
+                float(np.max(np.abs(velocity[right_dofs[4:]]))),
             )
             configuration.integrate_inplace(velocity, base.DT)
             mujoco.mj_forward(model, configuration.data)
@@ -152,8 +156,12 @@ class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
         self.assertLessEqual(position_error, 0.001)
         self.assertLessEqual(orientation_error, 0.1)
         self.assertLessEqual(
-            maximum_joint_velocity,
-            math.radians(MAX_JOINT_VELOCITY_DEG_S) + 1e-10,
+            maximum_proximal_velocity,
+            math.radians(PROXIMAL_MAX_JOINT_VELOCITY_DEG_S) + 1e-10,
+        )
+        self.assertLessEqual(
+            maximum_wrist_velocity,
+            math.radians(WRIST_MAX_JOINT_VELOCITY_DEG_S) + 1e-10,
         )
 
 

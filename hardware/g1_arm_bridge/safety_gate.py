@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Pure right-arm hardware safety gate for Unitree G1 teleoperation.
+"""Unitree G1 오른팔용 순수 함수형 하드웨어 안전 게이트.
 
-This module has NO DDS dependency and sends NO robot command. It validates and
-rate-limits a proposed seven-joint right-arm target before a future command
-publisher is allowed to use it.
+DDS에 의존하지 않고 로봇 명령도 보내지 않는다. 향후 publisher가 사용할 수 있는
+유일한 7관절 명령을 반환하기 전에 LowState 신선도, 관절 범위, 현재 자세와의 차이,
+주기당 속도 제한을 순서대로 검사한다.
 """
 
 from __future__ import annotations
@@ -22,8 +22,8 @@ JOINT_NAMES: Final[tuple[str, ...]] = (
     "right_wrist_yaw",
 )
 
-# Official Unitree MuJoCo G1 29-DoF ranges. Elbow lower bound is intentionally
-# tightened to the teleoperation operational policy already used by Mink.
+# Unitree 공식 MuJoCo G1 29-DoF 범위를 사용한다. 팔꿈치 하한만 Mink와 동일한
+# 텔레오퍼레이션 운용 정책에 맞춰 의도적으로 더 보수적으로 제한한다.
 JOINT_LIMITS_RAD: Final[tuple[tuple[float, float], ...]] = (
     (-3.0892, 2.6704),
     (-2.2515, 1.5882),
@@ -33,7 +33,6 @@ JOINT_LIMITS_RAD: Final[tuple[tuple[float, float], ...]] = (
     (-1.61443, 1.61443),
     (-1.61443, 1.61443),
 )
-
 
 @dataclass(frozen=True)
 class SafetyConfig:
@@ -81,10 +80,10 @@ def evaluate_target(
     dt_s: float,
     config: SafetyConfig = SafetyConfig(),
 ) -> SafetyDecision:
-    """Validate a target and return the only joint vector a publisher may use.
+    """목표를 검증하고 publisher가 사용할 수 있는 유일한 관절 벡터를 반환한다.
 
-    A denied decision always returns command_q_rad=None. Future hardware output
-    code must treat that as a hard stop and must not substitute its own target.
+    거부된 결과는 항상 command_q_rad=None이다. 실제 출력 코드는 이를 hard
+    stop으로 취급해야 하며 자체 목표를 대신 넣어 우회하면 안 된다.
     """
 
     if not math.isfinite(lowstate_age_s) or lowstate_age_s < 0.0:

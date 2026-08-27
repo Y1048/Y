@@ -1,4 +1,4 @@
-"""Arrival-time, sequence, and session watchdogs for teleoperation packets."""
+"""텔레오퍼레이션 패킷의 도착 시간, 순서, 송신 세션을 감시하는 watchdog."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ class PacketAcceptance:
 
 
 class SequenceWatchdog:
-    """Reject replayed packets and stop on missing input without comparing clocks."""
+    """서로 다른 장치의 시계를 비교하지 않고 재전송 패킷과 입력 단절을 판별한다."""
 
     def __init__(self, hold_after_s: float = 0.10, disarm_after_s: float = 0.30) -> None:
         if hold_after_s <= 0.0 or disarm_after_s <= hold_after_s:

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Offline Mink QP recovery from measured G1 rest pose to teleop-ready pose.
+"""측정된 G1 휴식 자세에서 teleop 준비 자세까지의 오프라인 Mink QP 복구 시험.
 
-This process has no Unitree SDK dependency, creates no DDS publisher, opens no
-network socket, and sends no robot command. It exists only to validate the
-kinematic startup state-machine transition before hardware output is written.
+Unitree SDK에 의존하지 않고 DDS publisher, 네트워크 소켓, 로봇 명령을 만들지 않는다.
+실제 출력 코드를 작성하기 전에 현재 측정 자세 -> 충돌 탈출 -> 안전 준비 자세
+상태 전이가 운동학/충돌/속도·가속도·jerk 제한을 만족하는지만 검증한다.
 """
 
 from __future__ import annotations
@@ -20,12 +20,13 @@ import numpy as np
 
 import diagnose_initial_pose_collision as collision_diag
 import plan_startup_transition as startup_plan
-from safety_gate import SafetyConfig, evaluate_target
+from safety_gate import JOINT_LIMITS_RAD, JOINT_NAMES, SafetyConfig, evaluate_target
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS_DIR = PROJECT_ROOT / "MuJoCo_G1_Controller" / "scripts"
 STATE_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_hardware_initial_state.json"
+CONFIG_PATH = PROJECT_ROOT / "config" / "startup_recovery.json"
 RESULT_PATH = Path(
     os.environ.get(
         "G1_STARTUP_RESULT_PATH",
@@ -38,10 +39,12 @@ DT_S = 1.0 / CONTROL_HZ
 MAX_DURATION_S = 30.0
 MAX_JOINT_VELOCITY_RAD_S = math.radians(8.0)
 QP_MAX_JOINT_VELOCITY_RAD_S = math.radians(6.0)
-FINE_QP_MAX_JOINT_VELOCITY_RAD_S = math.radians(0.5)
 MAX_JOINT_ACCELERATION_RAD_S2 = math.radians(30.0)
 MAX_JOINT_JERK_RAD_S3 = math.radians(300.0)
-READY_TOLERANCE_RAD = math.radians(0.5)
+TERMINAL_BLEND_ENTRY_ERROR_RAD = math.radians(5.0)
+TERMINAL_BLEND_MIN_DURATION_S = 0.50
+TERMINAL_BLEND_MAX_DURATION_S = 4.00
+TERMINAL_BLEND_DURATION_STEP_S = 0.05
 POSTURE_COST = 1.0
 DAMPING_COST = 1e-3
 TRACE_DECIMATION = 10
@@ -52,13 +55,46 @@ ESCAPE_OFFSET_ROBOT_M = np.asarray(
     dtype=float,
 )
 RECOVERY_VALIDATION_STEP_DEG = 0.001
-ESCAPE_TARGET_TOLERANCE_M = 0.015
-ESCAPE_LATCH_DISTANCE_M = 0.040
+CONTACT_RELEASE_DISTANCE_M = 0.012
+ESCAPE_ASSIST_RELEASE_DISTANCE_M = 0.020
 STARTUP_COLLISION_DETECTION_DISTANCE_M = 0.080
-STARTUP_QP_MINIMUM_COLLISION_DISTANCE_M = 0.040
-STARTUP_SAFE_READY_DEGREES = np.asarray(
-    [10.0, -30.0, 0.0, 55.0, 0.0, 0.0, 0.0], dtype=float
-)
+
+
+def _load_startup_safe_ready_degrees() -> np.ndarray:
+    payload = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    pose = payload.get("safe_ready_pose_deg")
+    if not isinstance(pose, dict):
+        raise RuntimeError("safe_ready_pose_deg must be a JSON object")
+
+    missing = set(JOINT_NAMES) - set(pose)
+    unknown = set(pose) - set(JOINT_NAMES)
+    if missing or unknown:
+        raise RuntimeError(
+            "safe_ready_pose_deg joint mismatch: "
+            f"missing={sorted(missing)}, unknown={sorted(unknown)}"
+        )
+
+    values = np.asarray([pose[name] for name in JOINT_NAMES], dtype=float)
+    if values.shape != (7,) or not np.all(np.isfinite(values)):
+        raise RuntimeError("safe_ready_pose_deg must contain seven finite values")
+
+    margin = SafetyConfig().joint_limit_margin_rad
+    for name, value_deg, (low, high) in zip(
+        JOINT_NAMES,
+        values,
+        JOINT_LIMITS_RAD,
+    ):
+        safe_low = math.degrees(low + margin)
+        safe_high = math.degrees(high - margin)
+        if value_deg < safe_low or value_deg > safe_high:
+            raise RuntimeError(
+                f"{name}={value_deg:.2f} deg is outside the Safety Gate range "
+                f"[{safe_low:.2f}, {safe_high:.2f}] deg"
+            )
+    return values
+
+
+STARTUP_SAFE_READY_DEGREES = _load_startup_safe_ready_degrees()
 
 
 def _right_qpos_ids(model, controller):
@@ -104,6 +140,7 @@ def _recovery_edge_is_valid(
     escaped_before,
     initial_body_pairs,
 ):
+    """두 관절 자세 사이를 촘촘히 검사해 기존 접촉에서는 빠지고 새 접촉은 막는다."""
     escaped = bool(escaped_before)
     minimum_after_escape = math.inf
     for local_index, pose in enumerate(
@@ -133,7 +170,7 @@ def _recovery_edge_is_valid(
                 sorted((str(item["first_body"]), str(item["second_body"])))
             )
             in initial_body_pairs
-            and float(item["distance_m"]) < ESCAPE_LATCH_DISTANCE_M
+            and float(item["distance_m"]) < CONTACT_RELEASE_DISTANCE_M
             for item in nearby
         )
         if not initial_pair_still_near:
@@ -172,6 +209,127 @@ def _motion_metrics(q_history):
     }
 
 
+def _quintic_terminal_profile(
+    start_q,
+    start_velocity,
+    start_acceleration,
+    target_q,
+    duration_s,
+):
+    """현재 q/v/a에서 목표 q와 정지 상태로 이어지는 5차 궤적을 만든다."""
+    intervals = max(1, int(math.ceil(float(duration_s) * CONTROL_HZ)))
+    duration = intervals * DT_S
+    start_q = np.asarray(start_q, dtype=float)
+    start_velocity = np.asarray(start_velocity, dtype=float)
+    start_acceleration = np.asarray(start_acceleration, dtype=float)
+    target_q = np.asarray(target_q, dtype=float)
+
+    matrix = np.asarray(
+        [
+            [duration**3, duration**4, duration**5],
+            [3.0 * duration**2, 4.0 * duration**3, 5.0 * duration**4],
+            [6.0 * duration, 12.0 * duration**2, 20.0 * duration**3],
+        ],
+        dtype=float,
+    )
+    residual = np.vstack(
+        [
+            target_q
+            - start_q
+            - start_velocity * duration
+            - 0.5 * start_acceleration * duration**2,
+            -start_velocity - start_acceleration * duration,
+            -start_acceleration,
+        ]
+    )
+    higher_order = np.linalg.solve(matrix, residual)
+    times = np.linspace(0.0, duration, intervals + 1)
+    samples = []
+    for time_s in times:
+        samples.append(
+            start_q
+            + start_velocity * time_s
+            + 0.5 * start_acceleration * time_s**2
+            + higher_order[0] * time_s**3
+            + higher_order[1] * time_s**4
+            + higher_order[2] * time_s**5
+        )
+    samples[0] = start_q.copy()
+    samples[-1] = target_q.copy()
+    return samples, duration
+
+
+def _terminal_profile_inside_joint_limits(samples) -> bool:
+    values = np.asarray(samples, dtype=float)
+    margin = SafetyConfig().joint_limit_margin_rad
+    lower = np.asarray([item[0] + margin for item in JOINT_LIMITS_RAD])
+    upper = np.asarray([item[1] - margin for item in JOINT_LIMITS_RAD])
+    return bool(np.all(values >= lower) and np.all(values <= upper))
+
+
+def _find_terminal_ready_profile(
+    model,
+    data,
+    controller,
+    geom_pairs,
+    history,
+    initial_body_pairs,
+    start_velocity,
+    start_acceleration,
+    target_q,
+):
+    """운동 제한과 swept-path 충돌 검사를 모두 통과하는 종단 궤적을 찾는다."""
+    attempts = []
+    duration = TERMINAL_BLEND_MIN_DURATION_S
+    while duration <= TERMINAL_BLEND_MAX_DURATION_S + 1e-12:
+        samples, exact_duration = _quintic_terminal_profile(
+            history[-1],
+            start_velocity,
+            start_acceleration,
+            target_q,
+            duration,
+        )
+        combined = list(history) + samples[1:]
+        metrics = _motion_metrics(combined)
+        limits_passed = bool(
+            metrics["max_velocity_deg_s"] <= 8.0 * 1.001
+            and metrics["max_acceleration_deg_s2"] <= 30.0 * 1.001
+            and metrics["max_jerk_deg_s3"] <= 300.0 * 1.001
+        )
+        joint_limits_passed = _terminal_profile_inside_joint_limits(samples)
+        collision_validation = None
+        if limits_passed and joint_limits_passed:
+            collision_validation = _validate_profile(
+                model,
+                data,
+                controller,
+                geom_pairs,
+                samples,
+                initial_body_pairs,
+            )
+            if collision_validation["passed"]:
+                return samples, {
+                    "duration_s": exact_duration,
+                    "metrics": metrics,
+                    "collision_validation": collision_validation,
+                    "attempts": attempts,
+                }
+        attempts.append(
+            {
+                "duration_s": exact_duration,
+                "limits_passed": limits_passed,
+                "joint_limits_passed": joint_limits_passed,
+                "metrics": metrics,
+                "collision_passed": bool(
+                    collision_validation
+                    and collision_validation.get("passed")
+                ),
+            }
+        )
+        duration += TERMINAL_BLEND_DURATION_STEP_S
+    return None, {"attempts": attempts}
+
+
 def _simplify_recovery_path(
     model, data, controller, geom_pairs, q_history, initial_body_pairs
 ):
@@ -179,9 +337,8 @@ def _simplify_recovery_path(
     if len(path) <= 2:
         return path
 
-    # Preserve the first accepted escape step. The measured pose starts at
-    # zero mesh clearance, so this establishes a positive recovery floor before
-    # any long shortcut is considered.
+    # 측정 시작 자세는 mesh 간격이 0일 수 있으므로 첫 탈출 스텝은 반드시 보존한다.
+    # 양의 간격을 만든 뒤에만 긴 구간을 shortcut 후보로 검사한다.
     simplified = [path[0], path[1]]
     source_index = 1
     while source_index < len(path) - 1:
@@ -196,7 +353,7 @@ def _simplify_recovery_path(
                 sorted((str(item["first_body"]), str(item["second_body"])))
             )
             in initial_body_pairs
-            and float(item["distance_m"]) < ESCAPE_LATCH_DISTANCE_M
+            and float(item["distance_m"]) < CONTACT_RELEASE_DISTANCE_M
             for item in nearby
         )
         clearance = math.inf if not nearby else float(nearby[0]["distance_m"])
@@ -430,6 +587,7 @@ def _write_result(payload):
 
 
 def main() -> int:
+    print("[1/4] Loading captured pose and MuJoCo/Mink model...", flush=True)
     os.environ.pop("G1_USE_HARDWARE_INITIAL_STATE", None)
     if str(SCRIPTS_DIR) not in sys.path:
         sys.path.insert(0, str(SCRIPTS_DIR))
@@ -460,12 +618,9 @@ def main() -> int:
     initial_inside, initial_body_pairs = startup_plan._inside_pairs(
         initial_nearby, controller.COLLISION_MIN_DISTANCE_M
     )
-    initial_recovery_body_pairs = {
-        tuple(
-            sorted((str(item["first_body"]), str(item["second_body"])))
-        )
-        for item in initial_nearby
-    }
+    # 시작 시 이미 12 mm 안에 있는 접촉 쌍만 복구 중 예외로 허용한다.
+    # 단순히 80 mm 검출 범위 안에 있던 쌍이 새로 12 mm 안으로 들어오는 것은 막는다.
+    initial_recovery_body_pairs = set(initial_body_pairs)
     initial_minimum = (
         math.inf if not initial_nearby else float(initial_nearby[0]["distance_m"])
     )
@@ -497,15 +652,15 @@ def main() -> int:
         name: QP_MAX_JOINT_VELOCITY_RAD_S
         for name in controller.g1.RIGHT_ARM_JOINTS
     }
-    limits = [
+    common_limits = [
         mink.ConfigurationLimit(model=model),
         mink.VelocityLimit(model, velocity_limits),
+    ]
+    ready_limits = common_limits + [
         mink.CollisionAvoidanceLimit(
             model=model,
             geom_pairs=collision_pairs,
-            minimum_distance_from_collisions=(
-                STARTUP_QP_MINIMUM_COLLISION_DISTANCE_M
-            ),
+            minimum_distance_from_collisions=controller.COLLISION_MIN_DISTANCE_M,
             collision_detection_distance=STARTUP_COLLISION_DETECTION_DISTANCE_M,
             gain=controller.COLLISION_GAIN,
             broadphase=True,
@@ -513,14 +668,21 @@ def main() -> int:
     ]
     constraints = [mink.DofFreezingTask(model=model, dof_indices=frozen_dofs)]
     solver = controller._select_solver()
+    print(
+        f"[2/4] Planning startup recovery with {solver} "
+        f"(up to {MAX_DURATION_S:.0f} simulated seconds)...",
+        flush=True,
+    )
 
     q_history = [measured.copy()]
     trace = []
     escaped = not initial_inside
-    escape_target_reached = False
-    escape_complete = False
-    ready_braking = False
-    ready_fine_mode = False
+    escape_assist_complete = escaped
+    escape_complete = escape_assist_complete
+    terminal_start_velocity = None
+    terminal_start_acceleration = None
+    terminal_start_time_s = None
+    terminal_metadata = None
     minimum_after_escape = math.inf
     failure = None
     failure_details = None
@@ -532,36 +694,38 @@ def main() -> int:
     maximum_steps = int(round(MAX_DURATION_S * CONTROL_HZ))
 
     for step in range(maximum_steps):
+        if step > 0 and step % int(CONTROL_HZ * 5.0) == 0:
+            phase = (
+                "ready posture"
+                if escape_complete
+                else "escape assist + ready posture"
+            )
+            print(
+                f"      simulated {step * DT_S:.0f}/{MAX_DURATION_S:.0f} s: "
+                f"{phase}",
+                flush=True,
+            )
         before_full = configuration.q.copy()
         before = before_full[right_qpos_ids].copy()
-        if (escape_target_reached and not escape_complete) or ready_braking:
-            velocity = np.zeros(model.nv, dtype=float)
-        else:
-            try:
-                active_tasks = (
-                    [posture_task, damping_task]
-                    if escape_complete
-                    else [escape_task, damping_task]
-                )
-                velocity = mink.solve_ik(
-                    configuration,
-                    active_tasks,
-                    DT_S,
-                    solver,
-                    damping=1e-6,
-                    safety_break=False,
-                    limits=limits,
-                    constraints=constraints,
-                )
-                if ready_fine_mode:
-                    velocity = np.clip(
-                        velocity,
-                        -FINE_QP_MAX_JOINT_VELOCITY_RAD_S,
-                        FINE_QP_MAX_JOINT_VELOCITY_RAD_S,
-                    )
-            except Exception as exc:
-                failure = f"qp_solver:{type(exc).__name__}:{exc}"
-                break
+        try:
+            active_tasks = (
+                [posture_task, damping_task]
+                if escape_complete
+                else [escape_task, posture_task, damping_task]
+            )
+            velocity = mink.solve_ik(
+                configuration,
+                active_tasks,
+                DT_S,
+                solver,
+                damping=1e-6,
+                safety_break=False,
+                limits=ready_limits,
+                constraints=constraints,
+            )
+        except Exception as exc:
+            failure = f"qp_solver:{type(exc).__name__}:{exc}"
+            break
 
         desired_acceleration = np.clip(
             (velocity - applied_velocity) / DT_S,
@@ -664,34 +828,27 @@ def main() -> int:
         escape_position_error = float(
             np.linalg.norm(wrist_position - escape_target_position)
         )
-        if escaped and escape_position_error <= ESCAPE_TARGET_TOLERANCE_M:
-            escape_target_reached = True
-        if (
-            escape_target_reached
-            and float(np.max(np.abs(applied_velocity[right_dofs])))
-            <= math.radians(0.1)
-            and float(np.max(np.abs(applied_acceleration[right_dofs])))
-            <= math.radians(1.0)
-        ):
+        current_nearby = collision_diag._nearby_pairs(
+            model, data, controller, collision_geom_pairs
+        )
+        initial_pair_still_near = any(
+            tuple(
+                sorted((str(item["first_body"]), str(item["second_body"])))
+            )
+            in initial_recovery_body_pairs
+            and float(item["distance_m"]) < ESCAPE_ASSIST_RELEASE_DISTANCE_M
+            for item in current_nearby
+        )
+        if escaped and not initial_pair_still_near and not escape_complete:
+            # 12 mm부터는 재진입을 금지한다. 20 mm까지는 posture 목표와 escape
+            # 보조 목표를 함께 풀고, 중간 정지 없이 보조 목표만 제거한다.
+            escape_assist_complete = True
             escape_complete = True
         ready_error = float(np.max(np.abs(ready - current)))
-        if escape_complete and not ready_braking:
-            if not ready_fine_mode and ready_error <= math.radians(2.0):
-                ready_braking = True
-            elif ready_fine_mode and ready_error <= math.radians(0.3):
-                ready_braking = True
-        motion_stopped = bool(
-            float(np.max(np.abs(applied_velocity[right_dofs])))
-            <= math.radians(0.1)
-            and float(np.max(np.abs(applied_acceleration[right_dofs])))
-            <= math.radians(1.0)
+        terminal_requested = bool(
+            escape_complete
+            and ready_error <= TERMINAL_BLEND_ENTRY_ERROR_RAD
         )
-        if ready_braking and motion_stopped:
-            if ready_error <= READY_TOLERANCE_RAD:
-                reached = True
-            else:
-                ready_fine_mode = True
-                ready_braking = False
 
         if step % TRACE_DECIMATION == 0:
             trace.append(
@@ -706,32 +863,92 @@ def main() -> int:
                     ),
                     "escaped_initial_contact": escaped,
                     "escape_complete": escape_complete,
-                    "escape_target_reached": escape_target_reached,
-                    "ready_braking": ready_braking,
-                    "ready_fine_mode": ready_fine_mode,
+                    "contact_release_complete": escaped,
+                    "escape_assist_complete": escape_assist_complete,
+                    "ready_braking": False,
+                    "ready_fine_mode": False,
                     "escape_position_error_m": escape_position_error,
                     "phase": (
-                        (
-                            "ready_brake_hold"
-                            if ready_braking
-                            else (
-                                "ready_fine_positioning"
-                                if ready_fine_mode
-                                else "transition_to_ready"
-                            )
-                        )
+                        "transition_to_ready"
                         if escape_complete
                         else (
-                            "escape_brake_hold"
-                            if escape_target_reached
-                            else "escape_body"
+                            "clearance_assist_and_recovery"
+                            if escaped
+                            else "contact_release_and_recovery"
                         )
                     ),
                 }
             )
 
-        if reached:
+        if terminal_requested:
+            # q[k]-q[k-1]로 정의된 이산 속도를 연속 다항식의 t=0 미분값으로
+            # 변환한다. 반 스텝 가속도 보정이 없으면 첫 샘플에서 가짜 jerk가 난다.
+            terminal_start_velocity = (
+                applied_velocity[right_dofs]
+                + 0.5 * applied_acceleration[right_dofs] * DT_S
+            )
+            terminal_start_acceleration = applied_acceleration[right_dofs].copy()
+            terminal_start_time_s = (len(q_history) - 1) * DT_S
             break
+
+    if failure is None and terminal_start_velocity is None:
+        failure = "terminal_blend_entry_not_reached"
+
+    if failure is None:
+        terminal_samples, terminal_metadata = _find_terminal_ready_profile(
+            model,
+            data,
+            controller,
+            collision_geom_pairs,
+            q_history,
+            initial_recovery_body_pairs,
+            terminal_start_velocity,
+            terminal_start_acceleration,
+            ready,
+        )
+        if terminal_samples is None:
+            failure = "terminal_ready_blend_not_found"
+            failure_details = terminal_metadata
+        else:
+            terminal_full = configuration.q.copy()
+            for local_index, sample in enumerate(terminal_samples[1:], start=1):
+                terminal_full[right_qpos_ids] = sample
+                configuration.update(terminal_full)
+                q_history.append(np.asarray(sample, dtype=float).copy())
+                clearance = _minimum_clearance(
+                    model, data, controller, collision_geom_pairs
+                )
+                minimum_after_escape = min(minimum_after_escape, clearance)
+                if (
+                    local_index % TRACE_DECIMATION == 0
+                    or local_index == len(terminal_samples) - 1
+                ):
+                    wrist_position = data.xpos[
+                        controller.g1.get_body_id(model, "right_wrist_yaw_link")
+                    ].copy()
+                    trace.append(
+                        {
+                            "time_s": (len(q_history) - 1) * DT_S,
+                            "q_rad": np.asarray(sample, dtype=float).tolist(),
+                            "maximum_ready_error_deg": float(
+                                np.max(np.abs(np.degrees(ready - sample)))
+                            ),
+                            "minimum_clearance_m": clearance,
+                            "escaped_initial_contact": True,
+                            "escape_complete": True,
+                            "contact_release_complete": True,
+                            "escape_assist_complete": True,
+                            "ready_braking": False,
+                            "ready_fine_mode": False,
+                            "escape_position_error_m": float(
+                                np.linalg.norm(
+                                    wrist_position - escape_target_position
+                                )
+                            ),
+                            "phase": "terminal_ready_blend",
+                        }
+                    )
+            reached = True
 
     final_q = q_history[-1]
     final_error = float(np.max(np.abs(ready - final_q)))
@@ -743,24 +960,30 @@ def main() -> int:
     )
 
     if reached and failure is None:
+        print(
+            "[3/4] Recovery found; validating the complete swept path...",
+            flush=True,
+        )
         profile_waypoints = q_history
         profile_samples = [np.asarray(item, dtype=float) for item in q_history]
-        profile_duration = (len(profile_samples) - 1) * DT_S
         profile_validation = _validate_profile(
             model,
             data,
             controller,
             collision_geom_pairs,
             profile_samples,
-                initial_recovery_body_pairs,
+            initial_recovery_body_pairs,
         )
         profile_segments = [
             {
-                "segment": 0,
-                "duration_s": profile_duration,
-                "raw_path_points": len(profile_waypoints),
-                "duration_scale": 1.0,
-            }
+                "segment": "concurrent_qp_recovery",
+                "duration_s": terminal_start_time_s,
+            },
+            {
+                "segment": "quintic_terminal_ready_blend",
+                "duration_s": terminal_metadata["duration_s"],
+                "candidate_attempts": len(terminal_metadata["attempts"]) + 1,
+            },
         ]
     else:
         profile_waypoints = [q_history[0], q_history[-1]]
@@ -780,6 +1003,7 @@ def main() -> int:
     )
 
     safety_config = SafetyConfig()
+    print("[4/4] Checking every command through the safety gate...", flush=True)
     previous_command = None
     measured_for_gate = tuple(float(value) for value in profile_samples[0])
     gate_failure = None
@@ -823,15 +1047,13 @@ def main() -> int:
         "hardware_ready": False,
         "command_output_enabled": False,
         "mode": "offline_mink_qp_startup_recovery",
+        "startup_config_path": str(CONFIG_PATH),
         "solver": solver,
         "control_hz": CONTROL_HZ,
         "recovery_validation_step_deg": RECOVERY_VALIDATION_STEP_DEG,
         "maximum_joint_velocity_deg_s": math.degrees(MAX_JOINT_VELOCITY_RAD_S),
         "qp_maximum_joint_velocity_deg_s": math.degrees(
             QP_MAX_JOINT_VELOCITY_RAD_S
-        ),
-        "fine_qp_maximum_joint_velocity_deg_s": math.degrees(
-            FINE_QP_MAX_JOINT_VELOCITY_RAD_S
         ),
         "maximum_joint_acceleration_deg_s2": math.degrees(
             MAX_JOINT_ACCELERATION_RAD_S2
@@ -845,16 +1067,37 @@ def main() -> int:
         "reached_ready_pose": reached,
         "escaped_initial_contact": escaped,
         "escape_complete": escape_complete,
-        "escape_target_reached": escape_target_reached,
-        "ready_braking": ready_braking,
-        "ready_fine_mode": ready_fine_mode,
-        "escape_target_tolerance_m": ESCAPE_TARGET_TOLERANCE_M,
-        "escape_latch_distance_m": ESCAPE_LATCH_DISTANCE_M,
+        "contact_release_complete": escaped,
+        "escape_assist_complete": escape_assist_complete,
+        "ready_braking": False,
+        "ready_fine_mode": False,
+        "recovery_strategy": (
+            "concurrent_contact_release_and_posture_with_quintic_terminal"
+        ),
+        "terminal_blend_entry_error_deg": math.degrees(
+            TERMINAL_BLEND_ENTRY_ERROR_RAD
+        ),
+        "terminal_blend": terminal_metadata,
+        "terminal_start_velocity_rad_s": (
+            None
+            if terminal_start_velocity is None
+            else terminal_start_velocity.tolist()
+        ),
+        "terminal_start_acceleration_rad_s2": (
+            None
+            if terminal_start_acceleration is None
+            else terminal_start_acceleration.tolist()
+        ),
+        "contact_release_distance_m": CONTACT_RELEASE_DISTANCE_M,
+        "escape_assist_release_distance_m": ESCAPE_ASSIST_RELEASE_DISTANCE_M,
         "startup_collision_detection_distance_m": (
             STARTUP_COLLISION_DETECTION_DISTANCE_M
         ),
-        "startup_qp_minimum_collision_distance_m": (
-            STARTUP_QP_MINIMUM_COLLISION_DISTANCE_M
+        "startup_escape_qp_minimum_collision_distance_m": (
+            controller.COLLISION_MIN_DISTANCE_M
+        ),
+        "startup_ready_qp_minimum_collision_distance_m": (
+            controller.COLLISION_MIN_DISTANCE_M
         ),
         "initial_inside_count": len(initial_inside),
         "initial_recovery_body_pairs": [
@@ -876,7 +1119,7 @@ def main() -> int:
         },
         "raw_qp_motion_metrics": _motion_metrics(q_history),
         "motion_profile": {
-            "type": "online_velocity_acceleration_jerk_limited_qp",
+            "type": "constrained_qp_plus_quintic_terminal_blend",
             "limits_passed": profile_limits_passed,
             "waypoint_count": len(profile_waypoints),
             "sample_count": len(profile_samples),

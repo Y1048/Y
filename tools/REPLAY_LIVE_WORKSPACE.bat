@@ -12,13 +12,14 @@ echo.
 if not exist "%SCRIPT%" (
     echo [ERROR] Replay script not found:
     echo %SCRIPT%
+    echo [ACTION] Restore MuJoCo_G1_Controller\scripts\replay_live_workspace.py from Git.
     goto :failed
 )
 
 if not exist "%TRACE%" (
     echo [ERROR] Live Quest trace not found:
     echo %TRACE%
-    echo Run Unity Play Mode with Quest tracking first.
+    echo [ACTION] Run Unity Play Mode with Quest tracking first, move the hand, stop Play Mode, then retry.
     goto :failed
 )
 
@@ -27,7 +28,8 @@ set "EXIT_CODE=%ERRORLEVEL%"
 
 echo.
 if not "%EXIT_CODE%"=="0" (
-    echo Workspace replay finished with exit code %EXIT_CODE%.
+    echo [FAIL] Workspace replay finished with exit code %EXIT_CODE%.
+    echo [ACTION] Run py -3.11 "%SCRIPT%" "%TRACE%" in PowerShell and inspect the first traceback line.
 ) else (
     echo Workspace replay completed.
 )

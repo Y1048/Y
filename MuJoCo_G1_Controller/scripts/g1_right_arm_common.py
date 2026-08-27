@@ -1,7 +1,7 @@
-"""Shared G1 right-arm model, joint and frame utilities.
+"""G1 오른팔 모델, 관절 인덱스, 좌표 변환을 한곳에 모은 공통 모듈.
 
-This module contains no IK solver. It is the common boundary used by the Mink
-controller and, temporarily, the legacy controller while the latter is retired.
+이 파일은 IK를 직접 풀지 않는다. Mink 제어기와 카메라 회귀 검사용 기존 제어기가
+동일한 모델/관절/프레임 정의를 사용하도록 경계를 제공한다.
 """
 
 from __future__ import annotations
@@ -64,8 +64,9 @@ RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES = {
     "right_elbow_joint": (5.0, 120.0),
 }
 
-# Unity operator frame: +X right, +Y up, +Z forward.
-# MuJoCo G1 frame: +X forward, +Y left, +Z up.
+# Unity 작업자 좌표계: +X 오른쪽, +Y 위, +Z 앞.
+# MuJoCo G1 좌표계: +X 앞, +Y 왼쪽, +Z 위.
+# 위치와 회전에 같은 기저 변환을 사용해 축 변환이 두 번 적용되지 않게 한다.
 OPERATOR_TO_ROBOT_BASIS = np.array(
     [
         [0.0, 0.0, 1.0],

@@ -1,4 +1,4 @@
-"""Non-blocking command reception for the teleoperation control loop."""
+"""텔레오퍼레이션 제어 루프용 non-blocking UDP 수신 계층."""
 
 from __future__ import annotations
 
@@ -35,12 +35,11 @@ def receive_available_commands(
     allow_v2_control: bool = False,
     buffer_size: int = 4096,
 ) -> ReceiveBatch:
-    """Drain queued UDP datagrams and keep only the newest accepted command.
+    """대기 중인 UDP 패킷을 모두 읽고 검증을 통과한 최신 명령만 남긴다.
 
-    Legacy V0 remains the live-control format. V2 packets are parsed strictly,
-    but cannot take control until the raw tracking-frame mapping is explicitly
-    enabled. This prevents a V2 pose in ``unity_ovr_tracking`` coordinates from
-    being mistaken for the legacy robot-target coordinates.
+    현재 live 제어는 legacy V0 형식을 사용한다. V2는 엄격히 파싱하지만 raw tracking
+    frame 변환이 명시적으로 켜지기 전에는 제어권을 주지 않는다. Unity 추적 좌표가
+    기존 로봇 목표 좌표로 잘못 해석되는 것을 막기 위한 경계다.
     """
     latest: InternalCommand | None = None
     latest_active: InternalCommand | None = None

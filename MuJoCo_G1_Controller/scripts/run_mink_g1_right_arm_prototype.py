@@ -1,17 +1,15 @@
-"""Mink-based right-arm-only G1 teleoperation controller.
+"""Mink 기반 G1 오른팔 7-DoF 텔레오퍼레이션 기준 제어기.
 
-Unity keeps sending the existing UDP target format on port 5005; this script
-solves one 7-DoF right-arm QP using Mink. Shared G1 model/joint/frame utilities
-live in g1_right_arm_common and no legacy IK implementation is imported here.
+Unity가 UDP 5005로 보낸 손목 6D 목표를 받아 Mink QP로 관절값을 계산한다.
+모델/관절/좌표 정의는 g1_right_arm_common만 사용하며 기존 DLS IK를 섞지 않는다.
 
-QP structure:
-- full 6D right wrist FrameTask,
-- posture regularization,
-- proximal-vs-wrist damping to prefer local wrist motion during rotation,
-- hard MuJoCo joint-position limits,
-- right-arm velocity limits,
-- MuJoCo geometry CollisionAvoidanceLimit,
-- exact zero-velocity equality constraints on every non-right-arm DOF.
+QP 구성:
+- 오른손목 위치와 회전을 함께 푸는 6D FrameTask
+- 사람다운 해를 유지하는 중립 자세 비용
+- 손목 회전 때 어깨/팔꿈치의 불필요한 움직임을 줄이는 관절별 감쇠
+- MuJoCo 관절 위치 제한과 오른팔 속도 제한
+- 실제 geom 쌍을 이용한 Mink 충돌 회피 제한
+- 오른팔 이외 모든 자유도의 속도를 0으로 고정하는 등식 제한
 """
 
 from __future__ import annotations
@@ -75,9 +73,14 @@ QP_DAMPING = 1e-8
 COLLISION_MIN_DISTANCE_M = 0.012
 COLLISION_DETECTION_DISTANCE_M = 0.040
 COLLISION_GAIN = 0.85
-# Ignore only direct and two-hop kinematic neighbors.  Three-hop pairs include
-# torso-to-shoulder-roll and must stay in the self-collision constraint set.
+# 직접 연결 및 두 단계 이내의 구조적 이웃만 충돌 검사에서 제외한다.
+# 세 단계 쌍에는 몸통과 상완처럼 실제 관통을 막아야 하는 조합이 포함된다.
 STRUCTURAL_NEIGHBOR_DISTANCE = 2
+# 긴 링크 형상 때문에 정상적인 팔 접힘에서도 가까워지는 것으로 실측된 쌍만
+# 전역 구조 거리와 별개로 제외한다. 몸통-상완 쌍은 여기에 추가하면 안 된다.
+COLLISION_BODY_PAIR_EXEMPTIONS = {
+    frozenset(("right_elbow_link", "right_wrist_yaw_link")),
+}
 RIGHT_ARM_MAX_VELOCITY_RAD_S = math.radians(75.0)
 POSITION_MAX_SPEED_MPS = 0.12
 ROTATION_MAX_SPEED_RAD_S = math.radians(70.0)
@@ -244,6 +247,14 @@ def _build_collision_pairs(model: mujoco.MjModel) -> tuple[list[tuple[list[str],
                 continue
             distance = _body_distance(model, body1, body2)
             if distance is not None and distance <= STRUCTURAL_NEIGHBOR_DISTANCE:
+                continue
+            body1_name = mujoco.mj_id2name(
+                model, mujoco.mjtObj.mjOBJ_BODY, body1
+            )
+            body2_name = mujoco.mj_id2name(
+                model, mujoco.mjtObj.mjOBJ_BODY, body2
+            )
+            if frozenset((body1_name, body2_name)) in COLLISION_BODY_PAIR_EXEMPTIONS:
                 continue
             geom1_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, geom1_name)
             geom2_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, geom2_name)

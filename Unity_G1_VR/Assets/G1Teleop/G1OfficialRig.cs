@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 공식 G1 프리팹의 관절 노드와 손목/그립/머리 카메라 기준점을 관리한다.
+/// 백엔드 관절값을 프리뷰에 적용하고 점검 도구를 표시하지만 제어 명령은 만들지 않는다.
+/// </summary>
 public class G1OfficialRig : MonoBehaviour
 {
     public Transform right_hand_contact_point;

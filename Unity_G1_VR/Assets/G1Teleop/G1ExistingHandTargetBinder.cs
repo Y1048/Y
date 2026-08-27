@@ -1,6 +1,11 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// Quest 오른손 추적 자세를 G1 텔레오퍼레이션의 상대 손목 목표로 변환한다.
+/// 손목 소스 선택, 머리 yaw 기준 좌표계, engage 정렬/유지, 중립 자세 보정을
+/// 담당하며 UDP 송신, IK 계산, 관절 명령 생성은 담당하지 않는다.
+/// </summary>
 public class G1ExistingHandTargetBinder : MonoBehaviour
 {
     public Transform source_hand;
@@ -31,7 +36,12 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public float engagement_position_stability = 0.025f;
     public float engagement_rotation_stability_degrees = 16.0f;
     public float engagement_frame_initialization_delay = 0.25f;
-    public float tracking_origin_jump_threshold = 0.20f;
+    public float tracked_wrist_max_speed_mps = 1.10f;
+    public float tracked_wrist_min_step_allowance = 0.020f;
+    public float body_translation_minimum_step = 0.0005f;
+    public float body_translation_direction_cosine = 0.85f;
+    public float body_translation_magnitude_ratio_minimum = 0.55f;
+    public float body_translation_residual_tolerance = 0.012f;
 
     public bool IsTrackingValid { get; private set; }
     public bool IsCalibrated { get; private set; }
@@ -55,6 +65,16 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public Vector3 EngagementTargetPosition { get; private set; }
     public Quaternion EngagementTargetRotation { get; private set; } = Quaternion.identity;
     public string EngagementState { get; private set; } = "initializing";
+    public Vector3 BodyCompensatedTrackingDelta { get; private set; }
+    public Vector3 EstimatedBodyTranslation { get; private set; }
+    public bool HasBodyTranslationCompensation { get; private set; }
+    public Vector3 TrackedHeadPosition { get; private set; }
+    public Quaternion TrackedHeadRotation { get; private set; } = Quaternion.identity;
+    public float TrackedHeadAngularSpeedDegrees { get; private set; }
+    public bool IsHeadMotionHold { get; private set; }
+    public Vector3 CalibratedHeadPosition { get; private set; }
+    public bool IsTrackedPosePlausible { get; private set; } = true;
+    public float TrackedWristSpeedMPS { get; private set; }
 
     private float log_timer;
     private float tracked_duration;
@@ -70,9 +90,15 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     private Transform middle_finger_base_transform;
     private Transform index_finger_base_transform;
     private Transform pinky_finger_base_transform;
-    private Vector3 previous_tracked_wrist_position;
-    private Quaternion previous_tracked_wrist_rotation = Quaternion.identity;
-    private bool tracked_wrist_position_initialized;
+    private Vector3 neutral_head_position;
+    private Vector3 previous_body_tracking_wrist_position;
+    private Vector3 previous_body_tracking_head_position;
+    private bool body_tracking_initialized;
+    private Vector3 last_accepted_wrist_position;
+    private bool accepted_wrist_position_initialized;
+    private bool tracked_pose_outlier_latched;
+    private Quaternion previous_tracked_head_rotation = Quaternion.identity;
+    private bool tracked_head_rotation_initialized;
 
     private void Awake()
     {
@@ -91,6 +117,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
+        UpdateTrackedHead();
         UpdateTrackedWrist();
 
         UpdateEngagementFrame();
@@ -101,13 +128,22 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         IsTrackingValid = GetHandTracked();
+        UpdateHeadMotionDiagnostics();
+        if (IsTrackingValid)
+        {
+            IsTrackingValid = UpdateTrackedPosePlausibility();
+        }
+        else
+        {
+            IsTrackedPosePlausible = false;
+            TrackedWristSpeedMPS = 0.0f;
+        }
         if (!IsTrackingValid)
         {
             if (IsCalibrated)
             {
-                // Hold the last valid target during temporary hand-tracking loss.
-                // Workspace exit is the only automatic disengagement condition;
-                // sustained pinch remains an intentional manual disengagement.
+                // 순간적인 손 추적 손실 동안에는 마지막 유효 목표를 유지한다.
+                // 손실이 계속되면 UDP sender가 캘리브레이션을 해제하며 기준점은 바꾸지 않는다.
                 IsAlignmentReady = true;
                 EngagementProgress = 1.0f;
                 EngagementState = "active-hold-tracking-unavailable";
@@ -166,15 +202,27 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             CaptureEngagementFrame();
         }
 
+        // engage 순간의 실제 손목과 로봇 목표를 각각 중립점으로 저장한다.
+        // 이후에는 두 절대 위치가 아니라 중립점에서의 상대 이동량만 사용한다.
         neutral_wrist_position = TrackedWristPosition;
+        neutral_head_position = TrackedHeadPosition;
         neutral_hand_rotation = TrackedWristRotation;
         CalibratedWristPosition = neutral_wrist_position;
+        CalibratedHeadPosition = neutral_head_position;
         CalibratedWristRotation = neutral_hand_rotation;
         OperatorTargetDelta = Vector3.zero;
+        BodyCompensatedTrackingDelta = Vector3.zero;
+        EstimatedBodyTranslation = Vector3.zero;
+        HasBodyTranslationCompensation = reference_transform != null;
+        previous_body_tracking_wrist_position = TrackedWristPosition;
+        previous_body_tracking_head_position = TrackedHeadPosition;
+        body_tracking_initialized = reference_transform != null;
+        ResetHeadMotionDiagnostics();
         OperatorHandRotation = Quaternion.identity;
         neutral_target_rotation = EngagementTargetRotation;
         MappedHandRotation = neutral_target_rotation;
         IsCalibrated = true;
+        AcceptCurrentTrackedPose();
         IsAlignmentReady = true;
         AlignmentPositionError = 0.0f;
         AlignmentOrientationErrorDegrees = 0.0f;
@@ -192,6 +240,10 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         IsCalibrated = false;
         tracked_duration = 0.0f;
         OperatorTargetDelta = Vector3.zero;
+        BodyCompensatedTrackingDelta = Vector3.zero;
+        EstimatedBodyTranslation = Vector3.zero;
+        HasBodyTranslationCompensation = false;
+        CalibratedHeadPosition = Vector3.zero;
         OperatorHandRotation = Quaternion.identity;
         MappedHandRotation = EngagementTargetRotation;
         neutral_target_rotation = EngagementTargetRotation;
@@ -201,6 +253,12 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         EngagementProgress = 0.0f;
         EngagementState = "waiting-position";
         alignment_reference_initialized = false;
+        body_tracking_initialized = false;
+        accepted_wrist_position_initialized = false;
+        tracked_pose_outlier_latched = false;
+        ResetHeadMotionDiagnostics();
+        IsTrackedPosePlausible = true;
+        TrackedWristSpeedMPS = 0.0f;
     }
 
     public void RecenterEngagementFrame()
@@ -265,6 +323,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
     private void CaptureEngagementFrame()
     {
+        // 방 안의 절대 좌표가 아니라 캡처 시점의 머리 위치와 yaw를 기준으로 고정한다.
+        // 고개를 돌려도 이미 engage된 팔 목표가 같이 회전하지 않도록 하는 기준 프레임이다.
         OperatorOrigin = reference_transform == null ? Vector3.zero : reference_transform.position;
         OperatorHeading = GetReferenceYawRotation();
         IsEngagementFrameLocked = true;
@@ -307,6 +367,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
         if (IsAlignmentReady)
         {
+            // 목표 근처에 있는 것만으로 engage하지 않고, 손이 안정적으로 유지된 시간까지
+            // 확인해 우연한 교차나 추적 노이즈로 인한 오작동을 줄인다.
             if (!alignment_reference_initialized)
             {
                 alignment_reference_position = TrackedWristPosition;
@@ -373,7 +435,46 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
     private void UpdateOperatorTarget()
     {
-        Vector3 hand_delta = TrackedWristPosition - neutral_wrist_position;
+        // 머리 이동을 무조건 빼면 고개만 움직여도 반대 방향의 팔 명령이 생긴다.
+        // 손목과 머리가 같은 방향과 비슷한 거리로 움직인 프레임만 몸 이동으로 누적한다.
+        Vector3 hand_delta;
+        if (reference_transform != null)
+        {
+            if (!body_tracking_initialized)
+            {
+                previous_body_tracking_wrist_position = TrackedWristPosition;
+                previous_body_tracking_head_position = TrackedHeadPosition;
+                body_tracking_initialized = true;
+            }
+
+            Vector3 wrist_step = TrackedWristPosition
+                - previous_body_tracking_wrist_position;
+            Vector3 head_step = TrackedHeadPosition
+                - previous_body_tracking_head_position;
+            EstimatedBodyTranslation += GetCommonBodyTranslationStep(
+                wrist_step,
+                head_step,
+                body_translation_minimum_step,
+                body_translation_direction_cosine,
+                body_translation_magnitude_ratio_minimum,
+                body_translation_residual_tolerance);
+            previous_body_tracking_wrist_position = TrackedWristPosition;
+            previous_body_tracking_head_position = TrackedHeadPosition;
+
+            hand_delta = CalculateBodyCompensatedTrackingDelta(
+                TrackedWristPosition,
+                neutral_wrist_position,
+                EstimatedBodyTranslation);
+            BodyCompensatedTrackingDelta = hand_delta;
+            HasBodyTranslationCompensation = true;
+        }
+        else
+        {
+            hand_delta = TrackedWristPosition - neutral_wrist_position;
+            BodyCompensatedTrackingDelta = hand_delta;
+            HasBodyTranslationCompensation = false;
+        }
+
         Vector3 local_delta = Quaternion.Inverse(OperatorHeading) * hand_delta;
         Vector3 scaled_delta = Vector3.Scale(local_delta, movement_scale);
         OperatorTargetDelta = Vector3.Lerp(
@@ -413,39 +514,176 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         TrackedWristPosition = current_wrist_position;
         Quaternion current_wrist_rotation = GetAnatomicalHandRotation(
             tracked_wrist_transform.rotation);
-        if (tracked_wrist_position_initialized)
-        {
-            Vector3 tracking_jump = current_wrist_position
-                - previous_tracked_wrist_position;
-            if (IsCalibrated && IsTrackingOriginJump(
-                tracking_jump,
-                tracking_origin_jump_threshold))
-            {
-                neutral_wrist_position += tracking_jump;
-                CalibratedWristPosition = neutral_wrist_position;
-                neutral_hand_rotation = neutral_hand_rotation
-                    * Quaternion.Inverse(previous_tracked_wrist_rotation)
-                    * current_wrist_rotation;
-                CalibratedWristRotation = neutral_hand_rotation;
-                Debug.LogWarning(
-                    "G1 hand tracking origin jump rejected: "
-                    + (tracking_jump.magnitude * 100.0f).ToString("F1")
-                    + " cm. Preserving the current robot target.");
-            }
-        }
-
-        previous_tracked_wrist_position = current_wrist_position;
-        previous_tracked_wrist_rotation = current_wrist_rotation;
-        tracked_wrist_position_initialized = true;
         TrackedWristRotation = current_wrist_rotation;
         TrackedHandPosition = GetPalmCenterPosition();
     }
 
-    public static bool IsTrackingOriginJump(
-        Vector3 tracking_delta,
-        float threshold)
+    private void UpdateTrackedHead()
     {
-        return tracking_delta.magnitude > Mathf.Max(0.05f, threshold);
+        TrackedHeadPosition = reference_transform == null
+            ? Vector3.zero
+            : reference_transform.position;
+        TrackedHeadRotation = reference_transform == null
+            ? Quaternion.identity
+            : reference_transform.rotation;
+    }
+
+    private void UpdateHeadMotionDiagnostics()
+    {
+        float safe_delta_time = Mathf.Max(Time.unscaledDeltaTime, 1.0f / 120.0f);
+        if (!tracked_head_rotation_initialized)
+        {
+            previous_tracked_head_rotation = TrackedHeadRotation;
+            tracked_head_rotation_initialized = true;
+            TrackedHeadAngularSpeedDegrees = 0.0f;
+            IsHeadMotionHold = false;
+            return;
+        }
+
+        TrackedHeadAngularSpeedDegrees = Quaternion.Angle(
+            previous_tracked_head_rotation,
+            TrackedHeadRotation) / safe_delta_time;
+        previous_tracked_head_rotation = TrackedHeadRotation;
+        // 머리 각속도는 원인 분석용으로만 기록한다. Quest의 작은 HMD 회전을
+        // 손 추적 손실로 취급하면 정상 IK 명령이 반복해서 차단된다.
+        IsHeadMotionHold = false;
+    }
+
+    private void ResetHeadMotionDiagnostics()
+    {
+        IsHeadMotionHold = false;
+        TrackedHeadAngularSpeedDegrees = 0.0f;
+        previous_tracked_head_rotation = TrackedHeadRotation;
+        tracked_head_rotation_initialized = reference_transform != null;
+    }
+
+    public static Vector3 CalculateBodyCompensatedTrackingDelta(
+        Vector3 current_wrist_position,
+        Vector3 neutral_wrist_position_value,
+        Vector3 estimated_body_translation)
+    {
+        return current_wrist_position
+            - neutral_wrist_position_value
+            - estimated_body_translation;
+    }
+
+    public static Vector3 GetCommonBodyTranslationStep(
+        Vector3 wrist_step,
+        Vector3 head_step,
+        float minimum_step,
+        float direction_cosine_threshold,
+        float magnitude_ratio_minimum,
+        float residual_tolerance)
+    {
+        float wrist_distance = wrist_step.magnitude;
+        float head_distance = head_step.magnitude;
+        float safe_minimum_step = Mathf.Max(0.0f, minimum_step);
+        if (wrist_distance < safe_minimum_step
+            || head_distance < safe_minimum_step)
+        {
+            return Vector3.zero;
+        }
+
+        float magnitude_ratio = Mathf.Min(wrist_distance, head_distance)
+            / Mathf.Max(wrist_distance, head_distance);
+        if (magnitude_ratio < Mathf.Clamp01(magnitude_ratio_minimum))
+        {
+            return Vector3.zero;
+        }
+
+        float direction_cosine = Vector3.Dot(wrist_step, head_step)
+            / (wrist_distance * head_distance);
+        if (direction_cosine < Mathf.Clamp(direction_cosine_threshold, -1.0f, 1.0f)
+            || Vector3.Distance(wrist_step, head_step)
+                > Mathf.Max(0.0f, residual_tolerance))
+        {
+            return Vector3.zero;
+        }
+
+        return head_step;
+    }
+
+    public static bool IsTrackedWristStepPlausible(
+        Vector3 current_head_relative_wrist_position,
+        Vector3 previous_head_relative_wrist_position,
+        float delta_time,
+        float maximum_speed_mps,
+        float minimum_step_allowance)
+    {
+        float safe_delta_time = Mathf.Max(delta_time, 1.0f / 120.0f);
+        float allowed_step = Mathf.Max(
+            Mathf.Max(0.0f, minimum_step_allowance),
+            Mathf.Max(0.0f, maximum_speed_mps) * safe_delta_time);
+        return Vector3.Distance(
+            current_head_relative_wrist_position,
+            previous_head_relative_wrist_position) <= allowed_step;
+    }
+
+    private bool UpdateTrackedPosePlausibility()
+    {
+        Vector3 current_wrist_position = TrackedWristPosition;
+        if (!accepted_wrist_position_initialized || !IsCalibrated)
+        {
+            last_accepted_wrist_position = current_wrist_position;
+            accepted_wrist_position_initialized = true;
+            tracked_pose_outlier_latched = false;
+            IsTrackedPosePlausible = true;
+            TrackedWristSpeedMPS = 0.0f;
+            return true;
+        }
+
+        float safe_delta_time = Mathf.Max(Time.unscaledDeltaTime, 1.0f / 120.0f);
+        float position_step = Vector3.Distance(
+            current_wrist_position,
+            last_accepted_wrist_position);
+        TrackedWristSpeedMPS = position_step / safe_delta_time;
+
+        if (tracked_pose_outlier_latched)
+        {
+            IsTrackedPosePlausible = false;
+            return false;
+        }
+
+        if (!IsTrackedWristStepPlausible(
+            current_wrist_position,
+            last_accepted_wrist_position,
+            safe_delta_time,
+            tracked_wrist_max_speed_mps,
+            tracked_wrist_min_step_allowance))
+        {
+            tracked_pose_outlier_latched = true;
+            IsTrackedPosePlausible = false;
+            Debug.LogWarning(
+                "G1 hand pose outlier rejected: wrist speed="
+                + TrackedWristSpeedMPS.ToString("F2")
+                + " m/s. Holding the last valid robot target.");
+            return false;
+        }
+
+        last_accepted_wrist_position = current_wrist_position;
+        IsTrackedPosePlausible = true;
+        return true;
+    }
+
+    private void AcceptCurrentTrackedPose()
+    {
+        last_accepted_wrist_position = TrackedWristPosition;
+        accepted_wrist_position_initialized = true;
+        tracked_pose_outlier_latched = false;
+        IsTrackedPosePlausible = true;
+        TrackedWristSpeedMPS = 0.0f;
+    }
+
+    private bool GetRawTrackingAvailable()
+    {
+        if (!require_tracked_hand)
+        {
+            return true;
+        }
+
+        return ovr_hand != null
+            ? ovr_hand.IsTracked && ovr_hand.IsDataHighConfidence
+            : OVRInput.GetControllerPositionTracked(OVRInput.Controller.RHand);
     }
 
     private Quaternion GetAnatomicalHandRotation(Quaternion fallback_rotation)
@@ -580,7 +818,11 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
         else if (ovr_hand != null)
         {
-            tracking_available = ovr_hand.IsTracked;
+            // Meta는 손을 완전히 잃기 전에도 낮은 신뢰도의 추정 자세를 잠시
+            // 제공할 수 있다. 이 전이 프레임은 고개 회전 때 손목이 끌려가는
+            // 원인이 되므로 새 목표로 사용하지 않고 마지막 정상 목표를 유지한다.
+            tracking_available = ovr_hand.IsTracked
+                && ovr_hand.IsDataHighConfidence;
         }
         else
         {
@@ -618,10 +860,18 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         log_timer = 0.0f;
-        string tracked_text = ovr_hand == null ? "OVRInput.RHand" : ovr_hand.IsTracked.ToString();
+        string tracked_text = ovr_hand == null
+            ? "OVRInput.RHand"
+            : ovr_hand.IsTracked.ToString();
+        string confidence_text = ovr_hand == null
+            ? "unknown"
+            : ovr_hand.IsDataHighConfidence.ToString();
         Debug.Log(
             "G1 hand binder active=" + active_value
             + " tracked=" + tracked_text
+            + " high_confidence=" + confidence_text
+            + " pose_plausible=" + IsTrackedPosePlausible
+            + " wrist_speed_mps=" + TrackedWristSpeedMPS.ToString("F2")
             + " hand_frame=" + (IsAnatomicalFrameValid ? "valid" : "invalid")
             + " align_position_cm="
             + (AlignmentPositionError * 100.0f).ToString("F1")

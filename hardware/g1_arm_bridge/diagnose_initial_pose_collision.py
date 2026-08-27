@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -17,6 +18,8 @@ SCRIPTS_DIR = PROJECT_ROOT / "MuJoCo_G1_Controller" / "scripts"
 STATE_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_hardware_initial_state.json"
 RESULT_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_initial_pose_collision.json"
 DETECTION_DISTANCE_M = 0.04
+ZERO_DISTANCE_TOLERANCE_M = 1e-12
+ZERO_DISTANCE_PROBE_RAD = 1e-7
 
 
 def _joint_pose(model, data, controller, values_rad: np.ndarray) -> None:
@@ -31,19 +34,116 @@ def _joint_pose(model, data, controller, values_rad: np.ndarray) -> None:
     mujoco.mj_forward(model, data)
 
 
+def _has_exact_geom_contact(data, first_geom: int, second_geom: int) -> bool:
+    expected = {int(first_geom), int(second_geom)}
+    for contact_index in range(int(data.ncon)):
+        contact = data.contact[contact_index]
+        if {int(contact.geom1), int(contact.geom2)} == expected:
+            return True
+    return False
+
+
+def _probe_zero_mesh_distance(
+    model,
+    data,
+    controller,
+    first_geom: int,
+    second_geom: int,
+    max_distance_m: float,
+) -> float:
+    """Resolve an isolated MuJoCo mesh-distance zero without hiding contact.
+
+    MuJoCo can return exactly zero for a mesh pair at a single floating-point
+    posture even though adjacent postures are centimetres apart and no contact
+    exists. Every right-arm joint is probed in both directions by 1e-7 rad.
+    The minimum nonzero result is retained, so a real contact or near-contact
+    remains below the safety margin. If no probe resolves the result, zero is
+    returned conservatively.
+    """
+
+    original_qpos = data.qpos.copy()
+    probe_distances: list[float] = []
+    fromto = np.zeros(6, dtype=float)
+    try:
+        for joint_name in controller.g1.RIGHT_ARM_JOINTS:
+            joint_id = controller._joint_id(model, joint_name)
+            qpos_id = int(model.jnt_qposadr[joint_id])
+            original_value = float(original_qpos[qpos_id])
+            for direction in (-1.0, 1.0):
+                data.qpos[:] = original_qpos
+                data.qpos[qpos_id] = (
+                    original_value + direction * ZERO_DISTANCE_PROBE_RAD
+                )
+                mujoco.mj_forward(model, data)
+                distance = float(
+                    mujoco.mj_geomDistance(
+                        model,
+                        data,
+                        int(first_geom),
+                        int(second_geom),
+                        max_distance_m,
+                        fromto,
+                    )
+                )
+                if (
+                    math.isfinite(distance)
+                    and abs(distance) > ZERO_DISTANCE_TOLERANCE_M
+                ):
+                    probe_distances.append(distance)
+    finally:
+        data.qpos[:] = original_qpos
+        mujoco.mj_forward(model, data)
+
+    if not probe_distances:
+        return 0.0
+    return min(probe_distances)
+
+
+def _robust_geom_distance(
+    model,
+    data,
+    controller,
+    first_geom: int,
+    second_geom: int,
+    max_distance_m: float,
+    fromto: np.ndarray,
+) -> float:
+    distance = float(
+        mujoco.mj_geomDistance(
+            model,
+            data,
+            int(first_geom),
+            int(second_geom),
+            max_distance_m,
+            fromto,
+        )
+    )
+    if abs(distance) > ZERO_DISTANCE_TOLERANCE_M:
+        return distance
+    if _has_exact_geom_contact(data, first_geom, second_geom):
+        return distance
+    return _probe_zero_mesh_distance(
+        model,
+        data,
+        controller,
+        first_geom,
+        second_geom,
+        max_distance_m,
+    )
+
+
 def _nearby_pairs(model, data, controller, geom_pairs) -> list[dict[str, object]]:
     nearby = []
     fromto = np.zeros(6, dtype=float)
     for first, second in geom_pairs:
-        distance = float(
-            mujoco.mj_geomDistance(
-                model,
-                data,
-                int(first),
-                int(second),
-                DETECTION_DISTANCE_M,
-                fromto,
-            )
+        distance = _robust_geom_distance(
+            model,
+            data,
+            controller,
+            int(first),
+            int(second),
+            DETECTION_DISTANCE_M,
+            fromto,
         )
         if distance >= DETECTION_DISTANCE_M:
             continue

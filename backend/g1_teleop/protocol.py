@@ -1,4 +1,8 @@
-"""Versioned JSON contracts shared by Unity, MuJoCo, and the physical G1."""
+"""Unity, MuJoCo, 실제 G1이 공유하는 버전 명시형 JSON 패킷 계약.
+
+필수 필드와 단위, frame_id, 벡터 크기를 직렬화 경계에서 검증한다. 제어 로직은
+포함하지 않으며 송수신 양쪽이 같은 의미로 데이터를 해석하게 하는 역할만 한다.
+"""
 
 from __future__ import annotations
 

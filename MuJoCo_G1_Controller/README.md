@@ -336,12 +336,14 @@ QP_DAMPING = 1e-8
 Virtual-center live controller는 추가로:
 
 ```python
-MAX_JOINT_VELOCITY_DEG_S = 45.0
-base.PROXIMAL_DAMPING_COST = 0.03
-base.WRIST_DAMPING_COST = 0.015
+PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = 40.0
+WRIST_MAX_JOINT_VELOCITY_DEG_S = 100.0
+VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03
+VIRTUAL_CENTER_WRIST_DAMPING_COST = 0.015
 ```
 
-를 사용한다.
+를 사용한다. 이 값은 Mink 공식 G1 예제의 값이 아니라 이 프로젝트에서 조작감을
+시험해 정한 virtual-center 제어기 전용 상한이다.
 
 | 값 | 의미 | 크게 하면 |
 | --- | --- | --- |
@@ -349,9 +351,10 @@ base.WRIST_DAMPING_COST = 0.015
 | `ORIENTATION_COST` | 회전 error weight | 회전을 더 강하게 추종 |
 | `POSTURE_COST` | engage posture 선호 | 원래 팔 자세를 더 유지 |
 | `FRAME_GAIN` | task feedback gain | 수렴 반응 증가 |
-| `PROXIMAL_DAMPING_COST` | shoulder/elbow motion penalty | proximal 움직임 억제 |
-| `WRIST_DAMPING_COST` | wrist motion penalty | wrist 움직임 억제 |
-| `MAX_JOINT_VELOCITY_DEG_S` | 관절속도 제한 | 최대 추종속도 증가 |
+| `VIRTUAL_CENTER_PROXIMAL_DAMPING_COST` | shoulder/elbow motion penalty | proximal 움직임 억제 |
+| `VIRTUAL_CENTER_WRIST_DAMPING_COST` | wrist motion penalty | wrist 움직임 억제 |
+| `PROXIMAL_MAX_JOINT_VELOCITY_DEG_S` | 어깨·팔꿈치 관절속도 제한 | 팔 전체의 최대 추종속도 증가 |
+| `WRIST_MAX_JOINT_VELOCITY_DEG_S` | 손목 roll/pitch/yaw 속도 제한 | 손목 회전 최대속도 증가 |
 
 Cost는 strict priority가 아니다. QP objective에서 weighted compromise를 만든다. 반면 joint limit/collision/freeze와 같은 constraint는 별도의 제한조건이다.
 

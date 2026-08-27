@@ -19,8 +19,9 @@ from run_mink_g1_right_arm_virtual_center_live import (  # noqa: E402
     ASSIST_MAX,
     ORIENTATION_COST_MIN_SCALE,
     ORIENTATION_ERROR_LIMIT_MAX_DEG,
+    PROXIMAL_MAX_JOINT_VELOCITY_DEG_S,
+    WRIST_MAX_JOINT_VELOCITY_DEG_S,
     orientation_limit_policy,
-    MAX_JOINT_VELOCITY_DEG_S,
 )
 import run_mink_g1_right_arm_prototype as base  # noqa: E402
 from run_mink_g1_right_arm_virtual_center_live import (  # noqa: E402
@@ -29,8 +30,9 @@ from run_mink_g1_right_arm_virtual_center_live import (  # noqa: E402
 
 
 class VirtualCenterOrientationPolicyTest(unittest.TestCase):
-    def test_live_joint_speed_uses_the_reduced_operator_setting(self):
-        self.assertEqual(MAX_JOINT_VELOCITY_DEG_S, 42.0)
+    def test_live_joint_speed_keeps_proximal_slow_and_wrist_fast(self):
+        self.assertEqual(PROXIMAL_MAX_JOINT_VELOCITY_DEG_S, 40.0)
+        self.assertEqual(WRIST_MAX_JOINT_VELOCITY_DEG_S, 100.0)
 
     def test_far_from_limit_preserves_wrist_only_behavior(self):
         latched, assist, cost_scale, error_cap = orientation_limit_policy(

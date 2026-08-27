@@ -1,5 +1,10 @@
 using UnityEngine;
 
+/// <summary>
+/// 백엔드가 계산한 7개 관절값으로 Unity의 공식 G1 모델과 디버그 표식을 갱신한다.
+/// 이 클래스는 결과를 보여주기만 하며, 프리뷰 위치나 표식이 UDP 목표 또는 IK 입력으로
+/// 되돌아가지 않도록 제어 경로와 분리되어 있다.
+/// </summary>
 public class G1UnityRightArmPreview : MonoBehaviour
 {
     public G1ExistingHandTargetBinder hand_binder;
@@ -80,6 +85,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
     public float MuJoCoPositionError { get; private set; }
     public float UnityReplayError { get; private set; }
     public float CommandTransportError { get; private set; }
+    public bool IsRobotAnchored => robot_anchored;
+    public Transform HeadCameraMount => official_g1_rig == null
+        ? null
+        : official_g1_rig.head_camera_mount;
 
     private void Awake()
     {
@@ -88,6 +97,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void LateUpdate()
     {
+        // 관절 프리뷰를 먼저 적용한 뒤 같은 프레임의 손/목표 표식을 배치해
+        // 화면에 보이는 오차가 한 프레임씩 어긋나지 않게 한다.
         UpdateOfficialRobotPose();
 
         if (!robot_anchored
@@ -352,6 +363,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateTrackingMarkers()
     {
+        // cyan: 실제 Quest 손목, magenta: 백엔드가 계산한 G1 손목,
+        // green: 로봇이 추종 중인 제한된 목표. 표식과 선은 진단 전용이다.
         bool target_visible = show_tracking_markers
             && hand_binder != null
             && hand_binder.IsEngagementFrameLocked;

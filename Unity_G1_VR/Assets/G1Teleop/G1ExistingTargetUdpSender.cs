@@ -5,6 +5,11 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// binder가 만든 상대 손목 목표를 G1 좌표계의 절대 목표로 바꾸어 UDP 5005로 보낸다.
+/// 실시간 입력 필터, pinch 해제, workspace 상태 피드백을 관리하지만 IK와 모터 명령은
+/// 생성하지 않는다. 최종 도달 가능성과 충돌 판단은 MuJoCo/Mink 백엔드가 담당한다.
+/// </summary>
 public class G1ExistingTargetUdpSender : MonoBehaviour
 {
     public G1ExistingHandTargetBinder hand_binder;
@@ -23,16 +28,16 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public bool use_rectangular_workspace_fallback = false;
     public bool enable_pinch_disengage = true;
     public float pinch_disengage_hold_seconds = 0.50f;
+    public bool disengage_on_tracking_loss = true;
+    public float tracking_loss_confirm_seconds = 0.35f;
 
-    // Live Quest hand tracking is noisier than the deterministic fake sender.
-    // Keep the backend limiter authoritative, but remove small frame-to-frame
-    // tracking noise before it becomes an IK target.
+    // Quest 실시간 손 추적의 프레임 간 미세 진동만 줄인다. 속도/관절/충돌 제한의
+    // 최종 권한은 백엔드에 두며, 여기서 로봇 동작을 임의로 다시 계획하지 않는다.
     public float live_position_filter_time_constant_s = 0.060f;
     public float live_rotation_filter_time_constant_s = 0.050f;
 
-    // Keep Quest wrist translation one-to-one on all three operator axes. Reach
-    // feasibility is handled by Mink joint/collision limits and the safety layer,
-    // not by silently scaling only the operator's forward motion.
+    // Quest 손목 이동은 세 축 모두 1:1을 기본으로 한다. 도달 가능성은 Mink와
+    // 안전 계층에서 판단하며 특정 축만 몰래 축소하지 않는다.
     public float operator_forward_scale = 1.00f;
 
     public Vector3 LastRobotTarget { get; private set; }
@@ -45,6 +50,9 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public bool IsPinchDisengaged { get; private set; }
     public float PinchDisengageProgress { get; private set; }
     public bool IsCommandValid { get; private set; }
+    public bool IsTrackingLossPending { get; private set; }
+    public bool IsTrackingLossDisengaged { get; private set; }
+    public float TrackingLossProgress { get; private set; }
     private UdpClient udp_client;
     private IPEndPoint udp_endpoint;
     private float send_interval;
@@ -64,6 +72,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     private Quaternion filtered_operator_rotation = Quaternion.identity;
     private float pinch_disengage_duration;
     private bool pinch_wait_for_release;
+    private float tracking_loss_duration;
+    private bool tracking_loss_latched;
     private void Awake()
     {
         if (state_receiver == null)
@@ -72,6 +82,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         }
         workspace_exit_margin = Mathf.Max(0.0f, workspace_exit_margin);
         pinch_disengage_hold_seconds = Mathf.Max(0.10f, pinch_disengage_hold_seconds);
+        tracking_loss_confirm_seconds = Mathf.Max(0.10f, tracking_loss_confirm_seconds);
         live_position_filter_time_constant_s = Mathf.Max(0.001f, live_position_filter_time_constant_s);
         live_rotation_filter_time_constant_s = Mathf.Max(0.001f, live_rotation_filter_time_constant_s);
         operator_forward_scale = Mathf.Clamp(operator_forward_scale, 0.10f, 1.0f);
@@ -97,6 +108,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
 
     private void SendTarget()
     {
+        // 한 주기의 순서: 입력 상태 확인 -> 상대 자세 필터 -> G1 좌표 변환 ->
+        // workspace 피드백 반영 -> 명령 상태를 포함한 단일 UDP 패킷 송신.
         UpdatePinchDisengage();
         bool calibrated = hand_binder == null || hand_binder.IsCalibrated;
         bool calibration_started = calibrated && !previous_calibrated;
@@ -115,10 +128,51 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             IsWorkspaceLimited = false;
             workspace_violation_hold_active = false;
             live_filter_initialized = false;
+            tracking_loss_duration = 0.0f;
+            tracking_loss_latched = false;
+            IsTrackingLossPending = false;
+            IsTrackingLossDisengaged = false;
+            TrackingLossProgress = 0.0f;
             Debug.Log("G1 teleoperation engagement accepted; stale workspace feedback is being rearmed.");
         }
 
         bool tracking_valid = hand_binder == null || hand_binder.IsTrackingValid;
+        bool tracking_loss_candidate = disengage_on_tracking_loss
+            && calibrated
+            && !tracking_valid;
+        tracking_loss_duration = UpdateWorkspaceExitDuration(
+            tracking_loss_candidate,
+            tracking_loss_duration,
+            send_interval);
+        bool tracking_loss_confirmed = IsWorkspaceExitConfirmed(
+            tracking_loss_duration,
+            tracking_loss_confirm_seconds);
+        IsTrackingLossPending = tracking_loss_candidate && !tracking_loss_confirmed;
+        TrackingLossProgress = tracking_loss_candidate
+            ? Mathf.Clamp01(
+                tracking_loss_duration
+                / Mathf.Max(0.01f, tracking_loss_confirm_seconds))
+            : 0.0f;
+        if (tracking_loss_confirmed)
+        {
+            bool first_tracking_loss = !tracking_loss_latched;
+            tracking_loss_latched = true;
+            IsTrackingLossDisengaged = true;
+            live_filter_initialized = false;
+            if (hand_binder != null && hand_binder.IsCalibrated)
+            {
+                hand_binder.ResetCalibration();
+            }
+            calibrated = false;
+            previous_calibrated = false;
+            if (first_tracking_loss)
+            {
+                Debug.LogWarning(
+                    "G1 teleoperation disengaged after confirmed hand-tracking loss. "
+                    + "Align with the robot wrist to reconnect.");
+            }
+        }
+
         bool command_valid = GetCommandValidity(calibrated, tracking_valid);
 
         Vector3 raw_operator_delta = hand_binder == null
@@ -126,10 +180,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             : hand_binder.OperatorTargetDelta;
         raw_operator_delta.z *= operator_forward_scale;
 
-        // Position deltas are already expressed in the headset-heading frame by
-        // the binder. Express absolute wrist orientation in that SAME frame.
-        // Sending Unity world rotation directly made live Quest rotation depend
-        // on the room/world yaw while the position command did not.
+        // 위치 이동량은 binder에서 이미 머리 yaw 기준으로 표현된다. 회전도 반드시
+        // 같은 기준 프레임으로 바꿔 보내야 방의 world yaw에 따라 손목 축이 달라지지 않는다.
         Quaternion raw_operator_rotation;
         if (hand_binder == null)
         {
@@ -248,6 +300,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         string command_state = workspace_exit_latched
             ? "workspace_exit"
             : IsPinchDisengaged ? "pinch_disengaged"
+            : IsTrackingLossDisengaged ? "tracking_disengaged"
             : command_valid ? "active" : "idle";
         string json_text = BuildPacket(send_position, send_rotation, command_valid, command_state);
         if (!SendPacket(json_text)) return;
@@ -264,6 +317,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
 
     public Vector3 OperatorToRobot(Vector3 operator_delta)
     {
+        // Unity/Quest: +X 오른쪽, +Y 위, +Z 앞.
+        // G1/MuJoCo: +X 앞, +Y 왼쪽, +Z 위.
         Vector3 robot_delta = new Vector3(operator_delta.z, -operator_delta.x, operator_delta.y);
         return robot_center + position_offset + robot_delta;
     }
@@ -297,6 +352,8 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
 
     private void UpdatePinchDisengage()
     {
+        // 엄지-검지 pinch는 engage 동작이 아니라 의도적인 해제 동작이다.
+        // 한 번 해제된 뒤에는 손가락을 놓아야 다음 engage를 받을 수 있다.
         OVRHand ovr_hand = hand_binder == null ? null : hand_binder.ovr_hand;
         if (!enable_pinch_disengage || hand_binder == null || ovr_hand == null)
         {
@@ -391,6 +448,11 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         PinchDisengageProgress = 0.0f;
         pinch_disengage_duration = 0.0f;
         pinch_wait_for_release = false;
+        tracking_loss_duration = 0.0f;
+        tracking_loss_latched = false;
+        IsTrackingLossPending = false;
+        IsTrackingLossDisengaged = false;
+        TrackingLossProgress = 0.0f;
         shutdown_complete = false;
         workspace_violation_hold_active = false;
         live_filter_initialized = false;

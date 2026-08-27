@@ -90,26 +90,26 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         )
         self.assertNotIn('GameObject.Find("operator_hand_target_marker")', runtime_source)
 
-    def test_tracking_origin_jump_preserves_the_active_target(self):
+    def test_confirmed_tracking_loss_disengages_without_rebasing(self):
         binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(
             encoding="utf-8"
         )
-
-        self.assertIn("tracking_origin_jump_threshold = 0.20f", binder)
-        self.assertIn("IsTrackingOriginJump(", binder)
-        self.assertIn("neutral_wrist_position += tracking_jump", binder)
-        self.assertIn("Quaternion.Inverse(previous_tracked_wrist_rotation)", binder)
-        self.assertIn("Preserving the current robot target", binder)
-
-    def test_backend_authority_is_not_injected_at_runtime(self):
-        authority = (TELEOP_ROOT / "G1BackendWorkspaceAuthority.cs").read_text(
+        sender = (TELEOP_ROOT / "G1ExistingTargetUdpSender.cs").read_text(
             encoding="utf-8"
         )
 
-        self.assertNotIn("RuntimeInitializeOnLoadMethod", authority)
-        self.assertNotIn("FindObjectOfType", authority)
-        self.assertNotIn("G1PinchTeleopDisengage", authority)
-        self.assertIn("enable_backend_workspace_authority", authority)
+        self.assertIn("tracked_wrist_max_speed_mps = 1.10f", binder)
+        self.assertIn("tracked_pose_outlier_latched = true", binder)
+        self.assertNotIn("neutral_wrist_position += tracking_jump", binder)
+        self.assertNotIn("RebaseCalibrationPreservingCurrentTarget", binder)
+        self.assertIn("disengage_on_tracking_loss = true", sender)
+        self.assertIn("tracking_loss_confirm_seconds = 0.35f", sender)
+        self.assertIn('IsTrackingLossDisengaged ? "tracking_disengaged"', sender)
+        self.assertIn("hand_binder.ResetCalibration();", sender)
+
+    def test_obsolete_optional_components_are_removed(self):
+        self.assertFalse((TELEOP_ROOT / "G1BackendWorkspaceAuthority.cs").exists())
+        self.assertFalse((TELEOP_ROOT / "G1PinchTeleopDisengage.cs").exists())
 
     def test_alignment_engage_keeps_only_index_pinch_disengage(self):
         sender = (TELEOP_ROOT / "G1ExistingTargetUdpSender.cs").read_text(
@@ -134,6 +134,36 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("disengage_on_workspace_exit: 0", scene)
+        self.assertIn("disengage_on_tracking_loss: 1", scene)
+        self.assertIn("tracking_loss_confirm_seconds: 0.35", scene)
+
+    def test_head_camera_aligns_once_without_continuous_position_lock(self):
+        scene = (
+            PROJECT_ROOT / "Unity_G1_VR" / "Assets" / "Scenes" / "SampleScene.unity"
+        ).read_text(encoding="utf-8")
+        camera = (TELEOP_ROOT / "G1HeadLockedCamera.cs").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("align_position_once: 1", scene)
+        self.assertIn("lock_position: 0", scene)
+        self.assertIn("initial_alignment_needed", camera)
+        self.assertIn("IsInitialAlignmentApplied = true", camera)
+
+    def test_head_only_motion_is_not_subtracted_from_the_wrist(self):
+        binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("GetCommonBodyTranslationStep", binder)
+        self.assertIn("CalculateBodyCompensatedTrackingDelta", binder)
+        self.assertNotIn("CalculateHeadRelativeTrackingDelta", binder)
+        self.assertIn("return head_step;", binder)
+        self.assertIn("UpdateHeadMotionDiagnostics", binder)
+        self.assertNotIn("active-hold-head-motion", binder)
+        self.assertNotIn("head_motion_hold_threshold_deg_s", binder)
+        self.assertNotIn("head_motion_resume_wrist_tolerance", binder)
+        self.assertIn("IsHeadMotionHold = false", binder)
 
     def test_smooth_controller_sends_direct_green_target_to_limited_ik(self):
         controller = SMOOTH_CONTROLLER.read_text(encoding="utf-8")

@@ -3,6 +3,10 @@ using System.Globalization;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Quest 입력, 전송 목표, MuJoCo 손목 상태를 같은 시각의 CSV 행으로 기록한다.
+/// 추적 오차와 지연 분석용이며 제어값을 변경하지 않는다.
+/// </summary>
 public class G1LiveTeleopTrace : MonoBehaviour
 {
     public G1ExistingHandTargetBinder hand_binder;
@@ -118,7 +122,9 @@ public class G1LiveTeleopTrace : MonoBehaviour
             "{23:F6},{24:F6},{25:F6}," +
             "{26:F6},{27:F6},{28:F6}," +
             "{29:F6},{30:F6},{31:F6},{32:F6},{33:F6}," +
-            "{34:F6},{35:F6},{36:F6},{37:F6},{38:F6},{39:F6},{40:F6}",
+            "{34:F6},{35:F6},{36:F6},{37:F6},{38:F6},{39:F6},{40:F6}," +
+            "{41},{42:F6},{43:F6},{44:F6},{45:F6}," +
+            "{46:F6},{47:F6},{48:F6},{49:F6},{50:F6},{51}",
             Time.realtimeSinceStartupAsDouble,
             tracked ? 1 : 0,
             calibrated ? 1 : 0,
@@ -140,7 +146,18 @@ public class G1LiveTeleopTrace : MonoBehaviour
             orientation_cost_scale,
             wrist_limit_margin_deg,
             shoulder_pitch, shoulder_roll, shoulder_yaw, elbow,
-            wrist_roll, wrist_pitch, wrist_yaw));
+            wrist_roll, wrist_pitch, wrist_yaw,
+            hand_binder != null && hand_binder.IsTrackedPosePlausible ? 1 : 0,
+            hand_binder == null ? 0.0f : hand_binder.TrackedWristSpeedMPS,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadPosition.x,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadPosition.y,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadPosition.z,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadRotation.x,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadRotation.y,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadRotation.z,
+            hand_binder == null ? 1.0f : hand_binder.TrackedHeadRotation.w,
+            hand_binder == null ? 0.0f : hand_binder.TrackedHeadAngularSpeedDegrees,
+            hand_binder != null && hand_binder.IsHeadMotionHold ? 1 : 0));
         writer.Flush();
     }
 
@@ -172,7 +189,10 @@ public class G1LiveTeleopTrace : MonoBehaviour
                 "orientation_assist_gain,orientation_cost_scale," +
                 "wrist_limit_margin_deg," +
                 "shoulder_pitch,shoulder_roll,shoulder_yaw,elbow," +
-                "wrist_roll,wrist_pitch,wrist_yaw");
+                "wrist_roll,wrist_pitch,wrist_yaw," +
+                "pose_plausible,wrist_speed_mps,head_x,head_y,head_z," +
+                "head_rot_x,head_rot_y,head_rot_z,head_rot_w," +
+                "head_angular_speed_deg_s,head_motion_hold");
             writer.Flush();
             next_sample_time = 0.0f;
             Debug.Log("G1 live teleop trace: " + trace_path);

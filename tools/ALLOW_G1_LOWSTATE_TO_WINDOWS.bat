@@ -1,8 +1,10 @@
 @echo off
 setlocal
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process PowerShell -Verb RunAs -Wait -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File ""%~dp0ALLOW_G1_LOWSTATE_TO_WINDOWS_ADMIN.ps1""'"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Start-Process PowerShell -Verb RunAs -WindowStyle Hidden -Wait -PassThru -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File ""%~dp0ALLOW_G1_LOWSTATE_TO_WINDOWS_ADMIN.ps1""'; exit $p.ExitCode"
 if errorlevel 1 (
     echo [ERROR] UDP 5007 firewall configuration was not completed.
+    echo [ACTION] Approve the administrator prompt, then run this BAT again.
+    echo [ACTION] If it still fails, open PowerShell as administrator and run ALLOW_G1_LOWSTATE_TO_WINDOWS_ADMIN.ps1 directly.
     pause
     exit /b 1
 )

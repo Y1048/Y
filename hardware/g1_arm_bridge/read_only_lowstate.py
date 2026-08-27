@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Read-only Unitree G1 right-arm LowState monitor and optional UDP forwarder.
+"""Unitree G1 오른팔 LowState 읽기 전용 모니터와 선택적 UDP 전달기.
 
-SAFETY CONTRACT
----------------
-This module intentionally creates NO DDS publisher and sends NO robot command.
-It only subscribes to ``rt/lowstate``, reports the seven right-arm joints, and
-optionally forwards those measured joint angles as ordinary UDP telemetry to
-the teleoperation PC for startup synchronization.
+안전 계약:
+- DDS publisher를 만들지 않는다.
+- 로봇 명령을 보내지 않는다.
+- rt/lowstate를 구독해 오른팔 7개 관절의 측정값만 읽는다.
+- 시작 자세 동기화가 필요할 때 측정 관절값을 일반 UDP telemetry로 PC에 전달한다.
 
-Expected environment: Linux/WSL2 with Unitree ``unitree_sdk2_python`` installed.
+실행 환경은 unitree_sdk2_python이 설치되고 G1과 연결된 Linux/WSL2이다.
 """
 
 from __future__ import annotations
@@ -21,6 +20,7 @@ import socket
 import sys
 import threading
 import time
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
@@ -57,6 +57,7 @@ DEFAULT_PRINT_HZ: Final[float] = 5.0
 DEFAULT_TIMEOUT_S: Final[float] = 1.0
 DEFAULT_FORWARD_HZ: Final[float] = 30.0
 DEFAULT_FORWARD_PORT: Final[int] = 5007
+LOWSTATE_TELEMETRY_SCHEMA: Final[str] = "g1.lowstate.right_arm.v1"
 
 
 @dataclass(frozen=True)
@@ -76,6 +77,8 @@ class ReadOnlyG1LowState:
         self._last_rx_monotonic = float("-inf")
 
     def callback(self, msg: LowState_) -> None:
+        # DDS callback에서는 최신 메시지만 짧게 저장한다. 출력/파일/UDP 작업은
+        # 별도 루프가 snapshot을 가져간 뒤 수행해 수신 스레드를 막지 않는다.
         now = time.monotonic()
         with self._lock:
             self._latest = msg
@@ -166,15 +169,23 @@ def _forward_snapshot(
     sock: socket.socket,
     host: str,
     port: int,
+    bridge_session_id: str,
     received: int,
     samples: list[JointSample],
 ) -> None:
     payload = {
+        "schema": LOWSTATE_TELEMETRY_SCHEMA,
         "mode": "READ_ONLY_LOWSTATE",
+        "topic": TOPIC_LOWSTATE,
+        "bridge_session_id": bridge_session_id,
+        "sequence": received,
         "received_packets": received,
         "sent_at_unix": time.time(),
+        "sent_at_unix_ns": time.time_ns(),
         "right_arm_q_rad": [item.q_rad for item in samples],
         "right_arm_dq_rad_s": [item.dq_rad_s for item in samples],
+        "publisher_present": False,
+        "command_output_enabled": False,
     }
     sock.sendto(
         json.dumps(payload, separators=(",", ":")).encode("utf-8"),
@@ -248,6 +259,8 @@ def main() -> int:
     forward_period = 1.0 / args.forward_hz
     next_report = time.monotonic()
     next_forward = time.monotonic()
+    bridge_session_id = uuid.uuid4().hex
+    last_forwarded_received = -1
     ever_received = False
     last_samples: list[JointSample] = []
     last_age_s: float | None = None
@@ -274,14 +287,20 @@ def main() -> int:
                         samples=samples,
                     )
                     next_report = now + print_period
-                if telemetry_sock is not None and now >= next_forward:
+                if (
+                    telemetry_sock is not None
+                    and now >= next_forward
+                    and received != last_forwarded_received
+                ):
                     _forward_snapshot(
                         telemetry_sock,
                         args.forward_host,
                         args.forward_port,
+                        bridge_session_id,
                         received,
                         samples,
                     )
+                    last_forwarded_received = received
                     next_forward = now + forward_period
             elif now >= next_report:
                 print("[WAIT] No rt/lowstate packet received yet.")

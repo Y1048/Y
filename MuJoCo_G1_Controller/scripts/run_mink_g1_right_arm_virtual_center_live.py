@@ -1,17 +1,12 @@
-"""Live experimental G1 right-arm Mink controller using a virtual wrist center.
+"""가상 손목 중심을 사용하는 현재 G1 오른팔 Mink 실시간 제어기.
 
-Internal IK roles:
-- translation: right_wrist_roll_link (upstream virtual wrist center),
-- orientation: right_wrist_yaw_link,
-- proximal orientation assistance: 0% normally, hysteretic near wrist limits.
+내부 IK 역할은 위치를 right_wrist_roll_link에, 회전을 right_wrist_yaw_link에
+나누어 준다. 평소에는 손목 관절이 회전을 담당하고, 손목 제한에 가까워질 때만
+히스테리시스로 어깨/팔꿈치 보조를 점진적으로 켠다.
 
-External Unity/state contract remains right_wrist_yaw_link. This is deliberate:
-Unity keeps receiving the same wrist_position / target_position semantics while
-internal translation no longer forces shoulder/elbow compensation during wrist
-pitch rotation.
-
-No speed-based mode switching and no hard freeze are used. Collision avoidance
-remains enabled; real hand/body collision may legitimately move the proximal arm.
+Unity에 돌려주는 외부 계약은 계속 right_wrist_yaw_link 기준이다. 따라서 내부
+최적화 방식을 바꿔도 Unity의 손목/목표 위치 의미는 바뀌지 않는다. 속도 기반 모드
+전환이나 hard freeze는 사용하지 않으며 충돌 회피는 항상 유지한다.
 """
 
 from __future__ import annotations
@@ -35,7 +30,8 @@ from g1_teleop.inspection_demo import (
 )
 
 
-MAX_JOINT_VELOCITY_DEG_S = 42.0
+PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = 40.0
+WRIST_MAX_JOINT_VELOCITY_DEG_S = 100.0
 VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03
 VIRTUAL_CENTER_WRIST_DAMPING_COST = 0.015
 
@@ -66,7 +62,7 @@ INSPECTION_MARKER_COLORS = {
 
 
 def virtual_center_damping_costs(model: mujoco.MjModel) -> np.ndarray:
-    """Build controller-local damping without mutating the baseline module."""
+    """기준 제어기 상수를 바꾸지 않고 이 제어기 전용 관절 감쇠를 만든다."""
     costs = np.zeros(int(model.nv), dtype=float)
     for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS):
         joint_id = base._joint_id(model, name)
@@ -79,11 +75,23 @@ def virtual_center_damping_costs(model: mujoco.MjModel) -> np.ndarray:
     return costs
 
 
+def virtual_center_velocity_limits() -> dict[str, float]:
+    """어깨/팔꿈치는 안정적으로, 손목 3축은 더 빠르게 제한한다."""
+    return {
+        name: math.radians(
+            PROXIMAL_MAX_JOINT_VELOCITY_DEG_S
+            if index < 4
+            else WRIST_MAX_JOINT_VELOCITY_DEG_S
+        )
+        for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS)
+    }
+
+
 def orientation_limit_policy(
     min_margin_deg: float,
     assist_latched: bool,
 ) -> tuple[bool, float, float, float]:
-    """Return latch, proximal gain, orientation cost scale, and error cap."""
+    """손목 한계 여유로 보조 latch, 근위 관절 gain, 회전 비용/오차 상한을 정한다."""
     if assist_latched:
         assist_latched = min_margin_deg < ASSIST_RELEASE_MARGIN_DEG
     elif min_margin_deg <= ASSIST_ENTER_MARGIN_DEG:
@@ -263,10 +271,7 @@ def main() -> None:
         cost=virtual_center_damping_costs(model),
     )
 
-    velocity_limits = {
-        name: math.radians(MAX_JOINT_VELOCITY_DEG_S)
-        for name in base.g1.RIGHT_ARM_JOINTS
-    }
+    velocity_limits = virtual_center_velocity_limits()
     limits = [
         mink.ConfigurationLimit(model=model),
         mink.VelocityLimit(model, velocity_limits),
@@ -355,7 +360,11 @@ def main() -> None:
     print("Collision avoidance: ENABLED")
     print("Speed modes : NONE")
     print("Hard freeze : NONE")
-    print(f"Joint speed : max {MAX_JOINT_VELOCITY_DEG_S:.0f} deg/s")
+    print(
+        "Joint speed : shoulder/elbow max "
+        f"{PROXIMAL_MAX_JOINT_VELOCITY_DEG_S:.0f} deg/s, wrist max "
+        f"{WRIST_MAX_JOINT_VELOCITY_DEG_S:.0f} deg/s"
+    )
     print(
         "Inspection demo : approach "
         f"{INSPECTION_APPROACH_RADIUS_M * 100:.0f} cm, contact "
@@ -780,7 +789,13 @@ def main() -> None:
                             ),
                             "speed_based_mode_switch": False,
                             "proximal_hard_freeze": False,
-                            "max_joint_velocity_deg_s": MAX_JOINT_VELOCITY_DEG_S,
+                            "max_joint_velocity_deg_s": WRIST_MAX_JOINT_VELOCITY_DEG_S,
+                            "max_proximal_joint_velocity_deg_s": (
+                                PROXIMAL_MAX_JOINT_VELOCITY_DEG_S
+                            ),
+                            "max_wrist_joint_velocity_deg_s": (
+                                WRIST_MAX_JOINT_VELOCITY_DEG_S
+                            ),
                             "right_arm_q_deg": np.degrees(
                                 configuration.q[right_qpos_ids]
                             ).tolist(),

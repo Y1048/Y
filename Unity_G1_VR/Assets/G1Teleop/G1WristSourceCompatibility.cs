@@ -1,13 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Meta XR SDK compatibility policy for the G1 teleoperation wrist source.
+/// Meta XR SDK 버전 차이에도 G1 텔레오퍼레이션 손목 기준을 일정하게 유지한다.
 ///
-/// The project historically uses the Quest rig's source_hand transform as the
-/// operator wrist reference. Newer Meta XR packages can place Hand_WristRoot
-/// visually farther into the palm. Keep the original rig wrist reference for
-/// position while the binder still derives the semantic hand orientation from
-/// the hand skeleton.
+/// 위치는 기존 Quest rig의 source_hand를 사용한다. 일부 최신 Meta XR 패키지의
+/// Hand_WristRoot가 손바닥 안쪽으로 이동해 보이는 차이를 피하면서, 의미 있는 손 방향은
+/// binder가 계속 skeleton에서 계산하도록 한다.
 /// </summary>
 [DefaultExecutionOrder(-10000)]
 public sealed class G1WristSourceCompatibility : MonoBehaviour

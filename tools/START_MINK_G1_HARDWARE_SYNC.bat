@@ -19,7 +19,8 @@ py -3.11 hardware\g1_arm_bridge\receive_initial_state.py --port 5007 --timeout 8
 if errorlevel 1 (
     echo.
     echo [ERROR] Hardware pose synchronization failed.
-    echo [INFO] Check the G1 LowState Read Only Forwarder window.
+    echo [ACTION] Check the G1 LowState Read Only Forwarder window for a missing 192.168.123.99/24 interface or LowState timeout.
+    echo [ACTION] Close both windows, run START_G1_READ_ONLY.bat successfully, then retry this BAT.
     goto :end
 )
 
@@ -30,6 +31,8 @@ py -3.11 hardware\g1_arm_bridge\verify_initial_pose_sync.py
 if errorlevel 1 (
     echo.
     echo [ERROR] Hardware pose synchronization validation failed.
+    echo [ACTION] Inspect logs\runtime\g1_hardware_initial_state.json and run py -3.11 hardware\g1_arm_bridge\verify_initial_pose_sync.py directly.
+    echo [ACTION] Do not proceed until all seven right-arm values are finite and match the current G1 pose.
     goto :end
 )
 
@@ -40,6 +43,8 @@ py -3.11 MuJoCo_G1_Controller\scripts\run_mink_g1_right_arm_virtual_center_live.
 if errorlevel 1 (
     echo.
     echo [ERROR] Mink hardware-synchronized startup exited with an error.
+    echo [ACTION] Run the printed Python command directly and inspect the first traceback or collision failure.
+    echo [ACTION] Hardware output is disabled; fix the simulation error before any command integration.
 )
 
 :end

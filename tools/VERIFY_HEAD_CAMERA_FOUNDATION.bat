@@ -21,6 +21,7 @@ exit /b 0
 
 :failed
 echo.
-echo FAIL: see the messages above. Do not switch to the physical camera yet.
+echo [FAIL] Camera-foundation validation failed. Do not switch to the physical camera yet.
+echo [ACTION] Fix the first failed unittest or verify_camera_simulation message printed above, then rerun this BAT.
 pause
 exit /b 1

@@ -10,15 +10,17 @@ set "LOG_DIR=%PROJECT_ROOT%\logs\unity"
 set "LOG_PATH=%LOG_DIR%\unity_vr_apk_build.log"
 
 if not exist "%UNITY_EXE%" (
-    echo Unity 6000.5.4f1 was not found:
+    echo [ERROR] Unity 6000.5.4f1 was not found:
     echo %UNITY_EXE%
+    echo [ACTION] Install Unity 6000.5.4f1 in Unity Hub, or update UNITY_EXE in this BAT.
     pause
     exit /b 1
 )
 
 if not exist "%ADB_EXE%" (
-    echo Meta Quest Developer Hub adb was not found:
+    echo [ERROR] Meta Quest Developer Hub adb was not found:
     echo %ADB_EXE%
+    echo [ACTION] Install Meta Quest Developer Hub, or update ADB_EXE in this BAT.
     pause
     exit /b 1
 )
@@ -34,16 +36,18 @@ echo.
 "%UNITY_EXE%" -batchmode -quit -projectPath "%PROJECT_DIR%" -executeMethod G1VRBuild.BuildApk -logFile "%LOG_PATH%"
 if not %errorlevel%==0 (
     echo.
-    echo Unity APK build failed. Open the log below:
+    echo [FAIL] Unity APK build failed. Open the log below:
     echo %LOG_PATH%
+    echo [ACTION] Fix the first Unity compiler or build error in that log, close Unity, and run this BAT again.
     pause
     exit /b 1
 )
 
 if not exist "%APK_PATH%" (
     echo.
-    echo APK was not created:
+    echo [FAIL] APK was not created:
     echo %APK_PATH%
+    echo [ACTION] Open %LOG_PATH% and verify that G1VRBuild.BuildApk completed without errors.
     pause
     exit /b 1
 )
@@ -57,7 +61,9 @@ echo Installing APK to Quest...
 "%ADB_EXE%" install -r "%APK_PATH%"
 if not %errorlevel%==0 (
     echo.
-    echo APK install failed. Check USB debugging authorization and adb devices.
+    echo [FAIL] APK install failed.
+    echo [ACTION] Run "%ADB_EXE%" devices, reconnect USB, and accept USB debugging inside Quest.
+    echo [ACTION] Continue only when the device is listed as device, not unauthorized or offline.
     pause
     exit /b 1
 )

@@ -104,10 +104,9 @@ pinch_disengaged
 ```
 
 Pinch is an intentional manual disengagement gesture; it is not treated as
-tracking loss. Automatic runtime installation of `G1BackendWorkspaceAuthority`
-was removed from the live path. The optional
-backend-authority component remains explicit opt-in and is not present in the
-live scene.
+tracking loss. Workspace feedback and pinch handling now live in the active
+sender; the unused optional authority and standalone pinch components were
+removed.
 
 ## 3. Protected local modifications
 
@@ -131,24 +130,6 @@ Do not revert it to:
 
 ```csharp
 Vector3.Cross(palm_across, finger_direction)
-```
-
-### 3.3 `config/wrist_frame_calibration.json`
-
-Current calibration is real measured calibration and must be preserved.
-
-```json
-"calibrated": true
-```
-
-Measured rotation matrix:
-
-```json
-[
-  [0.9924449310842209, -0.05620383861431516, 0.10906047538064291],
-  [0.11826344367346008, 0.20158636449624312, -0.9723048367357238],
-  [0.03266215938559683, 0.9778568740742197, 0.20671022512218856]
-]
 ```
 
 ## 4. Naming policy
@@ -542,6 +523,23 @@ When that resumes, begin from Ethernet/NIC state verification, not actuator comm
 
 OpenXR migration is a separate later stabilization/refactor task and is not the current blocking issue.
 
+Future research note from the supervising researcher (2026-08-27):
+
+- Consider applying an artificial potential field after the current baseline is
+  stable. The operator wrist/inspection target would provide an attractive
+  term, while the torso, self-collision geometry, joint-limit or singularity
+  neighborhoods, and later environment obstacles could provide repulsive terms.
+- Do not replace Mink hard joint/collision constraints or the hardware Safety
+  Gate with a potential field. First evaluate it in MuJoCo as target shaping or
+  a secondary QP objective layered before/inside the existing constrained IK.
+- Compare against the current Mink baseline using wrist tracking error, minimum
+  clearance, joint velocity/acceleration/jerk, unnecessary proximal motion,
+  oscillation, and recovery from local minima. Potential-field local minima and
+  gain sensitivity must be treated as explicit failure modes before any live G1
+  test.
+- This is a later research item, not a change to the currently validated
+  Startup Recovery or Quest teleoperation path.
+
 ## 10.1 Live Quest regression evidence on 2026-08-26
 
 The live trace written at `13:48:23` contained 2,762 rows and 2,387 active
@@ -925,7 +923,7 @@ Fourth live inspection run at 42 degrees per second:
   whose `scripts/...` targets no longer exist, one-time palm-center patching,
   superseded role-split/A-B experiments, and old torso-posture helpers. The
   superseded Python diagnostics tied only to those experiments were also removed.
-- `tools/` now retains 20 BAT entry points covering the current VR launcher
+- The cleanup initially retained 19 BAT entry points covering the current VR launcher
   support, frame/FK checks, hardware read-only synchronization, safety dry-run,
   network setup/recovery, APK build, and camera foundation validation.
 - Documentation no longer references the deleted BAT names, `git diff --check`
@@ -953,6 +951,317 @@ Fourth live inspection run at 42 degrees per second:
   The obsolete DLS trajectory test and its private fake sender were replaced by
   a current virtual-center Mink convergence and velocity-limit regression test.
 - Final validation is 145/145 backend tests and 12/12 hardware bridge tests.
+- All eight cleanup-era `tools/TEST_*.bat` entry points now print an absolute
+  result path before pausing. Seven console-only tests persist their output
+  under `logs/test_results/`; startup recovery retains its structured result at
+  `logs/runtime/g1_startup_mink_recovery.json`. The startup recovery script also
+  reports its four long-running calculation stages so it no longer appears hung.
+- The six short non-Unity offline BAT tests and the Unity FK parity BAT test
+  passed after this logging change.
+  The two UDP E2E tests must run sequentially because both intentionally bind
+  `127.0.0.1:5008`; their sequential runs pass. The long startup calculation was
+  not rerun after this output-only BAT change; its Python calculation passed
+  immediately before the progress-output patch.
+- A follow-up orphan audit removed the missed legacy wrist-frame calibration
+  bundle: `tools/CALIBRATE_WRIST_FRAME.bat`, its dedicated Python script, and
+  `config/wrist_frame_calibration.json`. These belonged to the already-deleted
+  `run_geometry_g1_teleop.py` path; no current runtime read the JSON or handled
+  its freeze flag. All 19 tool BAT files remaining at that point were documented and their
+  referenced scripts exist.
+- The repository-wide follow-up audit checked tracked source, tool targets,
+  documentation links, Unity GUID/meta pairs, duplicate classes/files, package
+  dependencies, and ignored residue. It removed the unreferenced
+  `MuJoCo_G1_Controller/unity` source copies, old Oculus smoothing scripts,
+  the unused fake-hand CSV and compatibility launcher, duplicate Unity workspace
+  and pinch components, unused Black/XRI settings assets, and stale
+  `Zone.Identifier` residue. The current Meta XR runtime, G1 assets, camera
+  regression receiver, tested backend modules, and read-only hardware tools were
+  retained intentionally.
+- Direct Unity dependencies on XR Interaction Toolkit and XR Hands were removed
+  because no project source used them. XR Hands remains only as a transitive
+  dependency of Meta XR SDK Core, which is required by the current Quest runtime.
+- Korean responsibility and safety comments were added without changing control
+  behavior across the active Unity G1 scripts, packet/protocol/state/transform
+  backend, Mink model and virtual-center controllers, read-only LowState path,
+  hardware safety gate, and offline startup recovery.
+- Final post-comment validation passed: Python compileall, 145/145 backend tests,
+  12/12 hardware bridge tests, Unity asset/meta and package JSON checks,
+  `START_VR_HAND_TO_MUJOCO.bat --check`, `git diff --check`, and the Unity
+  6000.5.4f1 batch validator. The Unity validation log is
+  `logs/unity/final_cleanup_batch_validation.log`.
+- On 2026-08-27, `G1HeadLockedCamera` was added to
+  `G1_Teleoperation_System`. Its first live Quest test exposed a frame error:
+  changing only `CenterEyeAnchor.position` left the tracked hand in room
+  coordinates, so a whole-body side step became a false wrist command. The log
+  showed Mink reaching the supplied target with essentially zero solver error
+  while the Unity wrist delta itself changed by tens of centimeters.
+- Translating the full `VR_XR_Rig` was rejected after the next live test. Meta XR
+  anchor updates and the root correction accumulated: the logged wrist Y moved
+  from about `-0.29 m` to `-1.67 m`, and Mink consequently reached extreme but
+  mathematically valid joint-limit poses. That implementation was removed.
+- The corrected mapping leaves the XR rig untouched. A first attempt mixed the
+  `UnityEngine.XR` head position with Meta wrist transforms; the live log exposed
+  a false `+1.056 m` vertical delta and a `2.104 m` target height. That mixed API
+  path was removed. At engage the binder now stores `CenterEyeAnchor.position`
+  and the wrist transform in the same Unity world frame, then commands only
+  `(current wrist - current head) - (neutral wrist - neutral head)`. Rendering
+  restores only `CenterEyeAnchor.position` after the binder has consumed the
+  pose, while HMD rotation remains tracked. Invalid hand frames can no longer
+  modify the tracking-jump neutral reference.
+- The Unity regression validator simulates a 25 cm equal head-and-hand side step
+  and requires zero robot hand delta. Unity compiled without errors and the
+  in-editor teleoperation project validator passed before the mixed-frame bug
+  was found. Unity compile/validator and live Quest verification must be repeated
+  for the same-world-frame correction.
+- The 2026-08-27 11:03 live Quest retest confirmed that the mixed-frame blow-up
+  was removed. During 20.7 seconds of active control, the head-relative binder
+  delta stayed within `X -0.34..0.18 m`, `Y -0.12..0.11 m`, and
+  `Z 0.00..0.25 m`; the previous false `+1.056 m` vertical delta did not recur.
+  No packet was rejected and no joint reached its configured limit. The minimum
+  wrist-limit margin was `25.55 deg`.
+- The same retest isolated the remaining tracking error to collision-constrained
+  IK rather than joint limits. The operator target crossed as far as robot
+  `Y=+0.18 m`, i.e. across the torso for the right arm. Collision proximity was
+  reported for 535 of 745 active samples, including continuous intervals of
+  `5.18 s` and `4.12 s`. At the final low/inboard target the nearest pair was
+  `torso_link` versus `right_elbow_link`, clearance reached `0 mm`, and wrist
+  position error grew to about `10.5 cm`. The next controller change should
+  address collision-boundary target handling and recovery from the constrained
+  branch; the official joint-limit table should not be loosened for this symptom.
+- A subsequent head-yaw-only test showed that the head camera position itself
+  remained fixed near `(0.007, 1.070, -0.003) m`, but the Meta right-hand pose
+  drifted by more than `10 cm` and its quaternion changed rapidly immediately
+  before `IsTracked` became false. The binder previously accepted those
+  low-confidence transition frames. Hand input now requires both
+  `OVRHand.IsTracked` and `OVRHand.IsDataHighConfidence`; low-confidence frames
+  hold the last valid target without disengaging the clutch. Tracking-origin
+  neutral correction uses the same confidence gate.
+- The first retest with that confidence gate confirmed that the fully invalid
+  pose is held, but Meta still reported `IsDataHighConfidence=true` for roughly
+  `0.4 s` while the head-relative wrist drifted about `35 cm` before loss. The
+  binder now also rejects implausible head-relative wrist steps above `1.10 m/s`,
+  latches the last accepted target, and recovers only after five frames return
+  within `8 cm` of the last accepted pose. This adds an independent plausibility
+  gate without changing clutch or workspace-exit semantics.
+- A far head-turn retest then caused genuine Quest hand-tracking loss. The pose
+  gate rejected the `5.20 m/s` wrist jump and the backend correctly entered
+  HOLD, but the older tracking-origin-jump correction had already moved the
+  neutral wrist reference by more than a metre. That obsolete neutral mutation
+  was removed; discontinuities are now handled only by holding the last accepted
+  head-relative wrist target. Requiring the hand to return within `8 cm` proved
+  too strict and could leave an engaged clutch permanently in HOLD. Automatic
+  rebasing at a newly observed hand pose was rejected because it silently changes
+  the hand-to-robot mapping. The final policy is: brief loss holds the last target,
+  but `0.35 s` of continuous invalid tracking emits `tracking_disengaged`, clears
+  both Unity calibration and the backend clutch, and requires the normal
+  wrist-alignment/hold procedure before a new engagement.
+- Gate 5 read-only hardware preparation was added on 2026-08-27. The WSL
+  `read_only_lowstate.py` forwarder now emits the strict
+  `g1.lowstate.right_arm.v1` UDP 5007 packet with bridge session ID, increasing
+  DDS receive sequence, source timestamp, measured right-arm `q/dq`, and explicit
+  no-publisher/no-output flags. Existing initial-pose receivers remain compatible
+  because the original joint fields are unchanged.
+- `hardware/g1_arm_bridge/gate5_lowstate_safety_monitor.py` receives that packet
+  on Windows and evaluates `measured_q == requested_q` through the existing
+  `safety_gate.evaluate_target`. An allowed vector is diagnostic only and is
+  written to status; it is never forwarded. The process imports no Unitree SDK,
+  creates no DDS publisher, and has no `LowCmd` path.
+- The Gate 5 monitor latches the bridge session and increasing sequence. Invalid
+  schema/data, session replacement, sequence rollback, joint-limit denial, or a
+  LowState age over 250 ms creates a fail-closed `FAULT`; denied status always
+  records `candidate_q_rad=null`. Runtime status and append-only events are
+  `logs/runtime/g1_gate5_lowstate_safety.json` and `.jsonl`.
+- `tools/START_G1_GATE5_READ_ONLY.bat` runs the real read-only forwarder and Gate
+  5 monitor. `tools/TEST_G1_GATE5_READ_ONLY.bat` uses synthetic UDP telemetry and
+  records `logs/test_results/g1_gate5_read_only.log`. The six new focused tests
+  passed, including a process-level fresh-HOLD then stale-timeout run. This raises
+  the current tool count to 21 BAT entry points and the hardware bridge test count
+  to 18. Actual physical-G1 Gate 5 validation remains pending and command authority
+  remains `NONE`.
+- The 2026-08-27 Quest trace after tracking-loss disengagement showed why the
+  green Mink target could remain far from the robot wrist: workspace limiting
+  was never active, while collision limiting was active for 80.2% of the 1,268
+  command frames and position error reached 23.8 cm. Reconstructing the maximum
+  error pose showed that the only geometry inside the 40 mm detection band was
+  local three-hop structure (`right_elbow_link` versus `right_wrist_yaw_link`,
+  and at nearby poses `torso_link` versus `right_shoulder_yaw_link`). These are
+  normal parts of the connected arm assembly, not independent self-collision
+  obstacles. `STRUCTURAL_NEIGHBOR_DISTANCE` was therefore corrected from 2 to
+  3. Independent protection such as `torso_link` versus `right_elbow_link`,
+  opposite-arm, pelvis, and lower-body collision pairs remains enabled and is
+  covered by a regression test.
+- The first live retest after excluding local three-hop collision pairs reduced
+  mean wrist error from 8.9 cm to 5.1 cm and collision-limited frames from 80.2%
+  to 36.9%; minimum wrist-limit margin remained 37.9 degrees. Continuous camera
+  position locking was then removed because fixing the rendered eye position
+  while the operator physically translates causes severe visual-vestibular
+  mismatch. The camera now aligns to the G1 head mount once at startup and then
+  follows normal Quest position and rotation. Whole-body translation still does
+  not enter the arm command because the binder uses wrist motion relative to the
+  tracked head in the same Unity world frame.
+- The next live test exposed a control-frame flaw in that last sentence: always
+  subtracting head translation also turns head-only motion into an equal and
+  opposite arm command. The binder now estimates body translation incrementally
+  and subtracts it only when wrist and head steps have matching direction,
+  comparable magnitude, and small residual. Head-only motion and wrist-only
+  motion are not classified as body translation. Wrist pose plausibility is also
+  evaluated in wrist world coordinates, so ordinary head motion cannot trip the
+  wrist outlier latch.
+- A head-only retest still produced up to 26 cm of Quest wrist drift while the
+  head translated only 1.5 cm. This was not body-translation leakage: the hand
+  provider gradually re-estimated the wrist while the headset rotated. The
+  first mitigation froze wrist position and orientation above 8 deg/s of head
+  angular speed. The 12:48 live trace proved that this was too aggressive:
+  85 of 159 calibrated samples (53%) were held, and valid commands fragmented
+  into four short intervals even though Mink received packets without rejection.
+  This was an input-gating regression, not an IK solver failure. The angular-speed
+  hold and its resume/outlier latch were removed. Head angular speed remains a
+  diagnostic-only trace field and cannot invalidate tracking or block commands.
+  The established 0.35 s confirmed tracking-loss disengagement and wrist-speed
+  outlier gate remain unchanged. A Quest live retest is required; any remaining
+  head-turn wrist drift must be corrected at the tracking/frame source without
+  gating the entire IK stream.
+- The next live test exposed an actual upper-arm/torso penetration. Replaying the
+  final logged joint pose measured `torso_link` to `right_shoulder_yaw_link` at
+  `-4.35 mm`, but the pair was absent from the Mink QP because the global
+  structural-neighbor exclusion had been widened from two to three kinematic
+  hops. The global exclusion is restored to two hops. Only the previously
+  measured false-positive pair `right_elbow_link` to `right_wrist_yaw_link` is
+  explicitly exempted. The torso/upper-arm and torso/elbow pairs are again in
+  the collision constraint set; generated Mink collision pairs increased from
+  234 to 243. All 150 backend tests pass. Live Quest/MuJoCo confirmation remains
+  required before treating the visual collision regression as closed.
+- The live Quest retest after restoring torso/upper-arm collision protection ran
+  for 31.47 s as one uninterrupted active-command segment (1,132 samples).
+  Pose plausibility was 100%, no head-motion hold or workspace-limit frame was
+  produced, and all UDP packets were accepted. The user reported that head-only,
+  hand-only, and whole-body motions were all approximately correct. Collision
+  limiting was active for 70.2% of command samples, with mean wrist tracking
+  error 4.67 cm and maximum 13.95 cm; this is now treated as the conservative
+  simulation baseline rather than immediately loosening the restored torso
+  protection.
+- The offline Startup Recovery was rerun after the collision-policy correction
+  and passed again: 21.798 simulated seconds, 10,899 steps, initial-contact
+  escape complete, ready pose reached within 0.302 degrees, and no command
+  output. `hardware/g1_arm_bridge/replay_startup_recovery.py` and
+  `tools/VIEW_G1_STARTUP_RECOVERY.bat` now replay that validated result in a
+  MuJoCo-only viewer. The viewer holds the measured rest pose for 3 seconds,
+  plays the 21.8-second trajectory at 0.5x, and holds the final TELEOP_READY
+  pose. It imports no Unitree SDK and opens no DDS, UDP, or robot command path.
+- Startup Recovery's ready posture is no longer hard-coded. The seven named
+  right-arm values and viewer-only playback settings are in
+  `config/startup_recovery.json`. The loader rejects missing/unknown joints,
+  non-finite values, and poses outside the existing Safety Gate range before
+  planning. The viewer default was changed from 0.5x to 1.0x with a 2-second
+  initial hold. Changing the ready pose requires rerunning the offline recovery;
+  changing only viewer speed does not alter the validated trajectory or any
+  future hardware motion limit.
+- `hardware/g1_arm_bridge/edit_startup_ready_pose.py` and
+  `tools/EDIT_G1_STARTUP_READY_POSE.bat` provide an offline MuJoCo keyboard
+  editor for that named seven-joint pose. Number keys select a joint, arrows or
+  `A/D` adjust it, `,/.` changes the step, and `S` saves only after the existing
+  Safety Gate ranges and Mink's 12 mm static collision clearance pass. The previous
+  config is copied to `logs/runtime/startup_ready_pose_previous.json`. This
+  static save is not a validated transition and must be followed by
+  `TEST_G1_STARTUP_RECOVERY_OFFLINE.bat` and visual replay. No Unitree SDK,
+  DDS, UDP, network socket, publisher, or robot command is opened by the editor.
+  A live Viewer smoke test selected joint 2, changed shoulder roll from -30 to
+  -29 degrees, printed a valid static result, restored -30 degrees, and closed
+  normally without saving. The editor save/backup unit tests and the full 152
+  backend tests also pass.
+- The first recovery run after the user saved
+  `[0, -7, 2, 57, 0, 0, 0]` degrees exposed a policy error: the 40 mm initial
+  escape distance had been used as the QP minimum for the entire transition.
+  That target is statically clear by 20.4 mm and therefore satisfies Mink's
+  actual 12 mm hard minimum, but the old QP stopped shoulder roll near -20.16
+  degrees. Startup Recovery now uses 40 mm only while escaping the initial
+  contact and switches to 12 mm after `escape_complete`. The unchanged user
+  pose then passed in 21.724 seconds with 0.302 degree final error, 20.339 mm
+  final clearance, and complete swept-path validation. No DDS or command output
+  was enabled.
+- The failed run also reproduced a MuJoCo mesh-mesh distance degeneracy: at two
+  isolated sub-microdegree samples, `mj_geomDistance` returned exactly 0 mm for
+  torso-to-right-shoulder-yaw although `data.ncon` was zero and symmetric
+  `1e-7` rad probes returned about 39.996 mm. Read-only collision diagnostics
+  now re-probe only an exact-zero/no-contact result in both directions and keep
+  the minimum nonzero value. Real contacts, negative distances, unresolved
+  zeros, and any result below the active safety margin remain blocked. A
+  regression test preserves this exact failure posture.
+
+### 2026-08-27 lower-body integration checkpoint
+
+- The current project has **no G1 command authority**. It subscribes to official
+  Unitree SDK2/CycloneDDS `rt/lowstate` on DDS domain 0 and observes right-arm
+  joints 22-28. It contains no `rt/lowcmd`, `ChannelPublisher`, or `LowCmd`
+  publisher. Gate 5 also sends no robot command.
+- The previously verified host-side network used `192.168.123.99/24` without
+  changing the G1 network configuration. The WSL interface name is detected
+  from that address and must not be assumed to remain `eth3` after reboot.
+- `tools/START_G1_READ_ONLY.bat` is the first physical connection check.
+  `tools/START_G1_GATE5_READ_ONLY.bat` is the next read-only check through the
+  Safety Gate. The offline Startup Recovery remains `hardware_ready=false` and
+  must not be applied to the physical G1.
+- The intended operating sequence is locomotion active -> locomotion stopping
+  -> confirmed stopped -> upper-body teleoperation -> upper-body disarmed/HOLD
+  -> locomotion may resume. A single authority or command arbiter must own each
+  joint and mode; independent processes must not write overlapping commands.
+- Before command integration, obtain the lower-body controller's current
+  executable/repository and commit, run location, SDK/API, DDS domain and exact
+  topics/services, control frequency, owned joints, waist 12-14 ownership, arm
+  behavior during locomotion, confirmed-stop signal, transition protocol,
+  watchdog, emergency stop, and disconnect recovery behavior. Also inventory
+  all files, services, startup scripts, and network settings installed on the
+  G1 computer; do not overwrite or reconfigure them.
+- Historical lower-body notes describe an experimental `rt/lowcmd` pipeline
+  with 12 policy-controlled leg joints, 17 PD-held waist/arm joints, 50 Hz
+  policy output, and about 500 Hz LowCmd output. The current lower-body owner
+  has stated that the present controller is not low-level, so those notes are
+  context only and must not be treated as the current interface.
+- The minimum joint/mode contract to write down together is: `LOCOMOTION`,
+  `STOPPING`, `UPPER_TELEOP`, and `FAULT`; for each mode record lower-body,
+  waist, and arm ownership plus the exact transition condition. Required
+  handshake meanings include lower-body stopped, upper-body ready, teleop
+  active/done, watchdog fault, and emergency stop.
+- Startup Recovery was shortened on 2026-08-27 without relaxing its 12 mm hard
+  collision minimum. The Cartesian contact-release task and ready-posture task
+  now run concurrently from the first QP step. Initial contact pairs become
+  strictly unable to re-enter after clearing 12 mm; the escape task remains only
+  as a routing assist until those same pairs clear 20 mm, then disappears with
+  no intermediate stop. The phase sequence is now
+  `CONTACT_RELEASE_AND_RECOVERY -> CLEARANCE_ASSIST_AND_RECOVERY ->
+  TRANSITION_TO_READY -> TERMINAL_READY_BLEND`.
+- The current captured-pose dry-run cleared 12 mm at 0.30 s, removed the escape
+  assist at 0.48 s, and reached the saved `[0, -7, 2, 57, 0, 0, 0]` degree pose
+  in 3.828 s instead of 21.724 s. The 1,915-sample path passed the 0.001-degree
+  swept-path replay, motion limits, Safety Gate, and stale-LowState denial, with
+  zero final error and 20.417 mm final model clearance. The 12 mm and
+  15 mm immediate-assist-release variants were rejected by swept-path collision
+  validation, so 20 mm is retained as a soft routing-assist release value only.
+  This remains `hardware_ready=false`; no DDS publisher or command output was
+  added.
+- The earlier 12.140 s version entered `READY_BRAKE_HOLD` at about 2 degrees,
+  stopped completely, restarted at 0.5 deg/s, and stopped a second time. Its
+  jerk-limited velocity tracker repeatedly crossed zero during those holds,
+  producing the visible stop/restart and joint-direction zigzag. It is replaced
+  by a boundary-matched quintic terminal trajectory: at 5 degrees remaining it
+  preserves the current discrete q/v/a and reaches the exact ready q with final
+  velocity and acceleration equal to zero. Candidate duration is accepted only
+  after joint-limit, velocity, acceleration, jerk, and collision replay checks.
+  The selected terminal blend starts at 2.70 s and lasts 1.152 s. A later
+  8-degree entry was tested and rejected because no candidate satisfied all
+  limits, so the validated 5-degree entry remains active.
+- Live virtual-center teleoperation now separates joint velocity limits instead
+  of accelerating the entire arm: shoulder/elbow joints remain capped at
+  40 deg/s, while wrist roll/pitch/yaw are capped at 100 deg/s. These are
+  project-specific tested limits, not values copied from Mink's G1 example. The split is
+  applied by `virtual_center_velocity_limits()` and is covered by policy and
+  mixed-pose trajectory tests. This affects MuJoCo/Mink only; no physical G1
+  command path was enabled.
+- All current root and `tools/` batch launchers now pair every `[FAIL]`,
+  `[ERROR]`, `[BLOCKED]`, or `[FAULT]` message with a nearby `[ACTION]` that
+  states the next concrete recovery step. Test launchers also append that action
+  to their saved result log. `backend/tests/test_batch_failure_guidance.py`
+  enforces this convention for future batch-file changes.
 
 The operating rules at the top of this file are the authoritative instructions for future ChatGPT conversations.
 

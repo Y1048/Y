@@ -4,6 +4,11 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// MuJoCo/Mink 백엔드가 UDP 5006으로 돌려준 실제 계산 상태를 수신한다.
+/// 최신 관절값, 손목/목표 오차, 제한 상태, 점검 데모 상태를 읽기 전용 속성으로
+/// 제공하며 Unity 프리뷰나 로봇 명령을 직접 변경하지 않는다.
+/// </summary>
 public class G1RobotStateUdpReceiver : MonoBehaviour
 {
     [Serializable]
@@ -101,6 +106,8 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
 
     private void Update()
     {
+        // 한 프레임에 여러 패킷이 쌓였으면 가장 최신 상태까지 모두 비운다.
+        // Unity 오브젝트 갱신은 메인 스레드의 이 메서드에서만 수행한다.
         if (udp_client == null)
         {
             return;

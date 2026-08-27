@@ -1,4 +1,4 @@
-"""Map tracked Unity OVR poses into a location-independent G1 reference frame."""
+"""Unity OVR 추적 자세를 장소와 무관한 G1 머리-yaw 기준 자세로 변환한다."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ def map_unity_ovr_wrist_to_head_yaw(
     wrist_pose_unity: np.ndarray,
     hand_side: HandSide,
 ) -> np.ndarray:
-    """Return a wrist pose in a robot-basis, head-yaw-relative frame."""
+    """손목 자세를 G1 축 기준이며 머리 yaw에 상대적인 프레임으로 반환한다."""
     head_pose_robot = convert_unity_ovr_pose_to_robot(head_pose_unity)
     wrist_pose_robot = convert_unity_ovr_pose_to_robot(wrist_pose_unity)
 

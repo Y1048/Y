@@ -15,7 +15,7 @@ This file is the current entry point for the precision review. It does not repla
 - [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md): R64/release batch implementation status
 - [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): R2/R33/R40/R41/R42 supported-path mitigation
 - [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R50 supported-path runtime supervision
-- [`REMEDIATION_20260904_PROVENANCE.md`](REMEDIATION_20260904_PROVENANCE.md): R21/R23/R51 LowState provenance and launcher status
+- [`REMEDIATION_20260904_PROVENANCE.md`](REMEDIATION_20260904_PROVENANCE.md): R15/R21/R23/R35/R51/R65 provenance and freshness status
 
 The review is incomplete. A file that appears in the code index or static ledger is not thereby fully reviewed or correct.
 
@@ -42,7 +42,10 @@ Do not quote 117/264 as current effective coverage. Use the detailed review/reme
 | R50 | PARTIAL SUPPORTED-PATH MITIGATION | `95810e0fb6ae55fefc814cbbb8eefb9cd7b902f5` | Gate6/Gate7/Jog entries supervise IMU tilt and motor temp/fault/tau finiteness; base/remote/CRC remain open |
 | R21 | SUPPORTED HARDWARE-SYNC PATH MITIGATED | `e4642f13fce944c6b8cabe24512f3ce0aa81f93b` + `3171c2ceb9ced6b5c8488bb46dbb22a3ef97df67` | Canonical/fresh initial state plus per-run forward token; generic no-token mode remains lower provenance |
 | R51 | SUPPORTED PHYSICAL STARTUP PATHS MITIGATED | `1ac4d5f4306a4685bc3455b4ac4a53674de2fdae` + launcher commits | Fresh UUID token binds forwarder, startup precheck and physical precheck consumers; tests not executed |
-| R23 | IMPLEMENTED; process validation pending | `b35c24a8baa8405bf2825b4d51cb40651bb6a303` | Hardware-sync BAT now propagates snapshot/verify/controller return code; BAT not executed |
+| R23 | IMPLEMENTED; process validation pending | `b35c24a8baa8405bf2825b4d51cb40651bb6a303` | Hardware-sync BAT propagates snapshot/verify/controller return code; BAT not executed |
+| R35 | SUPPORTED GATE 7 RELAY PATH MITIGATED | `6480be28eb73f85cabe52e2d4e0c11d5cd4108bd` + `53ce93efb97848497e1c476070510193befd3fb6` | Per-run relay token plus retired-session tombstones at relay and supported WSL entry; tests not executed |
+| R65 | SUPPORTED UNITY/MINK PATH MITIGATED | `0e18792c4e2edbb9eeed1e10a6e45a08514e30cb` + `1110bc4579b8c83a9f60c767f3084bf4cd01e63a` + `48a9e9406fedea088c1c6e02767d327c1e067ef8` | Loopback/source contract, source-clock backlog estimate and downstream age propagation; tests not executed |
+| R15 | SUPPORTED PHYSICAL RELAY PATH MITIGATED; source packet migration partial | `5cb4d657e891bd11d32762befff56be4ed2ebcca` + `e302dd984e3b9f3b5b29e90f90087490dc10ede0` + `4bebf749fe928ff723b0ab19ce1eabe7612bacc7` | Normalized replay marked/rejected; exact replay blocked from UDP 5008; live producer still relies on relay compatibility allowance |
 
 The committed regression tests above have not been run by GitHub Actions or a checked-out current branch during this remediation session. No status in this table is a physical validation result.
 
@@ -54,10 +57,10 @@ safety-event preservation  : R64 implemented pending integration validation
 final/acquire validation   : R2/R33/R41/R42 mitigated on supported paths; R40 partial
 runtime state supervision  : R50 partial; base/remote/CRC still open
 startup provenance         : R21/R51 supported paths mitigated; generic direct paths remain lower provenance
-live command provenance    : R35, R65, R15
+live command provenance    : R35/R65 mitigated on supported paths; R15 relay path mitigated with source-side compatibility allowance
 ```
 
-The next implementation group is live command provenance/freshness. R35 concerns relay→Gate 7 ownership and retired-session replay; R65 concerns Unity→Mink sender identity, source timing and backlog freshness. Keep the current hardware locks in place while addressing those paths.
+Next provenance work should migrate the live Mink producer itself to emit explicit `command_provenance=live_mink`, then remove the relay's missing-provenance compatibility allowance. Before any physical expansion, execute the committed unit/static/process-level tests from a current checkout and keep hardware authorization locked.
 
 ## Safety boundary
 

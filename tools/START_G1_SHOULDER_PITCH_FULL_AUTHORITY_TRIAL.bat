@@ -70,9 +70,9 @@ if not "%PRECHECK_RC%"=="0" (
 )
 
 echo [STEP 3B/5] Checking the +/-1 degree shoulder-pitch path in MuJoCo...
-py -3.11 hardware\g1_arm_bridge\validate_right_arm_jog_collision_path.py --config "%CONFIG%" --precheck-json "%PRECHECK_JSON%" --output "%PATH_PERMIT_JSON%"
+py -3.11 hardware\g1_arm_bridge\validate_right_arm_jog_collision_path_entry.py --config "%CONFIG%" --precheck-json "%PRECHECK_JSON%" --output "%PATH_PERMIT_JSON%"
 if errorlevel 1 (
-    echo [ERROR] The pose-bound shoulder-pitch permit was not created.
+    echo [ERROR] The provenance-bound shoulder-pitch permit was not created.
     echo [ACTION] Read %PATH_PERMIT_JSON% and do not bypass it.
     goto :failed
 )

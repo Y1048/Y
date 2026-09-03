@@ -13,7 +13,7 @@ For every new project conversation:
 3. Read [`REVIEW_LATEST.md`](REVIEW_LATEST.md) and the detailed review documents it links.
 4. Read [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md) before changing a reviewed defect.
 5. Read [`CODE_GUIDE.md`](CODE_GUIDE.md) before changing a control path.
-6. Inspect the current branch, commit and working tree before destructive Git operations.
+6. Inspect the current branch and HEAD before editing; documentation commits may follow code commits.
 7. Keep review findings, production changes and physical tests in separate commits and reports.
 8. Update this handoff after a meaningful implementation or verification milestone.
 
@@ -24,14 +24,16 @@ Do not remove safety checks, loosen limits or change gains merely to make a test
 ```text
 Repository : Y1048/Y
 Branch     : refactor/teleop-architecture
-Current remediation chain:
+Remediation code chain:
   187b3e2  R64 command-backlog safety-event preservation
   846b0d59 shared SDK-neutral release contract
   cb5082e1  R1 Gate 7 fail-closed release
   678b5d0b  R3/R34 Gate 6 interrupted/fault release
+  7b446563  R46 supported WSL Jog result guard
+  4251c543  R46 launcher-path regression assertion
 ```
 
-Documentation commits may be newer than the code commits above. Always query the branch HEAD before editing.
+The current branch HEAD may be a later documentation/ledger commit. Query it before editing.
 
 The default Windows launcher remains:
 
@@ -69,21 +71,35 @@ hardware/g1_arm_bridge/arm_sdk_release_contract.py
 
 It deliberately does not claim external firmware/controller authority handback.
 
-### Immediate next code item
+### R46 supported-path mitigation
+
+The physical WSL starter now executes:
 
 ```text
-R46 — g1_right_arm_jog.py fault result must not claim output disabled before a complete zero-weight tail.
+hardware/g1_arm_bridge/g1_right_arm_jog_entry.py
 ```
 
-After R46, return to the P1 final/acquisition group:
+instead of invoking `g1_right_arm_jog.py` directly. The wrapper guards only final result semantics: if the configured zero-weight tail is incomplete or a release error exists, it sets `output_state_unknown=true`, keeps `command_output_enabled=true`, and revokes PASS. A complete zero tail may mark command output disabled while the run itself remains failed.
+
+Important: this does **not** fully refactor the internal Jog controller. Direct physical execution of `g1_right_arm_jog.py` still has the original R46 result path and is unsupported. Supported physical BAT launchers route through `start_right_arm_jog_wsl.sh`, which now uses the guarded entrypoint. Do not call R46 fully closed until the controller itself adopts the shared release contract.
+
+### Immediate next code group
+
+Return to the P1 final/acquisition group:
 
 ```text
-R2, R33, R40, R41, R42
+R2  final Ruckig-shaped command collision validation
+R41 active Gate 7 packet must carry finite collision clearance evidence
+R33 continuous fresh ACTIVE stream during Gate 7 acquisition
+R40 full-body precheck binding at publisher boundary
+R42 Jog permit/model/full-body/final-segment binding
 ```
+
+R2 and R41 should be treated as one collision-evidence batch where practical. R33/R40/R42 are publisher-boundary/state-binding work.
 
 ### Verification boundary
 
-Regression test files were added for R64, the shared release helper, R1 and R3/R34. They have **not** been run from a checked-out repository or GitHub Actions during this remediation session. The earlier handoff statement claiming 18 committed R64 tests had passed was too strong and is superseded by `REMEDIATION_20260904.md`.
+Regression test files were added for R64, the shared release helper, R1, R3/R34 and R46 supported-entry behavior. They have **not** been run from a checked-out repository or GitHub Actions during this remediation session.
 
 No Unity Play, Quest runtime, WSL/DDS runtime or G1 command test has been performed for these remediation commits.
 
@@ -91,13 +107,13 @@ No Unity Play, Quest runtime, WSL/DDS runtime or G1 command test has been perfor
 
 `logs/review/20260903/source_checks.csv` is the original bounded snapshot: 117 `full_text_review`, 147 `static_only`. It does not include the later R20-R67 continuation work and must not be quoted as current effective coverage.
 
-Post-snapshot implementation/review deltas begin at:
+Post-snapshot implementation/review deltas are recorded in:
 
 ```text
 logs/review/20260903/source_checks_delta_20260904.csv
 ```
 
-The canonical CSV count still requires deliberate regeneration from the current branch. Until then, the detailed review documents and delta file are the authoritative continuation record.
+The canonical CSV count still requires deliberate regeneration from the current branch. `docs/CODE_INDEX.md` is also stale after the remediation files changed/appeared and must be regenerated before using its hashes as current evidence.
 
 ## 5. Hardware and environment boundary
 

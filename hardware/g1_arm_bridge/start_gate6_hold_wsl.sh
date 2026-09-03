@@ -20,5 +20,5 @@ then
 fi
 
 cd "${project_root}"
-exec "${python_path}" hardware/g1_arm_bridge/gate6_arm_sdk_hold.py \
+exec "${python_path}" hardware/g1_arm_bridge/gate6_arm_sdk_hold_entry.py \
     "${network_interface}" "$@"

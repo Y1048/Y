@@ -11,10 +11,11 @@ For every new project conversation:
 1. Read this file.
 2. Read [`ARCHITECTURE.md`](ARCHITECTURE.md).
 3. Read [`REVIEW_LATEST.md`](REVIEW_LATEST.md) and the detailed review documents it links.
-4. Read [`CODE_GUIDE.md`](CODE_GUIDE.md) before changing a control path.
-5. Inspect the current branch, commit and working tree before destructive Git operations.
-6. Keep review findings, production changes and physical tests in separate commits and reports.
-7. Update this handoff after a meaningful implementation or verification milestone.
+4. Read [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md) before changing a reviewed defect.
+5. Read [`CODE_GUIDE.md`](CODE_GUIDE.md) before changing a control path.
+6. Inspect the current branch, commit and working tree before destructive Git operations.
+7. Keep review findings, production changes and physical tests in separate commits and reports.
+8. Update this handoff after a meaningful implementation or verification milestone.
 
 Do not remove safety checks, loosen limits or change gains merely to make a test pass. Do not treat unit, static, simulation or transport tests as physical validation.
 
@@ -23,8 +24,14 @@ Do not remove safety checks, loosen limits or change gains merely to make a test
 ```text
 Repository : Y1048/Y
 Branch     : refactor/teleop-architecture
-Code head  : 187b3e2a44466653bc099327e0ace7f18dc7fcb0
+Current remediation chain:
+  187b3e2  R64 command-backlog safety-event preservation
+  846b0d59 shared SDK-neutral release contract
+  cb5082e1  R1 Gate 7 fail-closed release
+  678b5d0b  R3/R34 Gate 6 interrupted/fault release
 ```
+
+Documentation commits may be newer than the code commits above. Always query the branch HEAD before editing.
 
 The default Windows launcher remains:
 
@@ -44,25 +51,41 @@ Current control scope is the G1 right arm. The simulation path is Unity/VR → U
 
 The precision review currently records findings R1-R67. The review is not complete. Use [`REVIEW_LATEST.md`](REVIEW_LATEST.md) as the current index.
 
-### R64 implementation checkpoint
+### Implemented, pending broader validation
 
-Commit `187b3e2a44466653bc099327e0ace7f18dc7fcb0` implements the first remediation batch for R64:
+**R64** — `workspace_exit`, `pinch_disengaged` and `tracking_disengaged` are now receive-batch barriers. A later ACTIVE packet stays queued until the next controller poll, and safety reset cannot re-engage the clutch in the same update.
 
-- `workspace_exit`, `pinch_disengaged` and `tracking_disengaged` are command-batch barriers.
-- Later ACTIVE datagrams remain queued until the next control poll.
-- An earlier ACTIVE target from the same batch is not exposed after the safety event.
-- A safety reset cannot engage the clutch again in the same `MinkCommandUpdate`.
-- Stale-session takeover behavior remains unchanged and may still reset/re-engage once for a new session.
+**R1** — Gate 7 release now uses a shared SDK-neutral finalizer. It records only successfully published weight, does not reread config during finalization, still attempts the zero tail after a ramp failure, revokes PASS on release failure, and distinguishes unknown output state from confirmed zero-tail completion.
 
-Focused syntax and 18 command-ingress tests passed in an isolated local harness. The committed repository tests cover active→pinch→active and active→workspace-exit→active backlogs. Full repository discovery, Unity Play, Quest and hardware runtime were not executed for this batch, so R64 is implemented but integration validation remains pending.
+**R3** — Gate 6 Ctrl+C during ACQUIRE no longer jumps to configured maximum weight. Interrupted release starts from the last successfully published/current lower weight and decreases from there.
 
-### Next implementation batch
+**R34** — Gate 6 runtime faults after publisher creation now attempt a measured-pose release and independent zero tail. Fault status records release evidence instead of unconditionally claiming weight zero/output disabled.
+
+The common release evidence contract lives in:
 
 ```text
-release/fault finalization : R1, R34, R46
+hardware/g1_arm_bridge/arm_sdk_release_contract.py
 ```
 
-That batch must make Gate 7, Gate 6 and Jog release reporting reflect the last successfully transmitted weight, zero-tail completion and release failure. It must not create or authorize physical output during testing.
+It deliberately does not claim external firmware/controller authority handback.
+
+### Immediate next code item
+
+```text
+R46 — g1_right_arm_jog.py fault result must not claim output disabled before a complete zero-weight tail.
+```
+
+After R46, return to the P1 final/acquisition group:
+
+```text
+R2, R33, R40, R41, R42
+```
+
+### Verification boundary
+
+Regression test files were added for R64, the shared release helper, R1 and R3/R34. They have **not** been run from a checked-out repository or GitHub Actions during this remediation session. The earlier handoff statement claiming 18 committed R64 tests had passed was too strong and is superseded by `REMEDIATION_20260904.md`.
+
+No Unity Play, Quest runtime, WSL/DDS runtime or G1 command test has been performed for these remediation commits.
 
 ## 4. Coverage ledger
 
@@ -74,11 +97,11 @@ Post-snapshot implementation/review deltas begin at:
 logs/review/20260903/source_checks_delta_20260904.csv
 ```
 
-The canonical CSV count still requires a deliberate regeneration from the current branch. Until then, the detailed review documents and delta file are the authoritative continuation record.
+The canonical CSV count still requires deliberate regeneration from the current branch. Until then, the detailed review documents and delta file are the authoritative continuation record.
 
 ## 5. Hardware and environment boundary
 
-- Repository hardware authorization remains locked; the R64 commit changed only backend command-ingress code and tests.
+- Repository hardware authorization remains locked.
 - Do not assume G1 Ethernet, WSL DDS, Unity, Quest or any publisher is currently running. Verify current process/network state before use.
 - Read-only LowState tools and physical-output tools must remain clearly separated.
 - No physical command, G1 file mutation, service/mode change or administrator network change is authorized by this handoff.
@@ -86,8 +109,8 @@ The canonical CSV count still requires a deliberate regeneration from the curren
 
 ## 6. Historical handoff
 
-The complete pre-remediation handoff history was preserved byte-for-byte at:
+The complete pre-remediation handoff history was preserved at:
 
 [`CHAT_HANDOFF_HISTORY_20260903.md`](CHAT_HANDOFF_HISTORY_20260903.md)
 
-Use it for historical decisions, prior test logs, WSL setup, Unity crash investigation and older checkpoints. Current work should follow this concise file and `REVIEW_LATEST.md` first.
+Use it for historical decisions, prior test logs, WSL setup, Unity crash investigation and older checkpoints. Current work should follow this concise file, `REVIEW_LATEST.md` and `REMEDIATION_20260904.md` first.

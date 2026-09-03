@@ -3,6 +3,12 @@ setlocal EnableExtensions
 cd /d "%~dp0.."
 
 for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss"') do set "STAMP=%%I"
+for /f %%T in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "LOWSTATE_TOKEN=%%T"
+set "ADAPTER_STARTED=0"
+if not defined LOWSTATE_TOKEN (
+    echo [ERROR] Could not create the per-run LowState provenance token.
+    goto :failed
+)
 set "ADAPTER_LOG=%CD%\logs\test_results\g1_gate7_adapter_%STAMP%.log"
 set "ADAPTER_READY=%CD%\logs\runtime\g1_gate7_adapter_ready_%STAMP%.json"
 set "ADAPTER_READY_WSL=/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/runtime/g1_gate7_adapter_ready_%STAMP%.json"
@@ -31,7 +37,6 @@ if /I "%~1"=="--visible-ten" (
 )
 set "MODE_JSON=%CD%\logs\runtime\g1_motion_mode_query.json"
 set "PRECHECK_JSON=%CD%\logs\runtime\g1_startup_precheck.json"
-set "ADAPTER_STARTED=0"
 
 title G1 Gate 7 Live Hardware
 
@@ -102,12 +107,12 @@ if errorlevel 1 (
     goto :failed
 )
 
-echo [STEP 3/5] Creating a fresh read-only startup precheck...
-start "G1 Gate 7 Precheck LowState - READ ONLY" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --timeout 0.25 --forward-host 127.0.0.1 --forward-port 5007 --forward-hz 100
+echo [STEP 3/5] Creating a fresh provenance-bound read-only startup precheck...
+start "G1 Gate 7 Precheck LowState - READ ONLY" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --timeout 0.25 --forward-host 127.0.0.1 --forward-port 5007 --forward-hz 100 --forward-token %LOWSTATE_TOKEN%
 timeout /t 2 /nobreak >nul
-py -3.11 hardware\g1_arm_bridge\check_startup_readiness.py --host 0.0.0.0 --port 5007 --motion-mode-json "%MODE_JSON%" --output "%PRECHECK_JSON%"
+py -3.11 hardware\g1_arm_bridge\check_startup_readiness_entry.py --host 0.0.0.0 --port 5007 --motion-mode-json "%MODE_JSON%" --output "%PRECHECK_JSON%" --expected-forward-token %LOWSTATE_TOKEN%
 set "PRECHECK_RC=%ERRORLEVEL%"
-wsl -d Ubuntu -- bash -lc "pkill -f '[r]ead_only_lowstate.py.*--forward-port 5007' || true" >nul 2>&1
+wsl -d Ubuntu -- bash -lc "pkill -TERM -f '[r]ead_only_lowstate_entry.py.*--forward-token %LOWSTATE_TOKEN%' || true" >nul 2>&1
 if not "%PRECHECK_RC%"=="0" (
     echo [ERROR] Startup precheck did not return DIRECT_TELEOP_READY.
     echo [ACTION] Read %PRECHECK_JSON% and do not bypass its reason.
@@ -186,8 +191,8 @@ exit /b %RC%
 
 :failed
 if "%ADAPTER_STARTED%"=="1" (
-    echo [SAFETY] Requesting Gate 7 adapter stop and zero-weight release...
-    wsl -d Ubuntu -- bash -lc "pkill -TERM -f '[g]ate7_live_arm_sdk.py' || true" >nul 2>&1
+    echo [SAFETY] Requesting this Gate 7 adapter to stop and zero-weight release...
+    wsl -d Ubuntu -- bash -lc "pkill -TERM -f '[g]ate7_live_arm_sdk_entry.py.*--ready-file %ADAPTER_READY_WSL%' || true" >nul 2>&1
     timeout /t 3 /nobreak >nul
 )
 echo.

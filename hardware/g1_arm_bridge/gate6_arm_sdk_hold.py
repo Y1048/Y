@@ -2,17 +2,9 @@
 """Gate 6 measured-pose HOLD for G1 Regular Mode.
 
 기본 실행은 ``rt/lowstate``만 구독하는 준비 검사다. 실제
-``rt/arm_sdk`` publisher는 다음 조건을 모두 만족할 때만 생성한다.
-
-1. config가 hardware output을 명시적으로 허용한다.
-2. 실행 인자에 hardware output 플래그와 정확한 확인 문구가 있다.
-3. G1이 평평한 지면에서 Regular Mode로 자립 중임을 별도로 확인한다.
-4. 같은 세션 직전에 생성된 startup precheck가 DIRECT_TELEOP_READY다.
-5. 현재 MotionSwitcher mode와 LowState가 설정값과 일치한다.
-
-이 파일은 ``rt/lowcmd``를 사용하지 않으며 허리/하체 관절을 target update
-set에 포함하지 않는다. Arm SDK의 전역 weight 특성 때문에 양팔 14축은 모두
-실측 자세로 시드한 뒤 함께 검증한다.
+``rt/arm_sdk`` publisher는 설정 승인, 정확한 확인 문구, fresh startup
+precheck, expected MotionSwitcher mode와 fresh settled LowState를 모두 통과한
+경우에만 생성한다. 이 파일은 ``rt/lowcmd``를 사용하지 않는다.
 """
 
 from __future__ import annotations
@@ -40,6 +32,7 @@ from arm_sdk_hold_contract import (
     dual_arm_from_all_joints,
     validate_measured_hold,
 )
+from arm_sdk_release_contract import execute_release_sequence
 from hardware_state import FaultCode, HardwarePhase, build_status, write_status
 
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
@@ -209,9 +202,7 @@ def validate_runtime_config(config: RuntimeConfig) -> None:
     if not config.hardware_confirmation_phrase:
         raise ValueError("hardware_confirmation_phrase must not be empty")
     if not config.grounded_regular_confirmation_phrase:
-        raise ValueError(
-            "grounded_regular_confirmation_phrase must not be empty"
-        )
+        raise ValueError("grounded_regular_confirmation_phrase must not be empty")
 
 
 def validate_precheck(path: Path, maximum_age_s: float) -> dict[str, Any]:
@@ -248,13 +239,8 @@ def validate_output_authorization(
         raise PermissionError("hardware_output_authorized is false in Gate 6 config")
     if confirmation != config.hardware_confirmation_phrase:
         raise PermissionError("hardware confirmation phrase does not match")
-    if (
-        grounded_regular_confirmation
-        != config.grounded_regular_confirmation_phrase
-    ):
-        raise PermissionError(
-            "grounded Regular confirmation phrase does not match"
-        )
+    if grounded_regular_confirmation != config.grounded_regular_confirmation_phrase:
+        raise PermissionError("grounded Regular confirmation phrase does not match")
 
 
 def _append_event(path: Path, payload: dict[str, Any]) -> None:
@@ -389,10 +375,65 @@ def _apply_frame(message: Any, frame: ArmSdkCommandFrame) -> None:
         command.kd = frame.motor_kd[index]
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="G1 Gate 6 measured-pose Arm SDK HOLD"
+def _attempt_fault_release(
+    *,
+    buffer: LowStateBuffer,
+    fallback_snapshot: LowStateSnapshot | None,
+    publisher: Any,
+    message: Any,
+    crc: Any,
+    config: RuntimeConfig,
+    start_weight: float,
+):
+    """Release from the last successful weight without trusting a stale target."""
+
+    def current_snapshot() -> LowStateSnapshot:
+        return buffer.snapshot() or fallback_snapshot or (_ for _ in ()).throw(
+            RuntimeError("no LowState snapshot available for release")
+        )
+
+    def build_ramp_frame(weight: float):
+        current = current_snapshot()
+        measured_target = dual_arm_from_all_joints(current.all_q_rad)
+        return build_measured_hold_frame(
+            current.all_q_rad,
+            measured_target,
+            mode_pr=current.mode_pr,
+            mode_machine=current.mode_machine,
+            weight=weight,
+            config=config.safety,
+        )
+
+    def build_zero_frame():
+        current = current_snapshot()
+        measured_target = dual_arm_from_all_joints(current.all_q_rad)
+        return build_measured_hold_frame(
+            current.all_q_rad,
+            measured_target,
+            mode_pr=current.mode_pr,
+            mode_machine=current.mode_machine,
+            weight=0.0,
+            config=config.safety,
+        )
+
+    def publish_frame(frame) -> None:
+        _apply_frame(message, frame)
+        message.crc = crc.Crc(message)
+        publisher.Write(message)
+
+    return execute_release_sequence(
+        start_weight=start_weight,
+        ramp_s=config.ramp_down_s,
+        zero_cycles=config.release_zero_cycles,
+        publish_hz=config.publish_hz,
+        build_ramp_frame=build_ramp_frame,
+        build_zero_frame=build_zero_frame,
+        publish_frame=publish_frame,
     )
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="G1 Gate 6 measured-pose Arm SDK HOLD")
     parser.add_argument("network_interface")
     parser.add_argument("--domain-id", type=int, default=0)
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG_PATH)
@@ -475,8 +516,6 @@ def main() -> int:
         print(f"Result saved to: {args.status_json.resolve()}")
         return 2
 
-    # Linux-only imports remain inside main so offline Windows tests can import
-    # and exercise the complete contract without Unitree SDK2 installed.
     from unitree_sdk2py.comm.motion_switcher.motion_switcher_client import (
         MotionSwitcherClient,
     )
@@ -485,10 +524,15 @@ def main() -> int:
 
     buffer = LowStateBuffer()
     publisher = None
+    message = None
+    crc = None
     mode_form: str | None = None
     mode_name: str | None = None
     target_dual_arm: tuple[float, ...] | None = None
     published_frames = 0
+    last_snapshot: LowStateSnapshot | None = None
+    last_successful_weight = 0.0
+    last_successful_write_unix_ns: int | None = None
 
     try:
         ChannelFactoryInitialize(args.domain_id, args.network_interface)
@@ -510,9 +554,8 @@ def main() -> int:
         subscriber = ChannelSubscriber(LOWSTATE_TOPIC, LowState_)
         subscriber.Init(buffer.callback, 10)
         _wait_for_first_snapshot(buffer, args.startup_timeout)
-        snapshot, settle_samples, maximum_velocity = _collect_settled_snapshot(
-            buffer, config
-        )
+        snapshot, settle_samples, maximum_velocity = _collect_settled_snapshot(buffer, config)
+        last_snapshot = snapshot
         if snapshot.mode_pr != config.expected_mode_pr:
             raise RuntimeError(
                 f"mode_pr mismatch: {snapshot.mode_pr} != {config.expected_mode_pr}"
@@ -553,9 +596,7 @@ def main() -> int:
             reason="measured dual-arm HOLD contract accepted",
         )
         details["settle_samples"] = settle_samples
-        details["maximum_initial_arm_velocity_deg_s"] = math.degrees(
-            maximum_velocity
-        )
+        details["maximum_initial_arm_velocity_deg_s"] = math.degrees(maximum_velocity)
         details["configured_maximum_weight"] = config.maximum_weight
         _write_runtime_status(
             args.status_json,
@@ -580,7 +621,6 @@ def main() -> int:
             print(f"Result saved to: {args.status_json.resolve()}")
             return 0
 
-        # 이 분기 전까지는 ChannelPublisher가 import되거나 생성되지 않는다.
         from unitree_sdk2py.core.channel import ChannelPublisher
         from unitree_sdk2py.idl.default import unitree_hg_msg_dds__LowCmd_
         from unitree_sdk2py.idl.unitree_hg.msg.dds_ import LowCmd_
@@ -603,6 +643,8 @@ def main() -> int:
         next_tick_s = started_s
         zero_cycles_remaining = config.release_zero_cycles
         last_report_s = started_s
+        interrupt_release_started_s: float | None = None
+        interrupt_release_start_weight = 0.0
         print("[ACTIVE] rt/arm_sdk measured-pose HOLD started.")
 
         while True:
@@ -615,6 +657,7 @@ def main() -> int:
             current = buffer.snapshot()
             if current is None:
                 raise RuntimeError("LowState disappeared after publisher start")
+            last_snapshot = current
             age_s = now_s - current.received_monotonic_s
             validation = validate_measured_hold(
                 current.all_q_rad,
@@ -640,9 +683,16 @@ def main() -> int:
                 maximum_weight=config.maximum_weight,
             )
             if stop_requested.is_set() and schedule_phase not in ("RELEASE", "COMPLETE"):
-                started_s = now_s - config.ramp_up_s - config.hold_s
-                schedule_phase = "RELEASE"
-                weight = config.maximum_weight
+                if interrupt_release_started_s is None:
+                    interrupt_release_started_s = now_s
+                    interrupt_release_start_weight = min(
+                        float(weight), float(last_successful_weight)
+                    )
+                interrupt_elapsed_s = now_s - interrupt_release_started_s
+                release_ratio = min(1.0, interrupt_elapsed_s / config.ramp_down_s)
+                schedule_phase = "RELEASE" if release_ratio < 1.0 else "COMPLETE"
+                weight = interrupt_release_start_weight * (1.0 - release_ratio)
+                done = release_ratio >= 1.0
 
             if done:
                 if zero_cycles_remaining <= 0:
@@ -661,6 +711,8 @@ def main() -> int:
             message.crc = crc.Crc(message)
             publisher.Write(message)
             published_frames += 1
+            last_successful_weight = float(weight)
+            last_successful_write_unix_ns = time.time_ns()
 
             if now_s - last_report_s >= 0.25:
                 details = _status_details(
@@ -669,16 +721,17 @@ def main() -> int:
                     target_dual_arm_q_rad=target_dual_arm,
                     mode_form=mode_form,
                     mode_name=mode_name,
-                    weight=weight,
+                    weight=last_successful_weight,
                     schedule_phase=schedule_phase,
                     published_frames=published_frames,
                     reason="active measured-pose HOLD",
                 )
+                details["last_successful_write_unix_ns"] = last_successful_write_unix_ns
                 _write_runtime_status(
                     args.status_json,
                     args.event_log,
                     phase=HardwarePhase.HOLD_ACTIVE,
-                    command_output_enabled=True,
+                    command_output_enabled=last_successful_weight > 0.0,
                     publisher_present=True,
                     details=details,
                 )
@@ -700,6 +753,20 @@ def main() -> int:
             published_frames=published_frames,
             reason="normal release completed at zero Arm SDK weight",
         )
+        details.update(
+            {
+                "release_attempted": True,
+                "release_ramp_completed": True,
+                "release_zero_frames_requested": config.release_zero_cycles,
+                "release_zero_frames_sent": config.release_zero_cycles,
+                "zero_release_completed": True,
+                "last_successful_weight": last_successful_weight,
+                "last_successful_write_unix_ns": last_successful_write_unix_ns,
+                "release_fault": None,
+                "output_state_unknown": False,
+                "external_authority_handoff_confirmed": False,
+            }
+        )
         _write_runtime_status(
             args.status_json,
             args.event_log,
@@ -712,8 +779,8 @@ def main() -> int:
         print(f"Result saved to: {args.status_json.resolve()}")
         return 0
     except Exception as exc:
-        snapshot = buffer.snapshot()
-        message = f"{type(exc).__name__}: {exc}"
+        snapshot = buffer.snapshot() or last_snapshot
+        message_text = f"{type(exc).__name__}: {exc}"
         fault_code = FaultCode.INTERNAL_ERROR
         if "motion mode mismatch" in str(exc):
             fault_code = FaultCode.MOTION_MODE_MISMATCH
@@ -721,30 +788,78 @@ def main() -> int:
             fault_code = FaultCode.LOWSTATE_TIMEOUT
         elif "HOLD rejected" in str(exc):
             fault_code = FaultCode.TARGET_ERROR
+
+        release_evidence = None
+        if publisher is not None and message is not None and crc is not None:
+            try:
+                release_evidence = _attempt_fault_release(
+                    buffer=buffer,
+                    fallback_snapshot=snapshot,
+                    publisher=publisher,
+                    message=message,
+                    crc=crc,
+                    config=config,
+                    start_weight=last_successful_weight,
+                )
+            except Exception as release_exc:
+                release_evidence = None
+                release_error = f"{type(release_exc).__name__}: {release_exc}"
+            else:
+                release_error = release_evidence.release_fault
+        else:
+            release_error = None
+
+        output_state_unknown = publisher is not None
+        final_weight = last_successful_weight
+        if release_evidence is not None:
+            output_state_unknown = release_evidence.output_state_unknown
+            final_weight = release_evidence.last_successful_weight
+
         details = _status_details(
             network_interface=args.network_interface,
             snapshot=snapshot,
             target_dual_arm_q_rad=target_dual_arm,
             mode_form=mode_form,
             mode_name=mode_name,
-            weight=0.0,
+            weight=final_weight,
             schedule_phase="FAULT",
             published_frames=published_frames,
-            reason=message,
+            reason=message_text,
         )
+        if release_evidence is not None:
+            details.update(release_evidence.as_dict())
+        else:
+            details.update(
+                {
+                    "release_attempted": publisher is not None,
+                    "release_ramp_completed": False,
+                    "release_zero_frames_requested": (
+                        config.release_zero_cycles if publisher is not None else 0
+                    ),
+                    "release_zero_frames_sent": 0,
+                    "zero_release_completed": False,
+                    "last_successful_weight": last_successful_weight,
+                    "last_successful_write_unix_ns": last_successful_write_unix_ns,
+                    "release_fault": release_error,
+                    "output_state_unknown": output_state_unknown,
+                    "external_authority_handoff_confirmed": False,
+                }
+            )
         _write_runtime_status(
             args.status_json,
             args.event_log,
             phase=HardwarePhase.FAULT,
-            command_output_enabled=False,
+            command_output_enabled=output_state_unknown,
             publisher_present=publisher is not None,
             details=details,
             fault_code=fault_code,
-            fault_message=message,
+            fault_message=message_text,
         )
-        print(f"[FAULT] {message}")
-        if publisher is not None:
-            print("[ACTION] Command stream stopped fail-closed; use the robot stop control.")
+        print(f"[FAULT] {message_text}")
+        if release_evidence is not None and release_evidence.zero_release_completed:
+            print("[RELEASE] Zero-weight tail completed; external authority handback is unconfirmed.")
+        elif publisher is not None:
+            print("[ACTION] Output state is unknown; use the robot stop control.")
         else:
             print("[ACTION] No publisher was created. Fix the reported precondition.")
         print(f"Result saved to: {args.status_json.resolve()}")

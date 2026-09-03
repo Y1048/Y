@@ -1,4 +1,4 @@
-# Remediation log — LowState provenance and launcher status
+# Remediation log — command and LowState provenance
 
 Date: 2026-09-04  
 Branch: `refactor/teleop-architecture`
@@ -16,14 +16,7 @@ fix: validate initial LowState freshness and provenance (R21)
 
 `receive_initial_state.py` now requires the canonical read-only LowState schema, strict session/sequence/timestamp fields, complete 29-joint q/dq consistency and bounded packet age. It can require an exact per-run `forward_token` and stores only a boolean verification result, not the nonce itself.
 
-The supported hardware-sync launcher now creates a new UUID-hex token for each run, passes it to `read_only_lowstate_entry.py`, requires the same token in `receive_initial_state.py`, and terminates only the forwarder carrying that token after snapshot acquisition.
-
-Launcher integration commit:
-
-```text
-3171c2ceb9ced6b5c8488bb46dbb22a3ef97df67
-fix: bind hardware pose sync to per-run LowState token (R21 R51)
-```
+The supported hardware-sync launcher creates a new UUID-hex token for each run, passes it to `read_only_lowstate_entry.py`, requires the same token in `receive_initial_state.py`, and terminates only the forwarder carrying that token after snapshot acquisition.
 
 Status:
 
@@ -53,7 +46,7 @@ lowstate_forward_provenance.verified_packet_count
 
 The token value itself is not persisted.
 
-Supported launchers now create a fresh token and use it at both ends of the read-only UDP bridge:
+Supported launchers create a fresh token and use it at both ends of the read-only UDP bridge:
 
 ```text
 tools/START_G1_RIGHT_ARM_JOG_MUJOCO.bat
@@ -61,8 +54,6 @@ tools/START_G1_SHOULDER_PITCH_FULL_AUTHORITY_TRIAL.bat
 tools/START_G1_GATE6_INTERRUPT_RELEASE_TEST.bat
 tools/START_G1_GATE7_LIVE_HARDWARE.bat
 ```
-
-Each launcher also terminates the exact read-only process by matching `read_only_lowstate_entry.py` plus that run token. This corrects the stale cleanup pattern that still targeted `read_only_lowstate.py` after the supported entrypoint was introduced.
 
 Physical consumers additionally reject a startup-precheck JSON unless its token provenance is present and verified:
 
@@ -74,38 +65,19 @@ hardware/g1_arm_bridge/g1_right_arm_jog_entry.py
 
 This prevents replacing the newly generated precheck with an older, non-token-bound `DIRECT_TELEOP_READY` artifact on supported physical paths.
 
-Representative commits:
-
-```text
-1ac4d5f4306a4685bc3455b4ac4a53674de2fdae  supported precheck token entry
-5b372308626fa7dfa3c15f85bb80b28f54ae69d4  physical precheck provenance guard
-fd95d5d3a6938cfa48d4006b3b162f785b2d59f0  Jog launcher token binding
-cec4dfe1c38325e7e29042b147db98fdcd4eabfa  shoulder launcher token binding
-930d2ee4dbdff5331eff87ed7ac4ded2d23c499e  Gate 6 launcher token binding
-19e48786e81f76c3a4c320e70529f7c429b256a1  Gate 7 launcher token binding
-```
-
 Status:
 
 ```text
 R51 supported physical launchers : MITIGATED with per-run nonce
 R51 generic check_startup_readiness.py direct path : OPEN / lower provenance
-Sender-IP binding                : not required on supported token path
-Cryptographic authentication     : NOT PROVIDED; token is process-run provenance, not a secret/auth protocol
+Cryptographic authentication     : NOT PROVIDED; token is run provenance, not a secret/auth protocol
 Runtime validation               : NOT RUN
 Physical validation              : NOT RUN
 ```
 
 ## R23 — hardware-sync launcher exit status
 
-The hardware-sync launcher previously printed failures but could reach the end without explicitly returning the failed child status. It now preserves the snapshot receiver, pose verifier and controller return codes and exits with the selected `RC`.
-
-Commit:
-
-```text
-b35c24a8baa8405bf2825b4d51cb40651bb6a303
-fix: propagate hardware-sync launcher failures (R23)
-```
+The hardware-sync launcher now preserves snapshot receiver, pose verifier and controller return codes and exits with the selected nonzero `RC` instead of falling through to a successful batch exit.
 
 Status:
 
@@ -114,25 +86,89 @@ R23 source fix             : IMPLEMENTED
 Process-level BAT execution: NOT RUN
 ```
 
-## Regression tests added
+## R35 — Gate 7 relay/adapter source ownership
+
+The supported Gate 7 physical launcher creates a separate per-run `GATE7_RELAY_TOKEN`. The Windows UDP 5008 -> WSL UDP 5013 relay requires the token for live operation, and the supported WSL hardware entry requires the exact same token before command parsing.
+
+Both relay and hardware entry use a bounded retired-session tombstone guard. If ownership changes from session A to B, delayed A traffic cannot later regain command ownership during that same process lifetime.
+
+Status:
+
+```text
+R35 supported relay/adapter path : MITIGATED
+Direct/custom UDP 5013 consumers : outside supported path
+Cryptographic authentication     : NOT PROVIDED
+Runtime validation               : NOT RUN
+Physical validation              : NOT RUN
+```
+
+## R65 — Unity -> Mink sender/source-clock freshness
+
+The legacy Unity packet already carries `timestamp=Time.realtimeSinceStartupAsDouble` and `source=quest3s_head_relative`. The Python adapter now preserves that source clock instead of replacing it with `None`.
+
+A new `CommandSourceGuard` validates the expected loopback sender/source, source timestamp monotonicity, session ordering and retired sessions. It does not subtract Unity's clock epoch from Python monotonic time. Instead it anchors the first source/local arrival pair and compares elapsed source-clock progress with elapsed local-arrival progress. Excess lag therefore exposes controller pause/backlog without requiring synchronized clock epochs.
+
+`live_receiver.py` records arrival time immediately after `recvfrom`, before JSON parsing. `MinkCommandStream` adds estimated source backlog to the downstream `input_packet_age_s` so Gate 7 does not receive a freshly rewrapped age for an old Unity input.
+
+Status:
+
+```text
+R65 supported Unity/Mink command path : MITIGATED
+Cross-machine clock synchronization   : not required by current elapsed-time method
+Runtime validation                    : NOT RUN
+Unity/Quest validation                : NOT RUN
+```
+
+## R15 — recorded replay vs live command provenance
+
+Normalized `gate7_mink_replay.py` traffic now carries:
+
+```text
+command_provenance = recorded_replay
+session_id          = replay-...
+```
+
+The supported Windows live relay rejects explicit `recorded_replay` packets and legacy `replay-*` sessions before forwarding. Accepted live candidates are canonicalized at the relay boundary as:
+
+```text
+command_provenance = live_mink
+```
+
+The supported WSL Gate 7 hardware entry independently requires `live_mink` in addition to the per-run relay token.
+
+`gate7_mink_replay.py --exact-transport` can no longer target the live relay on UDP 5008. Exact transport remains available only on a dedicated offline replay port.
+
+Compatibility boundary: the current simulation controller's UDP 5008 packet predates the explicit `command_provenance` field. The Windows relay therefore accepts a missing provenance field only as a compatibility case when the session is not `replay-*`, then emits canonical `live_mink` downstream. A later packet-contract migration should make the live Mink producer itself emit `live_mink` and remove this allowance.
+
+Status:
+
+```text
+R15 supported physical relay path : MITIGATED
+Live Mink source packet explicit provenance : PARTIAL / compatibility allowance remains
+Normalized replay into live relay : BLOCKED
+Exact-transport replay into UDP 5008 : BLOCKED
+Runtime validation : NOT RUN
+Physical validation: NOT RUN
+```
+
+## Regression coverage added/updated
 
 ```text
 hardware/g1_arm_bridge/test_check_startup_readiness_entry.py
 hardware/g1_arm_bridge/test_precheck_provenance_guard.py
 hardware/g1_arm_bridge/test_lowstate_provenance_launchers.py
 hardware/g1_arm_bridge/test_physical_precheck_provenance_entries.py
+hardware/g1_arm_bridge/test_gate7_mink_wsl_relay.py
+hardware/g1_arm_bridge/test_gate7_live_entrypoint.py
+hardware/g1_arm_bridge/test_gate7_replay_provenance.py
+backend/tests/test_source_provenance.py
+backend/tests/test_mink_command_stream.py
 ```
 
-These tests have been committed but **have not been executed from a checked-out current branch or GitHub Actions in this remediation session**.
+Coverage includes LowState token mismatch, stale/non-provenance prechecks, wrong command sender/source, source-clock backlog, retired A -> B -> A sessions, Gate 7 relay-token mismatch, explicit replay rejection and exact-transport/live-port rejection.
 
-## Remaining provenance work
+## Verification boundary
 
-The next live-command provenance group remains:
+The code and regression tests are committed, but they have **not** been executed from a checked-out current repository or GitHub Actions in this remediation session.
 
-```text
-R35 — Gate 7 relay/adapter source ownership and retired-session replay
-R65 — Unity→Mink sender identity, source timestamp and receive/backlog freshness
-R15 — recorded/replayed command provenance where applicable
-```
-
-No hardware authorization flag was changed by this batch, and no G1/WSL/Unity runtime was started.
+No Unity Play, Quest runtime, WSL DDS runtime or physical G1 command test was performed for this batch. Repository hardware authorization remains locked. No result in this document grants physical-output authorization.

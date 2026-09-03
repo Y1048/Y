@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Supported Gate 6 entrypoint with LowState health supervision (R50)."""
+"""Supported Gate 6 entrypoint with LowState health and precheck provenance guards."""
 
 from __future__ import annotations
 
@@ -8,12 +8,21 @@ from lowstate_health_guard import (
     install_lowstate_health_tracking,
     require_latest_lowstate_health,
 )
+from precheck_provenance_guard import require_provenance_bound_precheck
 
 
-def install_supported_gate6_health_guard() -> None:
-    if getattr(hold, "_supported_gate6_health_guard_installed", False):
+def install_supported_gate6_guards() -> None:
+    if getattr(hold, "_supported_gate6_guards_installed", False):
         return
     install_lowstate_health_tracking(hold.LowStateBuffer)
+
+    original_precheck = hold.validate_precheck
+
+    def guarded_precheck(path, maximum_age_s):
+        payload = original_precheck(path, maximum_age_s)
+        return require_provenance_bound_precheck(payload)
+
+    hold.validate_precheck = guarded_precheck
 
     original_collect = hold._collect_settled_snapshot
 
@@ -31,11 +40,11 @@ def install_supported_gate6_health_guard() -> None:
         return original_blend_weight(*args, **kwargs)
 
     hold.blend_weight = guarded_blend_weight
-    hold._supported_gate6_health_guard_installed = True
+    hold._supported_gate6_guards_installed = True
 
 
 def main() -> int:
-    install_supported_gate6_health_guard()
+    install_supported_gate6_guards()
     return hold.main()
 
 

@@ -25,13 +25,13 @@ Do not remove safety checks, loosen limits or change gains merely to make a test
 Repository : Y1048/Y
 Branch     : refactor/teleop-architecture
 Recent provenance chain:
-  5cb4d657  R15 live/replay provenance helpers
-  f87b9201  replay packets marked recorded_replay
-  e302dd98  live relay rejects replay and emits live_mink
-  4bebf749  Gate 7 hardware entry requires live_mink
-  490c1650  relay provenance regression coverage
-  c84a7927  Gate 7 entry provenance assertion
-  51064ae9  replay provenance regression fixture
+  5c3e0a85  live Mink provenance helper
+  e25de6e7  virtual-center provenance entrypoint
+  c264d3ad  baseline provenance entrypoint
+  9e2ad167  root launcher uses provenance entrypoints
+  fb40acca  relay requires explicit live_mink
+  0c83d080  strict relay regression update
+  983ca9b4  producer provenance regression coverage
 ```
 
 Earlier remediation commits for R64/R1/R3/R34/R46/R2/R33/R40/R41/R42/R50/R21/R23/R35/R51/R65 remain documented in `REVIEW_LATEST.md` and the remediation logs. Query current branch HEAD before editing.
@@ -42,11 +42,19 @@ The default Windows launcher remains:
 START_VR_HAND_TO_MUJOCO.bat
 ```
 
-The default simulation controller remains:
+It now launches the provenance-marking wrapper:
+
+```text
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live_entry.py
+```
+
+which delegates to the existing controller:
 
 ```text
 MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py
 ```
+
+The `--baseline` launcher path similarly uses `run_mink_g1_right_arm_prototype_entry.py`.
 
 Current control scope is the G1 right arm. The simulation path is Unity/VR -> UDP 5005 -> strict source/session/freshness guards -> Mink differential QP/DAQP -> MuJoCo -> Unity state UDP 5006, with a separate Gate 7 candidate stream on UDP 5008. Physical Arm SDK and TWIST2 paths remain separate from the default simulation launcher.
 
@@ -65,19 +73,27 @@ The precision review records findings R1-R67 and remains incomplete. Use [`REVIE
 - **R23**: hardware-sync BAT propagates child failure codes.
 - **R35**: supported Gate 7 relay/adapter path uses a per-run relay token and retired-session tombstones.
 - **R65**: Unity -> Mink path checks loopback/source identity, source-clock progress and backlog freshness; downstream packet age includes estimated source lag.
-- **R15**: normalized replay is marked `recorded_replay`, live relay rejects replay/`replay-*`, canonical hardware-side packets are `live_mink`, and exact transport cannot target UDP 5008.
-
-### R15 compatibility boundary
-
-The current live Mink simulation packet does not yet originate with an explicit `command_provenance=live_mink` field. The Windows relay temporarily accepts a missing provenance field only when the session is not `replay-*`, then canonicalizes the downstream packet as `live_mink`.
-
-Therefore the next provenance code change should be source-side protocol migration: make the live Mink producer itself emit `live_mink`, update its tests/consumers, then remove the relay's missing-provenance compatibility allowance.
+- **R15**: supported live Mink producers now emit `command_provenance=live_mink`; normalized replay emits `recorded_replay`; the live relay rejects missing/replay provenance and exact replay cannot target UDP 5008.
 
 ### Verification boundary
 
-Regression tests for the remediation work are committed but **have not been run from a checked-out current repository or GitHub Actions during this remediation session**.
+A small isolated SDK-neutral smoke of `g1_mink_command_provenance.py` passed: live packets were marked, replay relabeling was rejected, and the wrapper preserved the original packet content.
+
+The actual committed repository regression suite has **not** been run from a current checkout or GitHub Actions. The execution sandbox could not clone GitHub, and this branch currently has no `.github/workflows` test workflow.
 
 No Unity Play, Quest runtime, WSL/DDS runtime or G1 command test has been performed for these provenance commits. Repository hardware authorization remains locked.
+
+### Immediate next work
+
+Do not add more provenance wrappers unless a new concrete gap is found. Next sequence:
+
+```text
+1. Run committed offline/unit/static regression tests from the user's current checkout.
+2. Fix any failures without weakening safety contracts.
+3. Address remaining partial P1 gaps: R40 and R50.
+4. Integrate the shared release contract directly into the Jog controller for R46.
+5. Only after those pass, plan separate simulation/WSL integration checks.
+```
 
 ## 4. Coverage ledger
 

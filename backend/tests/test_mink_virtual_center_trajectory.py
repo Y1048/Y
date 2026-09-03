@@ -21,6 +21,7 @@ from run_mink_g1_right_arm_virtual_center_live import (  # noqa: E402
     WRIST_MAX_JOINT_VELOCITY_DEG_S,
     VirtualCenterOrientationTask,
     virtual_center_damping_costs,
+    virtual_center_posture_costs,
     virtual_center_velocity_limits,
 )
 
@@ -32,6 +33,45 @@ def rotation_error_degrees(target: np.ndarray, actual: np.ndarray) -> float:
 
 
 class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
+    def test_state_feedback_preserves_all_29_joint_positions(self):
+        base._prepare_mink_xml()
+        model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
+        configuration = mink.Configuration(model)
+        configuration.update(base._initial_configuration(model))
+        all_qpos_ids = np.asarray(
+            [
+                int(model.jnt_qposadr[base._joint_id(model, joint_name)])
+                for joint_name in base.g1.G1_29_JOINTS
+            ],
+            dtype=int,
+        )
+        right_qpos_ids = all_qpos_ids[22:29]
+        wrist_position = configuration.get_transform_frame_to_world(
+            "right_wrist_yaw_link",
+            "body",
+        ).translation()
+
+        packet = base._state_packet(
+            configuration,
+            right_qpos_ids,
+            all_qpos_ids,
+            False,
+            wrist_position,
+            None,
+            False,
+        )
+
+        self.assertEqual("mink_simulation", packet["state_source"])
+        self.assertEqual(packet["all_joint_names"], base.g1.G1_29_JOINT_NAMES)
+        np.testing.assert_allclose(
+            packet["all_joint_q_rad"],
+            configuration.q[all_qpos_ids],
+        )
+        np.testing.assert_allclose(
+            packet["right_arm"]["joints"],
+            configuration.q[right_qpos_ids],
+        )
+
     def test_mixed_wrist_target_converges_within_velocity_limit(self):
         base._prepare_mink_xml()
         model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
@@ -53,7 +93,7 @@ class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
         )
         VirtualCenterOrientationTask.assist_latched = False
         orientation_task = VirtualCenterOrientationTask(model)
-        posture_task = mink.PostureTask(model, cost=base.POSTURE_COST)
+        posture_task = mink.PostureTask(model, cost=virtual_center_posture_costs(model))
         posture_task.set_target(configuration.q.copy())
         damping_task = mink.DampingTask(
             model,

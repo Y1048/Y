@@ -1,0 +1,103 @@
+{
+  "observations": {
+    "replay_accepted_as_live_candidate": {
+      "original_timestamp": 1.0,
+      "original_age_s": 99.0,
+      "normalized_age_s": 0.0,
+      "normalized_timestamp": 1788434625.8627415,
+      "normalized_session": "replay-review",
+      "forwarded_packets": 3,
+      "states": [
+        {
+          "state": "HOLD_CURRENT",
+          "frame_present": true
+        },
+        {
+          "state": "TRACK_MINK_RIGHT",
+          "frame_present": true
+        },
+        {
+          "state": "TRACK_MINK_RIGHT",
+          "frame_present": true
+        }
+      ],
+      "physical_publisher": false,
+      "boundary": "Offline controller/frame construction; physical authorization and runtime checks not executed"
+    },
+    "mismatched_capture_accepted": {
+      "replay_count": 2,
+      "quality_count": 2,
+      "manifest_id": "file-A",
+      "record_ids": [
+        "file-B",
+        "file-B"
+      ],
+      "payload_sequences": [
+        10,
+        9
+      ],
+      "metadata_sequences": [
+        500,
+        501
+      ],
+      "quality_manifest": "file-A"
+    },
+    "payload_hash_ignores_timing": {
+      "same_hash": true,
+      "first_duration_s": 0.02,
+      "second_duration_s": 0.2
+    },
+    "quality_zero_duration": {
+      "one_packet": "ZeroDivisionError: float division by zero",
+      "same_time_only": "ZeroDivisionError: float division by zero"
+    }
+  },
+  "tests_run": 4,
+  "tests_passed": true,
+  "indexed_source_changes": [],
+  "hardware_locks": [
+    {
+      "path": "config/g1_gate6_hold.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate6_interrupt_release_test.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_first_live_hardware_output.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_first_live_mink_arm_sdk.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_live_hardware_output.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_mink_arm_sdk.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_visible_motion_hardware_output.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_visible_motion_mink_arm_sdk.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_right_arm_jog.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_right_shoulder_pitch_full_authority_trial.json",
+      "locked": true
+    }
+  ],
+  "sdk_imported": false,
+  "real_network_opened": false,
+  "unity_or_viewer_started": false
+}

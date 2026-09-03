@@ -1,0 +1,30 @@
+[
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\ALLOW_G1_DDS_WSL_ADMIN.ps1",
+    "Errors": []
+  },
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\ALLOW_G1_LOWSTATE_TO_WINDOWS_ADMIN.ps1",
+    "Errors": []
+  },
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\CONFIGURE_G1_ETHERNET_ADMIN.ps1",
+    "Errors": []
+  },
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\DETECT_G1_NETWORK_ADMIN.ps1",
+    "Errors": []
+  },
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1",
+    "Errors": []
+  },
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\SET_UNITY_DISPLAY_MODE.ps1",
+    "Errors": []
+  },
+  {
+    "Path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\backend\\tools\\verify_unity_state_packets.ps1",
+    "Errors": []
+  }
+]

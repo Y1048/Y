@@ -1,5 +1,9 @@
 # Teleoperation Architecture
 
+현재 코드의 읽기 순서·수식·실제 파라미터는 [CODE_GUIDE](CODE_GUIDE.md)를 참고한다.
+[파일 색인](CODE_INDEX.md)은 코드/설정 파일의 목록과 확인 범위를 구분한다.
+2026-09-03 미사용 DLS/voxel/monkey-patch 정리 내역은 [정리 기록](CLEANUP_20260903.md)에 있다.
+
 ## 1. 목적과 범위
 
 이 문서는 VR에서 추적한 사용자 손목 자세를 MuJoCo의 Unitree G1 오른팔 움직임으로 변환하는 현재 구조를 설명한다. 또한 실제 G1, 실제 D435i, 양팔 제어로 확장할 때 유지해야 할 책임 경계와 리팩터링 순서를 정의한다.
@@ -25,12 +29,15 @@ flowchart LR
     Controller[MuJoCo G1 controller]
     Model[Unitree G1 29DoF model]
     Feedback[UDP feedback :5006]
-    Camera[Simulated / real D435i]
+    Camera[G1 front camera]
+    VideoClient[SDK2 VideoClient / CycloneDDS]
+    CameraBridge[WSL JPEG bridge / TCP :5011]
+    CameraPiP[Unity head-camera PiP]
 
     Operator --> Quest --> Unity
     Unity --> Command --> Controller --> Model
     Controller --> Feedback --> Unity
-    Controller --> Camera
+    Camera --> VideoClient --> CameraBridge --> CameraPiP --> Unity
 ```
 
 ### 현재 end-to-end 경로
@@ -52,7 +59,8 @@ Quest right wrist pose
 루트의 `START_VR_HAND_TO_MUJOCO.bat`이 현재 실행 진입점이며, 다음 두 프로세스를 연다.
 
 - Unity 프로젝트 `Unity_G1_VR`
-- MuJoCo 실행기 `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py`
+- 기본 MuJoCo 실행기 `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py`
+- `run_mink_g1_right_arm_prototype.py`는 공통 모듈이며 `--baseline`에서만 직접 실행
 
 ---
 
@@ -81,10 +89,15 @@ Unity_G1_VR/Assets/G1Teleop/
 | --- | --- |
 | `G1ExistingHandTargetBinder` | 추적 손목과 target 연결, calibration 상태 관리 |
 | `G1ExistingTargetUdpSender` | 목표 위치·회전, session, sequence, command state 송신 |
-| `G1RobotStateUdpReceiver` | 오른팔 상태와 workspace/collision feedback 수신 |
-| `G1OfficialRig` 및 관련 클래스 | Unity G1 모델과 관절 표시 |
+| `G1RobotStateUdpReceiver` | UDP 5006 Mink 피드백과 UDP 5010 실제 G1 표시 상태를 출처별로 분리 수신 |
+| `G1OfficialRig` 및 관련 클래스 | 이름 순서가 검증된 29관절 상태를 Unity G1 모델에 표시 |
+| `G1HeadCameraPiP` | 로컬 TCP 5011의 검증된 JPEG를 수신해 시야 고정 창에 표시 |
 
 Unity는 사용자의 입력과 피드백을 담당하지만, 장기적으로는 최종 안전 판정을 내리는 계층이 되어서는 안 된다. Unity가 중단되거나 packet이 조작되더라도 backend/controller가 독립적으로 안전 상태를 유지해야 한다.
+
+머리 카메라 PiP는 별도의 관측 경로다. 영상 연결 상태는 engagement, IK,
+watchdog 또는 모터 명령을 변경하지 않는다. 전신/base telemetry는 진단과 모델
+재생에 유지하지만, 운용자는 실제 환경과 이동 결과를 PiP로 직접 확인한다.
 
 ### 3.2 Shared Python foundation
 
@@ -116,13 +129,13 @@ backend/g1_teleop/
 현재 launcher가 사용하는 핵심 파일:
 
 ```text
-MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py
 ```
 
-별도 실험 실행기:
+공통 모듈 및 명시적 baseline 비교 실행기:
 
 ```text
-MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py
 ```
 
 현재 제어 계층의 책임:
@@ -225,19 +238,19 @@ Engagement 순간의 사용자 손 pose와 G1의 현재 손목 pose를 별도 �
 
 ## 5. 오른팔 제어 구조
 
-### 5.1 기본 6D task
+### 5.1 현재 role-separated 6D task
 
-launcher가 사용하는 prototype은 `right_wrist_yaw_link`에 하나의 Mink
-`FrameTask`를 둔다.
+기본 launcher는 위치와 회전을 두 task로 분리한다.
 
-- position cost: `8.0`
-- orientation cost: `2.0`
+- position: `right_wrist_roll_link`, cost `8.0`
+- orientation: `right_wrist_yaw_link`, cost `2.0`
 - gain: `0.35`
 - LM damping: `1e-5`
 - solver: DAQP 우선
 
-오른팔 7개 관절 전체로 손목 위치와 회전을 동시에 풀며, engagement 때 저장한
-사용자 손목과 실제 G1 손목의 상대 변화만 목표로 사용한다.
+오른팔 7개 관절로 손목 6D 목표를 풀며, engagement 때 저장한 사용자 손목과
+실제 G1 손목의 상대 변화만 적용한다. Unity에 보이는 외부 손목 frame은 계속
+`right_wrist_yaw_link`다.
 
 ### 5.2 자연스러운 해 선택
 
@@ -250,19 +263,18 @@ launcher가 사용하는 prototype은 `right_wrist_yaw_link`에 하나의 Mink
 각 60 Hz step에서 다음 제약을 함께 푼다.
 
 1. MuJoCo 관절 위치 범위인 `ConfigurationLimit`
-2. 오른팔 최대 관절 속도 75 deg/s인 `VelocityLimit`
+2. 어깨·팔꿈치 40 deg/s, 손목 100 deg/s인 `VelocityLimit`
 3. geometry 간 최소 거리와 감지 거리를 사용하는 `CollisionAvoidanceLimit`
 4. 오른팔 외 모든 DOF 속도를 0으로 만드는 `DofFreezingTask`
 
 목표를 먼저 계산한 뒤 사후 clamp하는 구조가 아니라 task와 제한을 같은 QP에
 포함한다.
 
-### 5.4 Virtual-center 실험
+### 5.4 Baseline 비교 경로
 
-`run_mink_g1_right_arm_virtual_center_live.py`는 위치 task를
-`right_wrist_roll_link`, 회전 task를 `right_wrist_yaw_link`로 분리한다. 손목
-한계 근처에서만 proximal orientation assist를 켜는 실험이며 현재 메인
-launcher 경로는 아니다.
+현재 메인 launcher는 `run_mink_g1_right_arm_virtual_center_live.py`를 기본으로
+사용한다. `--baseline`을 명시할 때만 `right_wrist_yaw_link` 하나에 위치와 회전을
+모두 둔 이전 단일 6D `FrameTask` 제어기를 실행한다.
 
 ---
 
@@ -290,9 +302,8 @@ pinch와 오래된 sender를 대체하는 새 session만 clutch reference를 초
 | sequence watchdog | 중복·역순 packet 거부 |
 | session watchdog | 동시에 실행된 오래된 Unity sender와 충돌 방지 |
 | timeout hold | 입력 중단 시 새 목표 갱신을 멈추고 마지막 관절 상태 유지 |
-| continuous Cartesian reference | 초록 목표를 사용자 손 방향으로 끊김 없이 속도 제한하여 이동 |
+| direct Cartesian reference | 초록 목표를 필터링된 사용자 손 목표에 직접 배치 |
 | sustained pinch disengage | 사용자가 의도적으로 즉시 clutch를 해제 |
-| direct Cartesian target | 초록 목표는 필터링된 사용자 손 목표를 즉시 표시하고 IK에 전달 |
 | Mink velocity limit | 관절 속도를 QP 내부에서 제한 |
 | configuration limit | MuJoCo 관절 범위 준수 |
 | collision avoidance | 지정 geometry 간 거리를 QP 내부에서 제한 |
@@ -372,6 +383,133 @@ Unity가 보내는 `active` 요청은 명령일 뿐이며, controller가 최종�
 진행한다.
 
 또한 MuJoCo UDP receiver는 현재 `0.0.0.0:5005`에 bind한다. 로컬 PC에서만 사용할 경우 `127.0.0.1` bind 또는 firewall 제한이 더 안전하다. 현재 UDP packet에는 인증·암호화가 없으므로 외부 네트워크에 그대로 노출하면 안 된다.
+
+### 7.1 Physical G1 read-only display boundary
+
+```text
+G1 rt/lowstate + rt/odommodestate
+    -> WSL SDK2/CycloneDDS subscribers (read-only)
+    -> first odometry sample = relative base origin
+    -> UDP 5009 strict 29-joint + optional base-state telemetry
+    -> MuJoCo full-body and relative-base mirror + display interpolation
+    -> g1_unity_state_bridge.py
+    -> UDP 5010 state_source=g1_lowstate_read_only
+       (the exact MuJoCo-displayed joints/base + source/display diagnostics)
+    -> Unity official G1 rig
+```
+
+UDP 5006은 `state_source=mink_simulation`인 제어 시뮬레이션 피드백으로 유지한다.
+`G1ExistingTargetUdpSender`의 workspace/collision 판단은 계속 5006만 사용한다.
+UDP 5010은 실제 G1 또는 저장 LowState의 전신 시각화 전용이며 어떤 target이나
+motor command도 생성하지 않는다. Unity 프리뷰는 신선한 5010 전신 상태를
+우선하고, 없으면 5006 Mink 상태를 표시한다. 두 출처를 한 수신기에 섞지 않는다.
+
+29개 motor angle은 관절 articulation을 복원하고, 별도의
+`rt/odommodestate`가 base 위치와 IMU 방향을 보완한다. 실행마다 첫 유효 base
+sample을 원점/identity로 정규화해 절대 odometry jump를 제거한다. MuJoCo는
+고정-base 모델의 `pelvis` body transform만 관찰용으로 이동하고, Unity는 같은
+상대 pose를 G1 root에 적용한다. base topic이 없거나 stale이어도 29관절 경로는
+중단하지 않고 마지막 base pose를 유지한다. 두 DDS 경로 모두 subscriber-only다.
+
+5010은 5009 원본을 MuJoCo보다 먼저 전달하지 않는다. MuJoCo가 해당 프레임에
+실제로 적용한 보간 관절/base 자세를 Unity에도 보내므로 두 화면의 표시 자세는
+동일하다. `g1_visual_mirror_*.jsonl`은 원본 G1 자세, MuJoCo 표시 자세, Unity에
+명령한 동일 표시 자세와 그 차이를 기록한다. Unity는 실제 root transform과
+5010 표시 자세의 위치/회전 오차를 `G1 BASE MIRROR` 로그로 추가 검증한다.
+
+### 7.2 Physical G1 Gate 6 command boundary
+
+Regular Mode에서 하체 motion service를 유지하는 실제 G1 상체 경로는
+`rt/lowcmd`가 아니라 공식 `rt/arm_sdk`를 사용한다.
+여기서 Regular Mode는 G1이 평평한 지면에서 두 발로 자립하고 하체 motion
+service가 균형을 유지하는 운용 상태를 뜻한다. 공중에 매달린 상태에서 얻은
+읽기 전용 결과는 DDS/관절 동기화 검증에는 사용할 수 있지만 실제 Gate 6
+출력을 승인하지 않는다.
+
+```text
+G1 rt/lowstate
+    -> fresh 29-joint measured state
+    -> MotionSwitcher signature check
+    -> dual-arm measured-pose HOLD validation
+    -> 35-slot HG LowCmd construction + CRC
+    -> explicit authorization gate
+    -> rt/arm_sdk
+```
+
+G1 Arm SDK의 `motor_cmd[29].q`는 motion service와 사용자 양팔 명령 사이의
+전역 blend weight다. 따라서 오른팔만 움직일 계획이어도 publisher 최초 획득
+시점에는 왼팔과 오른팔 14축을 모두 실측값으로 시드하고 검증한다. 동적으로
+갱신하는 관절은 15~28번뿐이며 허리 12~14번과 하체는 command mode와 gain을
+0으로 유지한다.
+
+Gate 6 publisher는 read-only forwarder와 분리되어 있다. 기본 실행은
+publisher를 import하거나 생성하지 않는 준비 검사다. 실제 출력 분기는 최신
+`DIRECT_TELEOP_READY`, config authorization, command 승인 문구, 지상 자립
+Regular 확인 문구를 모두 요구한다.
+영구 config authorization은 `false`다. 사용자 확인과 1회용 승인 설정으로
+최대 weight `0.2` measured-pose HOLD를 한 번 완료했지만 live Mink target은
+아직 실제 G1에 전송하지 않았다.
+
+### 7.3 Locked Gate 7 Mink target adapter
+
+Gate 7은 Gate 6의 publisher를 활성화하지 않은 채 live-target 계약만 분리해
+검증하는 오프라인 경계다.
+
+```text
+Mink state mirror (UDP 5008)
+    -> schema/session/sequence/watchdog validation
+    -> active: right-arm target rate limit
+    -> intentional pinch: collision-prevalidated dual-arm minimum-jerk return
+    -> tracking/network/workspace/collision fault: hold measured pose for 10 s
+    -> fault persists for 10 s: same collision-prevalidated Regular return
+    -> valid active input recovers before 10 s: cancel timer and resume tracking
+    -> SDK-neutral 35-slot Arm SDK candidate frame
+    -> [hardware authorization remains false]
+```
+
+Unity는 이미 `pinch_disengaged`와 `tracking_disengaged`를 구분해 송신한다.
+`MinkCommandStream`은 Mink의 계산 상태와 별도로 그 원본 mode를 보존한다.
+그러므로 추적 손실을 사용자 의도와 혼동하지 않는다. 의도적 pinch는 즉시 복귀하고,
+의도치 않은 해제는 10초간 현재 측정 자세를 유지한 뒤에만 복귀한다.
+
+의도적 pinch 복귀 목표는 `config/g1_regular_arm_pose.json`에 저장된 실측
+Regular 양팔 14축이다. Arm SDK blend weight가 양팔 전체에 적용되므로 복귀는
+15~28번을 함께 계획하지만, 허리와 하체는 계속 command 대상에서 제외한다.
+복귀 경로 전체가 MuJoCo/Mink collision pair에서 12 mm 이상인지 먼저 검증하지
+못하면 움직임 후보를 생성하지 않는다. 실제 publisher, DDS entity, Unitree SDK
+호출은 이 경계에 포함되지 않는다.
+
+현재 복귀는 저장된 양팔 관절 자세를 만드는 오프라인 command 후보다. 휴대용
+조종기는 향후 비상정지와 운용 모드 전환 수단으로 유지한다. 실제 G1 내부 Regular
+제어기에 양팔 권한을 넘기는 Arm SDK weight release와 모드 확인은 별도의 지상
+실기 Gate이며 이 오프라인 경계에는 구현하거나 승인하지 않았다.
+
+### 7.4 Gate 7 live dry-run
+
+`gate7_live_dry_run.py`는 UDP 5008의 실제 Mink stream을 같은 Gate 7 계약에
+연속 입력하며 SDK-neutral `ArmSdkCommandFrame`과 JSONL 로그를 만든다. 같은
+후보의 시뮬레이션 전용 복사본만 localhost UDP 5012로 MuJoCo에 되돌린다.
+
+```text
+Unity UDP 5005 -> Mink/MuJoCo -> UDP 5008
+    -> Gate7TeleopController at 250 Hz
+    -> measured/target age and 10 deg validation
+    -> 35-slot Arm SDK candidate
+    +-> JSONL
+    `-> UDP 5012 simulation_only feedback
+        -> MuJoCo applies REGULAR_RETURN / REGULAR_HOLD only
+    -> no Unitree SDK, DDS entity, publisher or physical command
+```
+
+기본 `mink` 모드는 후보를 이상적으로 추종하는 shadow plant로 사용한다. 선택적
+`lowstate` 모드는 UDP 5007의 29관절 측정값을 사용해 실제 자세 대비 후보 오차와
+250 ms stale 차단을 검증한다. 이 모드는 로봇이 실제로 후보를 따라 움직이지 않기
+때문에 목표가 측정값에서 10도 이상 벌어지면 의도대로 후보가 차단된다.
+
+5012 receiver는 Unity command가 inactive이고 packet age가 250 ms 이하일 때만
+복귀 상태를 적용한다. 정확히 양팔 15~28번 qpos만 바꾸며 하체와 허리는 유지한다.
+`simulation_only=true`, `hardware_output_authorized=false`가 아닌 packet은
+거부하므로 이 경로를 실제 G1 출력으로 재사용할 수 없다.
 
 ---
 
@@ -489,14 +627,15 @@ while running:
 - fake sender → MuJoCo controller
 - Unity editor sender → MuJoCo controller
 - controller → Unity state feedback
-- simulated head camera → shared memory reader
+- SDK2 `VideoClient.GetImageSample` → 완전한 JPEG 검사
+- WSL camera bridge → TCP 5011 → Unity 시야 고정 PiP
 
 ### Manual hardware tests
 
 - Quest Link tracking continuity
 - engagement 시 target jump 여부
 - workspace 경계에서 초록 목표 projection과 관절 제한 동작
-- 실제 D435i frame와 simulation frame 교체
+- 실제 G1 `videohub` frame의 갱신·stale·재연결 동작
 - 장시간 실행 중 session 재시작과 recovery
 
 ---

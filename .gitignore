@@ -56,6 +56,10 @@ ENV/
 logs/
 *.log
 
+# Imported TWIST2 runtime captures stay local; source and policy are versioned.
+references/lower_body/twist2_deploy/*.csv
+references/lower_body/twist2_deploy/eth0
+
 # ==============================
 # Generated MuJoCo runtime models
 # ==============================

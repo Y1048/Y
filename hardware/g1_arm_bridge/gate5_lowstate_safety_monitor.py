@@ -26,6 +26,8 @@ from hardware_state import (
     write_status,
 )
 from safety_gate import SafetyConfig, SafetyDecision, evaluate_target
+from g1_joint_contract import G1_29_JOINT_NAMES
+from g1_base_state import BASE_STATE_TOPIC
 
 LOWSTATE_TELEMETRY_SCHEMA: Final[str] = "g1.lowstate.right_arm.v1"
 LOWSTATE_MODE: Final[str] = "READ_ONLY_LOWSTATE"
@@ -43,12 +45,31 @@ class LowStatePacketError(ValueError):
 
 
 @dataclass(frozen=True)
+class BaseStateTelemetry:
+    valid: bool
+    topic: str
+    received_packets: int
+    invalid_packets: int
+    last_packet_age_s: float | None
+    position_m: tuple[float, float, float]
+    quaternion_xyzw: tuple[float, float, float, float]
+    velocity_mps: tuple[float, float, float]
+    yaw_speed_rad_s: float
+
+
+@dataclass(frozen=True)
 class LowStateTelemetry:
     bridge_session_id: str
     sequence: int
     sent_at_unix_ns: int
+    mode_pr: int | None
+    mode_machine: int | None
     measured_q_rad: tuple[float, ...]
     measured_dq_rad_s: tuple[float, ...]
+    all_joint_names: tuple[str, ...] | None
+    all_joint_q_rad: tuple[float, ...] | None
+    all_joint_dq_rad_s: tuple[float, ...] | None
+    base_state: BaseStateTelemetry | None = None
 
 
 class PacketOrderTracker:
@@ -83,6 +104,146 @@ def _finite_joint_vector(value: object, name: str) -> tuple[float, ...]:
     if not all(math.isfinite(item) for item in vector):
         raise LowStatePacketError(f"{name} contains a non-finite value")
     return vector
+
+
+def _optional_uint8(value: object, name: str) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 255:
+        raise LowStatePacketError(f"{name} must be a uint8 value")
+    return value
+
+
+def _optional_g1_29_vector(value: object, name: str) -> tuple[float, ...] | None:
+    if value is None:
+        return None
+    if not isinstance(value, list) or len(value) != 29:
+        raise LowStatePacketError(f"{name} must contain exactly 29 joints")
+    try:
+        vector = tuple(float(item) for item in value)
+    except (TypeError, ValueError) as exc:
+        raise LowStatePacketError(f"{name} contains a non-numeric value") from exc
+    if not all(math.isfinite(item) for item in vector):
+        raise LowStatePacketError(f"{name} contains a non-finite value")
+    return vector
+
+
+def _optional_g1_29_names(value: object) -> tuple[str, ...] | None:
+    if value is None:
+        return None
+    if (
+        not isinstance(value, list)
+        or len(value) != 29
+        or not all(isinstance(item, str) and item for item in value)
+    ):
+        raise LowStatePacketError("all_joint_names must contain 29 non-empty names")
+    if len(set(value)) != len(value):
+        raise LowStatePacketError("all_joint_names contains duplicates")
+    names = tuple(value)
+    if names != G1_29_JOINT_NAMES:
+        raise LowStatePacketError("all_joint_names does not match G1 motor order")
+    return names
+
+
+def _finite_vector(
+    value: object,
+    expected_length: int,
+    name: str,
+) -> tuple[float, ...]:
+    if not isinstance(value, list) or len(value) != expected_length:
+        raise LowStatePacketError(
+            f"{name} must contain exactly {expected_length} values"
+        )
+    try:
+        vector = tuple(float(item) for item in value)
+    except (TypeError, ValueError) as exc:
+        raise LowStatePacketError(f"{name} contains a non-numeric value") from exc
+    if not all(math.isfinite(item) for item in vector):
+        raise LowStatePacketError(f"{name} contains a non-finite value")
+    return vector
+
+
+def _nonnegative_integer(value: object, name: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise LowStatePacketError(f"{name} must be a non-negative integer")
+    return value
+
+
+def _optional_base_state(value: object) -> BaseStateTelemetry | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise LowStatePacketError("base_state must be an object")
+    valid = value.get("valid")
+    if not isinstance(valid, bool):
+        raise LowStatePacketError("base_state.valid must be boolean")
+    if value.get("topic") != BASE_STATE_TOPIC:
+        raise LowStatePacketError("base_state.topic is unexpected")
+
+    packet_age_value = value.get("last_packet_age_s")
+    if packet_age_value is None:
+        packet_age_s = None
+    else:
+        try:
+            packet_age_s = float(packet_age_value)
+        except (TypeError, ValueError) as exc:
+            raise LowStatePacketError(
+                "base_state.last_packet_age_s must be numeric or null"
+            ) from exc
+        if not math.isfinite(packet_age_s) or packet_age_s < 0.0:
+            raise LowStatePacketError(
+                "base_state.last_packet_age_s must be finite and non-negative"
+            )
+    if valid and packet_age_s is None:
+        raise LowStatePacketError(
+            "valid base_state requires last_packet_age_s"
+        )
+
+    position = _finite_vector(value.get("position_m"), 3, "base_state.position_m")
+    quaternion = _finite_vector(
+        value.get("quaternion_xyzw"),
+        4,
+        "base_state.quaternion_xyzw",
+    )
+    quaternion_norm = math.sqrt(sum(item * item for item in quaternion))
+    if abs(quaternion_norm - 1.0) > 1e-3:
+        raise LowStatePacketError("base_state quaternion must be normalized")
+    velocity = _finite_vector(
+        value.get("velocity_mps"),
+        3,
+        "base_state.velocity_mps",
+    )
+    try:
+        yaw_speed = float(value.get("yaw_speed_rad_s"))
+    except (TypeError, ValueError) as exc:
+        raise LowStatePacketError(
+            "base_state.yaw_speed_rad_s must be numeric"
+        ) from exc
+    if not math.isfinite(yaw_speed):
+        raise LowStatePacketError("base_state.yaw_speed_rad_s is non-finite")
+
+    return BaseStateTelemetry(
+        valid=valid,
+        topic=BASE_STATE_TOPIC,
+        received_packets=_nonnegative_integer(
+            value.get("received_packets"),
+            "base_state.received_packets",
+        ),
+        invalid_packets=_nonnegative_integer(
+            value.get("invalid_packets", 0),
+            "base_state.invalid_packets",
+        ),
+        last_packet_age_s=packet_age_s,
+        position_m=(position[0], position[1], position[2]),
+        quaternion_xyzw=(
+            quaternion[0],
+            quaternion[1],
+            quaternion[2],
+            quaternion[3],
+        ),
+        velocity_mps=(velocity[0], velocity[1], velocity[2]),
+        yaw_speed_rad_s=yaw_speed,
+    )
 
 
 def parse_lowstate_telemetry(payload: bytes) -> LowStateTelemetry:
@@ -125,12 +286,24 @@ def parse_lowstate_telemetry(payload: bytes) -> LowStateTelemetry:
         bridge_session_id=session_id,
         sequence=sequence,
         sent_at_unix_ns=sent_at_unix_ns,
+        mode_pr=_optional_uint8(message.get("mode_pr"), "mode_pr"),
+        mode_machine=_optional_uint8(
+            message.get("mode_machine"), "mode_machine"
+        ),
         measured_q_rad=_finite_joint_vector(
             message.get("right_arm_q_rad"), "right_arm_q_rad"
         ),
         measured_dq_rad_s=_finite_joint_vector(
             message.get("right_arm_dq_rad_s"), "right_arm_dq_rad_s"
         ),
+        all_joint_names=_optional_g1_29_names(message.get("all_joint_names")),
+        all_joint_q_rad=_optional_g1_29_vector(
+            message.get("all_joint_q_rad"), "all_joint_q_rad"
+        ),
+        all_joint_dq_rad_s=_optional_g1_29_vector(
+            message.get("all_joint_dq_rad_s"), "all_joint_dq_rad_s"
+        ),
+        base_state=_optional_base_state(message.get("base_state")),
     )
 
 
@@ -198,6 +371,7 @@ def _details(
     measured = packet.measured_q_rad if packet is not None else None
     velocity = packet.measured_dq_rad_s if packet is not None else None
     candidate = decision.command_q_rad if decision is not None else None
+    base_state = packet.base_state if packet is not None else None
     return {
         "gate": 5,
         "mode": "REAL_LOWSTATE_SAFETY_DRY_RUN",
@@ -207,6 +381,8 @@ def _details(
         "source": source,
         "bridge_session_id": packet.bridge_session_id if packet else None,
         "packet_sequence": packet.sequence if packet else None,
+        "mode_pr": packet.mode_pr if packet else None,
+        "mode_machine": packet.mode_machine if packet else None,
         "packet_age_s": packet_age,
         "valid_packets": valid_packets,
         "invalid_packets": invalid_packets,
@@ -217,6 +393,21 @@ def _details(
         "candidate_q_rad": list(candidate) if candidate is not None else None,
         "candidate_q_deg": _degrees(candidate),
         "candidate_forwarded": False,
+        "base_state": (
+            {
+                "valid": base_state.valid,
+                "topic": base_state.topic,
+                "received_packets": base_state.received_packets,
+                "invalid_packets": base_state.invalid_packets,
+                "last_packet_age_s": base_state.last_packet_age_s,
+                "position_m": list(base_state.position_m),
+                "quaternion_xyzw": list(base_state.quaternion_xyzw),
+                "velocity_mps": list(base_state.velocity_mps),
+                "yaw_speed_rad_s": base_state.yaw_speed_rad_s,
+            }
+            if base_state is not None
+            else None
+        ),
         "gate_decision": {
             "allowed": decision.allowed if decision is not None else False,
             "reason": decision.reason if decision is not None else "waiting",

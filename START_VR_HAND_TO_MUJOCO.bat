@@ -8,8 +8,12 @@ set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
 set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_VR"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_virtual_center_live.py"
+set "CAMERA_LAUNCHER=%PROJECT_ROOT%tools\START_G1_CAMERA_TO_UNITY.bat"
 set "IK_MODE=virtual-center"
 set "CHECK_ONLY=0"
+set "DISPLAY_MODE=simulation"
+if /I "%~1"=="--hardware-display" set "DISPLAY_MODE=hardware"
+if /I "%~2"=="--hardware-display" set "DISPLAY_MODE=hardware"
 if /I "%~1"=="--baseline" (
     set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype.py"
     set "IK_MODE=baseline"
@@ -21,6 +25,7 @@ if /I "%~2"=="--baseline" (
 if /I "%~1"=="--check" set "CHECK_ONLY=1"
 if /I "%~2"=="--check" set "CHECK_ONLY=1"
 set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
+set "GATE7_FEEDBACK_PORT=5012"
 
 echo ========================================
 echo G1 Quest hand tracking to Mink/MuJoCo
@@ -82,16 +87,46 @@ set "UDP_RUNNING=0"
 netstat -ano -p UDP | findstr /R /C:":%UDP_PORT%[ ]" >nul
 if not errorlevel 1 set "UDP_RUNNING=1"
 
+set "GATE7_FEEDBACK_RUNNING=0"
+netstat -ano -p UDP | findstr /R /C:":%GATE7_FEEDBACK_PORT%[ ]" >nul
+if not errorlevel 1 set "GATE7_FEEDBACK_RUNNING=1"
+
+if "%UDP_RUNNING%"=="1" if "%GATE7_FEEDBACK_RUNNING%"=="0" (
+    echo [WARNING] The existing Mink process does not listen on simulation feedback UDP %GATE7_FEEDBACK_PORT%.
+    echo [ACTION] Close the old Mink/MuJoCo window, then run this launcher again to enable Regular-return visualization.
+)
+if "%UDP_RUNNING%"=="0" if "%GATE7_FEEDBACK_RUNNING%"=="1" (
+    echo [ERROR] UDP %GATE7_FEEDBACK_PORT% is already used by another process.
+    echo [ACTION] Close the process using UDP %GATE7_FEEDBACK_PORT%, then run this launcher again.
+    goto :failed
+)
+
 rem Detect THIS Unity project, not merely any Unity.exe process.
 set "UNITY_PROJECT_RUNNING=0"
 powershell -NoProfile -Command "$u='%UNITY_PROJECT%'.ToLowerInvariant(); $p=Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq 'Unity.exe' -and $_.CommandLine -and $_.CommandLine.ToLowerInvariant().Contains($u) }; if($p){exit 0}else{exit 1}" >nul 2>&1
 if not errorlevel 1 set "UNITY_PROJECT_RUNNING=1"
 
+set "G1_CAMERA_AVAILABLE=0"
+powershell -NoProfile -Command "$ip=Get-NetIPAddress -IPAddress '192.168.123.99' -ErrorAction SilentlyContinue; if($ip -and (Test-Connection 192.168.123.164 -Count 1 -Quiet)){exit 0}else{exit 1}" >nul 2>&1
+if not errorlevel 1 set "G1_CAMERA_AVAILABLE=1"
+
+set "G1_CAMERA_RUNNING=0"
+wsl -d Ubuntu -- bash -lc "pgrep -f '[g]1_camera_tcp_bridge.py' >/dev/null" >nul 2>&1
+if not errorlevel 1 set "G1_CAMERA_RUNNING=1"
+
 if "%CHECK_ONLY%"=="1" (
     echo [OK] Required project files, config, and programs are ready.
     if "%UDP_RUNNING%"=="1" (echo [STATUS] UDP port %UDP_PORT% is already in use.) else (echo [STATUS] Mink controller is not running.)
     if "%UNITY_PROJECT_RUNNING%"=="1" (echo [STATUS] Unity G1 VR project is already open.) else (echo [STATUS] Unity G1 VR project is not running.)
+    if "%G1_CAMERA_AVAILABLE%"=="1" (echo [STATUS] G1 camera API is reachable by Ethernet.) else (echo [STATUS] G1 camera bridge will stay off until G1 Ethernet is connected.)
     exit /b 0
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PROJECT_ROOT%tools\SET_UNITY_DISPLAY_MODE.ps1" -Mode %DISPLAY_MODE%
+if errorlevel 1 (
+    echo [ERROR] Could not set the local Unity display mode.
+    echo [ACTION] Stop Unity Play and check logs\runtime write access before retrying.
+    goto :failed
 )
 
 if "%UNITY_PROJECT_RUNNING%"=="0" (
@@ -109,17 +144,30 @@ if "%UDP_RUNNING%"=="0" (
     echo [KEEP] A UDP controller is already listening on port %UDP_PORT%.
 )
 
+if "%G1_CAMERA_AVAILABLE%"=="1" (
+    if "%G1_CAMERA_RUNNING%"=="0" (
+        echo [START] Read-only G1 camera bridge to Unity TCP 5011
+        start "G1 Camera Read Only" cmd /c call "%CAMERA_LAUNCHER%"
+    ) else (
+        echo [KEEP] The read-only G1 camera bridge is already running.
+    )
+) else (
+    echo [INFO] G1 camera bridge skipped: 192.168.123.164 is not reachable.
+)
+
 echo.
 echo Ready for the live test:
 echo   1. In Meta Horizon Link, confirm Quest Link is connected.
 echo   2. In Unity, open Assets/Scenes/SampleScene if needed.
 echo   3. Press the Play button at the top of Unity.
+echo      If G1 Ethernet is connected, the head-camera PiP turns green after live JPEG frames arrive.
 echo   4. Move the cyan Quest wrist marker to the G1 wrist engagement target.
 echo   5. Hold it inside the target for around 0.55 seconds while it turns yellow.
 echo   6. After the target turns green, move and rotate your right wrist.
 echo   7. Confirm that the Mink/MuJoCo right arm follows the wrist pose.
-echo   8. Guide the inspection-tool tip to the target point on the panel.
-echo   9. Hold contact for 0.75 seconds until the target turns green.
+echo   8. The inspection stick and panel are currently hidden for camera/arm tests.
+echo   9. After disengagement, Gate 7 simulation feedback on UDP 5012 shows the
+echo      10-second HOLD and Regular-pose return directly in the MuJoCo window.
 echo.
 echo Controller:
 if "%IK_MODE%"=="virtual-center" (
@@ -137,12 +185,6 @@ echo   White  = waiting for alignment
 echo   Yellow = aligned; hold still to engage
 echo   Green  = teleoperation active
 echo   Gesture disengage = thumb-index pinch 0.50 s
-echo.
-echo Inspection target colors:
-echo   Blue   = waiting
-echo   Yellow = approaching
-echo   Orange = holding contact
-echo   Green  = inspection complete
 echo.
 echo Keep this window open only as a checklist; closing it does not stop the test.
 pause

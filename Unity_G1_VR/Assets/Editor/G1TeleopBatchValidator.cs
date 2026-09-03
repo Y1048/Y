@@ -30,7 +30,13 @@ public static class G1TeleopBatchValidator
 
         ValidateBinder(binder_value);
         ValidateSender(sender_value, binder_value);
+        ValidateStateReceivers(sender_value, preview_value);
+        AssertCondition(
+            !preview_value.show_inspection_scene,
+            "Inspection panel visuals must remain hidden by default.");
+        ValidateBaseCoordinateMapping();
         ValidateHeadLockedCamera(camera_lock_value, preview_value);
+        ValidateHeadCameraPiP();
         ValidateOfficialRig();
         ValidatePositionOnlyEngagement();
         ValidateTriggerRelativeRotation();
@@ -140,6 +146,9 @@ public static class G1TeleopBatchValidator
         {
             G1OfficialRig rig_value = instance_value.GetComponent<G1OfficialRig>();
             AssertCondition(rig_value != null, "Official G1 rig component is missing.");
+            AssertCondition(
+                !rig_value.show_inspection_tool,
+                "Inspection tool visual must remain hidden by default.");
 
             Transform semantic_reference_value =
                 rig_value.GetRightHandSemanticReference();
@@ -155,11 +164,78 @@ public static class G1TeleopBatchValidator
                     semantic_reference_value.localRotation,
                     Quaternion.identity) < 0.01f,
                 "G1 semantic wrist axes are not aligned with the imported wrist frame.");
+
+            string[] full_body_joint_names = G1OfficialRig.GetFullBodyJointNames();
+            float[] full_body_joint_positions = new float[full_body_joint_names.Length];
+            AssertCondition(
+                full_body_joint_names.Length == 29
+                    && rig_value.ApplyAllJointPositions(
+                        full_body_joint_names,
+                        full_body_joint_positions),
+                "G1 rig does not accept the canonical 29-joint state contract.");
         }
         finally
         {
             UnityEngine.Object.DestroyImmediate(instance_value);
         }
+    }
+
+    private static void ValidateStateReceivers(
+        G1ExistingTargetUdpSender sender_value,
+        G1UnityRightArmPreview preview_value)
+    {
+        G1RobotStateUdpReceiver simulation_receiver = preview_value.state_receiver;
+        G1RobotStateUdpReceiver hardware_receiver =
+            preview_value.hardware_state_receiver;
+        AssertCondition(
+            simulation_receiver != null,
+            "Mink simulation state receiver is missing.");
+        AssertCondition(
+            hardware_receiver != null,
+            "Read-only G1 hardware state receiver is missing.");
+        AssertCondition(
+            simulation_receiver != hardware_receiver,
+            "Simulation and hardware state must use separate receivers.");
+        AssertCondition(
+            simulation_receiver.udp_port == 5006
+                && simulation_receiver.expected_state_source
+                    == G1RobotStateUdpReceiver.MinkStateSource,
+            "Mink simulation state receiver contract is invalid.");
+        AssertCondition(
+            hardware_receiver.udp_port == 5010
+                && hardware_receiver.expected_state_source
+                    == G1RobotStateUdpReceiver.HardwareStateSource
+                && !hardware_receiver.accept_packets_without_source,
+            "Read-only G1 hardware state receiver contract is invalid.");
+        AssertCondition(
+            sender_value.state_receiver == simulation_receiver,
+            "Target sender safety feedback must remain on the Mink receiver.");
+    }
+
+    private static void ValidateBaseCoordinateMapping()
+    {
+        AssertVector(
+            G1UnityRightArmPreview.RobotVectorToUnity(
+                new Vector3(1.0f, 2.0f, 3.0f)),
+            new Vector3(-2.0f, 3.0f, 1.0f),
+            "G1 base position axis conversion is invalid.");
+
+        Quaternion unity_identity =
+            G1UnityRightArmPreview.RobotQuaternionToUnity(
+                Quaternion.identity);
+        AssertCondition(
+            Quaternion.Angle(unity_identity, Quaternion.identity) < 0.001f,
+            "Identity G1 base rotation did not map to Unity identity.");
+
+        Quaternion robot_yaw_left = Quaternion.AngleAxis(
+            90.0f,
+            Vector3.forward);
+        Quaternion unity_yaw_left =
+            G1UnityRightArmPreview.RobotQuaternionToUnity(robot_yaw_left);
+        AssertVector(
+            unity_yaw_left * Vector3.forward,
+            Vector3.left,
+            "Positive G1 yaw did not rotate the Unity robot toward its left.");
     }
 
     private static void ValidateHeadLockedCamera(
@@ -176,15 +252,57 @@ public static class G1TeleopBatchValidator
             camera_lock_value.robot_preview == preview_value,
             "Head-locked camera is not connected to the active G1 preview.");
         AssertCondition(
+            preview_value.head_camera_alignment == camera_lock_value,
+            "G1 preview must wait for the validated initial head pose.");
+        AssertCondition(
+            preview_value.hand_binder != null
+                && preview_value.hand_binder.head_camera_alignment
+                    == camera_lock_value,
+            "Engagement frame must wait for the validated initial head pose.");
+        AssertCondition(
             camera_lock_value.align_position_once,
             "G1 head camera must align to the robot head once at startup.");
         AssertCondition(
-            !camera_lock_value.lock_position,
-            "Continuous G1 head camera position lock must be disabled for VR comfort.");
+            camera_lock_value.lock_position,
+            "G1 head camera position must continuously follow the robot head mount.");
+        AssertCondition(
+            camera_lock_value.head_tracking_stable_duration >= 0.1f
+                && camera_lock_value.head_tracking_stable_duration <= 0.5f,
+            "Initial G1 head alignment must wait for stable XR tracking.");
+        AssertCondition(
+            camera_lock_value.minimum_floor_head_height >= 0.3f
+                && camera_lock_value.minimum_floor_head_height <= 0.6f,
+            "Initial G1 head alignment must reject an uninitialized floor-space pose.");
+        AssertCondition(
+            camera_lock_value.show_head_camera_pip,
+            "G1 head-camera PiP must be enabled for the operator view.");
+        AssertCondition(
+            camera_lock_value.head_camera_tcp_port
+                == G1HeadCameraPiP.DefaultTcpPort,
+            "G1 head-camera PiP must use the local read-only bridge port.");
+        AssertCondition(
+            G1HeadLockedCamera.IsTrackedHeadPoseValid(true, true, true, true)
+                && !G1HeadLockedCamera.IsTrackedHeadPoseValid(false, true, true, true)
+                && !G1HeadLockedCamera.IsTrackedHeadPoseValid(true, false, true, true)
+                && !G1HeadLockedCamera.IsTrackedHeadPoseValid(true, true, false, true)
+                && !G1HeadLockedCamera.IsTrackedHeadPoseValid(true, true, true, false),
+            "Initial G1 head alignment must require a fully tracked and valid HMD pose.");
+        AssertCondition(
+            G1HeadLockedCamera.IsTrackedHeadTransformReady(
+                new Vector3(0.0f, 1.1f, 0.0f),
+                0.4f)
+                && !G1HeadLockedCamera.IsTrackedHeadTransformReady(
+                    Vector3.zero,
+                    0.4f)
+                && !G1HeadLockedCamera.IsTrackedHeadTransformReady(
+                    new Vector3(0.0f, float.NaN, 0.0f),
+                    0.4f),
+            "Initial G1 head alignment must wait for the tracked pose to reach CenterEyeAnchor.");
 
         GameObject tracking_space_object = new GameObject("tracking_space_lock_test");
         GameObject camera_object = new GameObject("camera_position_lock_test");
         GameObject hand_object = new GameObject("hand_position_lock_test");
+        GameObject head_mount_object = new GameObject("g1_head_mount_lock_test");
         try
         {
             Quaternion tracked_rotation = Quaternion.Euler(18.0f, 42.0f, -7.0f);
@@ -198,26 +316,66 @@ public static class G1TeleopBatchValidator
                 new Vector3(0.1f, 1.6f, 0.2f),
                 tracked_rotation);
             hand_object.transform.localPosition = new Vector3(0.4f, 1.2f, 0.5f);
-            Vector3 hand_to_head_before = hand_object.transform.position
-                - camera_object.transform.position;
+            head_mount_object.transform.SetPositionAndRotation(
+                mount_position,
+                Quaternion.Euler(0.0f, -35.0f, 0.0f));
+            Quaternion camera_local_rotation_before = camera_object.transform.localRotation;
+            Vector3 local_hand_to_head_before =
+                tracking_space_object.transform.InverseTransformVector(
+                    hand_object.transform.position - camera_object.transform.position);
 
-            G1HeadLockedCamera.LockTrackingSpacePosition(
+            float yaw_correction = G1HeadLockedCamera.AlignTrackingSpaceToHeadMount(
                 tracking_space_object.transform,
                 camera_object.transform,
-                mount_position);
+                head_mount_object.transform,
+                out Vector3 position_correction);
 
             AssertVector(
                 camera_object.transform.position,
                 mount_position,
                 "Initial camera alignment did not adopt the G1 head position.");
             AssertCondition(
-                Quaternion.Angle(camera_object.transform.rotation, tracked_rotation)
+                Vector3.Angle(
+                    Vector3.ProjectOnPlane(
+                        camera_object.transform.forward,
+                        Vector3.up),
+                    Vector3.ProjectOnPlane(
+                        head_mount_object.transform.forward,
+                        Vector3.up))
                     < 0.001f,
-                "Initial camera alignment must preserve tracked HMD rotation.");
+                "Initial camera alignment did not adopt the G1 horizontal heading.");
+            AssertCondition(
+                Quaternion.Angle(
+                    camera_object.transform.localRotation,
+                    camera_local_rotation_before) < 0.001f,
+                "TrackingSpace alignment changed the local tracked HMD rotation.");
             AssertVector(
-                hand_object.transform.position - camera_object.transform.position,
-                hand_to_head_before,
+                tracking_space_object.transform.InverseTransformVector(
+                    hand_object.transform.position - camera_object.transform.position),
+                local_hand_to_head_before,
                 "Initial TrackingSpace alignment changed the hand-to-head relative position.");
+            AssertCondition(
+                Mathf.Abs(yaw_correction) > 1.0f
+                    && position_correction.sqrMagnitude > 0.0001f,
+                "Initial TrackingSpace alignment did not exercise yaw and position correction.");
+
+            Quaternion camera_rotation_before_follow =
+                camera_object.transform.rotation;
+            head_mount_object.transform.position +=
+                new Vector3(0.2f, 0.1f, -0.15f);
+            G1HeadLockedCamera.LockTrackingSpacePosition(
+                tracking_space_object.transform,
+                camera_object.transform,
+                head_mount_object.transform.position);
+            AssertVector(
+                camera_object.transform.position,
+                head_mount_object.transform.position,
+                "Continuous camera following did not adopt the moved G1 head position.");
+            AssertCondition(
+                Quaternion.Angle(
+                    camera_object.transform.rotation,
+                    camera_rotation_before_follow) < 0.001f,
+                "Continuous G1 head position following changed the tracked HMD rotation.");
 
             Vector3 operator_step = new Vector3(0.025f, 0.0f, 0.0f);
             Vector3 common_body_step =
@@ -253,6 +411,65 @@ public static class G1TeleopBatchValidator
         finally
         {
             UnityEngine.Object.DestroyImmediate(tracking_space_object);
+            UnityEngine.Object.DestroyImmediate(head_mount_object);
+        }
+    }
+
+    private static void ValidateHeadCameraPiP()
+    {
+        GameObject camera_object = new GameObject(
+            "g1_head_camera_pip_validation",
+            typeof(Camera));
+        try
+        {
+            G1HeadCameraPiP pip_value = G1HeadCameraPiP.Create(
+                camera_object.transform,
+                G1HeadCameraPiP.DefaultTcpPort);
+            AssertCondition(
+                pip_value != null,
+                "G1 head-camera PiP could not be created.");
+            AssertCondition(
+                pip_value.transform.parent == camera_object.transform,
+                "G1 head-camera PiP is not view-locked to CenterEyeAnchor.");
+            AssertCondition(
+                pip_value.video_image != null
+                    && pip_value.status_indicator != null,
+                "G1 head-camera PiP visual components are missing.");
+            AssertCondition(
+                pip_value.GetComponent<Canvas>() != null
+                    && pip_value.GetComponent<Canvas>().renderMode
+                        == RenderMode.WorldSpace,
+                "G1 head-camera PiP must use a world-space canvas.");
+            AssertCondition(
+                G1HeadCameraPiP.IsValidLoopbackPort(
+                    G1HeadCameraPiP.DefaultTcpPort)
+                    && !G1HeadCameraPiP.IsValidLoopbackPort(0)
+                    && !G1HeadCameraPiP.IsValidLoopbackPort(65536),
+                "G1 head-camera PiP TCP port guard is invalid.");
+
+            byte[] frame_header = new byte[G1HeadCameraPiP.FrameHeaderSize];
+            frame_header[0] = (byte)'G';
+            frame_header[1] = (byte)'1';
+            frame_header[2] = (byte)'C';
+            frame_header[3] = (byte)'M';
+            frame_header[7] = 1;
+            frame_header[11] = 7;
+            frame_header[19] = 9;
+            frame_header[22] = 4;
+            AssertCondition(
+                G1HeadCameraPiP.TryParseFrameHeader(
+                    frame_header,
+                    out uint sequence,
+                    out ulong timestamp_ns,
+                    out int payload_size)
+                    && sequence == 7
+                    && timestamp_ns == 9
+                    && payload_size == 1024,
+                "G1 head-camera PiP frame-header parser is invalid.");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(camera_object);
         }
     }
 

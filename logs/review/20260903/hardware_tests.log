@@ -1,0 +1,7 @@
+[REJECTED] Invalid LowState telemetry: all_joint_q_rad contains a non-finite value
+........................................................................................................................................................................
+[REJECTED] Invalid LowState telemetry: full 29-joint names, positions, and velocities are required
+----------------------------------------------------------------------
+Ran 168 tests in 10.777s
+
+OK

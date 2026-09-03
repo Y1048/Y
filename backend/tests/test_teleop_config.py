@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import sys
 import tempfile
-import types
 import unittest
 from pathlib import Path
 
@@ -13,8 +12,6 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from g1_teleop.config import (  # noqa: E402
-    apply_to_base_module,
-    apply_to_projected_runtime,
     load_teleop_config,
 )
 
@@ -126,19 +123,6 @@ class TeleopConfigTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             with self.assertRaises(FileNotFoundError):
                 load_teleop_config(Path(temp_dir) / "missing.json")
-
-    def test_apply_updates_runtime_tuning(self):
-        config = self._load(VALID_CONFIG)
-        base = types.SimpleNamespace()
-        apply_to_base_module(base, config)
-        self.assertEqual(base.UDP_PORT, 5005)
-        self.assertAlmostEqual(base.POSITION_MAX_SPEED, 0.12)
-        self.assertAlmostEqual(base.IK_STEP_GAIN, 0.5)
-        self.assertEqual(tuple(base.CLUTCH_POSITION_DELTA_MAX), (0.2, 0.45, 0.34))
-        runtime = types.SimpleNamespace()
-        apply_to_projected_runtime(runtime, config, Path("C:/project"))
-        self.assertAlmostEqual(runtime.WORKSPACE_VOXEL_SIZE_M, 0.01)
-        self.assertEqual(runtime.WORKSPACE_ALLOWED_CLASSES, (1, 2))
 
 
 if __name__ == "__main__":

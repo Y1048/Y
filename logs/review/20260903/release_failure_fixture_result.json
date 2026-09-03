@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "release_zero_frames": 0,
+  "command_output_enabled": false,
+  "release_fault": "OSError: injected publisher failure"
+}

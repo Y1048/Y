@@ -11,6 +11,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public Transform source_hand;
     public Transform target_transform;
     public Transform reference_transform;
+    public G1HeadLockedCamera head_camera_alignment;
     public OVRHand ovr_hand;
     public OVRSkeleton ovr_skeleton;
     public bool prefer_skeleton_wrist = true;
@@ -309,6 +310,14 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     {
         if (IsEngagementFrameLocked)
         {
+            return;
+        }
+
+        if (head_camera_alignment == null
+            || !head_camera_alignment.IsHeadTrackingReady)
+        {
+            engagement_frame_initialization_duration = 0.0f;
+            EngagementState = "waiting-for-head-tracking";
             return;
         }
 

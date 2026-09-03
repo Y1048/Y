@@ -1,0 +1,65 @@
+{
+  "stale_readiness": {
+    "decision": "DIRECT_TELEOP_READY",
+    "packets": 20,
+    "actual_latest_age_s": 0.899999999,
+    "recorded_latest_age_s": 0.0,
+    "timeout_s": 0.25,
+    "blockers": []
+  },
+  "conflicting_lowstate": {
+    "accepted": true,
+    "right_elbow_q": 0.986,
+    "full_body_elbow_q": 2.0,
+    "right_elbow_dq": 0.0,
+    "full_body_elbow_dq": 5.0
+  },
+  "contact_regression": {
+    "validation": {
+      "passed": true,
+      "failed_sample": null,
+      "escaped_initial_contact": true,
+      "minimum_clearance_after_escape_m": 0.015
+    },
+    "injected_clearances_m": [
+      0.005,
+      -0.002,
+      0.015
+    ],
+    "minimum_sampled_distance_m": -0.002,
+    "note": "Injected geometry response tests the validator, not a physical G1 trajectory"
+  },
+  "full_body_reset": {
+    "joints": [
+      "waist_yaw_joint",
+      "left_shoulder_pitch_joint",
+      "right_hip_pitch_joint"
+    ],
+    "injected_measured_q_rad": [
+      0.3,
+      0.4,
+      -0.2
+    ],
+    "q_after_collision_helper_rad": [
+      0.0,
+      0.17453292519943295,
+      0.0
+    ],
+    "model": "MuJoCo_G1_Controller\\external\\unitree_mujoco\\unitree_robots\\g1\\_generated_g1_right_arm_udp_ik.xml"
+  },
+  "mirror_session_replay": {
+    "accepted_old_current_old": [
+      true,
+      true,
+      true
+    ],
+    "final_session": "previous-session",
+    "final_timestamp_ns": 1,
+    "note": "Receive-time freshness in Run does not check source timestamp"
+  },
+  "replay_nan_timestamp": {
+    "loader_accepted_nonfinite_time": true,
+    "interpolation_error": "IndexError: index 2 is out of bounds for axis 0 with size 2"
+  },
+  "unitree_sdk_imported": false
+}

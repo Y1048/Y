@@ -9,6 +9,9 @@ using UnityEngine;
 /// binder가 만든 상대 손목 목표를 G1 좌표계의 절대 목표로 바꾸어 UDP 5005로 보낸다.
 /// 실시간 입력 필터, pinch 해제, workspace 상태 피드백을 관리하지만 IK와 모터 명령은
 /// 생성하지 않는다. 최종 도달 가능성과 충돌 판단은 MuJoCo/Mink 백엔드가 담당한다.
+/// 연결: G1ExistingHandTargetBinder -> 이 송신기 -> Python MinkCommandStream.
+/// position은 로봇 목표 좌표(m), rotation은 현재 패킷 계약의 quaternion(x,y,z,w)다.
+/// Inspector/씬에 저장된 값이 아래 필드 초기값보다 우선할 수 있다.
 /// </summary>
 public class G1ExistingTargetUdpSender : MonoBehaviour
 {
@@ -50,6 +53,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public bool IsPinchDisengaged { get; private set; }
     public float PinchDisengageProgress { get; private set; }
     public bool IsCommandValid { get; private set; }
+    public string CurrentSessionId => session_id;
     public bool IsTrackingLossPending { get; private set; }
     public bool IsTrackingLossDisengaged { get; private set; }
     public float TrackingLossProgress { get; private set; }

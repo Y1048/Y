@@ -33,7 +33,7 @@ echo [INFO] Scene: control
 
 echo.
 cd /d "%CONTROLLER_ROOT%"
-py -3.11 scripts\run_mink_g1_right_arm_virtual_center_live.py --scene control --view overview
+py -3.11 scripts\run_mink_g1_right_arm_virtual_center_live.py
 
 set "EXIT_CODE=%ERRORLEVEL%"
 echo.

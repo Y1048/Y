@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import mujoco
 import numpy as np
@@ -119,7 +120,9 @@ class MinkCollisionDiagnosticsTest(unittest.TestCase):
                     fromto,
                 )
             )
-            self.assertEqual(raw_distance, 0.0)
+            # 3.12 fixes the old exact-zero result; keep the geometric bound.
+            if raw_distance != 0.0:
+                self.assertAlmostEqual(raw_distance, 0.03999645050934125, places=6)
             self.assertFalse(
                 collision_diag._has_exact_geom_contact(
                     self.data,
@@ -138,9 +141,25 @@ class MinkCollisionDiagnosticsTest(unittest.TestCase):
                 fromto,
             )
             self.assertGreater(corrected_distance, 0.039)
+            nearest = base._nearest_pair_distance(
+                self.model,
+                self.data,
+                self.geom_pairs,
+            )
+            self.assertIsNotNone(nearest)
+            self.assertGreater(nearest[0], 0.039)
         finally:
             self.data.qpos[:] = base._initial_configuration(self.model)
             mujoco.mj_forward(self.model, self.data)
+
+    def test_zero_fallback_preserves_exact_contact(self):
+        for contact in (False, True):
+            with self.subTest(contact=contact), patch.object(base.mujoco, "mj_geomDistance", return_value=0.0), patch.object(
+                base, "_has_exact_geom_contact", return_value=contact
+            ), patch.object(base, "_probe_zero_mesh_distance", return_value=.04) as fallback:
+                distance = base._robust_geom_distance(self.model, self.data, 0, 1, .2, np.zeros(6))
+                self.assertEqual(distance, 0.0 if contact else .04)
+                self.assertEqual(fallback.call_count, 0 if contact else 1)
 
     def test_only_measured_local_arm_pair_is_exempted(self):
         body_pairs = {

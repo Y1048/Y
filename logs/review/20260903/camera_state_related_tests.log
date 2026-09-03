@@ -1,0 +1,26 @@
+test_replay_jpeg_is_decodable_and_nonblank (test_g1_camera_replay_tcp.G1CameraReplayTcpTest.test_replay_jpeg_is_decodable_and_nonblank) ... ok
+test_replay_rejects_non_loopback_output (test_g1_camera_replay_tcp.G1CameraReplayTcpTest.test_replay_rejects_non_loopback_output) ... ok
+test_replay_uses_exact_camera_packet_contract (test_g1_camera_replay_tcp.G1CameraReplayTcpTest.test_replay_uses_exact_camera_packet_contract) ... ok
+test_result_file_preserves_offline_safety_flags (test_g1_camera_replay_tcp.G1CameraReplayTcpTest.test_result_file_preserves_offline_safety_flags) ... ok
+test_frame_packet_preserves_header_and_jpeg (test_g1_camera_tcp_bridge.G1CameraTcpBridgeTest.test_frame_packet_preserves_header_and_jpeg) ... ok
+test_rejects_negative_timestamp (test_g1_camera_tcp_bridge.G1CameraTcpBridgeTest.test_rejects_negative_timestamp) ... ok
+test_rejects_non_jpeg_payload (test_g1_camera_tcp_bridge.G1CameraTcpBridgeTest.test_rejects_non_jpeg_payload) ... ok
+test_sequence_wraps_to_unsigned_32_bit (test_g1_camera_tcp_bridge.G1CameraTcpBridgeTest.test_sequence_wraps_to_unsigned_32_bit) ... ok
+test_built_packet_preserves_all_joints_and_right_arm_slice (test_replay_saved_lowstate_mujoco.ReplaySavedLowStateMuJoCoTests.test_built_packet_preserves_all_joints_and_right_arm_slice) ... ok
+test_legacy_status_explains_required_recapture (test_replay_saved_lowstate_mujoco.ReplaySavedLowStateMuJoCoTests.test_legacy_status_explains_required_recapture) ... ok
+test_loads_new_read_only_status_as_actual_capture (test_replay_saved_lowstate_mujoco.ReplaySavedLowStateMuJoCoTests.test_loads_new_read_only_status_as_actual_capture) ... ok
+test_loads_pose_sync_artifact_as_explicit_fallback (test_replay_saved_lowstate_mujoco.ReplaySavedLowStateMuJoCoTests.test_loads_pose_sync_artifact_as_explicit_fallback) ... ok
+test_reordered_joint_names_are_rejected (test_replay_saved_lowstate_mujoco.ReplaySavedLowStateMuJoCoTests.test_reordered_joint_names_are_rejected) ... ok
+test_displayed_base_override_requires_position_and_rotation (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_displayed_base_override_requires_position_and_rotation) ... ok
+test_encoded_packet_is_valid_json (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_encoded_packet_is_valid_json) ... ok
+test_forwards_mujoco_displayed_pose_and_reports_source_lag (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_forwards_mujoco_displayed_pose_and_reports_source_lag) ... ok
+test_legacy_packet_does_not_invent_base_state (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_legacy_packet_does_not_invent_base_state) ... ok
+test_missing_full_body_state_is_rejected (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_missing_full_body_state_is_rejected) ... ok
+test_nonfinite_state_is_rejected_by_lowstate_parser (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_nonfinite_state_is_rejected_by_lowstate_parser) ... ok
+test_preserves_all_29_joint_positions_and_velocities (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_preserves_all_29_joint_positions_and_velocities) ... ok
+test_preserves_normalized_base_state_for_unity (test_g1_unity_state_bridge.G1UnityStateBridgeTests.test_preserves_normalized_base_state_for_unity) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.042s
+
+OK

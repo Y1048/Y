@@ -3,7 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// 공식 G1 프리팹의 관절 노드와 손목/그립/머리 카메라 기준점을 관리한다.
-/// 백엔드 관절값을 프리뷰에 적용하고 점검 도구를 표시하지만 제어 명령은 만들지 않는다.
+/// 백엔드 관절값을 프리뷰에 적용하고 선택적으로 점검 도구를 표시한다.
+/// 프리뷰는 제어 명령을 만들지 않는다.
 /// </summary>
 public class G1OfficialRig : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class G1OfficialRig : MonoBehaviour
     public Transform right_hand_semantic_reference;
     public Transform head_camera_mount;
     public Renderer[] first_person_hidden_renderers;
-    public bool show_inspection_tool = true;
+    public bool show_inspection_tool = false;
 
     private Transform inspection_tool_root;
 
@@ -30,6 +31,39 @@ public class G1OfficialRig : MonoBehaviour
         "right_wrist_roll_joint",
         "right_wrist_pitch_joint",
         "right_wrist_yaw_joint"
+    };
+
+    private static readonly string[] g1_29_joint_names =
+    {
+        "left_hip_pitch",
+        "left_hip_roll",
+        "left_hip_yaw",
+        "left_knee",
+        "left_ankle_pitch",
+        "left_ankle_roll",
+        "right_hip_pitch",
+        "right_hip_roll",
+        "right_hip_yaw",
+        "right_knee",
+        "right_ankle_pitch",
+        "right_ankle_roll",
+        "waist_yaw",
+        "waist_roll",
+        "waist_pitch",
+        "left_shoulder_pitch",
+        "left_shoulder_roll",
+        "left_shoulder_yaw",
+        "left_elbow",
+        "left_wrist_roll",
+        "left_wrist_pitch",
+        "left_wrist_yaw",
+        "right_shoulder_pitch",
+        "right_shoulder_roll",
+        "right_shoulder_yaw",
+        "right_elbow",
+        "right_wrist_roll",
+        "right_wrist_pitch",
+        "right_wrist_yaw"
     };
 
     private void Awake()
@@ -63,7 +97,7 @@ public class G1OfficialRig : MonoBehaviour
 
     private void CreateInspectionTool()
     {
-        if (!show_inspection_tool || right_hand_grip_point == null)
+        if (right_hand_grip_point == null)
         {
             return;
         }
@@ -73,6 +107,12 @@ public class G1OfficialRig : MonoBehaviour
         if (existing_tool != null)
         {
             inspection_tool_root = existing_tool;
+            inspection_tool_root.gameObject.SetActive(show_inspection_tool);
+            return;
+        }
+
+        if (!show_inspection_tool)
+        {
             return;
         }
 
@@ -249,6 +289,59 @@ public class G1OfficialRig : MonoBehaviour
         {
             ApplyJointPosition(right_arm_joint_names[joint_index], joint_positions[joint_index]);
         }
+    }
+
+    public bool ApplyAllJointPositions(string[] joint_names, float[] joint_positions)
+    {
+        if (joint_names == null
+            || joint_positions == null
+            || !MatchesFullBodyJointContract(joint_names)
+            || joint_positions.Length != g1_29_joint_names.Length)
+        {
+            return false;
+        }
+
+        if (joint_nodes.Count == 0)
+        {
+            RebuildJointCache();
+        }
+        for (int joint_index = 0; joint_index < g1_29_joint_names.Length; joint_index++)
+        {
+            if (!joint_nodes.ContainsKey(g1_29_joint_names[joint_index] + "_joint"))
+            {
+                return false;
+            }
+        }
+
+        for (int joint_index = 0; joint_index < g1_29_joint_names.Length; joint_index++)
+        {
+            ApplyJointPosition(
+                g1_29_joint_names[joint_index] + "_joint",
+                joint_positions[joint_index]);
+        }
+        return true;
+    }
+
+    public static bool MatchesFullBodyJointContract(string[] joint_names)
+    {
+        if (joint_names == null || joint_names.Length != g1_29_joint_names.Length)
+        {
+            return false;
+        }
+
+        for (int joint_index = 0; joint_index < g1_29_joint_names.Length; joint_index++)
+        {
+            if (joint_names[joint_index] != g1_29_joint_names[joint_index])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static string[] GetFullBodyJointNames()
+    {
+        return (string[])g1_29_joint_names.Clone();
     }
 
     public void ApplyJointPosition(string joint_name, float joint_position)

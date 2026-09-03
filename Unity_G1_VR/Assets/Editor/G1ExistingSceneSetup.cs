@@ -100,17 +100,23 @@ public static class G1ExistingSceneSetup
         sender_value.disengage_on_tracking_loss = true;
         sender_value.tracking_loss_confirm_seconds = 0.35f;
 
-        G1RobotStateUdpReceiver receiver_value =
-            target_object.GetComponent<G1RobotStateUdpReceiver>();
-        if (receiver_value == null)
-        {
-            receiver_value = target_object.AddComponent<G1RobotStateUdpReceiver>();
-        }
-
+        G1RobotStateUdpReceiver receiver_value = GetOrAddStateReceiver(
+            target_object,
+            5006);
         receiver_value.udp_port = 5006;
         receiver_value.state_timeout = 0.5f;
+        receiver_value.expected_state_source = G1RobotStateUdpReceiver.MinkStateSource;
+        receiver_value.accept_packets_without_source = true;
+        G1RobotStateUdpReceiver hardware_receiver_value = GetOrAddStateReceiver(
+            target_object,
+            5010);
+        hardware_receiver_value.udp_port = 5010;
+        hardware_receiver_value.state_timeout = 0.5f;
+        hardware_receiver_value.expected_state_source =
+            G1RobotStateUdpReceiver.HardwareStateSource;
+        hardware_receiver_value.accept_packets_without_source = false;
         sender_value.state_receiver = receiver_value;
-        sender_value.disengage_on_workspace_exit = true;
+        sender_value.disengage_on_workspace_exit = false;
 
         G1UnityRightArmPreview preview_value = target_object.GetComponent<G1UnityRightArmPreview>();
         if (preview_value == null)
@@ -121,13 +127,17 @@ public static class G1ExistingSceneSetup
         preview_value.hand_binder = binder_value;
         preview_value.target_sender = sender_value;
         preview_value.state_receiver = receiver_value;
+        preview_value.hardware_state_receiver = hardware_receiver_value;
         preview_value.wrist_target = target_object.transform;
         preview_value.show_tracking_markers = true;
+        preview_value.show_inspection_scene = false;
         preview_value.tracking_axis_length = 0.10f;
-        ConfigureHeadLockedCamera(
+        G1HeadLockedCamera camera_lock_value = ConfigureHeadLockedCamera(
             target_object,
             center_eye_object,
             preview_value);
+        binder_value.head_camera_alignment = camera_lock_value;
+        preview_value.head_camera_alignment = camera_lock_value;
 
         if (camera_rig_object != null)
         {
@@ -145,6 +155,23 @@ public static class G1ExistingSceneSetup
         EditorSceneManager.MarkSceneDirty(scene_value);
         EditorSceneManager.SaveScene(scene_value);
         Debug.Log("G1 existing scene setup complete.");
+    }
+
+    private static G1RobotStateUdpReceiver GetOrAddStateReceiver(
+        GameObject target_object,
+        int udp_port)
+    {
+        G1RobotStateUdpReceiver[] receiver_values =
+            target_object.GetComponents<G1RobotStateUdpReceiver>();
+        foreach (G1RobotStateUdpReceiver receiver_value in receiver_values)
+        {
+            if (receiver_value.udp_port == udp_port)
+            {
+                return receiver_value;
+            }
+        }
+
+        return target_object.AddComponent<G1RobotStateUdpReceiver>();
     }
 
     [MenuItem("G1 Teleop/Setup Head-Locked Camera")]
@@ -186,6 +213,11 @@ public static class G1ExistingSceneSetup
                 "G1 head-locked camera references could not be configured.");
         }
 
+        binder_value.head_camera_alignment = camera_lock_value;
+        preview_value.head_camera_alignment = camera_lock_value;
+        EditorUtility.SetDirty(binder_value);
+        EditorUtility.SetDirty(preview_value);
+
         EditorSceneManager.MarkSceneDirty(scene_value);
         EditorSceneManager.SaveScene(scene_value);
         Debug.Log("G1 head-locked camera setup complete.");
@@ -217,7 +249,12 @@ public static class G1ExistingSceneSetup
         camera_lock_value.xr_tracking_space = center_eye_object.transform.parent;
         camera_lock_value.robot_preview = preview_value;
         camera_lock_value.align_position_once = true;
-        camera_lock_value.lock_position = false;
+        camera_lock_value.lock_position = true;
+        camera_lock_value.head_tracking_stable_duration = 0.15f;
+        camera_lock_value.minimum_floor_head_height = 0.4f;
+        camera_lock_value.show_head_camera_pip = true;
+        camera_lock_value.head_camera_tcp_port =
+            G1HeadCameraPiP.DefaultTcpPort;
         EditorUtility.SetDirty(camera_lock_value);
         return camera_lock_value;
     }

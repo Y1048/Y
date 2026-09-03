@@ -1,0 +1,154 @@
+{
+  "scope": "Source inspection, not C# compilation or Unity runtime reproduction",
+  "indexed_files": 264,
+  "changed_before": [],
+  "changed_after": [],
+  "source_evidence": [
+    {
+      "path": "Unity_G1_VR/Assets/Scenes/SampleScene.unity",
+      "matches": [
+        {
+          "line": 345,
+          "text": "prefer_skeleton_wrist: 1"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/Editor/G1ExistingSceneSetup.cs",
+      "matches": [
+        {
+          "line": 74,
+          "text": "binder_value.prefer_skeleton_wrist = true;"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs",
+      "matches": [
+        {
+          "line": 66,
+          "text": "binder_value.prefer_skeleton_wrist,"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/G1Teleop/G1WristSourceCompatibility.cs",
+      "matches": [
+        {
+          "line": 46,
+          "text": "binder.prefer_skeleton_wrist = false;"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs",
+      "matches": [
+        {
+          "line": 805,
+          "text": "if (!prefer_skeleton_wrist || ovr_skeleton == null || ovr_skeleton.Bones == null)"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs",
+      "matches": [
+        {
+          "line": 78,
+          "text": "AssetDatabase.DeleteAsset(resource_root);"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs",
+      "matches": [
+        {
+          "line": 84,
+          "text": "XDocument document_value = XDocument.Load(xml_path);"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs",
+      "matches": [
+        {
+          "line": 182,
+          "text": "catch (Exception exception_value)"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/Editor/G1MinkFkParityValidator.cs",
+      "matches": [
+        {
+          "line": 103,
+          "text": "Vector3 unity_delta = current_position - unity_baseline;"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs",
+      "matches": [
+        {
+          "line": 39,
+          "text": "trace.state_receiver = sender.state_receiver;"
+        }
+      ]
+    },
+    {
+      "path": "Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs",
+      "matches": [
+        {
+          "line": 177,
+          "text": "writer = new StreamWriter(trace_path, false, System.Text.Encoding.UTF8);"
+        }
+      ]
+    }
+  ],
+  "hardware_authorizations": [
+    {
+      "path": "config/g1_gate6_hold.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate6_interrupt_release_test.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate7_first_live_hardware_output.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate7_first_live_mink_arm_sdk.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate7_live_hardware_output.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate7_mink_arm_sdk.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate7_visible_motion_hardware_output.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_gate7_visible_motion_mink_arm_sdk.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_right_arm_jog.json",
+      "locked_boolean": true
+    },
+    {
+      "path": "config/g1_right_shoulder_pitch_full_authority_trial.json",
+      "locked_boolean": true
+    }
+  ],
+  "existing_test_exit_code": 0,
+  "tests_log": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\review\\20260903\\unity_related_tests.log",
+  "test_limit": "Workspace tests inspect strings; display test runs a copied PS1 in a temporary directory",
+  "unity_launched": false,
+  "g1_accessed": false
+}

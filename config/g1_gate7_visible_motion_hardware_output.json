@@ -1,0 +1,33 @@
+{
+  "schema": "g1.gate7.live_hardware_output.config.v1",
+  "mink_udp_host": "0.0.0.0",
+  "mink_udp_port": 5013,
+  "lowstate_topic": "rt/lowstate",
+  "arm_sdk_topic": "rt/arm_sdk",
+  "expected_motion_mode": {
+    "form": "0",
+    "name": "ai"
+  },
+  "expected_mode_pr": 0,
+  "expected_mode_machine": 5,
+  "lowstate_timeout_s": 0.25,
+  "settle_duration_s": 1.0,
+  "minimum_settle_samples": 100,
+  "maximum_initial_arm_velocity_deg_s": 5.0,
+  "precheck_max_age_s": 180.0,
+  "maximum_precheck_pose_delta_deg": 1.5,
+  "mink_startup_timeout_s": 120.0,
+  "acquire_ramp_s": 5.0,
+  "release_ramp_s": 2.0,
+  "release_zero_cycles": 25,
+  "maximum_active_duration_s": 30.0,
+  "maximum_start_pose_excursion_deg": 10.0,
+  "trajectory_generator": "ruckig",
+  "ruckig_version": "0.19.4",
+  "trajectory_velocity_scale": 1.0,
+  "trajectory_acceleration_scale": 1.0,
+  "trajectory_jerk_scale": 1.0,
+  "hardware_output_authorized": false,
+  "hardware_confirmation_phrase": "ENABLE_G1_GATE7_VISIBLE_MOTION_TRIAL",
+  "grounded_regular_confirmation_phrase": "G1_IS_GROUNDED_IN_REGULAR_MODE"
+}

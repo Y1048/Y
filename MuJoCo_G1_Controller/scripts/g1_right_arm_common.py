@@ -1,6 +1,6 @@
 """G1 오른팔 모델, 관절 인덱스, 좌표 변환을 한곳에 모은 공통 모듈.
 
-이 파일은 IK를 직접 풀지 않는다. Mink 제어기와 카메라 회귀 검사용 기존 제어기가
+이 파일은 IK를 직접 풀지 않는다. Mink 제어기와 카메라 회귀 검사가
 동일한 모델/관절/프레임 정의를 사용하도록 경계를 제공한다.
 """
 
@@ -86,6 +86,40 @@ RIGHT_ARM_JOINTS = [
     "right_wrist_yaw_joint",
 ]
 
+G1_29_JOINT_NAMES = [
+    "left_hip_pitch",
+    "left_hip_roll",
+    "left_hip_yaw",
+    "left_knee",
+    "left_ankle_pitch",
+    "left_ankle_roll",
+    "right_hip_pitch",
+    "right_hip_roll",
+    "right_hip_yaw",
+    "right_knee",
+    "right_ankle_pitch",
+    "right_ankle_roll",
+    "waist_yaw",
+    "waist_roll",
+    "waist_pitch",
+    "left_shoulder_pitch",
+    "left_shoulder_roll",
+    "left_shoulder_yaw",
+    "left_elbow",
+    "left_wrist_roll",
+    "left_wrist_pitch",
+    "left_wrist_yaw",
+    "right_shoulder_pitch",
+    "right_shoulder_roll",
+    "right_shoulder_yaw",
+    "right_elbow",
+    "right_wrist_roll",
+    "right_wrist_pitch",
+    "right_wrist_yaw",
+]
+
+G1_29_JOINTS = [name + "_joint" for name in G1_29_JOINT_NAMES]
+
 LEFT_ARM_JOINTS = [
     "left_shoulder_pitch_joint",
     "left_shoulder_roll_joint",
@@ -105,6 +139,16 @@ RIGHT_ARM_BODY_NAMES = {
     "right_wrist_pitch_link",
     "right_wrist_yaw_link",
     "inspection_tool_tip_body",
+}
+
+LEFT_ARM_BODY_NAMES = {
+    "left_shoulder_pitch_link",
+    "left_shoulder_roll_link",
+    "left_shoulder_yaw_link",
+    "left_elbow_link",
+    "left_wrist_roll_link",
+    "left_wrist_pitch_link",
+    "left_wrist_yaw_link",
 }
 
 SCENES = {
@@ -135,7 +179,10 @@ def find_body(element: ET.Element, name: str) -> ET.Element | None:
     return None
 
 
-def make_demo_xml(scene_name: str = "control") -> None:
+def make_demo_xml(
+    scene_name: str = "control",
+    show_inspection_scene: bool = False,
+) -> None:
     """Generate the fixed-base G1 simulation model used by teleoperation."""
     if scene_name not in SCENES:
         raise ValueError(f"unknown scene: {scene_name}")
@@ -182,6 +229,9 @@ def make_demo_xml(scene_name: str = "control") -> None:
             "conaffinity": "0",
         },
     )
+    inspection_alpha = "1" if show_inspection_scene else "0"
+    inspection_marker_alpha = "0.75" if show_inspection_scene else "0"
+
     inspection_target = ET.SubElement(
         worldbody,
         "body",
@@ -201,7 +251,7 @@ def make_demo_xml(scene_name: str = "control") -> None:
             "name": "inspection_demo_target_marker",
             "type": "sphere",
             "size": "0.045",
-            "rgba": "0.05 0.65 1.0 0.75",
+            "rgba": f"0.05 0.65 1.0 {inspection_marker_alpha}",
             "contype": "0",
             "conaffinity": "0",
         },
@@ -214,7 +264,7 @@ def make_demo_xml(scene_name: str = "control") -> None:
             "type": "box",
             "pos": " ".join(str(value) for value in scene["panel_pos"]),
             "size": " ".join(str(value) for value in scene["panel_size"]),
-            "rgba": "0.16 0.18 0.20 1",
+            "rgba": f"0.16 0.18 0.20 {inspection_alpha}",
             "contype": "0",
             "conaffinity": "0",
         },
@@ -253,7 +303,7 @@ def make_demo_xml(scene_name: str = "control") -> None:
                     "name": "inspection_tool_tip",
                     "type": "sphere",
                     "size": "0.035",
-                    "rgba": "0.9 0.18 0.08 1",
+                    "rgba": f"0.9 0.18 0.08 {inspection_alpha}",
                     "density": "0",
                     "contype": "0",
                     "conaffinity": "0",
@@ -268,7 +318,7 @@ def make_demo_xml(scene_name: str = "control") -> None:
                 "type": "cylinder",
                 "pos": "0.105 0.029 0.040",
                 "size": "0.017 0.05",
-                "rgba": "0.05 0.05 0.05 1",
+                "rgba": f"0.05 0.05 0.05 {inspection_alpha}",
                 "density": "0",
                 "contype": "0",
                 "conaffinity": "0",
@@ -282,7 +332,7 @@ def make_demo_xml(scene_name: str = "control") -> None:
                 "type": "cylinder",
                 "pos": "0.105 0.029 0.145",
                 "size": "0.010 0.055",
-                "rgba": "0.18 0.20 0.22 1",
+                "rgba": f"0.18 0.20 0.22 {inspection_alpha}",
                 "density": "0",
                 "contype": "0",
                 "conaffinity": "0",

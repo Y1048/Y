@@ -13,10 +13,6 @@ if str(BACKEND_ROOT) not in sys.path:
 
 from g1_teleop.command_adapter import InternalCommand  # noqa: E402
 from g1_teleop.runtime_state import TeleopRuntimeStateMachine  # noqa: E402
-from g1_teleop.whole_body import (  # noqa: E402
-    JointOwnership,
-    compose_whole_body_target,
-)
 
 
 def command(mode: str, valid: bool = False) -> InternalCommand:
@@ -60,23 +56,6 @@ class RuntimeArchitectureTest(unittest.TestCase):
         machine = TeleopRuntimeStateMachine()
         self.assertEqual(machine.apply(command("shutdown", False)).current, "shutdown")
         self.assertEqual(machine.apply(command("active", True)).current, "shutdown")
-
-    def test_right_arm_override_preserves_lower_body(self):
-        base = np.arange(29, dtype=float)
-        arm = np.linspace(-0.3, 0.3, 7)
-        result = compose_whole_body_target(base, {"right_arm": arm})
-
-        np.testing.assert_allclose(result[:22], base[:22])
-        np.testing.assert_allclose(result[22:], arm)
-
-    def test_joint_ownership_defaults_to_arm_teleop_for_right_arm(self):
-        ownership = JointOwnership()
-        self.assertEqual(ownership.owner_for("left_leg"), "lower_body_policy")
-        self.assertEqual(ownership.owner_for("right_arm"), "arm_teleop")
-
-    def test_invalid_override_shape_is_rejected(self):
-        with self.assertRaises(ValueError):
-            compose_whole_body_target(np.zeros(29), {"right_arm": np.zeros(6)})
 
 
 if __name__ == "__main__":

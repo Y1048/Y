@@ -6,7 +6,6 @@ import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from types import ModuleType
 from typing import Any
 
 
@@ -239,48 +238,3 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
             dilation_voxels=_integer(workspace.get("dilation_voxels", 0), "workspace.dilation_voxels", minimum=0),
         ),
     )
-
-
-def apply_to_base_module(base: ModuleType, config: TeleopConfig) -> None:
-    import numpy as np
-
-    base.UDP_HOST = config.network.udp_host
-    base.UDP_PORT = config.network.udp_port
-    base.UNITY_STATE_HOST = config.network.unity_state_host
-    base.UNITY_STATE_PORT = config.network.unity_state_port
-    base.UNITY_STATE_HZ = config.network.unity_state_hz
-    base.RUNTIME_STATUS_HZ = config.runtime.status_hz
-    base.HEAD_CAMERA_FPS = config.runtime.head_camera_fps
-    base.NEUTRAL_SOLVE_ITERATIONS = config.runtime.neutral_solve_iterations
-    base.INPUT_TIMEOUT_SECONDS = config.runtime.input_timeout_s
-    base.WORKSPACE_EXIT_CONFIRM_SECONDS = config.runtime.workspace_exit_confirm_s
-    base.POSITION_MAX_SPEED = config.motion.position_max_speed_mps
-    base.ROTATION_MAX_SPEED = math.radians(config.motion.rotation_max_speed_deg_s)
-    base.POSITION_DAMPING = config.ik.position_damping
-    base.ORIENTATION_DAMPING = config.ik.orientation_damping
-    base.IK_STEP_GAIN = config.ik.ik_step_gain
-    base.IK_MAX_STEP_RADIANS = math.radians(config.ik.ik_max_step_deg)
-    base.POSTURE_GAIN = config.ik.posture_gain
-    base.ELBOW_POLE_GAIN = config.ik.elbow_pole_gain
-    base.ELBOW_POLE_DAMPING = config.ik.elbow_pole_damping
-    base.ELBOW_AVOIDANCE_WEIGHT = config.ik.elbow_avoidance_weight
-    base.COLLISION_MARGIN = config.collision.margin_m
-    base.CLUTCH_POSITION_DELTA_MIN = np.asarray(config.workspace.clutch_delta_min_m, dtype=float)
-    base.CLUTCH_POSITION_DELTA_MAX = np.asarray(config.workspace.clutch_delta_max_m, dtype=float)
-    base.RIGHT_ELBOW_LATERAL_LIMIT = config.workspace.right_elbow_lateral_limit_m
-    base.RIGHT_WRIST_LATERAL_LIMIT = config.workspace.right_wrist_lateral_limit_m
-    base.TORSO_KEEP_OUT_X = tuple(config.workspace.torso_keep_out_x_m)
-    base.TORSO_KEEP_OUT_Z = tuple(config.workspace.torso_keep_out_z_m)
-
-
-def apply_to_projected_runtime(runtime: ModuleType, config: TeleopConfig, project_root: str | Path) -> None:
-    root = Path(project_root)
-    workspace_path = Path(config.workspace.workspace_file)
-    if not workspace_path.is_absolute():
-        workspace_path = root / workspace_path
-    runtime.WORKSPACE_PATH = workspace_path
-    runtime.WORKSPACE_VOXEL_SIZE_M = config.workspace.voxel_size_m
-    runtime.WORKSPACE_ALLOWED_CLASSES = tuple(config.workspace.allowed_classes)
-    runtime.WORKSPACE_DILATION_VOXELS = config.workspace.dilation_voxels
-    if hasattr(runtime, "VoxelWorkspaceMap"):
-        runtime.VoxelWorkspaceMap.DEFAULT_DILATION_VOXELS = config.workspace.dilation_voxels

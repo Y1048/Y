@@ -69,6 +69,7 @@ class MinkCommandStreamTest(unittest.TestCase):
         self.sock.queue(packet(2, mode="idle"))
         held = self.stream.poll(self.sock)
         self.assertEqual(held.control_state, "hold")
+        self.assertEqual(held.input_command_mode, "idle")
         self.assertTrue(held.clutch_engaged)
         self.assertFalse(held.command_active)
         self.assertFalse(held.reset_clutch)
@@ -93,6 +94,7 @@ class MinkCommandStreamTest(unittest.TestCase):
 
         self.assertTrue(active.command_active)
         self.assertEqual(held.control_state, "hold")
+        self.assertEqual(held.input_command_mode, "active")
         self.assertTrue(held.clutch_engaged)
         self.assertFalse(held.reset_clutch)
 
@@ -121,6 +123,7 @@ class MinkCommandStreamTest(unittest.TestCase):
         disengaged = self.stream.poll(self.sock)
 
         self.assertEqual(disengaged.control_state, "idle")
+        self.assertEqual(disengaged.input_command_mode, "pinch_disengaged")
         self.assertTrue(disengaged.reset_clutch)
         self.assertFalse(disengaged.clutch_engaged)
         self.assertFalse(disengaged.workspace_fault)
@@ -138,6 +141,7 @@ class MinkCommandStreamTest(unittest.TestCase):
         disengaged = self.stream.poll(self.sock)
 
         self.assertEqual(disengaged.control_state, "idle")
+        self.assertEqual(disengaged.input_command_mode, "tracking_disengaged")
         self.assertTrue(disengaged.reset_clutch)
         self.assertFalse(disengaged.clutch_engaged)
         self.assertFalse(disengaged.workspace_fault)

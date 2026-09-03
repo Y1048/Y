@@ -1,0 +1,19 @@
+{
+  "schema": "g1.startup_precheck.config.v1",
+  "expected_motion_mode": {
+    "form": "0",
+    "name": "ai",
+    "operator_label": "regular_3dof_waist",
+    "captured_date": "2026-08-28",
+    "source": "MotionSwitcherClient.CheckMode while operator confirmed G1 Regular Mode"
+  },
+  "expected_mode_machine": 5,
+  "expected_mode_pr": 0,
+  "observation_window_s": 1.0,
+  "minimum_packet_count": 20,
+  "maximum_packet_age_s": 0.25,
+  "maximum_pose_span_deg": 0.5,
+  "maximum_velocity_p95_deg_s": 3.0,
+  "minimum_collision_distance_m": 0.012,
+  "maximum_motion_mode_query_age_s": 15.0
+}

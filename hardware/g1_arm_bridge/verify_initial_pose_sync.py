@@ -2,9 +2,9 @@
 """Verify the captured G1 pose through Mink and the Unity state contract.
 
 This validator creates no DDS objects, opens no viewer, and sends no robot
-command. It checks that the seven captured LowState joint values are preserved
-when the current Mink model is initialized and when its Unity state packet is
-built.
+command. It checks that the seven captured LowState right-arm values are
+preserved when the current Mink model is initialized, and that the Unity state
+packet preserves the complete 29-joint model state.
 """
 
 from __future__ import annotations
@@ -56,6 +56,13 @@ def main() -> int:
         ],
         dtype=int,
     )
+    all_qpos_ids = np.asarray(
+        [
+            int(model.jnt_qposadr[controller._joint_id(model, name)])
+            for name in controller.g1.G1_29_JOINTS
+        ],
+        dtype=int,
+    )
     mink_pose = initial_qpos[qpos_ids]
 
     configuration = mink.Configuration(model)
@@ -66,25 +73,37 @@ def main() -> int:
     state_packet = controller._state_packet(
         configuration,
         qpos_ids,
+        all_qpos_ids,
         False,
         wrist_position,
         None,
         False,
     )
     unity_pose = np.asarray(state_packet["right_arm"]["joints"], dtype=float)
+    unity_full_pose = np.asarray(state_packet["all_joint_q_rad"], dtype=float)
+    expected_full_pose = configuration.q[all_qpos_ids]
 
     mink_error = float(np.max(np.abs(mink_pose - expected)))
     unity_error = float(np.max(np.abs(unity_pose - expected)))
+    unity_full_error = float(np.max(np.abs(unity_full_pose - expected_full_pose)))
     tolerance = 1e-9
-    passed = mink_error <= tolerance and unity_error <= tolerance
+    passed = (
+        mink_error <= tolerance
+        and unity_error <= tolerance
+        and unity_full_error <= tolerance
+        and state_packet["all_joint_names"] == controller.g1.G1_29_JOINT_NAMES
+    )
     result = {
         "passed": passed,
         "command_output_enabled": False,
         "captured_q_rad": expected.tolist(),
         "mink_q_rad": mink_pose.tolist(),
         "unity_packet_q_rad": unity_pose.tolist(),
+        "unity_packet_all_joint_names": state_packet["all_joint_names"],
+        "unity_packet_all_joint_q_rad": unity_full_pose.tolist(),
         "maximum_mink_error_rad": mink_error,
         "maximum_unity_packet_error_rad": unity_error,
+        "maximum_unity_full_body_packet_error_rad": unity_full_error,
         "captured_q_deg": [math.degrees(value) for value in expected],
     }
     RESULT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -99,6 +118,7 @@ def main() -> int:
     )
     print(f"Mink maximum error: {mink_error:.3e} rad")
     print(f"Unity packet maximum error: {unity_error:.3e} rad")
+    print(f"Unity full-body packet maximum error: {unity_full_error:.3e} rad")
     print("Robot command: NONE")
     print("[PASS]" if passed else "[FAIL]")
     return 0 if passed else 2

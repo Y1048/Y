@@ -1,0 +1,50 @@
+{
+  "source_checks": {
+    "files": 264,
+    "lines": 46832,
+    "review_depth": {
+      "full_text_review": 107,
+      "partial_control_path_review": 0,
+      "static_only": 157
+    },
+    "parse_failures": []
+  },
+  "structured_assets": {
+    "files": 36,
+    "failures": [
+      {
+        "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/scene.xml",
+        "status": "parse_failed",
+        "error": "not well-formed (invalid token): line 25, column 1"
+      }
+    ]
+  },
+  "findings": {
+    "string_false_authorizes_in_loader": true,
+    "release_failure": {
+      "passed": true,
+      "release_zero_frames": 0,
+      "command_output_enabled": false,
+      "release_fault": "OSError: injected publisher failure",
+      "exit_code": 0
+    },
+    "old_source_timestamp": {
+      "timestamp": 1.0,
+      "final_state": "TRACK_MINK_RIGHT",
+      "command_candidate_valid": true
+    },
+    "active_path_collision_validator_calls": 0,
+    "gate6_interrupt_during_acquire": {
+      "weight_before": 0.020000000000000004,
+      "weight_after": 0.2,
+      "phase_after": "RELEASE"
+    },
+    "nominal_0_5s_hold_elapsed_by_fps": {
+      "30": 1.0,
+      "60": 0.5,
+      "72": 0.8333333333333334,
+      "90": 0.6666666666666666
+    },
+    "sdk_imported": false
+  }
+}

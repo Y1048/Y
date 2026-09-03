@@ -1,4 +1,10 @@
-"""실시간 Mink 제어기가 공통으로 사용하는 상태 보존형 UDP 명령 입력 계층."""
+"""실시간 Mink 제어기가 공통으로 사용하는 상태 보존형 UDP 명령 입력 계층.
+
+호출: Mink 제어 루프 -> poll -> live_receiver -> command_adapter/watchdog.
+입력: 이미 열린 non-blocking UDP 소켓의 Unity 목표 패킷.
+출력: MinkCommandUpdate에 담긴 위치 m, quaternion xyzw, 유효성 및 clutch 이벤트.
+좌표 변환과 IK는 호출한 제어기가 담당하며 여기서는 수신 순서와 상태를 관리한다.
+"""
 
 from __future__ import annotations
 
@@ -27,6 +33,7 @@ class MinkCommandUpdate:
     accepted_count: int
     rejected_count: int
     control_state: str
+    input_command_mode: str
     session_id: str | None
     packet_age_s: float | None
 
@@ -67,6 +74,7 @@ class MinkCommandStream:
         self._target_position_m = position.copy()
         self._target_quaternion_xyzw = normalize_quaternion(quaternion)
         self._clutch_engaged = False
+        self._input_command_mode = "idle"
         self.accepted_total = 0
         self.rejected_total = 0
 
@@ -76,6 +84,11 @@ class MinkCommandStream:
         *,
         now_ns: int | None = None,
     ) -> MinkCommandUpdate:
+        """최신 유효 목표와 이번 주기의 engage/reset 이벤트를 반환한다.
+
+        now_ns는 수신 도착 시각과 같은 monotonic clock 기준이다. 송신측 timestamp와
+        직접 빼지 않는다. 짧은 timeout의 HOLD와 의도적 해제를 구분해 기준점을 보존한다.
+        """
         previous_session_id = self.watchdog.session_id
         batch = receive_available_commands(
             sock,
@@ -84,6 +97,10 @@ class MinkCommandStream:
         )
         self.accepted_total += batch.accepted_count
         self.rejected_total += batch.rejected_count
+        if batch.latest_command is not None:
+            # control_state는 controller가 계산한 active/hold/idle 상태다.
+            # 핀치와 추적 손실을 구분하는 원본 입력 mode는 별도로 보존한다.
+            self._input_command_mode = batch.latest_command.mode
 
         current_session_id = self.watchdog.session_id
         session_changed = (
@@ -157,6 +174,7 @@ class MinkCommandStream:
             accepted_count=batch.accepted_count,
             rejected_count=batch.rejected_count,
             control_state=control_state,
+            input_command_mode=self._input_command_mode,
             session_id=current_session_id,
             packet_age_s=packet_age_s,
         )

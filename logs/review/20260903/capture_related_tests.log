@@ -1,0 +1,9 @@
+test_equal_receive_times_keep_poses_without_dividing_by_zero (test_gate7_capture_quality.Gate7CaptureQualityTests.test_equal_receive_times_keep_poses_without_dividing_by_zero) ... ok
+test_sleep_until_step_never_passes_negative_duration (test_gate7_capture_quality.Gate7CaptureQualityTests.test_sleep_until_step_never_passes_negative_duration) ... ok
+test_synthetic_capture_builds_quality_report_and_replay_window (test_gate7_capture_quality.Gate7CaptureQualityTests.test_synthetic_capture_builds_quality_report_and_replay_window) ... ok
+test_all_synthetic_fault_scenarios_fail_closed (test_gate7_fault_injection_matrix.Gate7FaultInjectionMatrixTests.test_all_synthetic_fault_scenarios_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.331s
+
+OK

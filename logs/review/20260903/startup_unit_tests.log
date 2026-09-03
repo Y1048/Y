@@ -1,0 +1,25 @@
+test_collision_precheck_includes_both_arms (test_check_startup_readiness.StartupReadinessTests.test_collision_precheck_includes_both_arms) ... ok
+test_collision_violation_requires_recovery (test_check_startup_readiness.StartupReadinessTests.test_collision_violation_requires_recovery) ... ok
+test_high_velocity_waits_instead_of_authorizing (test_check_startup_readiness.StartupReadinessTests.test_high_velocity_waits_instead_of_authorizing) ... ok
+test_latest_full_body_snapshot_uses_nested_telemetry (test_check_startup_readiness.StartupReadinessTests.test_latest_full_body_snapshot_uses_nested_telemetry) ... ok
+test_motion_mode_query_has_no_mutating_call (test_check_startup_readiness.StartupReadinessTests.test_motion_mode_query_has_no_mutating_call) ... ok
+test_mutating_mode_query_contract_is_blocked (test_check_startup_readiness.StartupReadinessTests.test_mutating_mode_query_contract_is_blocked) ... ok
+test_non_regular_service_blocks_startup (test_check_startup_readiness.StartupReadinessTests.test_non_regular_service_blocks_startup) ... ok
+test_percentile_uses_nearest_rank (test_check_startup_readiness.StartupReadinessTests.test_percentile_uses_nearest_rank) ... ok
+test_settling_summary_reports_velocity (test_check_startup_readiness.StartupReadinessTests.test_settling_summary_reports_velocity) ... ok
+test_stable_window_is_direct_ready (test_check_startup_readiness.StartupReadinessTests.test_stable_window_is_direct_ready) ... ok
+test_fresh_measured_pose_becomes_hold_candidate (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_fresh_measured_pose_becomes_hold_candidate) ... ok
+test_gate5_processes_have_no_command_capable_import (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_gate5_processes_have_no_command_capable_import) ... ok
+test_legacy_packet_without_base_state_remains_valid (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_legacy_packet_without_base_state_remains_valid) ... ok
+test_malformed_base_quaternion_is_rejected (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_malformed_base_quaternion_is_rejected) ... ok
+test_optional_base_state_is_parsed_without_changing_arm_contract (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_optional_base_state_is_parsed_without_changing_arm_contract) ... ok
+test_packet_contract_rejects_non_finite_joint (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_packet_contract_rejects_non_finite_joint) ... ok
+test_runtime_accepts_fresh_packets_then_fails_closed_on_stale (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_runtime_accepts_fresh_packets_then_fails_closed_on_stale) ... ok
+test_sequence_and_session_are_latched (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_sequence_and_session_are_latched) ... ok
+test_stale_measured_pose_has_no_candidate (test_gate5_lowstate_safety_monitor.Gate5LowStateSafetyTests.test_stale_measured_pose_has_no_candidate) ... ok
+test_left_arm_mesh_zero_is_probed_with_left_joint (test_collision_diagnostics.CollisionDiagnosticTests.test_left_arm_mesh_zero_is_probed_with_left_joint) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.838s
+
+OK

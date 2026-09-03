@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import ctypes
-import importlib.util
 import json
 import sys
 from multiprocessing import shared_memory
@@ -14,10 +13,15 @@ import numpy as np
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
-DEMO_PATH = PROJECT_ROOT / "MuJoCo_G1_Controller" / "scripts" / "g1_right_arm_udp_ik_demo.py"
+CONTROLLER_ROOT = PROJECT_ROOT / "MuJoCo_G1_Controller" / "scripts"
 PROFILE_PATH = PROJECT_ROOT / "config" / "camera_profile.json"
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
+if str(CONTROLLER_ROOT) not in sys.path:
+    sys.path.insert(0, str(CONTROLLER_ROOT))
+
+import g1_right_arm_common as g1  # noqa: E402
+import run_mink_g1_right_arm_prototype as controller  # noqa: E402
 
 from g1_teleop import (  # noqa: E402
     G1_D435I_CAMERA_NAME,
@@ -35,15 +39,6 @@ from g1_teleop.unitree_image_transport import (  # noqa: E402
     UnitreeImageHeader,
     shared_memory_name,
 )
-
-
-def load_demo_module():
-    spec = importlib.util.spec_from_file_location("g1_camera_validation_demo", DEMO_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot load demo module: {DEMO_PATH}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def parse_args():
@@ -124,18 +119,22 @@ def verify_transport(frame):
 
 def main():
     args = parse_args()
-    demo = load_demo_module()
-    model, data, initial_qpos, preferred = demo.initialize_model("camera_validation")
-    target = np.asarray(demo.SCENES["camera_validation"]["target_pos"], dtype=float)
-    tool_position = demo.solve_right_arm_target(
+    # 카메라 검사는 현행 모델 생성기만 사용하며, 폐기한 DLS 제어기를 실행하지 않는다.
+    g1.make_demo_xml("camera_validation", show_inspection_scene=True)
+    model = mujoco.MjModel.from_xml_path(str(g1.DEMO_XML))
+    data = mujoco.MjData(model)
+    data.qpos[:] = controller._initial_configuration(model)
+    mujoco.mj_forward(model, data)
+    target = np.asarray(g1.SCENES["camera_validation"]["target_pos"], dtype=float)
+    tool_body_id = mujoco.mj_name2id(
         model,
-        data,
-        initial_qpos,
-        preferred,
-        target,
-        iterations=300,
+        mujoco.mjtObj.mjOBJ_BODY,
+        "inspection_tool_tip_body",
     )
-    ik_error_m = float(np.linalg.norm(target - tool_position))
+    if tool_body_id < 0:
+        raise RuntimeError("MuJoCo inspection tool body is missing")
+    tool_position = data.xpos[tool_body_id].copy()
+    reference_error_m = float(np.linalg.norm(target - tool_position))
 
     profile = load_camera_profile(PROFILE_PATH)
     profile["active_source"] = "simulation"
@@ -175,11 +174,12 @@ def main():
         and image_standard_deviation > 5.0
         and nonblank_ratio > 0.25
     )
-    ik_passed = ik_error_m <= 0.03
-    passed = mount_passed and stream_passed and ik_passed and transport["passed"]
+    # IK has its own controller tests. A camera transport check must not fail
+    # because the current arm controller chooses a different inspection pose.
+    passed = mount_passed and stream_passed and transport["passed"]
 
     report = {
-        "schema": "g1.teleop.camera.validation.v1",
+        "schema": "g1.teleop.camera.validation.v2",
         "status": "PASS" if passed else "FAIL",
         "camera": {
             "source": frame.source,
@@ -201,10 +201,11 @@ def main():
         },
         "scene": {
             "name": "camera_validation",
-            "target_position_m": target.tolist(),
+            "reference_target_position_m": target.tolist(),
             "tool_position_m": tool_position.tolist(),
-            "ik_error_m": ik_error_m,
-            "ik_passed": ik_passed,
+            "reference_error_m": reference_error_m,
+            "reference_only": True,
+            "control_owned_elsewhere": True,
         },
         "image": {
             "standard_deviation": image_standard_deviation,
@@ -226,7 +227,10 @@ def main():
     print(f"Camera simulation validation: {report['status']}")
     print(f"Preview: {args.preview.resolve()}")
     print(f"Report:  {args.report.resolve()}")
-    print(f"IK error: {ik_error_m * 1000.0:.1f} mm")
+    print(
+        "Reference tool-to-target distance: "
+        f"{reference_error_m * 1000.0:.1f} mm (non-gating)"
+    )
     if not passed:
         raise SystemExit(1)
 

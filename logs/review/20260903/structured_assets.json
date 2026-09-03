@@ -1,0 +1,147 @@
+[
+  {
+    "path": "Unity_G1_VR/Assembly-CSharp-Editor.csproj",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/teleop.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/startup_recovery.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_startup_precheck.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_right_shoulder_pitch_full_authority_trial.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_right_arm_jog.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_regular_arm_pose.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate7_visible_motion_mink_arm_sdk.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate7_visible_motion_hardware_output.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate7_mink_arm_sdk.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate7_live_hardware_output.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate7_first_live_mink_arm_sdk.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate7_first_live_hardware_output.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate6_interrupt_release_test.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/g1_gate6_hold.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "config/camera_profile.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/.vscode/settings.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/.vscode/launch.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/.vscode/extensions.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/ProjectSettings/SceneTemplateSettings.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/Packages/packages-lock.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/Packages/manifest.json",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/_generated_g1_right_arm_udp_ik.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/_generated_g1_right_arm_ik_inspection.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/_generated_g1_inspection_arm_demo.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/_generated_g1_29dof_fixed_base.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/scene_29dof.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/scene_23dof.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/scene.xml",
+    "status": "parse_failed",
+    "error": "not well-formed (invalid token): line 25, column 1"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/g1_29dof.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/g1_23dof.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/terrain_tool/scene.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "MuJoCo_G1_Controller/external/unitree_mujoco/example/ros2/package.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/Assets/Plugins/Android/AndroidManifest.xml",
+    "status": "parse_pass"
+  },
+  {
+    "path": "Unity_G1_VR/Assembly-CSharp.csproj",
+    "status": "parse_pass"
+  }
+]

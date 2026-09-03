@@ -1,0 +1,79 @@
+{
+  "observations": {
+    "saved_fallback_exported_as_hardware_source": {
+      "snapshot_source_kind": "pose_sync_validation",
+      "actual_full_body_capture": false,
+      "unity_state_source": "g1_lowstate_read_only",
+      "unity_session_id": "saved-review",
+      "unity_timestamp": 1788435522.2731905,
+      "boundary": "Python packet conversion only; no Unity execution or robot command"
+    },
+    "camera_quality_ignored": {
+      "requested_quality": 40,
+      "generator_call_args": [
+        0,
+        0.0
+      ],
+      "generator_call_kwargs": {},
+      "matches_default_quality_82": true,
+      "matches_requested_quality_40": false,
+      "send_count": 1,
+      "connection_closed": true,
+      "result_passed_without_unity": true
+    },
+    "camera_nan_arguments_accepted": [
+      "fps",
+      "duration",
+      "connect_timeout",
+      "reconnect_delay"
+    ]
+  },
+  "tests_run": 21,
+  "tests_passed": true,
+  "indexed_source_changes": [],
+  "hardware_locks": [
+    {
+      "path": "config/g1_gate6_hold.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate6_interrupt_release_test.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_first_live_hardware_output.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_first_live_mink_arm_sdk.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_live_hardware_output.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_mink_arm_sdk.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_visible_motion_hardware_output.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_gate7_visible_motion_mink_arm_sdk.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_right_arm_jog.json",
+      "locked": true
+    },
+    {
+      "path": "config/g1_right_shoulder_pitch_full_authority_trial.json",
+      "locked": true
+    }
+  ],
+  "real_network_opened": false,
+  "unity_or_viewer_started": false,
+  "sdk_imported": false
+}

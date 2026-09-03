@@ -41,12 +41,28 @@ def _packet(sequence: int, session_id: str = "offline-gate5-session") -> bytes:
         "received_packets": sequence,
         "sent_at_unix": time.time(),
         "sent_at_unix_ns": time.time_ns(),
+        "mode_pr": 0,
+        "mode_machine": 5,
         "right_arm_q_rad": list(SAFE_Q),
         "right_arm_dq_rad_s": [0.0] * 7,
         "publisher_present": False,
         "command_output_enabled": False,
     }
     return json.dumps(payload, separators=(",", ":")).encode("utf-8")
+
+
+def _base_state() -> dict[str, object]:
+    return {
+        "valid": True,
+        "topic": "rt/odommodestate",
+        "received_packets": 100,
+        "invalid_packets": 0,
+        "last_packet_age_s": 0.002,
+        "position_m": [0.2, -0.1, 0.0],
+        "quaternion_xyzw": [0.0, 0.0, 0.0, 1.0],
+        "velocity_mps": [0.1, 0.0, 0.0],
+        "yaw_speed_rad_s": 0.05,
+    }
 
 
 def _unused_local_port() -> int:
@@ -59,8 +75,31 @@ def _unused_local_port() -> int:
 
 
 class Gate5LowStateSafetyTests(unittest.TestCase):
+    def test_optional_base_state_is_parsed_without_changing_arm_contract(self) -> None:
+        payload = json.loads(_packet(9))
+        payload["base_state"] = _base_state()
+        packet = parse_lowstate_telemetry(json.dumps(payload).encode("utf-8"))
+        self.assertIsNotNone(packet.base_state)
+        assert packet.base_state is not None
+        self.assertTrue(packet.base_state.valid)
+        self.assertEqual((0.2, -0.1, 0.0), packet.base_state.position_m)
+        self.assertEqual(SAFE_Q, packet.measured_q_rad)
+
+    def test_legacy_packet_without_base_state_remains_valid(self) -> None:
+        packet = parse_lowstate_telemetry(_packet(8))
+        self.assertIsNone(packet.base_state)
+
+    def test_malformed_base_quaternion_is_rejected(self) -> None:
+        payload = json.loads(_packet(7))
+        payload["base_state"] = _base_state()
+        payload["base_state"]["quaternion_xyzw"] = [0.0, 0.0, 0.0, 2.0]
+        with self.assertRaisesRegex(LowStatePacketError, "normalized"):
+            parse_lowstate_telemetry(json.dumps(payload).encode("utf-8"))
+
     def test_fresh_measured_pose_becomes_hold_candidate(self) -> None:
         packet = parse_lowstate_telemetry(_packet(10))
+        self.assertEqual(0, packet.mode_pr)
+        self.assertEqual(5, packet.mode_machine)
         decision = evaluate_measured_hold(
             packet,
             age_s=0.01,

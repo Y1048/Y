@@ -2592,6 +2592,7 @@ MonoBehaviour:
   head_camera_mount: {fileID: 824866171756599430}
   first_person_hidden_renderers:
   - {fileID: 2106010713861345540}
+  show_inspection_tool: 0
 --- !u!1 &5197920164070298407
 GameObject:
   m_ObjectHideFlags: 0

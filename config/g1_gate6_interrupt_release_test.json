@@ -1,0 +1,31 @@
+{
+  "schema": "g1.gate6.arm_sdk_hold.config.v1",
+  "arm_sdk_topic": "rt/arm_sdk",
+  "lowstate_topic": "rt/lowstate",
+  "expected_motion_mode": {
+    "form": "0",
+    "name": "ai"
+  },
+  "expected_mode_pr": 0,
+  "expected_mode_machine": 5,
+  "settle_duration_s": 1.0,
+  "minimum_settle_samples": 100,
+  "maximum_initial_arm_velocity_deg_s": 5.0,
+  "lowstate_timeout_s": 0.25,
+  "joint_limit_margin_deg": 2.0,
+  "maximum_target_error_deg": 10.0,
+  "publish_hz": 250.0,
+  "ramp_up_s": 3.0,
+  "hold_s": 300.0,
+  "ramp_down_s": 2.0,
+  "maximum_weight": 0.2,
+  "release_zero_cycles": 25,
+  "proximal_kp": 80.0,
+  "proximal_kd": 3.0,
+  "wrist_kp": 40.0,
+  "wrist_kd": 1.5,
+  "precheck_max_age_s": 60.0,
+  "hardware_output_authorized": false,
+  "hardware_confirmation_phrase": "ENABLE_G1_GATE6_INTERRUPT_RELEASE_TEST",
+  "grounded_regular_confirmation_phrase": "G1_IS_GROUNDED_IN_REGULAR_MODE"
+}

@@ -107,6 +107,7 @@ public static class G1OfficialModelImporter
 
             prefab_root = new GameObject("G1_29DoF_Official");
             G1OfficialRig rig_value = prefab_root.AddComponent<G1OfficialRig>();
+            rig_value.show_inspection_tool = false;
             BuildBody(
                 pelvis_element,
                 prefab_root.transform,

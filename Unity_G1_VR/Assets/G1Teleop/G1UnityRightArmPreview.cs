@@ -1,18 +1,38 @@
 using UnityEngine;
+using System.IO;
+using Newtonsoft.Json;
 
 /// <summary>
-/// 백엔드가 계산한 7개 관절값으로 Unity의 공식 G1 모델과 디버그 표식을 갱신한다.
+/// 선택한 모드의 시뮬레이션 또는 실측 관절값으로 공식 G1 모델을 갱신한다.
 /// 이 클래스는 결과를 보여주기만 하며, 프리뷰 위치나 표식이 UDP 목표 또는 IK 입력으로
 /// 되돌아가지 않도록 제어 경로와 분리되어 있다.
 /// </summary>
 public class G1UnityRightArmPreview : MonoBehaviour
 {
+    public enum DisplayMode { Unavailable, Simulation, Hardware, Recorded }
+
+    private sealed class DisplayModeConfig
+    {
+        public string schema;
+        public string mode;
+    }
+
+    public DisplayMode ActiveDisplayMode { get; private set; }
+    public string DisplayStatus { get; private set; }
+    private string display_config_path;
+    private bool display_mode_changed;
+    private float display_config_check_time;
+    private TextMesh display_status_text;
+    private string previous_display_status;
     public G1ExistingHandTargetBinder hand_binder;
     public G1ExistingTargetUdpSender target_sender;
     public G1RobotStateUdpReceiver state_receiver;
+    public G1RobotStateUdpReceiver hardware_state_receiver;
+    public G1HeadLockedCamera head_camera_alignment;
     public Transform wrist_target;
     public bool show_tracking_markers = true;
     public bool show_orientation_axes = false;
+    public bool show_inspection_scene = false;
     public float tracking_axis_length = 0.10f;
 
     private static readonly float[] fallback_right_arm_positions =
@@ -74,17 +94,20 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private Material inspection_panel_material;
     private Material inspection_target_material;
     private bool robot_anchored;
-    private bool robot_state_pose_applied;
     private bool calibration_reference_captured;
     private bool previous_preview_calibrated;
     private Vector3 robot_wrist_at_calibration;
+    private ulong calibration_state_revision;
     private float alignment_log_timer;
+    private float base_mirror_log_timer;
 
     public float WristAlignmentError { get; private set; }
     public float RawHandVisualOffset { get; private set; }
     public float MuJoCoPositionError { get; private set; }
     public float UnityReplayError { get; private set; }
     public float CommandTransportError { get; private set; }
+    public float UnityBaseMirrorPositionError { get; private set; }
+    public float UnityBaseMirrorRotationErrorDegrees { get; private set; }
     public bool IsRobotAnchored => robot_anchored;
     public Transform HeadCameraMount => official_g1_rig == null
         ? null
@@ -92,18 +115,28 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void Awake()
     {
+        display_config_path = Path.GetFullPath(Path.Combine(
+            Application.dataPath, "../../logs/runtime/unity_display_mode.json"));
+        ActiveDisplayMode = ReadDisplayMode();
         CreatePreview();
     }
 
     private void LateUpdate()
     {
+        // 표시 모드는 Play 시작에 고정한다. 실행 중 변경되면 다른 출처로 전환하지 않는다.
+        if (Time.unscaledTime >= display_config_check_time)
+        {
+            display_config_check_time = Time.unscaledTime + 0.5f;
+            display_mode_changed |= ReadDisplayMode() != ActiveDisplayMode;
+        }
         // 관절 프리뷰를 먼저 적용한 뒤 같은 프레임의 손/목표 표식을 배치해
         // 화면에 보이는 오차가 한 프레임씩 어긋나지 않게 한다.
         UpdateOfficialRobotPose();
+        UpdateDisplayStatus();
 
-        if (!robot_anchored
-            && hand_binder != null
-            && hand_binder.IsEngagementFrameLocked)
+        bool initial_head_pose_ready = head_camera_alignment != null
+            && head_camera_alignment.IsHeadTrackingReady;
+        if (!robot_anchored && initial_head_pose_ready)
         {
             AnchorOfficialRobot();
         }
@@ -221,7 +254,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateInspectionDemo()
     {
-        bool visible = robot_anchored
+        bool visible = show_inspection_scene
+            && robot_anchored
             && official_g1_object != null
             && official_g1_rig != null
             && state_receiver != null
@@ -288,9 +322,28 @@ public class G1UnityRightArmPreview : MonoBehaviour
         }
     }
 
-    private static Vector3 RobotVectorToUnity(Vector3 robot_vector)
+    public static Vector3 RobotVectorToUnity(Vector3 robot_vector)
     {
         return new Vector3(-robot_vector.y, robot_vector.z, robot_vector.x);
+    }
+
+    public static Quaternion RobotQuaternionToUnity(Quaternion robot_rotation)
+    {
+        // G1 +X forward/+Y left/+Z up을 Unity +Z forward/-X left/+Y up으로
+        // 옮긴다. 축 반사 때문에 quaternion 성분을 직접 재배열하지 않고
+        // 회전된 forward/up 두 축으로 Unity 회전을 재구성한다.
+        Vector3 unity_forward = RobotVectorToUnity(
+            robot_rotation * Vector3.right);
+        Vector3 unity_up = RobotVectorToUnity(
+            robot_rotation * Vector3.forward);
+        if (unity_forward.sqrMagnitude < 1e-8f
+            || unity_up.sqrMagnitude < 1e-8f)
+        {
+            return Quaternion.identity;
+        }
+        return Quaternion.LookRotation(
+            unity_forward.normalized,
+            unity_up.normalized);
     }
 
     private void UpdateOfficialRobotPose()
@@ -300,49 +353,252 @@ public class G1UnityRightArmPreview : MonoBehaviour
             return;
         }
 
-        bool robot_state_available = state_receiver != null
-            && state_receiver.HasRecentState;
+        G1RobotStateUdpReceiver display_receiver = GetDisplayStateReceiver();
+        bool robot_state_available = display_receiver != null
+            && display_receiver.HasRecentState;
 
         if (robot_state_available)
         {
-            official_g1_rig.ApplyRightArmJointPositions(
-                state_receiver.LatestRightArmJoints);
-            robot_state_pose_applied = true;
+            bool full_body_applied = display_receiver.HasFullBodyJointState
+                && official_g1_rig.ApplyAllJointPositions(
+                    display_receiver.LatestAllJointNames,
+                    display_receiver.LatestAllJointPositions);
+            if (!full_body_applied)
+            {
+                official_g1_rig.ApplyRightArmJointPositions(
+                    display_receiver.LatestRightArmJoints);
+            }
+
+            if (display_receiver == hardware_state_receiver
+                && display_receiver.HasBasePoseState
+                && official_g1_object != null)
+            {
+                official_g1_object.transform.SetLocalPositionAndRotation(
+                    RobotVectorToUnity(
+                        display_receiver.LatestBasePositionRobot),
+                    RobotQuaternionToUnity(
+                        display_receiver.LatestBaseRotationRobot));
+                UpdateBaseMirrorDiagnostics(display_receiver);
+            }
+        }
+    }
+
+    private void UpdateBaseMirrorDiagnostics(
+        G1RobotStateUdpReceiver display_receiver)
+    {
+        Vector3 expected_unity_position = RobotVectorToUnity(
+            display_receiver.LatestBasePositionRobot);
+        Quaternion expected_unity_rotation = RobotQuaternionToUnity(
+            display_receiver.LatestBaseRotationRobot);
+        UnityBaseMirrorPositionError = Vector3.Distance(
+            official_g1_object.transform.localPosition,
+            expected_unity_position);
+        UnityBaseMirrorRotationErrorDegrees = Quaternion.Angle(
+            official_g1_object.transform.localRotation,
+            expected_unity_rotation);
+
+        if (!display_receiver.HasMirrorDiagnostics)
+        {
             return;
         }
 
-        if (robot_state_pose_applied)
+        base_mirror_log_timer += Time.deltaTime;
+        if (base_mirror_log_timer < 1.0f)
         {
-            ApplyFallbackPosture();
-            robot_state_pose_applied = false;
+            return;
         }
+        base_mirror_log_timer = 0.0f;
+
+        float source_move_cm =
+            display_receiver.LatestSourceBasePositionRobot.magnitude * 100.0f;
+        float mujoco_move_cm =
+            display_receiver.LatestDisplayedBasePositionRobot.magnitude * 100.0f;
+        float unity_move_cm = official_g1_object.transform.localPosition.magnitude
+            * 100.0f;
+        Debug.Log(
+            "G1 BASE MIRROR source="
+            + source_move_cm.ToString("F1")
+            + " cm | MuJoCo="
+            + mujoco_move_cm.ToString("F1")
+            + " cm | Unity="
+            + unity_move_cm.ToString("F1")
+            + " cm | source->MuJoCo="
+            + (display_receiver.LatestSourceToMuJoCoPositionErrorMeters * 100.0f)
+                .ToString("F2")
+            + " cm / "
+            + display_receiver.LatestSourceToMuJoCoOrientationErrorDegrees
+                .ToString("F2")
+            + " deg | MuJoCo->Unity="
+            + (UnityBaseMirrorPositionError * 100.0f).ToString("F3")
+            + " cm / "
+            + UnityBaseMirrorRotationErrorDegrees.ToString("F3")
+            + " deg | max joint display lag="
+            + (display_receiver.LatestSourceToMuJoCoMaxJointErrorRadians
+                * Mathf.Rad2Deg).ToString("F2")
+            + " deg");
+    }
+
+    private G1RobotStateUdpReceiver GetDisplayStateReceiver()
+    {
+        bool simulation_ready = state_receiver != null
+            && state_receiver.HasRecentState
+            && (state_receiver.LatestStateSource == G1RobotStateUdpReceiver.MinkStateSource
+                || state_receiver.LatestStateSource == "legacy_unspecified");
+        DisplayMode source = SelectDisplaySource(ActiveDisplayMode, display_mode_changed,
+            simulation_ready, HasRecentHardwareState());
+        if (source == DisplayMode.Hardware || source == DisplayMode.Recorded)
+        {
+            return hardware_state_receiver;
+        }
+        if (source == DisplayMode.Simulation)
+        {
+            return state_receiver;
+        }
+        return null;
+    }
+
+    public static DisplayMode SelectDisplaySource(DisplayMode mode, bool changed,
+        bool simulation_ready, bool hardware_ready)
+    {
+        if (changed)
+        {
+            return DisplayMode.Unavailable;
+        }
+        if ((mode == DisplayMode.Hardware || mode == DisplayMode.Recorded) && hardware_ready)
+        {
+            return mode;
+        }
+        if (mode == DisplayMode.Simulation && simulation_ready)
+        {
+            return DisplayMode.Simulation;
+        }
+        return DisplayMode.Unavailable;
+    }
+
+    public static DisplayMode ParseDisplayMode(string config_json)
+    {
+        try
+        {
+            DisplayModeConfig config = JsonConvert.DeserializeObject<DisplayModeConfig>(
+                config_json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None, MaxDepth = 4 });
+            if (config == null || config.schema != "g1.unity.display.v1")
+            {
+                return DisplayMode.Unavailable;
+            }
+            if (config.mode == "simulation")
+            {
+                return DisplayMode.Simulation;
+            }
+            if (config.mode == "hardware")
+            {
+                return DisplayMode.Hardware;
+            }
+            if (config.mode == "recorded")
+            {
+                return DisplayMode.Recorded;
+            }
+        }
+        catch (JsonException)
+        {
+            return DisplayMode.Unavailable;
+        }
+        return DisplayMode.Unavailable;
+    }
+
+    private DisplayMode ReadDisplayMode()
+    {
+        try
+        {
+            return ParseDisplayMode(File.ReadAllText(display_config_path));
+        }
+        catch (IOException)
+        {
+            return DisplayMode.Unavailable;
+        }
+        catch (System.UnauthorizedAccessException)
+        {
+            return DisplayMode.Unavailable;
+        }
+    }
+
+    private void UpdateDisplayStatus()
+    {
+        bool recent = GetDisplayStateReceiver() != null;
+        DisplayStatus = display_mode_changed ? "DISPLAY MODE CHANGED - RESTART PLAY"
+            : ActiveDisplayMode == DisplayMode.Hardware
+                ? (recent ? "G1 LIVE - MEASURED" : "G1 STATE LOST / WAITING - POSE FROZEN")
+            : ActiveDisplayMode == DisplayMode.Simulation
+                ? (recent ? "SIMULATION - NOT G1 MEASURED" : "SIMULATION STATE LOST - POSE FROZEN")
+            : ActiveDisplayMode == DisplayMode.Recorded
+                ? (recent ? "RECORDED G1 - NOT LIVE" : "REPLAY STATE LOST - POSE FROZEN")
+            : "DISPLAY MODE MISSING - RUN LAUNCHER";
+        if (DisplayStatus != previous_display_status)
+        {
+            Debug.Log("G1 DISPLAY: " + DisplayStatus);
+            previous_display_status = DisplayStatus;
+        }
+        if (display_status_text == null && head_camera_alignment != null
+            && head_camera_alignment.xr_center_eye != null)
+        {
+            GameObject status_object = new GameObject("G1_Display_Source_Status");
+            status_object.transform.SetParent(head_camera_alignment.xr_center_eye, false);
+            status_object.transform.localPosition = new Vector3(0.0f, 0.24f, 0.85f);
+            display_status_text = status_object.AddComponent<TextMesh>();
+            Font status_font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            display_status_text.font = status_font;
+            status_object.GetComponent<MeshRenderer>().sharedMaterial = status_font.material;
+            display_status_text.anchor = TextAnchor.MiddleCenter;
+            display_status_text.alignment = TextAlignment.Center;
+            display_status_text.fontSize = 48;
+            display_status_text.characterSize = 0.003f;
+        }
+        if (display_status_text != null)
+        {
+            display_status_text.text = DisplayStatus;
+            display_status_text.color = recent ? Color.white : new Color(1.0f, 0.65f, 0.1f);
+        }
+    }
+
+    private bool HasRecentHardwareState()
+    {
+        return hardware_state_receiver != null
+            && hardware_state_receiver.HasRecentState
+            && hardware_state_receiver.HasFullBodyJointState
+            && hardware_state_receiver.LatestStateSource == G1RobotStateUdpReceiver.HardwareStateSource;
     }
 
     private void AnchorOfficialRobot()
     {
         if (official_g1_object == null
             || official_g1_rig == null
-            || GetRobotPositionReference() == null
-            || GetRobotOrientationReference() == null
             || official_g1_rig.head_camera_mount == null)
         {
             return;
         }
 
         official_g1_object.SetActive(true);
-        official_g1_object.transform.position = Vector3.zero;
-        official_g1_object.transform.rotation = hand_binder.OperatorHeading;
-
-        Vector3 camera_alignment_delta = hand_binder.OperatorOrigin
-            - official_g1_rig.head_camera_mount.position;
-        official_g1_object.transform.position += camera_alignment_delta;
+        official_g1_object.transform.SetPositionAndRotation(
+            Vector3.zero,
+            Quaternion.identity);
         official_g1_rig.SetFirstPersonView(true);
-        hand_binder.SetEngagementTargetPose(
-            GetRobotPositionReference().position,
-            GetRobotOrientationReference().rotation);
         robot_anchored = true;
+
+        Transform robot_position_reference = GetRobotPositionReference();
+        Transform robot_orientation_reference = GetRobotOrientationReference();
+        if (hand_binder != null
+            && robot_position_reference != null
+            && robot_orientation_reference != null)
+        {
+            hand_binder.SetEngagementTargetPose(
+                robot_position_reference.position,
+                robot_orientation_reference.rotation);
+        }
+
+        string state_source = ActiveDisplayMode.ToString();
         Debug.Log(
-            "Official G1 head camera aligned to the initial HMD pose and locked in world coordinates.");
+            $"Official G1 preview fixed in the Unity robot frame using {state_source}. "
+            + $"head_mount={official_g1_rig.head_camera_mount.position} "
+            + $"forward={official_g1_rig.head_camera_mount.forward}");
     }
 
     private void ApplyFallbackPosture()
@@ -363,9 +619,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateTrackingMarkers()
     {
-        // cyan: 실제 Quest 손목, magenta: 백엔드가 계산한 G1 손목,
+        // cyan: 실제 Quest 손목, magenta: 선택한 표시 모드의 G1 손목,
         // green: 로봇이 추종 중인 제한된 목표. 표식과 선은 진단 전용이다.
         bool target_visible = show_tracking_markers
+            && GetDisplayStateReceiver() != null
             && hand_binder != null
             && hand_binder.IsEngagementFrameLocked;
         bool tracking_visible = target_visible && hand_binder.IsTrackingValid;
@@ -399,10 +656,28 @@ public class G1UnityRightArmPreview : MonoBehaviour
             ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
 
-        // Blue and green are local input/command visuals, so network round-trip
-        // latency cannot make the green marker trail or pass the operator hand.
-        // Pink alone follows the joint state returned by MuJoCo.
+        // 초록 표식은 백엔드가 검증한 예측 자세만 표시한다. 응답이 없으면
+        // 원래 손 목표를 도달 가능한 목표인 것처럼 대신 표시하지 않는다.
         Vector3 command_target_position = command_position;
+        if (command_active)
+        {
+            bool feasible_target_available = calibration_reference_captured
+                && state_receiver != null
+                && state_receiver.HasRecentState
+                && state_receiver.IsTeleoperationActive
+                && state_receiver.HasFeasibleTarget
+                && state_receiver.StateRevision > calibration_state_revision
+                && state_receiver.LatestSessionId == target_sender.CurrentSessionId;
+            target_hand_marker.gameObject.SetActive(target_visible && feasible_target_available);
+            target_hand_axes.gameObject.SetActive(
+                show_orientation_axes && target_visible && feasible_target_available);
+            if (feasible_target_available)
+            {
+                command_target_position = robot_wrist_at_calibration
+                    + hand_binder.OperatorHeading
+                    * state_receiver.LatestFeasibleTargetOperatorDelta;
+            }
+        }
 
         target_hand_marker.position = command_target_position;
         target_hand_marker.rotation = command_rotation;
@@ -516,6 +791,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             && robot_position_reference != null)
         {
             robot_wrist_at_calibration = robot_position_reference.position;
+            calibration_state_revision = state_receiver == null ? 0 : state_receiver.StateRevision;
             calibration_reference_captured = true;
         }
     }
@@ -544,9 +820,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
         Vector3 mujoco_target_position = robot_wrist_at_calibration
             + hand_binder.OperatorHeading * state_receiver.LatestTargetOperatorDelta;
         MuJoCoPositionError = state_receiver.LatestPositionError;
-        UnityReplayError = Vector3.Distance(
-            robot_state_wrist_reference.position,
-            mujoco_wrist_position);
+        // 실측 자세와 시뮬레이션 차이를 Unity 재현 오차로 오인하지 않도록 분리한다.
+        UnityReplayError = ActiveDisplayMode == DisplayMode.Simulation
+            ? Vector3.Distance(robot_state_wrist_reference.position, mujoco_wrist_position)
+            : float.NaN;
         CommandTransportError = Vector3.Distance(command_position, mujoco_target_position);
     }
 
@@ -674,6 +951,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (display_status_text != null)
+        {
+            Destroy(display_status_text.gameObject);
+        }
         if (preview_root != null)
         {
             Destroy(preview_root.gameObject);

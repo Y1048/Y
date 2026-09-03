@@ -63,6 +63,7 @@ SAFETY_DRY_RUN_HOST = "127.0.0.1"
 SAFETY_DRY_RUN_PORT = 5008
 INPUT_TIMEOUT_S = 0.75
 
+# IK 오차의 상대 중요도이며 모터 Kp/Kd가 아니다. 수식/출처: docs/CODE_GUIDE.md.
 POSITION_COST = 8.0
 ORIENTATION_COST = 2.0
 POSTURE_COST = 0.04
@@ -73,6 +74,8 @@ QP_DAMPING = 1e-8
 COLLISION_MIN_DISTANCE_M = 0.012
 COLLISION_DETECTION_DISTANCE_M = 0.040
 COLLISION_GAIN = 0.85
+ZERO_DISTANCE_TOLERANCE_M = 1e-12
+ZERO_DISTANCE_PROBE_RAD = 1e-7
 # 직접 연결 및 두 단계 이내의 구조적 이웃만 충돌 검사에서 제외한다.
 # 세 단계 쌍에는 몸통과 상완처럼 실제 관통을 막아야 하는 조합이 포함된다.
 STRUCTURAL_NEIGHBOR_DISTANCE = 2
@@ -124,9 +127,12 @@ def _find_body(element: ET.Element, name: str) -> ET.Element | None:
     return None
 
 
-def _prepare_mink_xml() -> None:
+def _prepare_mink_xml(show_inspection_scene: bool = False) -> None:
     """Generate the fixed-base demo and name its collision-enabled robot geoms."""
-    g1.make_demo_xml("control")
+    g1.make_demo_xml(
+        "control",
+        show_inspection_scene=show_inspection_scene,
+    )
     tree = ET.parse(g1.DEMO_XML)
     root = tree.getroot()
     worldbody = root.find("worldbody")
@@ -230,10 +236,15 @@ def _collision_geom_records(model: mujoco.MjModel) -> list[tuple[int, str]]:
     return records
 
 
-def _build_collision_pairs(model: mujoco.MjModel) -> tuple[list[tuple[list[str], list[str]]], list[tuple[int, int]]]:
-    right_arm_body_ids = {
+def _build_collision_pairs(
+    model: mujoco.MjModel,
+    controlled_body_names: set[str] | None = None,
+) -> tuple[list[tuple[list[str], list[str]]], list[tuple[int, int]]]:
+    if controlled_body_names is None:
+        controlled_body_names = g1.RIGHT_ARM_BODY_NAMES
+    controlled_body_ids = {
         g1.get_body_id(model, body_name)
-        for body_name in g1.RIGHT_ARM_BODY_NAMES
+        for body_name in controlled_body_names
         if mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name) >= 0
     }
     records = _collision_geom_records(model)
@@ -243,7 +254,7 @@ def _build_collision_pairs(model: mujoco.MjModel) -> tuple[list[tuple[list[str],
 
     for index, (body1, geom1_name) in enumerate(records):
         for body2, geom2_name in records[index + 1 :]:
-            if not (body1 in right_arm_body_ids or body2 in right_arm_body_ids):
+            if not (body1 in controlled_body_ids or body2 in controlled_body_ids):
                 continue
             distance = _body_distance(model, body1, body2)
             if distance is not None and distance <= STRUCTURAL_NEIGHBOR_DISTANCE:
@@ -326,12 +337,112 @@ def _nearest_pair_distance(
     nearest: tuple[float, int, int] | None = None
     fromto = np.zeros(6, dtype=float)
     for geom1, geom2 in geom_pairs:
-        distance = float(mujoco.mj_geomDistance(model, data, geom1, geom2, distmax, fromto))
+        distance = _robust_geom_distance(
+            model,
+            data,
+            geom1,
+            geom2,
+            distmax,
+            fromto,
+        )
         if distance >= distmax:
             continue
         if nearest is None or distance < nearest[0]:
             nearest = (distance, int(geom1), int(geom2))
     return nearest
+
+
+def _has_exact_geom_contact(
+    data: mujoco.MjData,
+    first_geom: int,
+    second_geom: int,
+) -> bool:
+    expected = {int(first_geom), int(second_geom)}
+    for contact_index in range(int(data.ncon)):
+        contact = data.contact[contact_index]
+        if {int(contact.geom1), int(contact.geom2)} == expected:
+            return True
+    return False
+
+
+def _probe_zero_mesh_distance(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    first_geom: int,
+    second_geom: int,
+    distmax: float,
+) -> float:
+    """Resolve an isolated mesh-distance zero without hiding real contact."""
+    original_qpos = data.qpos.copy()
+    probe_distances: list[float] = []
+    fromto = np.zeros(6, dtype=float)
+    try:
+        arm_joint_names = tuple(
+            dict.fromkeys(tuple(g1.RIGHT_ARM_JOINTS) + tuple(g1.LEFT_ARM_JOINTS))
+        )
+        for joint_name in arm_joint_names:
+            joint_id = _joint_id(model, joint_name)
+            qpos_id = int(model.jnt_qposadr[joint_id])
+            original_value = float(original_qpos[qpos_id])
+            for direction in (-1.0, 1.0):
+                data.qpos[:] = original_qpos
+                data.qpos[qpos_id] = (
+                    original_value + direction * ZERO_DISTANCE_PROBE_RAD
+                )
+                mujoco.mj_forward(model, data)
+                distance = float(
+                    mujoco.mj_geomDistance(
+                        model,
+                        data,
+                        int(first_geom),
+                        int(second_geom),
+                        distmax,
+                        fromto,
+                    )
+                )
+                if (
+                    math.isfinite(distance)
+                    and abs(distance) > ZERO_DISTANCE_TOLERANCE_M
+                ):
+                    probe_distances.append(distance)
+    finally:
+        data.qpos[:] = original_qpos
+        mujoco.mj_forward(model, data)
+
+    if not probe_distances:
+        return 0.0
+    return min(probe_distances)
+
+
+def _robust_geom_distance(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    first_geom: int,
+    second_geom: int,
+    distmax: float,
+    fromto: np.ndarray,
+) -> float:
+    distance = float(
+        mujoco.mj_geomDistance(
+            model,
+            data,
+            int(first_geom),
+            int(second_geom),
+            distmax,
+            fromto,
+        )
+    )
+    if abs(distance) > ZERO_DISTANCE_TOLERANCE_M:
+        return distance
+    if _has_exact_geom_contact(data, first_geom, second_geom):
+        return distance
+    return _probe_zero_mesh_distance(
+        model,
+        data,
+        first_geom,
+        second_geom,
+        distmax,
+    )
 
 
 def _min_pair_distance(
@@ -354,13 +465,17 @@ def _open_udp_socket() -> socket.socket:
 def _state_packet(
     configuration,
     right_qpos_ids,
+    all_qpos_ids,
     active,
     target_position,
     reference_position,
     collision_limited,
     *,
+    minimum_clearance_m=None,
     workspace_limited=False,
     control_state="idle",
+    input_command_mode="idle",
+    state_sequence=0,
     session_id=None,
     input_packet_age_s=None,
 ):
@@ -374,6 +489,13 @@ def _state_packet(
         wrist_delta = np.zeros(3)
         target_delta = np.zeros(3)
     return {
+        "schema": "g1.mink.right_arm.state.v1",
+        "sequence": int(state_sequence),
+        "state_source": "mink_simulation",
+        "all_joint_names": list(g1.G1_29_JOINT_NAMES),
+        "all_joint_q_rad": [
+            float(configuration.q[index]) for index in all_qpos_ids
+        ],
         "right_arm": {
             "joints": [float(configuration.q[index]) for index in right_qpos_ids],
             "active": bool(active),
@@ -384,8 +506,14 @@ def _state_packet(
             "position_error": float(np.linalg.norm(target_position - wrist_position)),
             "workspace_limited": bool(workspace_limited),
             "collision_limited": bool(collision_limited),
+            "minimum_clearance_m": (
+                None
+                if minimum_clearance_m is None
+                else float(minimum_clearance_m)
+            ),
             "command_state": str(control_state),
         },
+        "input_command_mode": str(input_command_mode),
         "session_id": session_id,
         "input_packet_age_s": input_packet_age_s,
         "timestamp": time.time(),
@@ -413,6 +541,10 @@ def main() -> None:
 
     right_dofs = _right_arm_dof_indices(model)
     right_qpos_ids = [int(model.jnt_qposadr[_joint_id(model, name)]) for name in g1.RIGHT_ARM_JOINTS]
+    all_qpos_ids = [
+        int(model.jnt_qposadr[_joint_id(model, name)])
+        for name in g1.G1_29_JOINTS
+    ]
     frozen_dofs = _frozen_dof_indices(model, right_dofs)
     collision_pairs, collision_geom_ids = _build_collision_pairs(model)
 
@@ -462,6 +594,7 @@ def main() -> None:
     rejected_total = 0
     next_status = time.monotonic()
     next_state = time.monotonic()
+    state_sequence = 0
     cycle_times: list[float] = []
     target_rotation = configuration.get_transform_frame_to_world(
         "right_wrist_yaw_link", "body"
@@ -594,17 +727,22 @@ def main() -> None:
                     packet = _state_packet(
                         configuration,
                         right_qpos_ids,
+                        all_qpos_ids,
                         active,
                         target_position,
                         None if clutch_reference is None else clutch_reference["robot_position"],
                         collision_limited,
+                        minimum_clearance_m=min_clearance,
                         workspace_limited=(
                             command_update.workspace_fault or reachability_limited
                         ),
                         control_state=command_update.control_state,
+                        input_command_mode=command_update.input_command_mode,
+                        state_sequence=state_sequence,
                         session_id=command_update.session_id,
                         input_packet_age_s=command_update.packet_age_s,
                     )
+                    state_sequence += 1
                     _send_state(state_sock, packet, UNITY_STATE_HOST, UNITY_STATE_PORT)
                     _send_state(
                         dry_run_sock,
@@ -627,6 +765,7 @@ def main() -> None:
                             "controller": "mink_right_arm_qp",
                             "input_active": active,
                             "input_control_state": command_update.control_state,
+                            "input_command_mode": command_update.input_command_mode,
                             "input_session_id": command_update.session_id,
                             "input_packet_age_s": command_update.packet_age_s,
                             "clutch_engaged": command_update.clutch_engaged,

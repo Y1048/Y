@@ -55,8 +55,10 @@ def _probe_zero_mesh_distance(
 
     MuJoCo can return exactly zero for a mesh pair at a single floating-point
     posture even though adjacent postures are centimetres apart and no contact
-    exists. Every right-arm joint is probed in both directions by 1e-7 rad.
-    The minimum nonzero result is retained, so a real contact or near-contact
+    exists. Every left- and right-arm joint is probed in both directions by
+    1e-7 rad. The startup precheck evaluates both arms, so probing only the
+    right arm cannot resolve an isolated zero involving a left-arm mesh. The
+    minimum nonzero result is retained, so a real contact or near-contact
     remains below the safety margin. If no probe resolves the result, zero is
     returned conservatively.
     """
@@ -65,7 +67,13 @@ def _probe_zero_mesh_distance(
     probe_distances: list[float] = []
     fromto = np.zeros(6, dtype=float)
     try:
-        for joint_name in controller.g1.RIGHT_ARM_JOINTS:
+        arm_joint_names = tuple(
+            dict.fromkeys(
+                tuple(controller.g1.RIGHT_ARM_JOINTS)
+                + tuple(controller.g1.LEFT_ARM_JOINTS)
+            )
+        )
+        for joint_name in arm_joint_names:
             joint_id = controller._joint_id(model, joint_name)
             qpos_id = int(model.jnt_qposadr[joint_id])
             original_value = float(original_qpos[qpos_id])

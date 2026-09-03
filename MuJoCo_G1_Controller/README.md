@@ -2,7 +2,7 @@
 
 이 폴더는 Unitree G1 MuJoCo 모델과 Mink 기반 오른팔 differential QP IK를 담당한다.
 
-현재 최신 실험 정책은:
+현재 기본 IK 정책은:
 
 ```text
 scripts/run_mink_g1_right_arm_virtual_center_live.py
@@ -11,7 +11,7 @@ scripts/run_mink_g1_right_arm_virtual_center_live.py
 이며 실행은 프로젝트 루트에서:
 
 ```powershell
-.\START_VR_HAND_TO_MUJOCO.bat --smooth
+.\START_VR_HAND_TO_MUJOCO.bat
 ```
 
 으로 한다.
@@ -24,7 +24,9 @@ scripts/run_mink_g1_right_arm_virtual_center_live.py
 | `scripts/run_mink_g1_right_arm_prototype.py` | 공통 Mink QP, UDP, collision, state packet 기반 |
 | `scripts/g1_right_arm_common.py` | G1 joint/frame/model/좌표계 공통 정의 |
 
-Legacy custom DLS/Jacobian controller인 `g1_right_arm_udp_ik_demo.py`는 카메라 기반 검증과 회귀 테스트 지원용으로만 남겨 두며, 현재 Mink controller는 이 파일을 import하지 않는다.
+옛 DLS 데모는 제거했다. 카메라 검사와 축 변환 테스트는 현재 공통 모델/변환을
+사용한다. `prototype`이라는 이름의 파일은 현재 공통 모듈과 baseline 비교
+경로이므로 유지한다. 수식·게인·주요 함수 설명은 [코드 가이드](../docs/CODE_GUIDE.md)를 참고한다.
 
 ---
 
@@ -143,30 +145,30 @@ orientation Jacobian × shoulder/elbow columns = 0
 손목이 관절 한계에 몰렸을 때 orientation을 완전히 잃지 않도록 proximal assist를 제한적으로 허용한다.
 
 ```python
-ASSIST_ENTER_MARGIN_DEG = 10.0
-ASSIST_RELEASE_MARGIN_DEG = 18.0
-ASSIST_FULL_MARGIN_DEG = 3.0
-ASSIST_LATCH_FLOOR = 0.03
-ASSIST_MAX = 0.14
+ASSIST_ENTER_MARGIN_DEG = 18.0
+ASSIST_RELEASE_MARGIN_DEG = 28.0
+ASSIST_FULL_MARGIN_DEG = 5.0
+ASSIST_LATCH_FLOOR = 0.08
+ASSIST_MAX = 1.0
 ```
 
 동작:
 
 ```text
-wrist limit margin > 10°
+wrist limit margin > 18°
 → proximal orientation assist = 0%
 
-margin <= 10°
+margin <= 18°
 → assist latch ON
 
 limit에 매우 가까움
-→ 최대 14%
+→ 최대 100%
 
-margin >= 18° 회복
+margin >= 28° 회복
 → latch OFF
 ```
 
-10°/18° 두 threshold를 둔 이유는 경계에서 assist가 반복적으로 켜졌다 꺼지는 chatter를 막기 위한 hysteresis다.
+18°/28° 두 threshold를 둔 이유는 경계에서 assist가 반복적으로 켜졌다 꺼지는 chatter를 막기 위한 hysteresis다.
 
 **손 속도를 기준으로 mode를 바꾸지 않는다.** 느린 millimetric translation도 항상 정상 position task로 처리한다.
 
@@ -179,20 +181,23 @@ Engage 순간 Quest와 G1의 pose를 기준으로 저장한다.
 ### Position
 
 ```python
-target_center_position = (
-    clutch_reference["center_position"]
+operator_target_position = (
+    clutch_reference["yaw_position"]
     + raw_target
     - clutch_reference["input_position"]
 )
+current_center_to_yaw = yaw_position - roll_position
+target_center_position = operator_target_position - current_center_to_yaw
 ```
 
 수식:
 
 ```text
-p_target = p_G1_engage + (p_hand_current - p_hand_engage)
+p_external_target = p_G1_yaw_engage + (p_input_current - p_input_engage)
+p_roll_target = p_external_target - (p_yaw_current - p_roll_current)
 ```
 
-Quest의 절대 세계좌표를 G1에 직접 넣는 것이 아니라 engage 이후의 상대 이동량을 사용한다.
+Quest의 절대 세계좌표를 G1에 직접 넣는 것이 아니라 engage 이후의 상대 이동량을 사용한다. 외부 계약은 yaw-link로 유지하고, 내부 위치 task에만 현재 yaw-to-roll offset을 한 번 빼서 전달한다.
 
 ### Orientation
 
@@ -372,7 +377,7 @@ RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES = {
 }
 ```
 
-Virtual-center live에서는 오른팔 7축 최대속도를 `45 deg/s`로 제한한다.
+Virtual-center live에서는 어깨·팔꿈치를 `40 deg/s`, 손목 3축을 `100 deg/s`로 제한한다.
 
 ---
 

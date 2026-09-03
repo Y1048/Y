@@ -23,6 +23,7 @@ Status:
 ```text
 R21 supported hardware-sync path : MITIGATED
 R21 generic receiver without --expected-forward-token : lower-provenance/manual mode remains possible
+Offline/static CI coverage       : PASS in provenance workflow subset
 Runtime validation               : NOT RUN
 Physical validation              : NOT RUN
 ```
@@ -71,6 +72,7 @@ Status:
 R51 supported physical launchers : MITIGATED with per-run nonce
 R51 generic check_startup_readiness.py direct path : OPEN / lower provenance
 Cryptographic authentication     : NOT PROVIDED; token is run provenance, not a secret/auth protocol
+Offline/static CI coverage       : PASS in provenance workflow subset
 Runtime validation               : NOT RUN
 Physical validation              : NOT RUN
 ```
@@ -83,6 +85,7 @@ Status:
 
 ```text
 R23 source fix             : IMPLEMENTED
+Static launcher assertion  : PASS in provenance CI
 Process-level BAT execution: NOT RUN
 ```
 
@@ -98,6 +101,7 @@ Status:
 R35 supported relay/adapter path : MITIGATED
 Direct/custom UDP 5013 consumers : outside supported path
 Cryptographic authentication     : NOT PROVIDED
+Offline CI coverage              : PASS
 Runtime validation               : NOT RUN
 Physical validation              : NOT RUN
 ```
@@ -115,6 +119,7 @@ Status:
 ```text
 R65 supported Unity/Mink command path : MITIGATED
 Cross-machine clock synchronization   : not required by current elapsed-time method
+Offline CI coverage                   : PASS
 Runtime validation                    : NOT RUN
 Unity/Quest validation                : NOT RUN
 ```
@@ -145,7 +150,9 @@ command_provenance = live_mink
 
 The root `START_VR_HAND_TO_MUJOCO.bat` now launches those entrypoints for both default virtual-center and `--baseline` modes.
 
-The Windows live relay now **requires** explicit `live_mink`. Missing provenance is no longer accepted as a compatibility case. Explicit `recorded_replay`, missing provenance, unknown provenance and a `replay-*` session are fail-closed before forwarding. The relay still canonicalizes the accepted packet and adds the per-run relay token before WSL delivery.
+The Windows live relay now **requires** explicit `live_mink`. Missing provenance is no longer accepted as a compatibility case. Explicit `recorded_replay`, missing provenance, unknown provenance and a `replay-*` session are fail-closed before forwarding. The relay canonicalizes the accepted packet and adds the per-run relay token before WSL delivery.
+
+Adding provenance and relay-token fields initially pushed the strict canonical UDP packet beyond the existing 1400-byte no-fragmentation budget. The first current-checkout CI run caught this. Commit `26e25d1c620243c86a031812c05ba0034368fcf4` kept the 1400-byte limit and reduced only relay joint serialization from 10 to 7 decimal places. This remains sub-microradian resolution and the right-arm duplicate is built from the same rounded 29-joint array, preserving the parser's exact consistency check.
 
 The supported WSL Gate 7 hardware entry independently requires both `live_mink` and the exact per-run relay token. `gate7_mink_replay.py --exact-transport` cannot target the live relay on UDP 5008; exact replay remains available only on a dedicated offline port.
 
@@ -159,6 +166,8 @@ c264d3ad398ade7b4e51f2a528704e455c5db5cc  baseline provenance entry
 fb40acca073e27c565e8ac3b1bf756ed5167f421  relay requires explicit live provenance
 0c83d080cdeeffceab40890adda895497367fc2c  strict relay regression update
 983ca9b47834122737406250eb4b3a5225d172b9  producer provenance regression coverage
+26e25d1c620243c86a031812c05ba0034368fcf4  preserve 1400-byte relay budget with 7-decimal joints
+31c7e0031a8a8bdb10eacc65f6d017a337eb2610  scope offline provenance CI to relevant paths
 ```
 
 Status:
@@ -169,6 +178,7 @@ Normalized replay into live relay                         : BLOCKED
 Missing-provenance legacy candidate into live relay      : BLOCKED
 Exact-transport replay into UDP 5008                      : BLOCKED
 Direct execution of the old core controller scripts      : lower-provenance / unsupported for physical relay use
+Current-checkout offline regression                       : PASS
 Runtime integration validation                            : PENDING
 Physical validation                                       : NOT RUN
 ```
@@ -185,15 +195,26 @@ hardware/g1_arm_bridge/test_gate7_live_entrypoint.py
 hardware/g1_arm_bridge/test_gate7_replay_provenance.py
 backend/tests/test_source_provenance.py
 backend/tests/test_mink_command_stream.py
+backend/tests/test_live_receiver.py
 MuJoCo_G1_Controller/scripts/test_mink_command_provenance.py
 ```
 
 Coverage includes LowState token mismatch, stale/non-provenance prechecks, wrong command sender/source, source-clock backlog, retired A -> B -> A sessions, Gate 7 relay-token mismatch, explicit replay rejection, missing live provenance, exact-transport/live-port rejection and source-side live packet marking.
 
-## Verification boundary
+## Verification results
 
-A small isolated smoke run of the SDK-neutral `g1_mink_command_provenance.py` helper passed on 2026-09-04: live packets were marked `live_mink`, replay relabeling was rejected, and the wrapped state factory preserved the original packet while adding provenance.
+A small isolated smoke run of the SDK-neutral `g1_mink_command_provenance.py` helper passed first.
 
-This was **not** a checked-out repository test run. Network access from the execution sandbox could not clone GitHub, and the repository has no GitHub Actions workflow currently available for this branch. The committed regression tests therefore remain unexecuted as a current-checkout suite.
+A repository-current GitHub Actions workflow was then added at:
 
-No Unity Play, Quest runtime, WSL DDS runtime or physical G1 command test was performed for this batch. Repository hardware authorization remains locked. No result in this document grants physical-output authorization.
+```text
+.github/workflows/offline-provenance-regression.yml
+```
+
+Run 1 (`33819076146`) failed in `test_gate7_mink_wsl_relay.py` because the newly authenticated/provenance-tagged canonical relay packet exceeded 1400 bytes. Backend command-ingress tests had already passed in that run. The MTU-budget issue was fixed without increasing the 1400-byte limit.
+
+Run 2 (`33819176285`) on commit `26e25d1c620243c86a031812c05ba0034368fcf4` passed all selected offline/static provenance regressions. Run 3 (`33819253842`) on the path-scoped workflow commit `31c7e0031a8a8bdb10eacc65f6d017a337eb2610` also passed.
+
+The passing workflow executes **54 tests** total across command ingress, source-clock freshness, Gate 7 relay/replay/hardware provenance, startup provenance guards and live Mink producer provenance. It installs only NumPy and creates no Unitree publisher, no DDS endpoint and no G1 connection.
+
+No Unity Play, Quest runtime, WSL DDS runtime or physical G1 command test was performed by this workflow. Repository hardware authorization remains locked. No result in this document grants physical-output authorization.

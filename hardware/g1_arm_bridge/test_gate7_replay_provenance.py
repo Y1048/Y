@@ -7,6 +7,7 @@ import json
 import unittest
 
 from arm_sdk_teleop_contract import Gate7ContractError
+from g1_joint_contract import G1_29_JOINT_NAMES
 from gate7_mink_replay import LIVE_GATE7_RELAY_PORT, NormalizePayload, validate_replay_destination
 from gate7_relay_provenance_guard import (
     COMMAND_PROVENANCE_REPLAY,
@@ -21,7 +22,7 @@ class Gate7ReplayProvenanceTests(unittest.TestCase):
                 "schema": "g1.mink.right_arm.state.v1",
                 "sequence": 1,
                 "state_source": "mink_simulation",
-                "all_joint_names": [f"joint-{index}" for index in range(29)],
+                "all_joint_names": list(G1_29_JOINT_NAMES),
                 "all_joint_q_rad": [0.0] * 29,
                 "right_arm": {
                     "joints": [0.0] * 7,
@@ -39,19 +40,11 @@ class Gate7ReplayProvenanceTests(unittest.TestCase):
         ).encode("utf-8")
 
     def test_normalized_replay_is_explicitly_marked(self) -> None:
-        # NormalizePayload validates the normal Gate 7 packet contract. This
-        # fixture intentionally exercises only the transport metadata fields,
-        # so patch in a known-valid packet shape through JSON after normalization
-        # is covered by the relay tests as well.
-        source = self._packet()
-        try:
-            normalized = NormalizePayload(
-                source,
-                session_id="replay-0123456789abcdef",
-                sequence=0,
-            )
-        except Exception as exc:  # fixture contract changes should fail loudly
-            self.fail(f"replay normalization fixture became invalid: {exc}")
+        normalized = NormalizePayload(
+            self._packet(),
+            session_id="replay-0123456789abcdef",
+            sequence=0,
+        )
         value = json.loads(normalized)
         self.assertEqual(COMMAND_PROVENANCE_REPLAY, value["command_provenance"])
         self.assertEqual("replay-0123456789abcdef", value["session_id"])

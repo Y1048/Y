@@ -72,6 +72,21 @@ def legacy_tracking_disengage_packet(sequence: int) -> bytes:
     return json.dumps(value).encode("utf-8")
 
 
+def legacy_workspace_exit_packet(sequence: int) -> bytes:
+    value = {
+        "session_id": "legacy-session",
+        "sequence": sequence,
+        "command_state": "workspace_exit",
+        "right": {
+            "pos": [0.42, -0.16, 1.05],
+            "rot": [0.0, 0.0, 0.0, 1.0],
+            "valid": False,
+        },
+        "source": "quest3s_head_relative",
+    }
+    return json.dumps(value).encode("utf-8")
+
+
 def v2_packet(sequence: int) -> bytes:
     pose = {
         "valid": True,
@@ -149,6 +164,56 @@ class LiveReceiverTest(unittest.TestCase):
         self.assertTrue(batch.operator_disengage)
         self.assertEqual(batch.latest_command.mode, "tracking_disengaged")
         self.assertEqual(state.state, "idle")
+
+    def test_pinch_disengage_is_a_batch_barrier(self):
+        sock = FakeSocket(
+            [
+                legacy_packet(1, 0.43),
+                legacy_disengage_packet(2),
+                legacy_packet(3, 0.60),
+            ]
+        )
+        watchdog = SessionSequenceWatchdog(takeover_after_s=0.75)
+        state = TeleopRuntimeStateMachine()
+
+        first = receive_available_commands(sock, watchdog, state)
+
+        self.assertEqual(first.accepted_count, 2)
+        self.assertTrue(first.operator_disengage)
+        self.assertEqual(first.latest_command.mode, "pinch_disengaged")
+        self.assertIsNone(first.latest_active_command)
+        self.assertEqual(state.state, "idle")
+        self.assertEqual(len(sock.payloads), 1)
+
+        second = receive_available_commands(sock, watchdog, state)
+        self.assertEqual(second.accepted_count, 1)
+        self.assertEqual(second.latest_command.sequence, 3)
+        self.assertEqual(state.state, "active")
+
+    def test_workspace_exit_is_a_batch_barrier(self):
+        sock = FakeSocket(
+            [
+                legacy_packet(1, 0.43),
+                legacy_workspace_exit_packet(2),
+                legacy_packet(3, 0.60),
+            ]
+        )
+        watchdog = SessionSequenceWatchdog(takeover_after_s=0.75)
+        state = TeleopRuntimeStateMachine()
+
+        first = receive_available_commands(sock, watchdog, state)
+
+        self.assertEqual(first.accepted_count, 2)
+        self.assertTrue(first.workspace_exit)
+        self.assertEqual(first.latest_command.mode, "workspace_exit")
+        self.assertIsNone(first.latest_active_command)
+        self.assertEqual(state.state, "workspace_fault")
+        self.assertEqual(len(sock.payloads), 1)
+
+        second = receive_available_commands(sock, watchdog, state)
+        self.assertEqual(second.accepted_count, 1)
+        self.assertEqual(second.latest_command.sequence, 3)
+        self.assertEqual(state.state, "active")
 
     def test_v2_is_parsed_but_not_allowed_to_take_live_control_yet(self):
         sock = FakeSocket([v2_packet(1)])

@@ -107,13 +107,12 @@ class MinkCommandStream:
             previous_session_id is not None
             and current_session_id != previous_session_id
         )
-        reset_clutch = bool(
-            session_changed or batch.workspace_exit or batch.operator_disengage
-        )
+        safety_reset = bool(batch.workspace_exit or batch.operator_disengage)
+        reset_clutch = bool(session_changed or safety_reset)
         if reset_clutch:
             self._clutch_engaged = False
 
-        if batch.latest_active_command is not None:
+        if batch.latest_active_command is not None and not safety_reset:
             self._target_position_m = (
                 batch.latest_active_command.position_m.copy()
             )
@@ -124,7 +123,8 @@ class MinkCommandStream:
         engage_clutch = False
         latest = batch.latest_command
         if (
-            latest is not None
+            not safety_reset
+            and latest is not None
             and latest.mode == "active"
             and latest.valid
             and self.runtime_state.state == "active"

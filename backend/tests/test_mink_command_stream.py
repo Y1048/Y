@@ -108,6 +108,7 @@ class MinkCommandStreamTest(unittest.TestCase):
         self.assertEqual(exited.control_state, "workspace_fault")
         self.assertTrue(exited.workspace_fault)
         self.assertTrue(exited.reset_clutch)
+        self.assertFalse(exited.engage_clutch)
         self.assertFalse(exited.clutch_engaged)
 
         self.sock.queue(packet(3, position=(0.40, -0.14, 1.02)))
@@ -125,6 +126,7 @@ class MinkCommandStreamTest(unittest.TestCase):
         self.assertEqual(disengaged.control_state, "idle")
         self.assertEqual(disengaged.input_command_mode, "pinch_disengaged")
         self.assertTrue(disengaged.reset_clutch)
+        self.assertFalse(disengaged.engage_clutch)
         self.assertFalse(disengaged.clutch_engaged)
         self.assertFalse(disengaged.workspace_fault)
 
@@ -143,11 +145,60 @@ class MinkCommandStreamTest(unittest.TestCase):
         self.assertEqual(disengaged.control_state, "idle")
         self.assertEqual(disengaged.input_command_mode, "tracking_disengaged")
         self.assertTrue(disengaged.reset_clutch)
+        self.assertFalse(disengaged.engage_clutch)
         self.assertFalse(disengaged.clutch_engaged)
         self.assertFalse(disengaged.workspace_fault)
 
         self.sock.queue(packet(3, position=(0.44, -0.15, 1.06)))
         reengaged = self.stream.poll(self.sock)
+        self.assertTrue(reengaged.engage_clutch)
+        self.assertTrue(reengaged.command_active)
+
+    def test_pinch_backlog_preserves_one_disengaged_cycle(self):
+        self.sock.queue(packet(1, position=(0.45, -0.12, 1.08)))
+        self.stream.poll(self.sock)
+        previous_target = self.stream._target_position_m.copy()
+        self.sock.queue(
+            packet(2, mode="pinch_disengaged"),
+            packet(3, position=(0.62, 0.02, 1.24)),
+        )
+
+        disengaged = self.stream.poll(self.sock)
+
+        self.assertTrue(disengaged.reset_clutch)
+        self.assertFalse(disengaged.engage_clutch)
+        self.assertFalse(disengaged.command_active)
+        self.assertFalse(disengaged.clutch_engaged)
+        self.assertEqual(disengaged.input_command_mode, "pinch_disengaged")
+        np.testing.assert_allclose(disengaged.target_position_m, previous_target)
+        self.assertEqual(len(self.sock.payloads), 1)
+
+        reengaged = self.stream.poll(self.sock)
+        self.assertFalse(reengaged.reset_clutch)
+        self.assertTrue(reengaged.engage_clutch)
+        self.assertTrue(reengaged.command_active)
+        np.testing.assert_allclose(reengaged.target_position_m, [0.62, 0.02, 1.24])
+
+    def test_workspace_backlog_preserves_one_fault_cycle(self):
+        self.sock.queue(packet(1))
+        self.stream.poll(self.sock)
+        self.sock.queue(
+            packet(2, mode="workspace_exit"),
+            packet(3, position=(0.40, -0.14, 1.02)),
+        )
+
+        faulted = self.stream.poll(self.sock)
+
+        self.assertTrue(faulted.workspace_fault)
+        self.assertEqual(faulted.control_state, "workspace_fault")
+        self.assertEqual(faulted.input_command_mode, "workspace_exit")
+        self.assertTrue(faulted.reset_clutch)
+        self.assertFalse(faulted.engage_clutch)
+        self.assertFalse(faulted.command_active)
+        self.assertEqual(len(self.sock.payloads), 1)
+
+        reengaged = self.stream.poll(self.sock)
+        self.assertFalse(reengaged.workspace_fault)
         self.assertTrue(reengaged.engage_clutch)
         self.assertTrue(reengaged.command_active)
 

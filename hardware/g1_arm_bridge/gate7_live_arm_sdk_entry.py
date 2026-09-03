@@ -1,25 +1,48 @@
 #!/usr/bin/env python3
-"""Supported Gate 7 physical entrypoint with fail-closed collision guards.
+"""Supported Gate 7 physical entrypoint with fail-closed safety guards.
 
-This wrapper does not create DDS entities itself. It patches the existing live
-adapter before delegating to its main function so the supported WSL path requires
-finite ACTIVE collision evidence and validates the final shaped Arm SDK command
-segment against the latest full-body measured pose.
+This wrapper creates no DDS entity itself. It installs safety guards before
+calling the existing live adapter: finite ACTIVE collision evidence, final
+post-shaping collision validation, continuous ACTIVE acquisition freshness,
+per-acquire HOLD validation, and 29-joint precheck binding.
 """
 
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
+import sys
 from typing import Any
 
 import gate7_live_arm_sdk as live
+from gate7_acquisition_guard import (
+    ActiveAcquisitionGuard,
+    validate_acquisition_hold_target,
+    validate_full_body_snapshot_matches_precheck,
+)
 from gate7_live_safety_guard import (
     require_active_collision_evidence,
     validate_final_command_segment,
 )
 
 
-def install_supported_path_guards() -> None:
+def _argument_path(name: str, default: Path) -> Path:
+    argv = sys.argv[1:]
+    for index, value in enumerate(argv):
+        if value == name:
+            if index + 1 >= len(argv):
+                raise ValueError(f"{name} requires a path")
+            return Path(argv[index + 1])
+        prefix = name + "="
+        if value.startswith(prefix):
+            return Path(value[len(prefix) :])
+    return default
+
+
+def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
+    if getattr(live, "_supported_gate7_entry_guards_installed", False):
+        return
+
     original_parse = live.parse_mink_arm_sample
 
     def guarded_parse(payload):
@@ -27,10 +50,84 @@ def install_supported_path_guards() -> None:
 
     live.parse_mink_arm_sample = guarded_parse
 
-    session_type = live.Gate7LiveDryRunSession
-    if getattr(session_type, "_supported_gate7_collision_guard_installed", False):
-        return
+    original_snapshot_match = live.validate_snapshot_matches_precheck
 
+    def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
+        # Preserve the existing arm check and add a stricter all-29-joint check.
+        original_snapshot_match(snapshot, precheck, maximum_delta_rad)
+        return validate_full_body_snapshot_matches_precheck(
+            snapshot,
+            precheck,
+            maximum_delta_rad,
+        )
+
+    live.validate_snapshot_matches_precheck = guarded_snapshot_match
+
+    acquisition_guard = ActiveAcquisitionGuard(acquisition_timeout_s)
+    original_wait_for_active = live.WaitForFirstActiveMink
+    original_acquire_weight = live.AcquireWeight
+    original_receive_latest = live._ReceiveLatestMink
+
+    def guarded_wait_for_active(sock, timeout_s):
+        sample = original_wait_for_active(sock, timeout_s)
+        acquisition_guard.seed(sample)
+        guarded_wait_for_active.socket = sock
+        return sample
+
+    guarded_wait_for_active.socket = None
+
+    def guarded_acquire_weight(elapsed_s, ramp_s, maximum_weight):
+        sock = guarded_wait_for_active.socket
+        if sock is None:
+            raise RuntimeError("Mink acquisition socket was not registered")
+        sample = original_receive_latest(sock)
+        if sample is not None:
+            acquisition_guard.observe(sample)
+        acquisition_guard.require_fresh()
+        return original_acquire_weight(elapsed_s, ramp_s, maximum_weight)
+
+    live.WaitForFirstActiveMink = guarded_wait_for_active
+    live.AcquireWeight = guarded_acquire_weight
+
+    original_build_hold = live.build_measured_hold_frame
+
+    def guarded_build_hold(
+        measured_all_q_rad,
+        target_dual_arm_q_rad,
+        *,
+        mode_pr,
+        mode_machine,
+        weight,
+        config=None,
+    ):
+        effective_config = config
+        if effective_config is None:
+            # Preserve the original builder default when a caller omits config.
+            frame = original_build_hold(
+                measured_all_q_rad,
+                target_dual_arm_q_rad,
+                mode_pr=mode_pr,
+                mode_machine=mode_machine,
+                weight=weight,
+            )
+            return frame
+        validate_acquisition_hold_target(
+            measured_all_q_rad,
+            target_dual_arm_q_rad,
+            effective_config,
+        )
+        return original_build_hold(
+            measured_all_q_rad,
+            target_dual_arm_q_rad,
+            mode_pr=mode_pr,
+            mode_machine=mode_machine,
+            weight=weight,
+            config=effective_config,
+        )
+
+    live.build_measured_hold_frame = guarded_build_hold
+
+    session_type = live.Gate7LiveDryRunSession
     original_init = session_type.__init__
     original_step = session_type.Step
 
@@ -81,11 +178,15 @@ def install_supported_path_guards() -> None:
 
     session_type.__init__ = guarded_init
     session_type.Step = guarded_step
-    session_type._supported_gate7_collision_guard_installed = True
+    live._supported_gate7_entry_guards_installed = True
 
 
 def main() -> int:
-    install_supported_path_guards()
+    gate7_config_path = _argument_path("--gate7-config", live.DEFAULT_GATE7_CONFIG)
+    gate7_config = live.load_gate7_config(gate7_config_path)
+    install_supported_path_guards(
+        acquisition_timeout_s=gate7_config.input_timeout_s,
+    )
     return live.main()
 
 

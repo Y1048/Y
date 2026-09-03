@@ -2,9 +2,10 @@
 """Validate localhost Gate 7 Mink packets and relay them to WSL.
 
 Input is restricted to Windows loopback UDP 5008. Forwarded hardware-path packets
-carry a per-run relay nonce, and command sessions that lose ownership are retired
-so delayed A->B->A traffic cannot regain control during the same relay process.
-This process imports no Unitree SDK and creates no DDS publisher.
+carry a per-run relay nonce and explicit live command provenance. Recorded replay
+is rejected before forwarding, and command sessions that lose ownership are
+retired so delayed A->B->A traffic cannot regain control during the same relay
+process. This process imports no Unitree SDK and creates no DDS publisher.
 """
 
 from __future__ import annotations
@@ -20,8 +21,10 @@ from typing import Final
 from arm_sdk_teleop_contract import Gate7ContractError, parse_mink_arm_sample
 from g1_joint_contract import G1_29_JOINT_NAMES
 from gate7_relay_provenance_guard import (
+    COMMAND_PROVENANCE_LIVE,
     RetiredSessionGuard,
     add_relay_token,
+    require_live_candidate_for_relay,
     validate_relay_token,
 )
 
@@ -52,8 +55,9 @@ def ValidateAndForward(
     *,
     relay_token: str | None = None,
 ) -> None:
-    """Validate, canonicalize and forward one Mink state packet."""
+    """Validate, canonicalize and forward one live Mink state packet."""
 
+    require_live_candidate_for_relay(payload)
     sample = parse_mink_arm_sample(payload)
     order_guard.Accept(sample.session_id, sample.sequence)
     all_q = [round(value, 10) for value in sample.all_joint_q_rad]
@@ -61,6 +65,7 @@ def ValidateAndForward(
         "schema": "g1.mink.right_arm.state.v1",
         "sequence": sample.sequence,
         "state_source": "mink_simulation",
+        "command_provenance": COMMAND_PROVENANCE_LIVE,
         "all_joint_names": list(G1_29_JOINT_NAMES),
         "all_joint_q_rad": all_q,
         "right_arm": {
@@ -83,8 +88,6 @@ def ValidateAndForward(
         raise Gate7ContractError(
             f"canonical relay packet exceeds {MAX_RELAY_PACKET_BYTES} bytes"
         )
-    # Unknown transport metadata is intentionally ignored by the core state
-    # parser, so validate the canonical command fields again before forwarding.
     parse_mink_arm_sample(forwarded)
     output_socket.sendto(forwarded, target)
 
@@ -123,6 +126,7 @@ def main() -> int:
     print("G1 Gate 7 Mink relay")
     print(f"Input:  udp://{args.listen_host}:{args.listen_port}")
     print(f"Output: udp://{args.target_host}:{args.target_port}")
+    print("Command provenance: live_mink only")
     print("Relay provenance: " + ("TOKEN-BOUND" if relay_token else "VALIDATE-ONLY"))
     print("Unitree SDK: NONE")
     print("DDS publisher: NONE")
@@ -161,13 +165,13 @@ def main() -> int:
                 accepted += 1
                 if accepted == 1:
                     print(
-                        "[RELAY] First token-bound Mink packet forwarded to "
+                        "[RELAY] First token-bound live Mink packet forwarded to "
                         f"udp://{args.target_host}:{args.target_port}",
                         flush=True,
                     )
                 elif accepted % 250 == 0:
                     print(
-                        f"[RELAY] Forwarded {accepted} valid Mink packets; "
+                        f"[RELAY] Forwarded {accepted} live Mink packets; "
                         f"rejected={rejected}",
                         flush=True,
                     )
@@ -185,6 +189,7 @@ def main() -> int:
         "accepted_packets": accepted,
         "rejected_packets": rejected,
         "retired_session_count": len(order_guard.retired_sessions),
+        "command_provenance": COMMAND_PROVENANCE_LIVE,
         "relay_token_verified": relay_token is not None,
         "publisher_present": False,
         "command_output_enabled": False,
@@ -195,7 +200,7 @@ def main() -> int:
     print(f"Accepted={accepted} rejected={rejected}")
     print(f"Result saved to: {result_path.resolve()}")
     if accepted == 0:
-        print("[ACTION] Start Unity/Mink output on UDP 5008, then retry.")
+        print("[ACTION] Start Unity/Mink live output on UDP 5008, then retry.")
     return 0 if accepted > 0 else 2
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay a validated Mink capture with fresh transport metadata."""
+"""Replay a validated Mink capture with explicit recorded provenance."""
 
 from __future__ import annotations
 
@@ -16,8 +16,10 @@ from pathlib import Path
 from typing import Final
 
 from arm_sdk_teleop_contract import parse_mink_arm_sample
+from gate7_relay_provenance_guard import COMMAND_PROVENANCE_REPLAY
 
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
+LIVE_GATE7_RELAY_PORT: Final[int] = 5008
 
 
 @dataclass(frozen=True)
@@ -71,6 +73,7 @@ def NormalizePayload(payload: bytes, *, session_id: str, sequence: int) -> bytes
     value["sequence"] = sequence
     value["timestamp"] = time.time()
     value["input_packet_age_s"] = 0.0
+    value["command_provenance"] = COMMAND_PROVENANCE_REPLAY
     normalized = json.dumps(value, separators=(",", ":")).encode("utf-8")
     parse_mink_arm_sample(normalized)
     return normalized
@@ -81,6 +84,18 @@ def CaptureSha256(packets: tuple[CapturedPacket, ...]) -> str:
     for packet in packets:
         digest.update(packet.payload)
     return digest.hexdigest()
+
+
+def validate_replay_destination(*, host: str, port: int, exact_transport: bool) -> None:
+    if host != "127.0.0.1":
+        raise ValueError("replay destination must remain localhost")
+    if not 1 <= port <= 65535:
+        raise ValueError("port must be within 1..65535")
+    if exact_transport and port == LIVE_GATE7_RELAY_PORT:
+        raise ValueError(
+            "--exact-transport cannot target live Gate 7 relay UDP 5008; "
+            "use a dedicated offline replay port"
+        )
 
 
 def _parse_args() -> argparse.Namespace:
@@ -96,10 +111,11 @@ def _parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = _parse_args()
-    if args.host != "127.0.0.1":
-        raise ValueError("replay destination must remain localhost")
-    if not 1 <= args.port <= 65535:
-        raise ValueError("port must be within 1..65535")
+    validate_replay_destination(
+        host=args.host,
+        port=args.port,
+        exact_transport=args.exact_transport,
+    )
     if not math.isfinite(args.speed) or args.speed <= 0.0:
         raise ValueError("speed must be finite and positive")
     manifest, packets = LoadCapture(args.capture)
@@ -127,6 +143,7 @@ def main() -> int:
     print(f"Capture ID: {manifest['capture_id']}")
     print(f"Packets: {len(packets)}")
     print(f"Payload SHA256: {CaptureSha256(packets)}")
+    print("Command provenance: recorded_replay")
     print("Unitree SDK: NONE / DDS publisher: NONE / Robot command: NONE")
     return 0
 

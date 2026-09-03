@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 HERE = Path(__file__).resolve().parent
+PROJECT_ROOT = HERE.parents[1]
 
 
 class Gate7LiveEntrypointTests(unittest.TestCase):
@@ -34,6 +35,18 @@ class Gate7LiveEntrypointTests(unittest.TestCase):
         self.assertIn("acquisition_guard.require_fresh", source)
         self.assertIn("validate_full_body_snapshot_matches_precheck", source)
         self.assertIn("validate_acquisition_hold_target", source)
+
+    def test_entrypoint_requires_relay_token_and_retires_sessions(self) -> None:
+        source = (HERE / "gate7_live_arm_sdk_entry.py").read_text(encoding="utf-8")
+        self.assertIn("--expected-relay-token", source)
+        self.assertIn("require_relay_token", source)
+        self.assertIn("RetiredSessionGuard", source)
+        launcher = (
+            PROJECT_ROOT / "tools" / "START_G1_GATE7_LIVE_HARDWARE.bat"
+        ).read_text(encoding="utf-8")
+        self.assertIn("GATE7_RELAY_TOKEN", launcher)
+        self.assertIn("--relay-token %GATE7_RELAY_TOKEN%", launcher)
+        self.assertIn("--expected-relay-token %GATE7_RELAY_TOKEN%", launcher)
 
 
 if __name__ == "__main__":

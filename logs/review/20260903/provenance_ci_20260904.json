@@ -1,0 +1,44 @@
+{
+  "schema": "g1.review.provenance_ci.v1",
+  "date": "2026-09-04",
+  "workflow": ".github/workflows/offline-provenance-regression.yml",
+  "hardware_output": false,
+  "unitree_publisher_created": false,
+  "dds_endpoint_created": false,
+  "g1_connection": false,
+  "selected_test_count": 54,
+  "runs": [
+    {
+      "run_id": 33819076146,
+      "head_sha": "0e1afbda2a8fb6ce4f866ea00aa72d17cf34f34b",
+      "conclusion": "failure",
+      "failure": "canonical Gate 7 relay packet exceeded 1400-byte budget after provenance metadata was added",
+      "backend_command_ingress": "pass"
+    },
+    {
+      "run_id": 33819176285,
+      "head_sha": "26e25d1c620243c86a031812c05ba0034368fcf4",
+      "conclusion": "success",
+      "fix": "retain 1400-byte cap and serialize relay-only joint values to 7 decimal places"
+    },
+    {
+      "run_id": 33819253842,
+      "head_sha": "31c7e0031a8a8bdb10eacc65f6d017a337eb2610",
+      "conclusion": "success",
+      "note": "workflow path filters added; same 54-test provenance suite passed"
+    }
+  ],
+  "coverage_groups": [
+    "backend command ingress",
+    "Unity source-clock and backlog provenance",
+    "Gate 7 relay/replay/hardware provenance",
+    "startup LowState and precheck provenance guards",
+    "live Mink producer provenance"
+  ],
+  "not_validated": [
+    "Unity Play/Quest runtime",
+    "WSL DDS runtime",
+    "Unitree SDK publisher runtime",
+    "physical G1 behavior"
+  ]
+}

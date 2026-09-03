@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 import gate7_live_arm_sdk as live
@@ -69,10 +70,22 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
     original_receive_latest = live._ReceiveLatestMink
 
     def guarded_wait_for_active(sock, timeout_s):
-        sample = original_wait_for_active(sock, timeout_s)
-        acquisition_guard.seed(sample)
+        first_sample = original_wait_for_active(sock, timeout_s)
+        acquisition_guard.seed(first_sample)
         guarded_wait_for_active.socket = sock
-        return sample
+
+        # One ACTIVE datagram is not enough to cross the publisher boundary.
+        # Require a second ordered ACTIVE sample within the normal input timeout.
+        confirmation_deadline = time.monotonic() + acquisition_timeout_s
+        while time.monotonic() < confirmation_deadline:
+            sample = original_receive_latest(sock)
+            if sample is not None:
+                acquisition_guard.observe(sample)
+                return sample
+            time.sleep(min(0.005, acquisition_timeout_s / 10.0))
+        raise TimeoutError(
+            "ACTIVE Mink stream did not remain live before publisher creation"
+        )
 
     guarded_wait_for_active.socket = None
 
@@ -102,15 +115,13 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
     ):
         effective_config = config
         if effective_config is None:
-            # Preserve the original builder default when a caller omits config.
-            frame = original_build_hold(
+            return original_build_hold(
                 measured_all_q_rad,
                 target_dual_arm_q_rad,
                 mode_pr=mode_pr,
                 mode_machine=mode_machine,
                 weight=weight,
             )
-            return frame
         validate_acquisition_hold_target(
             measured_all_q_rad,
             target_dual_arm_q_rad,

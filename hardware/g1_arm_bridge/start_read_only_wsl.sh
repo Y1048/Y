@@ -18,5 +18,5 @@ then
 fi
 
 cd "${project_root}"
-exec "${python_path}" hardware/g1_arm_bridge/read_only_lowstate.py \
+exec "${python_path}" hardware/g1_arm_bridge/read_only_lowstate_entry.py \
     "${network_interface}" "$@"

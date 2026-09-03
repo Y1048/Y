@@ -1,20 +1,21 @@
 """실시간 Mink 제어기가 공통으로 사용하는 상태 보존형 UDP 명령 입력 계층.
 
 호출: Mink 제어 루프 -> poll -> live_receiver -> command_adapter/watchdog.
-입력: 이미 열린 non-blocking UDP 소켓의 Unity 목표 패킷.
-출력: MinkCommandUpdate에 담긴 위치 m, quaternion xyzw, 유효성 및 clutch 이벤트.
-좌표 변환과 IK는 호출한 제어기가 담당하며 여기서는 수신 순서와 상태를 관리한다.
+현재 same-PC Link 경로는 loopback sender, Unity source id, ordered session sequence와
+relative source-clock freshness를 모두 통과해야 active command로 사용된다.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 import time
+from typing import Iterable
 
 import numpy as np
 
 from .live_receiver import DatagramSocket, receive_available_commands
 from .runtime_state import TeleopRuntimeStateMachine
+from .source_provenance import CommandSourceGuard
 from .transforms import normalize_quaternion
 from .watchdog import SessionSequenceWatchdog
 
@@ -36,15 +37,12 @@ class MinkCommandUpdate:
     input_command_mode: str
     session_id: str | None
     packet_age_s: float | None
+    input_source_lag_s: float | None = None
+    input_source_host: str | None = None
 
 
 class MinkCommandStream:
-    """UDP 송신자/순서를 검증하면서 짧은 hold 동안 clutch 기준을 보존한다.
-
-    idle 패킷이나 입력 timeout은 목표 갱신만 멈추고 engage 기준은 유지한다.
-    확인된 workspace_exit, 의도적인 pinch 해제, 확인된 손 추적 손실,
-    새 송신자에게 소유권이 넘어가는 경우에만 clutch 기준을 초기화한다.
-    """
+    """Validate Unity UDP source/session freshness while preserving clutch state."""
 
     def __init__(
         self,
@@ -53,8 +51,14 @@ class MinkCommandStream:
         *,
         input_timeout_s: float,
         takeover_after_s: float | None = None,
+        allowed_source_hosts: Iterable[str] = ("127.0.0.1",),
+        allowed_frame_ids: Iterable[str] = ("quest3s_head_relative",),
     ) -> None:
-        if not isinstance(input_timeout_s, (int, float)) or input_timeout_s <= 0.0:
+        if (
+            not isinstance(input_timeout_s, (int, float))
+            or isinstance(input_timeout_s, bool)
+            or input_timeout_s <= 0.0
+        ):
             raise ValueError("input_timeout_s must be positive")
         if takeover_after_s is None:
             takeover_after_s = float(input_timeout_s)
@@ -70,11 +74,18 @@ class MinkCommandStream:
         self.watchdog = SessionSequenceWatchdog(
             takeover_after_s=float(takeover_after_s)
         )
+        self.source_guard = CommandSourceGuard(
+            maximum_source_lag_s=float(input_timeout_s),
+            allowed_source_hosts=allowed_source_hosts,
+            allowed_frame_ids=allowed_frame_ids,
+        )
         self.runtime_state = TeleopRuntimeStateMachine()
         self._target_position_m = position.copy()
         self._target_quaternion_xyzw = normalize_quaternion(quaternion)
         self._clutch_engaged = False
         self._input_command_mode = "idle"
+        self._latest_source_lag_s: float | None = None
+        self._latest_source_host: str | None = None
         self.accepted_total = 0
         self.rejected_total = 0
 
@@ -84,23 +95,26 @@ class MinkCommandStream:
         *,
         now_ns: int | None = None,
     ) -> MinkCommandUpdate:
-        """최신 유효 목표와 이번 주기의 engage/reset 이벤트를 반환한다.
+        """Return the latest source-validated target and clutch events.
 
-        now_ns는 수신 도착 시각과 같은 monotonic clock 기준이다. 송신측 timestamp와
-        직접 빼지 않는다. 짧은 timeout의 HOLD와 의도적 해제를 구분해 기준점을 보존한다.
+        Unity and Python monotonic epochs are never directly subtracted. The
+        source guard estimates transport/backlog lag from relative clock
+        progress, and that lag is added to local time-since-dequeue when
+        reporting `packet_age_s` downstream.
         """
         previous_session_id = self.watchdog.session_id
         batch = receive_available_commands(
             sock,
             self.watchdog,
             self.runtime_state,
+            source_guard=self.source_guard,
         )
         self.accepted_total += batch.accepted_count
         self.rejected_total += batch.rejected_count
         if batch.latest_command is not None:
-            # control_state는 controller가 계산한 active/hold/idle 상태다.
-            # 핀치와 추적 손실을 구분하는 원본 입력 mode는 별도로 보존한다.
             self._input_command_mode = batch.latest_command.mode
+            self._latest_source_lag_s = batch.latest_source_lag_s
+            self._latest_source_host = batch.latest_source_host
 
         current_session_id = self.watchdog.session_id
         session_changed = (
@@ -144,7 +158,14 @@ class MinkCommandStream:
         packet_age_s: float | None = None
         input_fresh = False
         if self.watchdog.last_arrival_time_ns >= 0:
-            packet_age_ns = max(0, now_ns - self.watchdog.last_arrival_time_ns)
+            local_receive_age_ns = max(
+                0,
+                now_ns - self.watchdog.last_arrival_time_ns,
+            )
+            source_lag_ns = int(
+                max(0.0, self._latest_source_lag_s or 0.0) * 1_000_000_000
+            )
+            packet_age_ns = local_receive_age_ns + source_lag_ns
             packet_age_s = packet_age_ns / 1_000_000_000.0
             input_fresh = packet_age_ns <= self.input_timeout_ns
 
@@ -177,4 +198,6 @@ class MinkCommandStream:
             input_command_mode=self._input_command_mode,
             session_id=current_session_id,
             packet_age_s=packet_age_s,
+            input_source_lag_s=self._latest_source_lag_s,
+            input_source_host=self._latest_source_host,
         )

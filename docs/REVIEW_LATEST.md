@@ -26,21 +26,25 @@ Do not quote 117/264 as the current effective review coverage. Use the detailed 
 
 | Finding | Status | Commit | Verification boundary |
 | --- | --- | --- | --- |
-| R64 | IMPLEMENTED; integration validation pending | `187b3e2a44466653bc099327e0ace7f18dc7fcb0` | Focused syntax and 18 isolated command-ingress tests passed; full repository/Unity/Quest/hardware runtime not run |
+| R64 | IMPLEMENTED; integration validation pending | `187b3e2a44466653bc099327e0ace7f18dc7fcb0` | Regression tests committed; not executed from a repository checkout |
+| R1 | IMPLEMENTED; integration/physical validation pending | `cb5082e182b4f1f4404a3e57c1803cf3be9e9d5e` | Shared release contract integrated; committed tests not executed |
+| R3 | IMPLEMENTED; integration/physical validation pending | `678b5d0bb6bd7518fa0c9864998999b7b13c1b5c` | Acquire interruption no longer jumps to maximum weight; committed tests not executed |
+| R34 | IMPLEMENTED; integration/physical validation pending | `678b5d0bb6bd7518fa0c9864998999b7b13c1b5c` | Fault release records zero-tail evidence; committed tests not executed |
+| R46 | OPEN | — | Jog result semantics still need the shared release contract |
 
-R64 now treats `workspace_exit`, `pinch_disengaged` and `tracking_disengaged` as command-batch barriers. A later ACTIVE datagram is deferred to the next poll, and a safety reset cannot engage the clutch again in the same update.
+Important verification correction: an earlier handoff entry stated that 18 committed R64 command-ingress tests had passed. Those committed tests were not actually run from a checked-out repository in this remediation session. That statement is superseded by `REMEDIATION_20260904.md`.
 
 ## Current priority groups
 
 ```text
-release/fault finalization : R1, R34, R46
-safety-event preservation  : R3, R64 integration validation
+release/fault finalization : R46 remaining; R1/R34 implemented pending validation
+safety-event preservation  : R64 implemented pending integration validation; R3 implemented pending validation
 final/acquire validation   : R2, R33, R40, R41, R42
 runtime state supervision  : R50
 provenance/freshness       : R15, R21, R35, R51, R52, R65
 ```
 
-The next production batch is R1/R34/R46. It must use testable, idempotent release finalization and accurately separate release attempted, last successful weight, zero-tail completion, output state unknown and external authority handback.
+The immediate production item is R46 so Gate 7, Gate 6 and Jog share the same release-result semantics. After R46, return to the final/acquisition P1 group rather than broadening physical trials.
 
 ## Safety boundary
 

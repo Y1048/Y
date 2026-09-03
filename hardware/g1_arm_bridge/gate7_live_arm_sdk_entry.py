@@ -4,8 +4,8 @@
 This wrapper creates no DDS entity itself. It installs safety guards before
 calling the existing live adapter: finite ACTIVE collision evidence, final
 post-shaping collision validation, continuous ACTIVE acquisition freshness,
-per-acquire HOLD validation, 29-joint precheck binding, and LowState IMU/motor
-health supervision.
+per-acquire HOLD validation, provenance-bound 29-joint precheck binding, and
+LowState IMU/motor health supervision.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ from lowstate_health_guard import (
     install_lowstate_health_tracking,
     require_latest_lowstate_health,
 )
+from precheck_provenance_guard import require_provenance_bound_precheck
 
 
 def _argument_path(name: str, default: Path) -> Path:
@@ -50,6 +51,15 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
         return
 
     install_lowstate_health_tracking(live.LowStateBuffer)
+
+    original_precheck = live.validate_precheck
+
+    def guarded_precheck(path, maximum_age_s):
+        payload = original_precheck(path, maximum_age_s)
+        return require_provenance_bound_precheck(payload)
+
+    live.validate_precheck = guarded_precheck
+
     original_parse = live.parse_mink_arm_sample
 
     def guarded_parse(payload):

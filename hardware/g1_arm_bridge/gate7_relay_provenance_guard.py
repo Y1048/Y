@@ -66,22 +66,22 @@ def command_provenance(payload: bytes | str) -> str | None:
 
 
 def require_live_candidate_for_relay(payload: bytes | str) -> None:
-    """Reject recorded replay before it can enter the supported hardware relay.
+    """Require explicit live provenance before entering the hardware relay.
 
-    Current live Mink state packets predate the explicit provenance field, so a
-    missing field is accepted only as a compatibility case when the session does
-    not identify itself as replay. The relay then canonicalizes the hardware-side
-    packet as ``live_mink``. Explicit ``recorded_replay`` is always rejected.
+    Supported live producers now mark every Gate 7 candidate as ``live_mink``.
+    Missing provenance is therefore fail-closed rather than treated as a legacy
+    compatibility case. Recorded replay and unknown provenance never enter the
+    supported live relay.
     """
 
     value = _payload_object(payload, label="Gate 7 candidate")
     provenance = value.get("command_provenance")
-    if provenance is not None:
-        if not isinstance(provenance, str) or provenance not in _ALLOWED_COMMAND_PROVENANCE:
-            raise Gate7ContractError("invalid_command_provenance")
-        if provenance != COMMAND_PROVENANCE_LIVE:
-            raise Gate7ContractError("recorded_replay_not_allowed_on_live_relay")
-        return
+    if provenance is None:
+        raise Gate7ContractError("live_mink_provenance_required")
+    if not isinstance(provenance, str) or provenance not in _ALLOWED_COMMAND_PROVENANCE:
+        raise Gate7ContractError("invalid_command_provenance")
+    if provenance != COMMAND_PROVENANCE_LIVE:
+        raise Gate7ContractError("recorded_replay_not_allowed_on_live_relay")
 
     session_id = value.get("session_id")
     if isinstance(session_id, str) and session_id.startswith("replay-"):

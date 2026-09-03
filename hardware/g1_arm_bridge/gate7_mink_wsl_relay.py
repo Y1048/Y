@@ -32,6 +32,7 @@ PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 DEFAULT_RESULT_DIR: Final[Path] = PROJECT_ROOT / "logs" / "test_results"
 MAX_PACKET_BYTES: Final[int] = 65535
 MAX_RELAY_PACKET_BYTES: Final[int] = 1400
+RELAY_JOINT_DECIMALS: Final[int] = 7
 
 
 class MinkOrderGuard(RetiredSessionGuard):
@@ -60,7 +61,11 @@ def ValidateAndForward(
     require_live_candidate_for_relay(payload)
     sample = parse_mink_arm_sample(payload)
     order_guard.Accept(sample.session_id, sample.sequence)
-    all_q = [round(value, 10) for value in sample.all_joint_q_rad]
+    # Seven decimal places is sub-microradian resolution and keeps the strict
+    # canonical packet below the 1400-byte no-fragmentation budget after adding
+    # relay-token and command-provenance fields. The right-arm copy is taken
+    # from the same rounded array so the parser's equality contract is exact.
+    all_q = [round(value, RELAY_JOINT_DECIMALS) for value in sample.all_joint_q_rad]
     canonical = {
         "schema": "g1.mink.right_arm.state.v1",
         "sequence": sample.sequence,

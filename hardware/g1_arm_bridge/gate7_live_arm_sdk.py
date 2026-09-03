@@ -29,6 +29,7 @@ from arm_sdk_hold_contract import (
     build_measured_hold_frame,
     dual_arm_from_all_joints,
 )
+from arm_sdk_release_contract import execute_release_sequence
 from arm_sdk_teleop_contract import (
     Gate7ContractError,
     load_gate7_config,
@@ -373,6 +374,16 @@ def main() -> int:
         "command_output_enabled": False,
         "published_frames": 0,
         "release_zero_frames": 0,
+        "release_attempted": False,
+        "release_ramp_completed": False,
+        "release_zero_frames_requested": 0,
+        "release_zero_frames_sent": 0,
+        "zero_release_completed": False,
+        "last_successful_weight": 0.0,
+        "last_successful_write_unix_ns": None,
+        "release_fault": None,
+        "output_state_unknown": False,
+        "external_authority_handoff_confirmed": False,
         "right_arm_command_indices": list(range(22, 29)),
         "left_arm_policy": "measured_hold",
         "waist_and_legs_command_enabled": False,
@@ -397,6 +408,11 @@ def main() -> int:
     unity_socket = None
     last_target = None
     last_weight = 0.0
+    last_successful_weight = 0.0
+    last_successful_write_unix_ns: int | None = None
+    gate7_config = None
+    hardware_config = None
+    session = None
     try:
         gate7_config = load_gate7_config(args.gate7_config)
         hardware_config = LoadLiveHardwareConfig(args.hardware_config)
@@ -442,7 +458,6 @@ def main() -> int:
         if not args.network_interface:
             raise ValueError("network_interface is required for hardware mode")
 
-        # Hardware-only imports stay below all static authorization checks.
         from unitree_sdk2py.comm.motion_switcher.motion_switcher_client import (
             MotionSwitcherClient,
         )
@@ -566,7 +581,6 @@ def main() -> int:
             mink_socket, hardware_config.mink_startup_timeout_s
         )
 
-        # Recheck time-sensitive evidence at the exact publisher boundary.
         precheck = validate_precheck(
             args.precheck_json, hardware_config.precheck_max_age_s
         )
@@ -588,7 +602,6 @@ def main() -> int:
                 f"mode_machine changed before publish: {snapshot.mode_machine}"
             )
 
-        # Publisher construction remains the final step after every prerequisite.
         publisher = ChannelPublisher(ARM_SDK_TOPIC, LowCmd_)
         publisher.Init()
         command_message = unitree_hg_msg_dds__LowCmd_()
@@ -741,7 +754,11 @@ def main() -> int:
             command_message.crc = command_crc.Crc(command_message)
             publisher.Write(command_message)
             result["published_frames"] += 1
-            result["command_output_enabled"] = last_weight > 0.0
+            last_successful_weight = float(last_weight)
+            last_successful_write_unix_ns = time.time_ns()
+            result["last_successful_weight"] = last_successful_weight
+            result["last_successful_write_unix_ns"] = last_successful_write_unix_ns
+            result["command_output_enabled"] = last_successful_weight > 0.0
 
         result.update(
             passed=True,
@@ -755,48 +772,80 @@ def main() -> int:
         print("[ACTION] Keep the handheld remote ready and do not retry until fixed.")
     finally:
         if publisher is not None and command_message is not None and command_crc is not None:
-            try:
-                release_started = time.monotonic()
-                period_s = 1.0 / load_gate7_config(args.gate7_config).command_hz
-                hardware_config = LoadLiveHardwareConfig(args.hardware_config)
-                while time.monotonic() - release_started < hardware_config.release_ramp_s:
+            result["release_attempted"] = True
+            if (
+                gate7_config is None
+                or hardware_config is None
+                or session is None
+                or last_target is None
+            ):
+                result["passed"] = False
+                result["release_fault"] = "release prerequisites unavailable"
+                result["output_state_unknown"] = True
+                result["command_output_enabled"] = True
+            else:
+                def current_snapshot():
                     current = buffer.snapshot()
-                    if current is None or last_target is None:
-                        break
-                    elapsed = time.monotonic() - release_started
-                    weight = ReleaseWeight(
-                        elapsed, hardware_config.release_ramp_s, last_weight
-                    )
-                    frame = build_measured_hold_frame(
+                    if current is None:
+                        raise RuntimeError("LowState unavailable during release")
+                    return current
+
+                def build_ramp_release_frame(weight: float):
+                    current = current_snapshot()
+                    return build_measured_hold_frame(
                         current.all_q_rad,
                         last_target,
                         mode_pr=current.mode_pr,
                         mode_machine=current.mode_machine,
                         weight=weight,
+                        config=session.hold_config,
                     )
+
+                def build_zero_release_frame():
+                    current = current_snapshot()
+                    zero_target = dual_arm_from_all_joints(current.all_q_rad)
+                    return build_measured_hold_frame(
+                        current.all_q_rad,
+                        zero_target,
+                        mode_pr=current.mode_pr,
+                        mode_machine=current.mode_machine,
+                        weight=0.0,
+                        config=session.hold_config,
+                    )
+
+                def publish_release_frame(frame) -> None:
                     _apply_frame(command_message, frame)
                     command_message.crc = command_crc.Crc(command_message)
                     publisher.Write(command_message)
-                    time.sleep(period_s)
-                current = buffer.snapshot()
-                if current is not None:
-                    zero_target = dual_arm_from_all_joints(current.all_q_rad)
-                    for _ in range(hardware_config.release_zero_cycles):
-                        frame = build_measured_hold_frame(
-                            current.all_q_rad,
-                            zero_target,
-                            mode_pr=current.mode_pr,
-                            mode_machine=current.mode_machine,
-                            weight=0.0,
+
+                try:
+                    evidence = execute_release_sequence(
+                        start_weight=last_successful_weight,
+                        ramp_s=hardware_config.release_ramp_s,
+                        zero_cycles=hardware_config.release_zero_cycles,
+                        publish_hz=gate7_config.command_hz,
+                        build_ramp_frame=build_ramp_release_frame,
+                        build_zero_frame=build_zero_release_frame,
+                        publish_frame=publish_release_frame,
+                    )
+                    result.update(evidence.as_dict())
+                    result["release_zero_frames"] = evidence.release_zero_frames_sent
+                    if evidence.last_successful_write_unix_ns is None:
+                        result["last_successful_write_unix_ns"] = (
+                            last_successful_write_unix_ns
                         )
-                        _apply_frame(command_message, frame)
-                        command_message.crc = command_crc.Crc(command_message)
-                        publisher.Write(command_message)
-                        result["release_zero_frames"] += 1
-                        time.sleep(period_s)
-            except Exception as release_exc:
-                result["release_fault"] = f"{type(release_exc).__name__}: {release_exc}"
-            result["command_output_enabled"] = False
+                    if evidence.release_fault is not None or not evidence.zero_release_completed:
+                        result["passed"] = False
+                        print(f"[RELEASE FAULT] {evidence.release_fault or 'zero tail incomplete'}")
+                        print("[ACTION] Treat Arm SDK output state as unknown and use the robot stop control.")
+                    result["command_output_enabled"] = not evidence.zero_release_completed
+                except Exception as release_exc:
+                    result["passed"] = False
+                    result["release_fault"] = (
+                        f"{type(release_exc).__name__}: {release_exc}"
+                    )
+                    result["output_state_unknown"] = True
+                    result["command_output_enabled"] = True
 
         if mink_socket is not None:
             mink_socket.close()

@@ -4,7 +4,7 @@
 The physical controller remains in ``g1_right_arm_jog.py``. This wrapper creates
 no DDS entity itself. Before delegating to the controller it installs fail-closed
 result semantics, permit provenance validation, all-29-joint precheck binding,
-and a final swept-segment collision check on every active Jog controller tick.
+final swept-segment collision checks, and LowState IMU/motor supervision.
 """
 
 from __future__ import annotations
@@ -16,6 +16,10 @@ from typing import Any
 
 import g1_right_arm_jog as jog
 from gate7_mink_arm_sdk_offline import CollisionPathValidator
+from lowstate_health_guard import (
+    install_lowstate_health_tracking,
+    require_latest_lowstate_health,
+)
 from right_arm_jog_safety_guard import (
     validate_jog_final_segment,
     validate_jog_permit_provenance,
@@ -114,6 +118,7 @@ def install_jog_safety_guards(
     if getattr(jog, "_supported_jog_entry_guards_installed", False):
         return
 
+    install_lowstate_health_tracking(jog.LowStateBuffer)
     state: dict[str, Any] = {"precheck": None}
 
     original_validate_precheck = jog.validate_precheck
@@ -128,6 +133,7 @@ def install_jog_safety_guards(
     original_snapshot_match = jog.validate_snapshot_matches_precheck
 
     def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
+        require_latest_lowstate_health(jog.LowStateBuffer)
         original_snapshot_match(snapshot, precheck, maximum_delta_rad)
         return validate_jog_runtime_full_body(
             snapshot.all_q_rad,
@@ -158,6 +164,7 @@ def install_jog_safety_guards(
         weight,
         hold_config,
     ):
+        require_latest_lowstate_health(jog.LowStateBuffer)
         precheck = state.get("precheck")
         if precheck is None:
             raise RuntimeError("startup precheck is unavailable during Jog control")
@@ -191,8 +198,6 @@ def main() -> int:
     config_path = _config_path(argv)
     config = jog.load_config(config_path)
 
-    # Build the exact current collision validator before the controller can create
-    # a publisher. Its generated model is then compared with the permit provenance.
     collision_validator = CollisionPathValidator()
     install_jog_safety_guards(
         config=config,

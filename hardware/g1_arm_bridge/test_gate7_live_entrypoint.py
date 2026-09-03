@@ -36,10 +36,11 @@ class Gate7LiveEntrypointTests(unittest.TestCase):
         self.assertIn("validate_full_body_snapshot_matches_precheck", source)
         self.assertIn("validate_acquisition_hold_target", source)
 
-    def test_entrypoint_requires_relay_token_and_retires_sessions(self) -> None:
+    def test_entrypoint_requires_relay_token_live_provenance_and_retired_sessions(self) -> None:
         source = (HERE / "gate7_live_arm_sdk_entry.py").read_text(encoding="utf-8")
         self.assertIn("--expected-relay-token", source)
         self.assertIn("require_relay_token", source)
+        self.assertIn("require_live_hardware_provenance", source)
         self.assertIn("RetiredSessionGuard", source)
         launcher = (
             PROJECT_ROOT / "tools" / "START_G1_GATE7_LIVE_HARDWARE.bat"

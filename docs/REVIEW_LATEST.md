@@ -15,6 +15,7 @@ This file is the current entry point for the precision review. It does not repla
 - [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md): R64/release batch implementation status
 - [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): R2/R33/R40/R41/R42 supported-path mitigation
 - [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R50 supported-path runtime supervision
+- [`REMEDIATION_20260904_PROVENANCE.md`](REMEDIATION_20260904_PROVENANCE.md): R21/R23/R51 LowState provenance and launcher status
 
 The review is incomplete. A file that appears in the code index or static ledger is not thereby fully reviewed or correct.
 
@@ -39,6 +40,9 @@ Do not quote 117/264 as current effective coverage. Use the detailed review/reme
 | R40 | PARTIAL SUPPORTED-PATH MITIGATION | `df26873d1246da8de2aaa1b707a238754050757a` | All 29 joints bound; base/IMU/model parts remain open |
 | R42 | SUPPORTED JOG PATH MITIGATED; direct controller open | `22cd0cf4849747a1e6d7580ab3070f916028f835` | Permit hashes config/code/model; selected-joint ticks check all 29 joints and final swept collision segment |
 | R50 | PARTIAL SUPPORTED-PATH MITIGATION | `95810e0fb6ae55fefc814cbbb8eefb9cd7b902f5` | Gate6/Gate7/Jog entries supervise IMU tilt and motor temp/fault/tau finiteness; base/remote/CRC remain open |
+| R21 | SUPPORTED HARDWARE-SYNC PATH MITIGATED | `e4642f13fce944c6b8cabe24512f3ce0aa81f93b` + `3171c2ceb9ced6b5c8488bb46dbb22a3ef97df67` | Canonical/fresh initial state plus per-run forward token; generic no-token mode remains lower provenance |
+| R51 | SUPPORTED PHYSICAL STARTUP PATHS MITIGATED | `1ac4d5f4306a4685bc3455b4ac4a53674de2fdae` + launcher commits | Fresh UUID token binds forwarder, startup precheck and physical precheck consumers; tests not executed |
+| R23 | IMPLEMENTED; process validation pending | `b35c24a8baa8405bf2825b4d51cb40651bb6a303` | Hardware-sync BAT now propagates snapshot/verify/controller return code; BAT not executed |
 
 The committed regression tests above have not been run by GitHub Actions or a checked-out current branch during this remediation session. No status in this table is a physical validation result.
 
@@ -49,10 +53,11 @@ release/fault finalization : direct R46 integration remains; R1/R3/R34 implement
 safety-event preservation  : R64 implemented pending integration validation
 final/acquire validation   : R2/R33/R41/R42 mitigated on supported paths; R40 partial
 runtime state supervision  : R50 partial; base/remote/CRC still open
-provenance/freshness       : R15, R21, R35, R51, R52, R65
+startup provenance         : R21/R51 supported paths mitigated; generic direct paths remain lower provenance
+live command provenance    : R35, R65, R15
 ```
 
-The next implementation group should address provenance/freshness without broadening physical trials. R21 and R51 affect startup/LowState evidence, while R35/R65 affect live command-source identity and stale-session/backlog handling. R15 recorded replay remains a separate command-provenance risk.
+The next implementation group is live command provenance/freshness. R35 concerns relay→Gate 7 ownership and retired-session replay; R65 concerns Unity→Mink sender identity, source timing and backlog freshness. Keep the current hardware locks in place while addressing those paths.
 
 ## Safety boundary
 

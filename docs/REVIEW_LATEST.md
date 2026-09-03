@@ -13,7 +13,8 @@ This file is the current entry point for the precision review. It does not repla
 - [`REVIEW_20260903_CONTINUATION_4.md`](REVIEW_20260903_CONTINUATION_4.md): R50-R59
 - [`REVIEW_20260903_CONTINUATION_5.md`](REVIEW_20260903_CONTINUATION_5.md): R60-R67
 - [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md): R64/release batch implementation status
-- [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): Gate 7 collision/acquisition mitigation status
+- [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): R2/R33/R40/R41/R42 supported-path mitigation
+- [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R50 supported-path runtime supervision
 
 The review is incomplete. A file that appears in the code index or static ledger is not thereby fully reviewed or correct.
 
@@ -21,7 +22,7 @@ The review is incomplete. A file that appears in the code index or static ledger
 
 `logs/review/20260903/source_checks.csv` remains the original bounded audit snapshot with 117 `full_text_review` and 147 `static_only` entries. Later review/remediation work has not been folded into that canonical CSV count.
 
-Do not quote 117/264 as current effective coverage. Use the detailed review documents and `logs/review/20260903/source_checks_delta_20260904.csv` for post-snapshot work. `docs/CODE_INDEX.md` is also stale after remediation additions and must be regenerated before its hashes are treated as current evidence.
+Do not quote 117/264 as current effective coverage. Use the detailed review/remediation documents and `logs/review/20260903/source_checks_delta_20260904.csv` for post-snapshot work. `docs/CODE_INDEX.md` is stale after remediation additions and must be regenerated before its hashes are treated as current evidence.
 
 ## Remediation status
 
@@ -35,7 +36,9 @@ Do not quote 117/264 as current effective coverage. Use the detailed review docu
 | R2 | SUPPORTED GATE 7 PATH MITIGATED; core path open | `40e46d6538321034ab873ef189427c30b595e9f6` | Exact post-shaping frame/swept segment checked before publish on supported WSL entry |
 | R41 | SUPPORTED GATE 7 PATH MITIGATED; core parser open | `40e46d6538321034ab873ef189427c30b595e9f6` | ACTIVE samples require finite clearance on supported WSL entry |
 | R33 | SUPPORTED GATE 7 PATH MITIGATED; core live adapter open | `1b159819c1da97379f5db5c115de7abf5ce5bcd8` | Multiple ordered ACTIVE samples required before publisher; freshness checked during acquire |
-| R40 | PARTIAL SUPPORTED-PATH MITIGATION | `df26873d1246da8de2aaa1b707a238754050757a` | All 29 joint positions bound to precheck; base/IMU/model binding still open |
+| R40 | PARTIAL SUPPORTED-PATH MITIGATION | `df26873d1246da8de2aaa1b707a238754050757a` | All 29 joints bound; base/IMU/model parts remain open |
+| R42 | SUPPORTED JOG PATH MITIGATED; direct controller open | `22cd0cf4849747a1e6d7580ab3070f916028f835` | Permit hashes config/code/model; selected-joint ticks check all 29 joints and final swept collision segment |
+| R50 | PARTIAL SUPPORTED-PATH MITIGATION | `95810e0fb6ae55fefc814cbbb8eefb9cd7b902f5` | Gate6/Gate7/Jog entries supervise IMU tilt and motor temp/fault/tau finiteness; base/remote/CRC remain open |
 
 The committed regression tests above have not been run by GitHub Actions or a checked-out current branch during this remediation session. No status in this table is a physical validation result.
 
@@ -44,12 +47,12 @@ The committed regression tests above have not been run by GitHub Actions or a ch
 ```text
 release/fault finalization : direct R46 integration remains; R1/R3/R34 implemented pending validation
 safety-event preservation  : R64 implemented pending integration validation
-final/acquire validation   : R42 remains primary; R2/R41/R33 mitigated on supported path; R40 partial
-runtime state supervision  : R50
+final/acquire validation   : R2/R33/R41/R42 mitigated on supported paths; R40 partial
+runtime state supervision  : R50 partial; base/remote/CRC still open
 provenance/freshness       : R15, R21, R35, R51, R52, R65
 ```
 
-The immediate P1 implementation target is R42: bind the Jog permit to model/validator provenance, collision-relevant full-body state and the final command segment. R40 base/IMU/model binding remains open and should be handled with R50 rather than pretending the 29-joint wrapper closes it.
+The next implementation group should address provenance/freshness without broadening physical trials. R21 and R51 affect startup/LowState evidence, while R35/R65 affect live command-source identity and stale-session/backlog handling. R15 recorded replay remains a separate command-provenance risk.
 
 ## Safety boundary
 

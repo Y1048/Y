@@ -1,12 +1,15 @@
 """기존 Unity 패킷과 V2 패킷을 하나의 내부 명령 모델로 엄격하게 변환한다.
 
 알 수 없는 schema를 기존 형식으로 추측하지 않으며, active/valid 조합과 벡터 크기를
-경계에서 검증해 잘못된 네트워크 입력이 IK 계층으로 넘어가지 않게 한다.
+경계에서 검증해 잘못된 네트워크 입력이 IK 계층으로 넘어가지 않게 한다. Legacy
+Unity monotonic timestamp는 epoch가 다른 로컬 시계와 직접 비교하지 않고 source
+clock evidence로 보존한다.
 """
 
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 
 import numpy as np
@@ -53,6 +56,19 @@ def _legacy_integer(value: object, field_name: str) -> int:
     return value
 
 
+def _legacy_source_time_ns(value: object) -> int | None:
+    if value is None:
+        return None
+    if (
+        not isinstance(value, (int, float))
+        or isinstance(value, bool)
+        or not math.isfinite(float(value))
+        or float(value) < 0.0
+    ):
+        raise ProtocolError("timestamp must be a non-negative finite number")
+    return int(round(float(value) * 1_000_000_000.0))
+
+
 def _legacy_vector(value: object, length: int, field_name: str) -> np.ndarray:
     try:
         result = np.asarray(value, dtype=float)
@@ -72,6 +88,11 @@ def _parse_legacy_value(value: dict[str, object]) -> InternalCommand:
         raise ProtocolError("session_id must be a non-empty string")
 
     sequence = _legacy_integer(value.get("sequence"), "sequence")
+    source_time_ns = _legacy_source_time_ns(value.get("timestamp"))
+    source = value.get("source", "legacy_controller_target")
+    if not isinstance(source, str) or not source.strip():
+        raise ProtocolError("source must be a non-empty string")
+
     right = value.get("right")
     if not isinstance(right, dict):
         raise ProtocolError("right must be an object")
@@ -114,8 +135,8 @@ def _parse_legacy_value(value: dict[str, object]) -> InternalCommand:
         valid=valid,
         position_m=position,
         quaternion_xyzw=quaternion,
-        source_time_ns=None,
-        frame_id=str(value.get("source", "legacy_controller_target")),
+        source_time_ns=source_time_ns,
+        frame_id=source.strip(),
         protocol="legacy_v0",
     )
 

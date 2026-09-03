@@ -1,6 +1,12 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0.."
+
+for /f %%T in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "LOWSTATE_TOKEN=%%T"
+if not defined LOWSTATE_TOKEN (
+    echo [ERROR] Could not create the per-run LowState provenance token.
+    exit /b 2
+)
 
 echo ============================================================
 echo   G1 Mink Right-Arm - Hardware Pose Sync Startup
@@ -11,15 +17,17 @@ echo ============================================================
 echo.
 
 echo [STEP 0] Starting read-only G1 LowState forwarder...
-start "G1 LowState Read Only Forwarder" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --forward-host 127.0.0.1 --forward-port 5007 --forward-hz 30
+start "G1 LowState Read Only Forwarder" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --forward-host 127.0.0.1 --forward-port 5007 --forward-hz 30 --forward-token %LOWSTATE_TOKEN%
 timeout /t 3 /nobreak >nul
 
-echo [STEP 1] Waiting for a fresh G1 right-arm LowState snapshot...
-py -3.11 hardware\g1_arm_bridge\receive_initial_state.py --port 5007 --timeout 8
-if errorlevel 1 (
+echo [STEP 1] Waiting for a fresh provenance-bound G1 LowState snapshot...
+py -3.11 hardware\g1_arm_bridge\receive_initial_state.py --port 5007 --timeout 8 --max-packet-age 1.0 --expected-forward-token %LOWSTATE_TOKEN%
+set "SYNC_RC=%ERRORLEVEL%"
+wsl -d Ubuntu -- bash -lc "pkill -TERM -f '[r]ead_only_lowstate_entry.py.*--forward-token %LOWSTATE_TOKEN%' || true" >nul 2>&1
+if not "%SYNC_RC%"=="0" (
     echo.
     echo [ERROR] Hardware pose synchronization failed.
-    echo [ACTION] Check the G1 LowState Read Only Forwarder window for a missing 192.168.123.99/24 interface or LowState timeout.
+    echo [ACTION] Check the G1 LowState Read Only Forwarder window for a missing 192.168.123.99/24 interface, token mismatch, or LowState timeout.
     echo [ACTION] Close both windows, run START_G1_READ_ONLY.bat successfully, then retry this BAT.
     goto :end
 )

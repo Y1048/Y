@@ -4,8 +4,12 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from g1_right_arm_jog_entry import apply_release_result_guard
+
+
+HERE = Path(__file__).resolve().parent
 
 
 class RightArmJogReleaseGuardTests(unittest.TestCase):
@@ -89,6 +93,14 @@ class RightArmJogReleaseGuardTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertTrue(result["output_state_unknown"])
         self.assertTrue(result["command_output_enabled"])
+
+    def test_supported_wsl_starter_uses_guarded_entrypoint(self) -> None:
+        starter = (HERE / "start_right_arm_jog_wsl.sh").read_text(encoding="utf-8")
+        self.assertIn("g1_right_arm_jog_entry.py", starter)
+        self.assertNotIn(
+            'exec "${python_path}" hardware/g1_arm_bridge/g1_right_arm_jog.py',
+            starter,
+        )
 
 
 if __name__ == "__main__":

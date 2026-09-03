@@ -2,10 +2,11 @@
 """Supported Gate 7 physical entrypoint with fail-closed safety guards.
 
 This wrapper creates no DDS entity itself. It installs safety guards before
-calling the existing live adapter: per-run relay provenance and retired-session
-rejection, finite ACTIVE collision evidence, final post-shaping collision
-validation, continuous acquisition freshness, provenance-bound 29-joint precheck
-binding, and LowState IMU/motor health supervision.
+calling the existing live adapter: per-run relay provenance, explicit live-vs-
+replay command provenance, retired-session rejection, finite ACTIVE collision
+evidence, final post-shaping collision validation, continuous acquisition
+freshness, provenance-bound 29-joint precheck binding, and LowState IMU/motor
+health supervision.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ from gate7_live_safety_guard import (
 )
 from gate7_relay_provenance_guard import (
     RetiredSessionGuard,
+    require_live_hardware_provenance,
     require_relay_token,
     validate_relay_token,
 )
@@ -92,6 +94,7 @@ def install_supported_path_guards(
 
     def guarded_parse(payload):
         require_relay_token(payload, relay_token)
+        require_live_hardware_provenance(payload)
         sample = require_active_collision_evidence(original_parse(payload))
         relay_sessions.accept(sample.session_id, sample.sequence)
         return sample

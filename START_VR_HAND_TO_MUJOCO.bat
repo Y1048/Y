@@ -7,7 +7,7 @@ set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
 set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_VR"
 set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
-set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_virtual_center_live.py"
+set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_virtual_center_live_entry.py"
 set "CAMERA_LAUNCHER=%PROJECT_ROOT%tools\START_G1_CAMERA_TO_UNITY.bat"
 set "IK_MODE=virtual-center"
 set "CHECK_ONLY=0"
@@ -15,11 +15,11 @@ set "DISPLAY_MODE=simulation"
 if /I "%~1"=="--hardware-display" set "DISPLAY_MODE=hardware"
 if /I "%~2"=="--hardware-display" set "DISPLAY_MODE=hardware"
 if /I "%~1"=="--baseline" (
-    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype.py"
+    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype_entry.py"
     set "IK_MODE=baseline"
 )
 if /I "%~2"=="--baseline" (
-    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype.py"
+    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype_entry.py"
     set "IK_MODE=baseline"
 )
 if /I "%~1"=="--check" set "CHECK_ONLY=1"
@@ -178,6 +178,7 @@ if "%IK_MODE%"=="virtual-center" (
 echo   DAQP QP solver preferred
 echo   Non-right-arm DOFs frozen
 echo   Joint, velocity, and collision limits enabled
+echo   Gate 7 command provenance: explicit live_mink
 echo.
 echo Marker colors:
 echo   Cyan   = actual Quest wrist

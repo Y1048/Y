@@ -1,30 +1,42 @@
 #!/usr/bin/env python3
-"""Supported WSL entrypoint for right-arm Jog result fail-closure.
+"""Supported WSL entrypoint for right-arm Jog safety guards.
 
-The physical controller remains in ``g1_right_arm_jog.py``. This wrapper does not
-create DDS entities itself. It patches only the final result writer so a faulted
-run cannot report command output disabled unless the configured zero-weight tail
-was fully written without a release error.
+The physical controller remains in ``g1_right_arm_jog.py``. This wrapper creates
+no DDS entity itself. Before delegating to the controller it installs fail-closed
+result semantics, permit provenance validation, all-29-joint precheck binding,
+and a final swept-segment collision check on every active Jog controller tick.
 """
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Any
 
 import g1_right_arm_jog as jog
+from gate7_mink_arm_sdk_offline import CollisionPathValidator
+from right_arm_jog_safety_guard import (
+    validate_jog_final_segment,
+    validate_jog_permit_provenance,
+    validate_jog_runtime_full_body,
+)
+
+
+def _argument_path(argv: list[str], name: str, default: Path) -> Path:
+    for index, value in enumerate(argv):
+        if value == name:
+            if index + 1 >= len(argv):
+                raise ValueError(f"{name} requires a path")
+            return Path(argv[index + 1])
+        prefix = name + "="
+        if value.startswith(prefix):
+            return Path(value[len(prefix) :])
+    return default
 
 
 def _config_path(argv: list[str]) -> Path:
-    for index, value in enumerate(argv):
-        if value == "--config":
-            if index + 1 >= len(argv):
-                raise ValueError("--config requires a path")
-            return Path(argv[index + 1])
-        if value.startswith("--config="):
-            return Path(value.split("=", 1)[1])
-    return jog.DEFAULT_CONFIG_PATH
+    return _argument_path(argv, "--config", jog.DEFAULT_CONFIG_PATH)
 
 
 def apply_release_result_guard(
@@ -93,8 +105,101 @@ def apply_release_result_guard(
     return payload
 
 
+def install_jog_safety_guards(
+    *,
+    config,
+    config_path: Path,
+    collision_validator,
+) -> None:
+    if getattr(jog, "_supported_jog_entry_guards_installed", False):
+        return
+
+    state: dict[str, Any] = {"precheck": None}
+
+    original_validate_precheck = jog.validate_precheck
+
+    def guarded_validate_precheck(path, maximum_age_s):
+        precheck = original_validate_precheck(path, maximum_age_s)
+        state["precheck"] = precheck
+        return precheck
+
+    jog.validate_precheck = guarded_validate_precheck
+
+    original_snapshot_match = jog.validate_snapshot_matches_precheck
+
+    def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
+        original_snapshot_match(snapshot, precheck, maximum_delta_rad)
+        return validate_jog_runtime_full_body(
+            snapshot.all_q_rad,
+            precheck,
+            maximum_delta_rad,
+        )
+
+    jog.validate_snapshot_matches_precheck = guarded_snapshot_match
+
+    original_load_path_permit = jog.load_path_permit
+
+    def guarded_load_path_permit(path, precheck, config_value):
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        validate_jog_permit_provenance(payload, config_path)
+        return original_load_path_permit(path, precheck, config_value)
+
+    jog.load_path_permit = guarded_load_path_permit
+
+    original_advance = jog.ArmJointJogController.advance
+
+    def guarded_advance(
+        self,
+        measured_all_q_rad,
+        dt_s,
+        *,
+        mode_pr,
+        mode_machine,
+        weight,
+        hold_config,
+    ):
+        precheck = state.get("precheck")
+        if precheck is None:
+            raise RuntimeError("startup precheck is unavailable during Jog control")
+        validate_jog_runtime_full_body(
+            measured_all_q_rad,
+            precheck,
+            config.maximum_precheck_pose_delta_rad,
+        )
+        tick = original_advance(
+            self,
+            measured_all_q_rad,
+            dt_s,
+            mode_pr=mode_pr,
+            mode_machine=mode_machine,
+            weight=weight,
+            hold_config=hold_config,
+        )
+        validate_jog_final_segment(
+            tick.frame,
+            measured_all_q_rad,
+            collision_validator,
+        )
+        return tick
+
+    jog.ArmJointJogController.advance = guarded_advance
+    jog._supported_jog_entry_guards_installed = True
+
+
 def main() -> int:
-    config = jog.load_config(_config_path(sys.argv[1:]))
+    argv = sys.argv[1:]
+    config_path = _config_path(argv)
+    config = jog.load_config(config_path)
+
+    # Build the exact current collision validator before the controller can create
+    # a publisher. Its generated model is then compared with the permit provenance.
+    collision_validator = CollisionPathValidator()
+    install_jog_safety_guards(
+        config=config,
+        config_path=config_path,
+        collision_validator=collision_validator,
+    )
+
     original_write_result = jog.write_result
 
     def guarded_write_result(path: Path, payload: dict[str, Any]) -> None:

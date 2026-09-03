@@ -121,34 +121,56 @@ Unity/Quest validation                : NOT RUN
 
 ## R15 — recorded replay vs live command provenance
 
-Normalized `gate7_mink_replay.py` traffic now carries:
+Replay/live provenance is now explicit on both sides of the supported Gate 7 boundary.
+
+Normalized `gate7_mink_replay.py` traffic carries:
 
 ```text
 command_provenance = recorded_replay
 session_id          = replay-...
 ```
 
-The supported Windows live relay rejects explicit `recorded_replay` packets and legacy `replay-*` sessions before forwarding. Accepted live candidates are canonicalized at the relay boundary as:
+Supported live producers now run through provenance-marking entrypoints:
+
+```text
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live_entry.py
+MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype_entry.py
+```
+
+Both wrap the existing state-packet factory with `g1_mink_command_provenance.py`, which marks newly produced Gate 7 state packets as:
 
 ```text
 command_provenance = live_mink
 ```
 
-The supported WSL Gate 7 hardware entry independently requires `live_mink` in addition to the per-run relay token.
+The root `START_VR_HAND_TO_MUJOCO.bat` now launches those entrypoints for both default virtual-center and `--baseline` modes.
 
-`gate7_mink_replay.py --exact-transport` can no longer target the live relay on UDP 5008. Exact transport remains available only on a dedicated offline replay port.
+The Windows live relay now **requires** explicit `live_mink`. Missing provenance is no longer accepted as a compatibility case. Explicit `recorded_replay`, missing provenance, unknown provenance and a `replay-*` session are fail-closed before forwarding. The relay still canonicalizes the accepted packet and adds the per-run relay token before WSL delivery.
 
-Compatibility boundary: the current simulation controller's UDP 5008 packet predates the explicit `command_provenance` field. The Windows relay therefore accepts a missing provenance field only as a compatibility case when the session is not `replay-*`, then emits canonical `live_mink` downstream. A later packet-contract migration should make the live Mink producer itself emit `live_mink` and remove this allowance.
+The supported WSL Gate 7 hardware entry independently requires both `live_mink` and the exact per-run relay token. `gate7_mink_replay.py --exact-transport` cannot target the live relay on UDP 5008; exact replay remains available only on a dedicated offline port.
+
+Representative source-side migration commits:
+
+```text
+5c3e0a85aa5bb7f3f1602458564bf53c2725f64e  live producer provenance helper
+e25de6e737b893dec9068b918a16eabd8af15ac8  virtual-center provenance entry
+c264d3ad398ade7b4e51f2a528704e455c5db5cc  baseline provenance entry
+9e2ad167e3dc757958725cd8895dc884ac66a237  root launcher uses provenance entries
+fb40acca073e27c565e8ac3b1bf756ed5167f421  relay requires explicit live provenance
+0c83d080cdeeffceab40890adda895497367fc2c  strict relay regression update
+983ca9b47834122737406250eb4b3a5225d172b9  producer provenance regression coverage
+```
 
 Status:
 
 ```text
-R15 supported physical relay path : MITIGATED
-Live Mink source packet explicit provenance : PARTIAL / compatibility allowance remains
-Normalized replay into live relay : BLOCKED
-Exact-transport replay into UDP 5008 : BLOCKED
-Runtime validation : NOT RUN
-Physical validation: NOT RUN
+R15 supported live producer -> relay -> WSL hardware path : SOURCE MITIGATION COMPLETE
+Normalized replay into live relay                         : BLOCKED
+Missing-provenance legacy candidate into live relay      : BLOCKED
+Exact-transport replay into UDP 5008                      : BLOCKED
+Direct execution of the old core controller scripts      : lower-provenance / unsupported for physical relay use
+Runtime integration validation                            : PENDING
+Physical validation                                       : NOT RUN
 ```
 
 ## Regression coverage added/updated
@@ -163,12 +185,15 @@ hardware/g1_arm_bridge/test_gate7_live_entrypoint.py
 hardware/g1_arm_bridge/test_gate7_replay_provenance.py
 backend/tests/test_source_provenance.py
 backend/tests/test_mink_command_stream.py
+MuJoCo_G1_Controller/scripts/test_mink_command_provenance.py
 ```
 
-Coverage includes LowState token mismatch, stale/non-provenance prechecks, wrong command sender/source, source-clock backlog, retired A -> B -> A sessions, Gate 7 relay-token mismatch, explicit replay rejection and exact-transport/live-port rejection.
+Coverage includes LowState token mismatch, stale/non-provenance prechecks, wrong command sender/source, source-clock backlog, retired A -> B -> A sessions, Gate 7 relay-token mismatch, explicit replay rejection, missing live provenance, exact-transport/live-port rejection and source-side live packet marking.
 
 ## Verification boundary
 
-The code and regression tests are committed, but they have **not** been executed from a checked-out current repository or GitHub Actions in this remediation session.
+A small isolated smoke run of the SDK-neutral `g1_mink_command_provenance.py` helper passed on 2026-09-04: live packets were marked `live_mink`, replay relabeling was rejected, and the wrapped state factory preserved the original packet while adding provenance.
+
+This was **not** a checked-out repository test run. Network access from the execution sandbox could not clone GitHub, and the repository has no GitHub Actions workflow currently available for this branch. The committed regression tests therefore remain unexecuted as a current-checkout suite.
 
 No Unity Play, Quest runtime, WSL DDS runtime or physical G1 command test was performed for this batch. Repository hardware authorization remains locked. No result in this document grants physical-output authorization.

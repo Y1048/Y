@@ -21,11 +21,19 @@ class Gate7LiveEntrypointTests(unittest.TestCase):
             starter,
         )
 
-    def test_entrypoint_installs_clearance_and_final_segment_guards(self) -> None:
+    def test_entrypoint_installs_collision_guards(self) -> None:
         source = (HERE / "gate7_live_arm_sdk_entry.py").read_text(encoding="utf-8")
         self.assertIn("require_active_collision_evidence", source)
         self.assertIn("validate_final_command_segment", source)
         self.assertIn("frame=None", source)
+
+    def test_entrypoint_installs_continuous_acquisition_and_full_body_guards(self) -> None:
+        source = (HERE / "gate7_live_arm_sdk_entry.py").read_text(encoding="utf-8")
+        self.assertIn("ActiveAcquisitionGuard", source)
+        self.assertIn("ACTIVE Mink stream did not remain live", source)
+        self.assertIn("acquisition_guard.require_fresh", source)
+        self.assertIn("validate_full_body_snapshot_matches_precheck", source)
+        self.assertIn("validate_acquisition_hold_target", source)
 
 
 if __name__ == "__main__":

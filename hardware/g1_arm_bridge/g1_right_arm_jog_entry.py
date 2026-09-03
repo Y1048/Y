@@ -3,8 +3,9 @@
 
 The physical controller remains in ``g1_right_arm_jog.py``. This wrapper creates
 no DDS entity itself. Before delegating to the controller it installs fail-closed
-result semantics, permit provenance validation, all-29-joint precheck binding,
-final swept-segment collision checks, and LowState IMU/motor supervision.
+result semantics, permit provenance validation, provenance-bound all-29-joint
+precheck binding, final swept-segment collision checks, and LowState IMU/motor
+supervision.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from lowstate_health_guard import (
     install_lowstate_health_tracking,
     require_latest_lowstate_health,
 )
+from precheck_provenance_guard import require_provenance_bound_precheck
 from right_arm_jog_safety_guard import (
     validate_jog_final_segment,
     validate_jog_permit_provenance,
@@ -125,6 +127,7 @@ def install_jog_safety_guards(
 
     def guarded_validate_precheck(path, maximum_age_s):
         precheck = original_validate_precheck(path, maximum_age_s)
+        require_provenance_bound_precheck(precheck)
         state["precheck"] = precheck
         return precheck
 

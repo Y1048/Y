@@ -4,9 +4,14 @@ cd /d "%~dp0.."
 
 for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss"') do set "STAMP=%%I"
 for /f %%T in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "LOWSTATE_TOKEN=%%T"
+for /f %%T in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "GATE7_RELAY_TOKEN=%%T"
 set "ADAPTER_STARTED=0"
 if not defined LOWSTATE_TOKEN (
     echo [ERROR] Could not create the per-run LowState provenance token.
+    goto :failed
+)
+if not defined GATE7_RELAY_TOKEN (
+    echo [ERROR] Could not create the per-run Gate 7 relay provenance token.
     goto :failed
 )
 set "ADAPTER_LOG=%CD%\logs\test_results\g1_gate7_adapter_%STAMP%.log"
@@ -42,7 +47,7 @@ title G1 Gate 7 Live Hardware
 
 echo ============================================================
 echo G1 GATE 7 LIVE HARDWARE - rt/arm_sdk
-echo   Unity/Mink UDP 5008 ^> validated relay ^> WSL UDP 5013
+echo   Unity/Mink UDP 5008 ^> token-bound relay ^> WSL UDP 5013
 echo   WSL Gate 7 + direct rt/lowstate ^> rt/arm_sdk
 echo   Profile: %PROFILE_NAME%
 echo ============================================================
@@ -140,18 +145,18 @@ if not defined WSL_GATE7_HOST (
 )
 echo [NETWORK] Windows relay target selected from G1 route: %WSL_GATE7_HOST%:5013
 
-echo [STEP 5/5] Starting validated relay, Unity/Mink, then WSL adapter...
+echo [STEP 5/5] Starting token-bound relay, Unity/Mink, then WSL adapter...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CD%\tools\SET_UNITY_DISPLAY_MODE.ps1" -Mode hardware
 if errorlevel 1 (
     echo [ERROR] Could not select hardware-only Unity display.
     echo [ACTION] Stop Unity Play and correct local display configuration before retrying.
     goto :failed
 )
-start "G1 Gate 7 Mink Relay" cmd /k py -3.11 hardware\g1_arm_bridge\gate7_mink_wsl_relay.py --target-host %WSL_GATE7_HOST% --target-port 5013
+start "G1 Gate 7 Mink Relay" cmd /k py -3.11 hardware\g1_arm_bridge\gate7_mink_wsl_relay.py --target-host %WSL_GATE7_HOST% --target-port 5013 --relay-token %GATE7_RELAY_TOKEN%
 timeout /t 2 /nobreak >nul
 netstat -ano -p UDP | findstr /R /C:":5008[ ]" >nul
 if errorlevel 1 (
-    echo [ERROR] The validated relay did not bind Windows UDP 5008.
+    echo [ERROR] The token-bound relay did not bind Windows UDP 5008.
     echo [ACTION] Stop the WSL adapter with Ctrl+C and read the relay window.
     goto :failed
 )
@@ -160,7 +165,7 @@ start "G1 VR and Mink" cmd /c call "%CD%\START_VR_HAND_TO_MUJOCO.bat" --hardware
 timeout /t 2 /nobreak >nul
 
 if exist "%ADAPTER_READY%" del /q "%ADAPTER_READY%"
-start "G1 Gate 7 rt-arm-sdk PHYSICAL" wsl -d Ubuntu -- env G1_GATE7_ADAPTER_LOG=/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/g1_gate7_adapter_%STAMP%.log bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh --gate7-config %GATE7_CONFIG_WSL% --hardware-config %HARDWARE_CONFIG_WSL% --ready-file %ADAPTER_READY_WSL% --enable-hardware-output --confirm %HARDWARE_CONFIRM% --confirm-grounded-regular G1_IS_GROUNDED_IN_REGULAR_MODE
+start "G1 Gate 7 rt-arm-sdk PHYSICAL" wsl -d Ubuntu -- env G1_GATE7_ADAPTER_LOG=/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/g1_gate7_adapter_%STAMP%.log bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh --gate7-config %GATE7_CONFIG_WSL% --hardware-config %HARDWARE_CONFIG_WSL% --ready-file %ADAPTER_READY_WSL% --expected-relay-token %GATE7_RELAY_TOKEN% --enable-hardware-output --confirm %HARDWARE_CONFIRM% --confirm-grounded-regular G1_IS_GROUNDED_IN_REGULAR_MODE
 set "ADAPTER_STARTED=1"
 echo [INFO] WSL adapter log: %ADAPTER_LOG%
 echo [WAIT] Waiting up to 20 seconds for WSL validation and UDP 5013 bind...
@@ -178,7 +183,7 @@ echo [PASS] The WSL Gate 7 adapter reported UDP 5013 ready.
 echo [INFO] Ready evidence: %ADAPTER_READY%
 
 echo [READY] Press Play in Unity. The adapter waits up to 120 seconds for a
-echo [READY] valid relayed Mink packet before it can create a publisher.
+echo [READY] token-bound valid relayed Mink packet before it can create a publisher.
 set "RC=0"
 echo.
 echo [INFO] Stop Gate 7 with Ctrl+C in the WSL adapter window.

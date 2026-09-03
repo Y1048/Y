@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static launcher checks for R21/R51 per-run LowState provenance."""
+"""Static launcher checks for R21/R23/R51 startup provenance and status."""
 
 from __future__ import annotations
 
@@ -53,6 +53,13 @@ class LowStateProvenanceLauncherTests(unittest.TestCase):
             "[r]ead_only_lowstate_entry.py.*--forward-token %LOWSTATE_TOKEN%",
             source,
         )
+
+    def test_hardware_pose_sync_propagates_failure_code(self) -> None:
+        source = self._text("START_MINK_G1_HARDWARE_SYNC.bat")
+        self.assertIn('set "RC=%SYNC_RC%"', source)
+        self.assertIn('set "RC=%VERIFY_RC%"', source)
+        self.assertIn('set "RC=%ERRORLEVEL%"', source)
+        self.assertIn("endlocal & exit /b %RC%", source)
 
     def test_gate7_failed_cleanup_targets_guarded_entrypoint(self) -> None:
         source = self._text("START_G1_GATE7_LIVE_HARDWARE.bat")

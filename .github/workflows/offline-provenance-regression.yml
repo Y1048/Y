@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - refactor/teleop-architecture
+    paths:
+      - '.github/workflows/offline-provenance-regression.yml'
+      - 'START_VR_HAND_TO_MUJOCO.bat'
+      - 'backend/g1_teleop/**'
+      - 'backend/tests/test_live_receiver.py'
+      - 'backend/tests/test_mink_command_stream.py'
+      - 'backend/tests/test_source_provenance.py'
+      - 'hardware/g1_arm_bridge/**'
+      - 'MuJoCo_G1_Controller/scripts/**'
+      - 'tools/**'
   workflow_dispatch:
 
 jobs:

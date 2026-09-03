@@ -111,15 +111,71 @@ Committed tests executed      : NO
 Physical validation           : NOT AUTHORIZED / NOT RUN
 ```
 
-## Current P1 focus after Batch 3
+## Batch 3C — R42 supported Jog permit/runtime binding
 
-The remaining high-priority publisher-boundary item is:
+Implementation commits:
 
 ```text
-R42 — Jog permit/model/full-body/final-segment binding
+f6fc83d6657a4ecd92c9918800ea1a4a07f5d178
+feat: add Jog permit provenance and runtime safety guards (R42)
+
+149a274ddaa8e47d27a2409f564b6e1cee40a28a
+feat: bind Jog permits to code config and model provenance (R42)
+
+22cd0cf4849747a1e6d7580ab3070f916028f835
+fix: bind supported Jog runtime to permit and full-body collision state (R42)
+
+3f517f479165fe5aa1c5095707108f7feb8389ed
+fix: generate provenance-bound Jog permit on supported launcher (R42)
+
+16a21c446189f691da828050cacf9beaa29cfce8
+fix: generate provenance-bound full-authority Jog permit (R42)
+
+377f6c0019de259ac9f8aa8b857259c5d48155bc
+test: add Jog provenance and final-segment guards
 ```
 
-R2/R41 and R33/R40 should still be treated as wrapper-level mitigations until the rules are moved into core code and the repository test suites are run from a checked-out current branch.
+Added/changed:
+
+- `hardware/g1_arm_bridge/right_arm_jog_safety_guard.py`
+- `hardware/g1_arm_bridge/validate_right_arm_jog_collision_path_entry.py`
+- `hardware/g1_arm_bridge/g1_right_arm_jog_entry.py`
+- `hardware/g1_arm_bridge/test_right_arm_jog_safety_guard.py`
+- `tools/START_G1_RIGHT_ARM_JOG_MUJOCO.bat`
+- `tools/START_G1_SHOULDER_PITCH_FULL_AUTHORITY_TRIAL.bat`
+
+The two supported physical Jog launchers now create the path permit through the provenance-aware generator. A passing permit records SHA-256 identities for the selected Jog config, generated MuJoCo collision model, base permit generator, collision validator, and Jog controller source.
+
+The supported WSL Jog entrypoint constructs the current `CollisionPathValidator` before delegating to the physical controller. `load_path_permit()` is wrapped so the permit hashes must exactly match the current config/code/generated model before Unitree imports and publisher creation continue.
+
+While a selected Jog controller is active, every `ArmJointJogController.advance()` on the supported path now:
+
+1. compares all 29 measured joint positions against the startup precheck tolerance,
+2. computes the existing Jog candidate frame,
+3. validates a swept segment from the latest measured full-body pose to that exact final frame through the current collision validator,
+4. raises into the existing fault/release path if the full-body binding or final segment is rejected.
+
+This makes permit invalidation sensitive to waist/leg drift during active Jog ticks and adds a final command collision check instead of relying only on the precomputed per-joint offset range.
+
+Boundary:
+
+```text
+R42 supported bounded/full-authority launchers : MITIGATED
+R42 direct g1_right_arm_jog.py path            : OPEN / UNSUPPORTED
+Permit provenance/model hash check             : ADDED on supported path
+29-joint runtime drift check                    : ADDED on selected-joint ticks
+Final swept-segment collision check             : ADDED on selected-joint ticks
+Base/IMU runtime binding                        : NOT COVERED (R40/R50 overlap)
+Regression tests committed                      : YES
+Committed tests executed                        : NO
+Physical validation                             : NOT AUTHORIZED / NOT RUN
+```
+
+As with the Gate 7 wrappers, this is not core-path closure. Direct execution of the legacy permit generator or `g1_right_arm_jog.py` bypasses the supported wrapper contract and must remain unsupported for physical use.
+
+## Current P1 state after Batch 3
+
+The primary P1 wrapper-level mitigations are now in place for R2, R33, R41 and R42, with R40 partially covered at the 29-joint level. Core integration and regression execution remain outstanding. The next high-priority work should move to runtime supervision R50 and the remaining base/IMU portion of R40 rather than broadening physical trials.
 
 ## Verification boundary
 

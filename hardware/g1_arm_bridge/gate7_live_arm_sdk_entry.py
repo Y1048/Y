@@ -2,10 +2,10 @@
 """Supported Gate 7 physical entrypoint with fail-closed safety guards.
 
 This wrapper creates no DDS entity itself. It installs safety guards before
-calling the existing live adapter: finite ACTIVE collision evidence, final
-post-shaping collision validation, continuous ACTIVE acquisition freshness,
-per-acquire HOLD validation, provenance-bound 29-joint precheck binding, and
-LowState IMU/motor health supervision.
+calling the existing live adapter: per-run relay provenance and retired-session
+rejection, finite ACTIVE collision evidence, final post-shaping collision
+validation, continuous acquisition freshness, provenance-bound 29-joint precheck
+binding, and LowState IMU/motor health supervision.
 """
 
 from __future__ import annotations
@@ -25,6 +25,11 @@ from gate7_acquisition_guard import (
 from gate7_live_safety_guard import (
     require_active_collision_evidence,
     validate_final_command_segment,
+)
+from gate7_relay_provenance_guard import (
+    RetiredSessionGuard,
+    require_relay_token,
+    validate_relay_token,
 )
 from lowstate_health_guard import (
     install_lowstate_health_tracking,
@@ -46,10 +51,33 @@ def _argument_path(name: str, default: Path) -> Path:
     return default
 
 
-def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
+def _pop_argument(name: str) -> str | None:
+    argv = sys.argv[1:]
+    for index, value in enumerate(argv):
+        if value == name:
+            if index + 1 >= len(argv):
+                raise ValueError(f"{name} requires a value")
+            result = argv[index + 1]
+            del sys.argv[index + 1 : index + 3]
+            return result
+        prefix = name + "="
+        if value.startswith(prefix):
+            result = value[len(prefix) :]
+            del sys.argv[index + 1]
+            return result
+    return None
+
+
+def install_supported_path_guards(
+    *,
+    acquisition_timeout_s: float,
+    expected_relay_token: str,
+) -> None:
     if getattr(live, "_supported_gate7_entry_guards_installed", False):
         return
 
+    relay_token = validate_relay_token(expected_relay_token)
+    relay_sessions = RetiredSessionGuard()
     install_lowstate_health_tracking(live.LowStateBuffer)
 
     original_precheck = live.validate_precheck
@@ -63,7 +91,10 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
     original_parse = live.parse_mink_arm_sample
 
     def guarded_parse(payload):
-        return require_active_collision_evidence(original_parse(payload))
+        require_relay_token(payload, relay_token)
+        sample = require_active_collision_evidence(original_parse(payload))
+        relay_sessions.accept(sample.session_id, sample.sequence)
+        return sample
 
     live.parse_mink_arm_sample = guarded_parse
 
@@ -210,9 +241,13 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
 
 def main() -> int:
     gate7_config_path = _argument_path("--gate7-config", live.DEFAULT_GATE7_CONFIG)
+    expected_relay_token = _pop_argument("--expected-relay-token")
+    if expected_relay_token is None:
+        raise SystemExit("supported Gate 7 hardware path requires --expected-relay-token")
     gate7_config = live.load_gate7_config(gate7_config_path)
     install_supported_path_guards(
         acquisition_timeout_s=gate7_config.input_timeout_s,
+        expected_relay_token=expected_relay_token,
     )
     return live.main()
 

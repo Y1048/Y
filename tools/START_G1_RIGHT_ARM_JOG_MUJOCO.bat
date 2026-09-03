@@ -70,9 +70,9 @@ if not "%PRECHECK_RC%"=="0" (
 )
 
 echo [STEP 3B/5] Computing pose-bound directional limits for all 7 joints...
-py -3.11 hardware\g1_arm_bridge\validate_right_arm_jog_collision_path.py --precheck-json "%PRECHECK_JSON%" --output "%PATH_PERMIT_JSON%"
+py -3.11 hardware\g1_arm_bridge\validate_right_arm_jog_collision_path_entry.py --precheck-json "%PRECHECK_JSON%" --output "%PATH_PERMIT_JSON%"
 if errorlevel 1 (
-    echo [ERROR] A pose-bound right-arm Jog permit could not be created.
+    echo [ERROR] A provenance-bound right-arm Jog permit could not be created.
     echo [ACTION] Read %PATH_PERMIT_JSON% and do not bypass it.
     goto :failed
 )

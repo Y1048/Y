@@ -45,9 +45,9 @@ Do not quote 117/264 as current effective coverage. Use the detailed review/reme
 | R23 | IMPLEMENTED; process validation pending | `b35c24a8baa8405bf2825b4d51cb40651bb6a303` | Hardware-sync BAT propagates snapshot/verify/controller return code; BAT not executed |
 | R35 | SUPPORTED GATE 7 RELAY PATH MITIGATED | `6480be28eb73f85cabe52e2d4e0c11d5cd4108bd` + `53ce93efb97848497e1c476070510193befd3fb6` | Per-run relay token plus retired-session tombstones at relay and supported WSL entry; tests not executed |
 | R65 | SUPPORTED UNITY/MINK PATH MITIGATED | `0e18792c4e2edbb9eeed1e10a6e45a08514e30cb` + `1110bc4579b8c83a9f60c767f3084bf4cd01e63a` + `48a9e9406fedea088c1c6e02767d327c1e067ef8` | Loopback/source contract, source-clock backlog estimate and downstream age propagation; tests not executed |
-| R15 | SUPPORTED PHYSICAL RELAY PATH MITIGATED; source packet migration partial | `5cb4d657e891bd11d32762befff56be4ed2ebcca` + `e302dd984e3b9f3b5b29e90f90087490dc10ede0` + `4bebf749fe928ff723b0ab19ce1eabe7612bacc7` | Normalized replay marked/rejected; exact replay blocked from UDP 5008; live producer still relies on relay compatibility allowance |
+| R15 | SOURCE MITIGATION COMPLETE ON SUPPORTED LIVE PATH; runtime validation pending | `5c3e0a85aa5bb7f3f1602458564bf53c2725f64e` + `9e2ad167e3dc757958725cd8895dc884ac66a237` + `fb40acca073e27c565e8ac3b1bf756ed5167f421` | Live producers emit `live_mink`; relay rejects missing/replay provenance; exact replay blocked from UDP 5008; isolated helper smoke only |
 
-The committed regression tests above have not been run by GitHub Actions or a checked-out current branch during this remediation session. No status in this table is a physical validation result.
+The committed regression tests above have not been run by GitHub Actions or a checked-out current branch during this remediation session. A small isolated SDK-neutral R15 producer-provenance smoke passed, but that is not a repository-suite result. No status in this table is a physical validation result.
 
 ## Current priority groups
 
@@ -57,10 +57,10 @@ safety-event preservation  : R64 implemented pending integration validation
 final/acquire validation   : R2/R33/R41/R42 mitigated on supported paths; R40 partial
 runtime state supervision  : R50 partial; base/remote/CRC still open
 startup provenance         : R21/R51 supported paths mitigated; generic direct paths remain lower provenance
-live command provenance    : R35/R65 mitigated on supported paths; R15 relay path mitigated with source-side compatibility allowance
+live command provenance    : R15/R35/R65 source-side mitigations in supported paths; integration tests pending
 ```
 
-Next provenance work should migrate the live Mink producer itself to emit explicit `command_provenance=live_mink`, then remove the relay's missing-provenance compatibility allowance. Before any physical expansion, execute the committed unit/static/process-level tests from a current checkout and keep hardware authorization locked.
+The next work should shift from adding more provenance wrappers to **verification and remaining partial P1s**. First execute the committed offline/unit/static tests from the user's current checkout. After that, address the remaining R40/R50 gaps and direct R46 integration before any physical expansion.
 
 ## Safety boundary
 

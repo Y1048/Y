@@ -1,11 +1,12 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0.."
+set "RC=0"
 
 for /f %%T in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "LOWSTATE_TOKEN=%%T"
 if not defined LOWSTATE_TOKEN (
     echo [ERROR] Could not create the per-run LowState provenance token.
-    exit /b 2
+    endlocal & exit /b 2
 )
 
 echo ============================================================
@@ -25,6 +26,7 @@ py -3.11 hardware\g1_arm_bridge\receive_initial_state.py --port 5007 --timeout 8
 set "SYNC_RC=%ERRORLEVEL%"
 wsl -d Ubuntu -- bash -lc "pkill -TERM -f '[r]ead_only_lowstate_entry.py.*--forward-token %LOWSTATE_TOKEN%' || true" >nul 2>&1
 if not "%SYNC_RC%"=="0" (
+    set "RC=%SYNC_RC%"
     echo.
     echo [ERROR] Hardware pose synchronization failed.
     echo [ACTION] Check the G1 LowState Read Only Forwarder window for a missing 192.168.123.99/24 interface, token mismatch, or LowState timeout.
@@ -36,7 +38,9 @@ echo.
 echo [STEP 2] Verifying measured pose through Mink and Unity packet...
 set G1_USE_HARDWARE_INITIAL_STATE=1
 py -3.11 hardware\g1_arm_bridge\verify_initial_pose_sync.py
-if errorlevel 1 (
+set "VERIFY_RC=%ERRORLEVEL%"
+if not "%VERIFY_RC%"=="0" (
+    set "RC=%VERIFY_RC%"
     echo.
     echo [ERROR] Hardware pose synchronization validation failed.
     echo [ACTION] Inspect logs\runtime\g1_hardware_initial_state.json and run py -3.11 hardware\g1_arm_bridge\verify_initial_pose_sync.py directly.
@@ -48,9 +52,10 @@ echo.
 echo [STEP 3] Starting current virtual-center Mink controller...
 echo [INFO] Hardware output remains disabled in this process.
 py -3.11 MuJoCo_G1_Controller\scripts\run_mink_g1_right_arm_virtual_center_live.py
-if errorlevel 1 (
+set "RC=%ERRORLEVEL%"
+if not "%RC%"=="0" (
     echo.
-    echo [ERROR] Mink hardware-synchronized startup exited with an error.
+    echo [ERROR] Mink hardware-synchronized startup exited with code %RC%.
     echo [ACTION] Run the printed Python command directly and inspect the first traceback or collision failure.
     echo [ACTION] Hardware output is disabled; fix the simulation error before any command integration.
 )
@@ -58,4 +63,4 @@ if errorlevel 1 (
 :end
 echo.
 pause
-endlocal
+endlocal & exit /b %RC%

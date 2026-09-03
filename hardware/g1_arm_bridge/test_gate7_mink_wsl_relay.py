@@ -16,9 +16,11 @@ from gate7_mink_wsl_relay import (
     ValidateAndForward,
     ValidateRelayEndpoint,
 )
+from gate7_relay_provenance_guard import require_relay_token
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REGULAR_POSE = PROJECT_ROOT / "config" / "g1_regular_arm_pose.json"
+RELAY_TOKEN = "0123456789abcdef0123456789abcdef"
 
 
 def _packet(sequence: int, session_id: str = "relay-test") -> bytes:
@@ -63,7 +65,15 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
             guard.Accept("a", 1)
         guard.Accept("b", 0)
 
-    def test_valid_packet_is_forwarded_without_rewriting(self):
+    def test_order_guard_rejects_retired_session_reappearance(self):
+        guard = MinkOrderGuard()
+        guard.Accept("a", 100)
+        guard.Accept("b", 0)
+        with self.assertRaisesRegex(Gate7ContractError, "retired"):
+            guard.Accept("a", 101)
+        self.assertEqual(("a",), guard.retired_sessions)
+
+    def test_valid_packet_is_token_bound_and_forwarded(self):
         receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
@@ -71,7 +81,13 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
             receiver.settimeout(1.0)
             target = receiver.getsockname()
             payload = _packet(1)
-            ValidateAndForward(payload, MinkOrderGuard(), sender, target)
+            ValidateAndForward(
+                payload,
+                MinkOrderGuard(),
+                sender,
+                target,
+                relay_token=RELAY_TOKEN,
+            )
             forwarded, _source = receiver.recvfrom(65535)
             parsed_original = json.loads(payload)
             parsed_forwarded = json.loads(forwarded)
@@ -85,6 +101,10 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
                 parsed_original["right_arm"]["active"],
                 parsed_forwarded["right_arm"]["active"],
             )
+            self.assertEqual(RELAY_TOKEN, parsed_forwarded["relay_token"])
+            require_relay_token(forwarded, RELAY_TOKEN)
+            with self.assertRaisesRegex(Gate7ContractError, "relay_token_mismatch"):
+                require_relay_token(forwarded, "f" * 32)
         finally:
             receiver.close()
             sender.close()

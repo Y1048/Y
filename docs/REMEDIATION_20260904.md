@@ -148,13 +148,54 @@ Committed tests executed   : NO
 Physical validation        : NOT AUTHORIZED / NOT RUN
 ```
 
-## Remaining item in the release/fault batch
+## Batch 2C — R46 supported Jog entrypoint fail-closure
+
+Implementation commits:
 
 ```text
-R46 Jog fault result can report output disabled before zero-tail completion
+7b44656364cf469bdc4f70ea4c1c0c8171a4ae81
+fix: fail-close Jog release results on supported WSL path (R46)
+
+4251c5438387719c83b2a50c7eb63789e93e95a1
+test: verify supported Jog launcher uses guarded entry
 ```
 
-R46 is still open. The Jog path must adopt the same last-successful-weight and zero-tail evidence contract before this release/fault batch is considered complete.
+Added/changed:
+
+- `hardware/g1_arm_bridge/g1_right_arm_jog_entry.py`
+- `hardware/g1_arm_bridge/start_right_arm_jog_wsl.sh`
+- `hardware/g1_arm_bridge/test_g1_right_arm_jog_entry.py`
+
+The supported WSL physical launcher now executes `g1_right_arm_jog_entry.py`. The wrapper does not create a DDS entity itself; it delegates to the existing controller and intercepts only the final result write. It applies the following fail-closed result contract:
+
+- `command_output_enabled=false` is allowed only when the configured zero-weight tail count was reached and no release error was recorded.
+- An incomplete zero tail changes `output_state_unknown=true`, keeps `command_output_enabled=true`, and revokes `passed=true`.
+- A recorded emergency release error keeps output state unknown even if a nominal zero-frame count is present.
+- Fault runs may report `command_output_enabled=false` after a complete zero tail while still remaining `passed=false`.
+- `external_authority_handoff_confirmed` remains false.
+
+Important boundary: this is a **supported-launcher mitigation**, not yet a full internal refactor of `g1_right_arm_jog.py`. Directly invoking `g1_right_arm_jog.py` with an independently unlocked physical config still retains the original R46 result-writing logic. Supported physical BAT launchers route through `start_right_arm_jog_wsl.sh`, so their hardware execution path now passes through the guard. Direct physical execution of `g1_right_arm_jog.py` must remain unsupported until the controller itself adopts the shared release contract.
+
+Status:
+
+```text
+R46 supported WSL path     : MITIGATED / FAIL-CLOSED RESULT GUARD
+R46 direct Python path     : OPEN
+Regression tests committed : YES
+Committed tests executed   : NO
+Physical validation        : NOT AUTHORIZED / NOT RUN
+```
+
+## Current release/fault batch state
+
+```text
+R1   implemented, validation pending
+R3   implemented, validation pending
+R34  implemented, validation pending
+R46  supported launcher mitigated; direct controller integration still open
+```
+
+Do not call the release/fault batch completely closed until `g1_right_arm_jog.py` itself uses the shared release evidence contract and the committed tests are executed from a real checkout.
 
 ## Verification boundary for all remediation above
 

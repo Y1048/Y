@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
 from typing import Literal
 
@@ -58,23 +59,41 @@ class SequenceWatchdog:
 
 
 class SessionSequenceWatchdog:
-    """Accept ordered packets from one sender session at a time.
+    """Accept ordered packets from one live sender session at a time.
 
     A different sender can take ownership only after the current session is
-    stale. This prevents delayed invalid packets from a previous Unity run from
-    stealing ownership from the active sender.
+    stale. Once ownership moves away from a session, that session is tombstoned
+    for this watchdog lifetime so delayed A->B->A traffic cannot regain control.
+    An explicit watchdog/process reset clears the bounded retired history.
     """
 
-    def __init__(self, takeover_after_s: float = 0.30) -> None:
+    def __init__(
+        self,
+        takeover_after_s: float = 0.30,
+        *,
+        retired_session_capacity: int = 16,
+    ) -> None:
         if takeover_after_s < 0.0:
             raise ValueError("takeover_after_s must be non-negative")
+        if (
+            not isinstance(retired_session_capacity, int)
+            or isinstance(retired_session_capacity, bool)
+            or retired_session_capacity < 1
+        ):
+            raise ValueError("retired_session_capacity must be a positive integer")
         self.takeover_after_ns = int(takeover_after_s * 1_000_000_000)
+        self.retired_session_capacity = retired_session_capacity
         self.reset()
 
     def reset(self) -> None:
         self.session_id: str | None = None
         self.last_sequence = -1
         self.last_arrival_time_ns = -1
+        self._retired_sessions: deque[str] = deque()
+
+    @property
+    def retired_sessions(self) -> tuple[str, ...]:
+        return tuple(self._retired_sessions)
 
     def accept(
         self,
@@ -85,6 +104,7 @@ class SessionSequenceWatchdog:
     ) -> PacketAcceptance:
         if not isinstance(session_id, str) or not session_id.strip():
             return PacketAcceptance(False, "invalid session id")
+        session_id = session_id.strip()
         if not isinstance(sequence, int) or isinstance(sequence, bool):
             return PacketAcceptance(False, "invalid sequence type")
         if not isinstance(valid, bool):
@@ -109,13 +129,26 @@ class SessionSequenceWatchdog:
             self.last_arrival_time_ns = arrival_time_ns
             return PacketAcceptance(True, "ordered packet")
 
+        if session_id in self._retired_sessions:
+            return PacketAcceptance(False, "retired session cannot retake ownership")
+
         current_session_age_ns = arrival_time_ns - self.last_arrival_time_ns
         current_session_stale = current_session_age_ns >= self.takeover_after_ns
         if not current_session_stale:
             return PacketAcceptance(False, "active session owns the stream")
 
+        self._retire_current_session()
         self._take_ownership(session_id, sequence, arrival_time_ns)
         return PacketAcceptance(True, "stale session takeover")
+
+    def _retire_current_session(self) -> None:
+        if self.session_id is None:
+            return
+        if self.session_id in self._retired_sessions:
+            self._retired_sessions.remove(self.session_id)
+        self._retired_sessions.append(self.session_id)
+        while len(self._retired_sessions) > self.retired_session_capacity:
+            self._retired_sessions.popleft()
 
     def _take_ownership(self, session_id: str, sequence: int, arrival_time_ns: int) -> None:
         self.session_id = session_id

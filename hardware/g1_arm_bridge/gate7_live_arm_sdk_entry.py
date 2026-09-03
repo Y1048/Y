@@ -4,7 +4,8 @@
 This wrapper creates no DDS entity itself. It installs safety guards before
 calling the existing live adapter: finite ACTIVE collision evidence, final
 post-shaping collision validation, continuous ACTIVE acquisition freshness,
-per-acquire HOLD validation, and 29-joint precheck binding.
+per-acquire HOLD validation, 29-joint precheck binding, and LowState IMU/motor
+health supervision.
 """
 
 from __future__ import annotations
@@ -25,6 +26,10 @@ from gate7_live_safety_guard import (
     require_active_collision_evidence,
     validate_final_command_segment,
 )
+from lowstate_health_guard import (
+    install_lowstate_health_tracking,
+    require_latest_lowstate_health,
+)
 
 
 def _argument_path(name: str, default: Path) -> Path:
@@ -44,6 +49,7 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
     if getattr(live, "_supported_gate7_entry_guards_installed", False):
         return
 
+    install_lowstate_health_tracking(live.LowStateBuffer)
     original_parse = live.parse_mink_arm_sample
 
     def guarded_parse(payload):
@@ -54,7 +60,7 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
     original_snapshot_match = live.validate_snapshot_matches_precheck
 
     def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
-        # Preserve the existing arm check and add a stricter all-29-joint check.
+        require_latest_lowstate_health(live.LowStateBuffer)
         original_snapshot_match(snapshot, precheck, maximum_delta_rad)
         return validate_full_body_snapshot_matches_precheck(
             snapshot,
@@ -74,8 +80,6 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
         acquisition_guard.seed(first_sample)
         guarded_wait_for_active.socket = sock
 
-        # One ACTIVE datagram is not enough to cross the publisher boundary.
-        # Require a second ordered ACTIVE sample within the normal input timeout.
         confirmation_deadline = time.monotonic() + acquisition_timeout_s
         while time.monotonic() < confirmation_deadline:
             sample = original_receive_latest(sock)
@@ -90,6 +94,7 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
     guarded_wait_for_active.socket = None
 
     def guarded_acquire_weight(elapsed_s, ramp_s, maximum_weight):
+        require_latest_lowstate_health(live.LowStateBuffer)
         sock = guarded_wait_for_active.socket
         if sock is None:
             raise RuntimeError("Mink acquisition socket was not registered")
@@ -157,6 +162,7 @@ def install_supported_path_guards(*, acquisition_timeout_s: float) -> None:
         mode_pr,
         mode_machine,
     ):
+        require_latest_lowstate_health(live.LowStateBuffer)
         tick = original_step(
             self,
             sample,

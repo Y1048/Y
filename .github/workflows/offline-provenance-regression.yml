@@ -1,0 +1,44 @@
+name: Offline provenance regressions
+
+on:
+  push:
+    branches:
+      - refactor/teleop-architecture
+  workflow_dispatch:
+
+jobs:
+  provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install offline test dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Backend command ingress
+        run: |
+          python backend/tests/test_live_receiver.py
+          python backend/tests/test_mink_command_stream.py
+          python backend/tests/test_source_provenance.py
+
+      - name: Gate 7 provenance boundary
+        run: |
+          python hardware/g1_arm_bridge/test_gate7_mink_wsl_relay.py
+          python hardware/g1_arm_bridge/test_gate7_live_entrypoint.py
+          python hardware/g1_arm_bridge/test_gate7_replay_provenance.py
+
+      - name: Startup provenance static guards
+        run: |
+          python hardware/g1_arm_bridge/test_lowstate_provenance_launchers.py
+          python hardware/g1_arm_bridge/test_physical_precheck_provenance_entries.py
+          python hardware/g1_arm_bridge/test_precheck_provenance_guard.py
+
+      - name: Live Mink producer provenance
+        run: python MuJoCo_G1_Controller/scripts/test_mink_command_provenance.py

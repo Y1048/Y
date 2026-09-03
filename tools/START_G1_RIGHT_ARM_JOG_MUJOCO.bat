@@ -5,6 +5,11 @@ cd /d "%~dp0.."
 set "MODE_JSON=%CD%\logs\runtime\g1_motion_mode_query.json"
 set "PRECHECK_JSON=%CD%\logs\runtime\g1_startup_precheck.json"
 set "PATH_PERMIT_JSON=%CD%\logs\runtime\g1_right_arm_jog_path_permit.json"
+for /f %%T in ('powershell -NoProfile -Command "[guid]::NewGuid().ToString('N')"') do set "LOWSTATE_TOKEN=%%T"
+if not defined LOWSTATE_TOKEN (
+    echo [ERROR] Could not create the per-run LowState provenance token.
+    goto :failed
+)
 
 title G1 Right Arm 7-DoF Jog + Live MuJoCo
 
@@ -57,12 +62,12 @@ if errorlevel 1 (
     goto :failed
 )
 
-echo [STEP 3/5] Running a fresh read-only startup precheck...
-start "G1 Arm Jog Precheck LowState - READ ONLY" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --timeout 0.25 --forward-host 127.0.0.1 --forward-port 5007 --forward-hz 100
+echo [STEP 3/5] Running a fresh provenance-bound read-only startup precheck...
+start "G1 Arm Jog Precheck LowState - READ ONLY" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --timeout 0.25 --forward-host 127.0.0.1 --forward-port 5007 --forward-hz 100 --forward-token %LOWSTATE_TOKEN%
 timeout /t 2 /nobreak >nul
-py -3.11 hardware\g1_arm_bridge\check_startup_readiness.py --host 0.0.0.0 --port 5007 --motion-mode-json "%MODE_JSON%" --output "%PRECHECK_JSON%"
+py -3.11 hardware\g1_arm_bridge\check_startup_readiness_entry.py --host 0.0.0.0 --port 5007 --motion-mode-json "%MODE_JSON%" --output "%PRECHECK_JSON%" --expected-forward-token %LOWSTATE_TOKEN%
 set "PRECHECK_RC=%ERRORLEVEL%"
-wsl -d Ubuntu -- bash -lc "pkill -f '[r]ead_only_lowstate.py.*--forward-port 5007' || true" >nul 2>&1
+wsl -d Ubuntu -- bash -lc "pkill -TERM -f '[r]ead_only_lowstate_entry.py.*--forward-token %LOWSTATE_TOKEN%' || true" >nul 2>&1
 if not "%PRECHECK_RC%"=="0" (
     echo [ERROR] Startup precheck did not authorize DIRECT_TELEOP_READY.
     echo [ACTION] Read %PRECHECK_JSON% and do not bypass its reason.

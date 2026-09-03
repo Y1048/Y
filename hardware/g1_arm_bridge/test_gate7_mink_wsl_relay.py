@@ -32,7 +32,7 @@ def _packet(
     sequence: int,
     session_id: str = "relay-test",
     *,
-    command_provenance: str | None = None,
+    command_provenance: str | None = COMMAND_PROVENANCE_LIVE,
 ) -> bytes:
     pose = load_regular_arm_pose(REGULAR_POSE)
     all_q = list(pose.reference_all_joint_q_rad)
@@ -84,6 +84,20 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
             guard.Accept("a", 101)
         self.assertEqual(("a",), guard.retired_sessions)
 
+    def test_missing_provenance_is_rejected_before_forwarding(self):
+        sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            with self.assertRaisesRegex(Gate7ContractError, "live_mink_provenance_required"):
+                ValidateAndForward(
+                    _packet(1, command_provenance=None),
+                    MinkOrderGuard(),
+                    sender,
+                    ("127.0.0.1", 9),
+                    relay_token=RELAY_TOKEN,
+                )
+        finally:
+            sender.close()
+
     def test_recorded_replay_is_rejected_before_forwarding(self):
         sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
@@ -102,12 +116,16 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
         finally:
             sender.close()
 
-    def test_legacy_replay_session_prefix_is_rejected(self):
+    def test_live_packet_with_replay_session_prefix_is_rejected(self):
         sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             with self.assertRaisesRegex(Gate7ContractError, "replay_session"):
                 ValidateAndForward(
-                    _packet(1, session_id="replay-legacy-capture"),
+                    _packet(
+                        1,
+                        session_id="replay-legacy-capture",
+                        command_provenance=COMMAND_PROVENANCE_LIVE,
+                    ),
                     MinkOrderGuard(),
                     sender,
                     ("127.0.0.1", 9),

@@ -16,39 +16,50 @@ from gate7_mink_wsl_relay import (
     ValidateAndForward,
     ValidateRelayEndpoint,
 )
-from gate7_relay_provenance_guard import require_relay_token
+from gate7_relay_provenance_guard import (
+    COMMAND_PROVENANCE_LIVE,
+    COMMAND_PROVENANCE_REPLAY,
+    require_live_hardware_provenance,
+    require_relay_token,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REGULAR_POSE = PROJECT_ROOT / "config" / "g1_regular_arm_pose.json"
 RELAY_TOKEN = "0123456789abcdef0123456789abcdef"
 
 
-def _packet(sequence: int, session_id: str = "relay-test") -> bytes:
+def _packet(
+    sequence: int,
+    session_id: str = "relay-test",
+    *,
+    command_provenance: str | None = None,
+) -> bytes:
     pose = load_regular_arm_pose(REGULAR_POSE)
     all_q = list(pose.reference_all_joint_q_rad)
     for index, value in zip(range(15, 29), pose.dual_arm_q_rad):
         all_q[index] = value
-    return json.dumps(
-        {
-            "schema": "g1.mink.right_arm.state.v1",
-            "sequence": sequence,
-            "state_source": "mink_simulation",
-            "all_joint_names": list(G1_29_JOINT_NAMES),
-            "all_joint_q_rad": all_q,
-            "right_arm": {
-                "joints": all_q[22:29],
-                "active": True,
-                "workspace_limited": False,
-                "collision_limited": False,
-                "minimum_clearance_m": 0.04,
-                "command_state": "active",
-            },
-            "input_command_mode": "active",
-            "session_id": session_id,
-            "input_packet_age_s": 0.0,
-            "timestamp": 1.0,
-        }
-    ).encode("utf-8")
+    value = {
+        "schema": "g1.mink.right_arm.state.v1",
+        "sequence": sequence,
+        "state_source": "mink_simulation",
+        "all_joint_names": list(G1_29_JOINT_NAMES),
+        "all_joint_q_rad": all_q,
+        "right_arm": {
+            "joints": all_q[22:29],
+            "active": True,
+            "workspace_limited": False,
+            "collision_limited": False,
+            "minimum_clearance_m": 0.04,
+            "command_state": "active",
+        },
+        "input_command_mode": "active",
+        "session_id": session_id,
+        "input_packet_age_s": 0.0,
+        "timestamp": 1.0,
+    }
+    if command_provenance is not None:
+        value["command_provenance"] = command_provenance
+    return json.dumps(value).encode("utf-8")
 
 
 class Gate7MinkWslRelayTests(unittest.TestCase):
@@ -73,7 +84,39 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
             guard.Accept("a", 101)
         self.assertEqual(("a",), guard.retired_sessions)
 
-    def test_valid_packet_is_token_bound_and_forwarded(self):
+    def test_recorded_replay_is_rejected_before_forwarding(self):
+        sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            with self.assertRaisesRegex(Gate7ContractError, "recorded_replay"):
+                ValidateAndForward(
+                    _packet(
+                        1,
+                        session_id="replay-test",
+                        command_provenance=COMMAND_PROVENANCE_REPLAY,
+                    ),
+                    MinkOrderGuard(),
+                    sender,
+                    ("127.0.0.1", 9),
+                    relay_token=RELAY_TOKEN,
+                )
+        finally:
+            sender.close()
+
+    def test_legacy_replay_session_prefix_is_rejected(self):
+        sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            with self.assertRaisesRegex(Gate7ContractError, "replay_session"):
+                ValidateAndForward(
+                    _packet(1, session_id="replay-legacy-capture"),
+                    MinkOrderGuard(),
+                    sender,
+                    ("127.0.0.1", 9),
+                    relay_token=RELAY_TOKEN,
+                )
+        finally:
+            sender.close()
+
+    def test_valid_packet_is_live_token_bound_and_forwarded(self):
         receiver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
@@ -101,8 +144,13 @@ class Gate7MinkWslRelayTests(unittest.TestCase):
                 parsed_original["right_arm"]["active"],
                 parsed_forwarded["right_arm"]["active"],
             )
+            self.assertEqual(
+                COMMAND_PROVENANCE_LIVE,
+                parsed_forwarded["command_provenance"],
+            )
             self.assertEqual(RELAY_TOKEN, parsed_forwarded["relay_token"])
             require_relay_token(forwarded, RELAY_TOKEN)
+            require_live_hardware_provenance(forwarded)
             with self.assertRaisesRegex(Gate7ContractError, "relay_token_mismatch"):
                 require_relay_token(forwarded, "f" * 32)
         finally:

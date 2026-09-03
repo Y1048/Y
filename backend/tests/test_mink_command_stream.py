@@ -19,6 +19,7 @@ from g1_teleop.mink_command_stream import MinkCommandStream  # noqa: E402
 class FakeSocket:
     def __init__(self) -> None:
         self.payloads: list[bytes] = []
+        self.source_host = "127.0.0.1"
 
     def queue(self, *payloads: bytes) -> None:
         self.payloads.extend(payloads)
@@ -26,7 +27,7 @@ class FakeSocket:
     def recvfrom(self, _bufsize):
         if not self.payloads:
             raise BlockingIOError
-        return self.payloads.pop(0), ("127.0.0.1", 5005)
+        return self.payloads.pop(0), (self.source_host, 5005)
 
 
 def packet(
@@ -35,8 +36,12 @@ def packet(
     session_id: str = "session-a",
     mode: str = "active",
     position: tuple[float, float, float] = (0.42, -0.16, 1.05),
+    source: str = "quest3s_head_relative",
+    timestamp_s: float | None = None,
 ) -> bytes:
     valid = mode == "active"
+    if timestamp_s is None:
+        timestamp_s = sequence / 60.0
     value = {
         "session_id": session_id,
         "sequence": sequence,
@@ -46,7 +51,8 @@ def packet(
             "rot": [0.0, 0.0, 0.0, 1.0],
             "valid": valid,
         },
-        "source": "test",
+        "source": source,
+        "timestamp": timestamp_s,
     }
     return json.dumps(value).encode("utf-8")
 
@@ -65,6 +71,7 @@ class MinkCommandStreamTest(unittest.TestCase):
         first = self.stream.poll(self.sock)
         self.assertTrue(first.engage_clutch)
         self.assertTrue(first.command_active)
+        self.assertEqual("127.0.0.1", first.input_source_host)
 
         self.sock.queue(packet(2, mode="idle"))
         held = self.stream.poll(self.sock)
@@ -227,6 +234,38 @@ class MinkCommandStreamTest(unittest.TestCase):
         self.assertTrue(takeover.reset_clutch)
         self.assertTrue(takeover.engage_clutch)
         self.assertTrue(takeover.command_active)
+
+    def test_retired_session_cannot_take_control_again(self):
+        self.sock.queue(packet(1, session_id="session-a"))
+        self.stream.poll(self.sock)
+        self.stream.watchdog.last_arrival_time_ns -= self.stream.watchdog.takeover_after_ns + 1
+        self.sock.queue(packet(1, session_id="session-b"))
+        takeover = self.stream.poll(self.sock)
+        self.assertEqual("session-b", takeover.session_id)
+
+        self.stream.watchdog.last_arrival_time_ns -= self.stream.watchdog.takeover_after_ns + 1
+        self.sock.queue(packet(2, session_id="session-a"))
+        replay = self.stream.poll(self.sock)
+        self.assertEqual(0, replay.accepted_count)
+        self.assertGreaterEqual(replay.rejected_count, 1)
+        self.assertEqual("session-b", replay.session_id)
+
+    def test_wrong_sender_host_is_rejected(self):
+        self.sock.source_host = "192.168.1.20"
+        self.sock.queue(packet(1))
+        rejected = self.stream.poll(self.sock)
+        self.assertEqual(0, rejected.accepted_count)
+        self.assertEqual(1, rejected.rejected_count)
+        self.assertFalse(rejected.command_active)
+
+    def test_missing_source_timestamp_is_rejected(self):
+        raw = json.loads(packet(1))
+        raw.pop("timestamp")
+        self.sock.queue(json.dumps(raw).encode("utf-8"))
+        rejected = self.stream.poll(self.sock)
+        self.assertEqual(0, rejected.accepted_count)
+        self.assertEqual(1, rejected.rejected_count)
+        self.assertFalse(rejected.command_active)
 
 
 if __name__ == "__main__":

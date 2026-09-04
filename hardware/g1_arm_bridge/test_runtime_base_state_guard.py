@@ -9,7 +9,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from runtime_base_state_guard import (
-    RuntimeBaseSnapshot,
     RuntimeBaseStateMonitor,
     validate_runtime_base_snapshot,
 )
@@ -139,6 +138,25 @@ class RuntimeBaseStateGuardTests(unittest.TestCase):
         self.assertIn("rt/odommodestate", source)
         self.assertNotIn("ChannelPublisher", source)
         self.assertNotIn("LowCmd_", source)
+
+    def test_supported_physical_entries_install_and_require_base_guard(self) -> None:
+        here = Path(__file__).resolve().parent
+        for filename in (
+            "gate6_arm_sdk_hold_entry.py",
+            "gate7_live_arm_sdk_entry.py",
+            "g1_right_arm_jog_entry.py",
+        ):
+            source = (here / filename).read_text(encoding="utf-8")
+            self.assertIn("runtime_base_state_guard", source)
+            self.assertIn("install_unitree_base_state_subscription", source)
+            self.assertIn("require_latest_runtime_base_state", source)
+
+    def test_validate_only_paths_do_not_require_unitree_base_import(self) -> None:
+        here = Path(__file__).resolve().parent
+        gate6 = (here / "gate6_arm_sdk_hold_entry.py").read_text(encoding="utf-8")
+        jog = (here / "g1_right_arm_jog_entry.py").read_text(encoding="utf-8")
+        self.assertIn('"--validate-only" not in sys.argv[1:]', gate6)
+        self.assertIn('"--validate-only" not in argv', jog)
 
 
 if __name__ == "__main__":

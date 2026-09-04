@@ -63,9 +63,15 @@ def RunLocal(command, expected_code=0):
     return result.stdout.strip()
 
 
+def SourceDigest(path):
+    """Hash source text with platform line endings normalized to LF."""
+    source = path.read_text(encoding="utf-8")
+    return hashlib.sha256(source.encode("utf-8")).hexdigest()
+
+
 def CheckSources(output_path):
     for name, digest in (("twist2_static_stand.cpp", source_hash), ("twist2_common.hpp", common_hash)):
-        CheckCondition(hashlib.sha256((reference_path / name).read_bytes()).hexdigest() == digest,
+        CheckCondition(SourceDigest(reference_path / name) == digest,
                        "Reference changed; re-review before testing: " + name)
     original = (reference_path / "twist2_static_stand.cpp").read_text(encoding="utf-8")
     source = (experiment_path / "twist2_right_arm_trial.cpp").read_text(encoding="utf-8")

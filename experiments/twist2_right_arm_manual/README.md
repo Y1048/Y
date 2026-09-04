@@ -17,6 +17,8 @@
 공통 헤더는 기존 `references/lower_body/twist2_deploy/cpp_g1_twist2/twist2_common.hpp`를
 참조한다. 원본 C++와 공통 헤더는 수정하지 않았으며, 검증 스크립트에 SHA-256을 고정했다.
 원본이 바뀌면 자동으로 받아들이지 않고 재검토를 요구한다.
+해시는 Windows CRLF와 Linux LF checkout을 같은 소스로 판정하도록 줄바꿈을 LF로
+정규화한 뒤 계산한다.
 파생본은 비교하기 쉽도록 원본의 코드 스타일을 유지했다.
 
 ## 바꾼 부분과 유지한 부분

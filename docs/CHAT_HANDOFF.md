@@ -106,13 +106,18 @@ These workflows are robot-offline and create no Unitree publisher, DDS endpoint,
 
 ```text
 1. Keep R20/R24/R27/R32 remediation separate from completed review bookkeeping.
-2. Preserve the experimental TWIST2 R43-R45/R49 block before any physical use.
+2. Preserve the experimental TWIST2 R43-R45/R49 block before any further physical use.
 3. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first.
 4. Plan simulation/WSL integration checks with hardware output locked.
 5. Reconcile CODE_INDEX/source_checks whenever scoped files change.
 ```
 
-Do not expand physical testing yet.
+The first explicitly approved right-shoulder-pitch sign/response trial completed
+on 2026-09-04. `Q` increased raw q and moved the arm backward; `Z` decreased raw
+q and moved it forward. The run also included an absolute-zero `A` input, so it
+is not a strict +/- one-step acceptance test. See
+[`PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md`](PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md).
+Do not expand physical testing without a new exact approval.
 
 ## 6A. Rejected Mink collision-boundary experiment
 

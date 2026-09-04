@@ -1,0 +1,315 @@
+name: R46 direct Jog release migration
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/r46-direct-jog-migration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Patch direct Jog release finalization
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('hardware/g1_arm_bridge/g1_right_arm_jog.py')
+          text = path.read_text(encoding='utf-8')
+
+          old = '''from arm_sdk_hold_contract import RIGHT_ARM_JOINT_NAMES
+          from right_arm_jog_contract import ArmJointJogController, ArmJointJogLimits
+          from gate6_arm_sdk_hold import (
+          '''
+          new = '''from arm_sdk_hold_contract import RIGHT_ARM_JOINT_NAMES
+          from arm_sdk_release_contract import ReleaseEvidence, execute_release_sequence
+          from right_arm_jog_contract import ArmJointJogController, ArmJointJogLimits
+          from gate6_arm_sdk_hold import (
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('import anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          old = '''    config: RuntimeConfig | None = None
+              publisher = None
+              command_message = None
+              command_crc = None
+              last_snapshot = None
+          '''
+          new = '''    config: RuntimeConfig | None = None
+              publisher = None
+              command_message = None
+              command_crc = None
+              buffer = None
+              snapshot = None
+              last_snapshot = None
+              last_successful_weight = 0.0
+              release_evidence: ReleaseEvidence | None = None
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('main state anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          old = '''                publisher.Write(command_message)
+                  result["published_frames"] += 1
+                  if tick is not None:
+          '''
+          new = '''                publisher.Write(command_message)
+                  result["published_frames"] += 1
+                  last_successful_weight = float(current_weight)
+                  if tick is not None:
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('active publish anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          start = text.index('            print(f"[RELEASE] reason={release_reason}")')
+          end = text.index('    except Exception as exc:', start)
+          replacement = '''            print(f"[RELEASE] reason={release_reason}")
+
+              def build_release_frame(weight: float):
+                  nonlocal last_snapshot
+                  current = buffer.snapshot() or last_snapshot or snapshot
+                  if current is None:
+                      raise RuntimeError("no measured LowState is available for release")
+                  last_snapshot = current
+                  return build_measured_hold_frame(
+                      current.all_q_rad,
+                      dual_arm_from_all_joints(current.all_q_rad),
+                      mode_pr=current.mode_pr,
+                      mode_machine=current.mode_machine,
+                      weight=weight,
+                      config=config.hold,
+                  )
+
+              def publish_release_frame(frame) -> None:
+                  _apply_frame(command_message, frame)
+                  command_message.crc = command_crc.Crc(command_message)
+                  publisher.Write(command_message)
+                  result["published_frames"] += 1
+
+              release_evidence = execute_release_sequence(
+                  start_weight=last_successful_weight,
+                  ramp_s=config.ramp_down_s,
+                  zero_cycles=config.release_zero_cycles,
+                  publish_hz=config.publish_hz,
+                  build_ramp_frame=build_release_frame,
+                  build_zero_frame=lambda: build_release_frame(0.0),
+                  publish_frame=publish_release_frame,
+              )
+              result.update(release_evidence.as_dict())
+              result["release_zero_frames"] = release_evidence.release_zero_frames_sent
+              release_ok = bool(
+                  release_evidence.zero_release_completed
+                  and release_evidence.release_fault is None
+              )
+              final = buffer.snapshot() or last_snapshot or snapshot
+              result.update(
+                  passed=release_ok,
+                  command_output_enabled=release_evidence.output_state_unknown,
+                  release_reason=release_reason,
+                  final_right_arm_deg=(
+                      []
+                      if final is None
+                      else [
+                          math.degrees(final.all_q_rad[index])
+                          for index in range(22, 29)
+                      ]
+                  ),
+                  maximum_command_measurement_error_deg=math.degrees(
+                      maximum_observed_error
+                  ),
+              )
+              if release_ok:
+                  print("[PASS] Right-arm jog ended with a verified zero-weight tail.")
+              else:
+                  print("[FAULT] Right-arm jog release evidence is incomplete or faulted.")
+          
+          '''
+          text = text[:start] + replacement + text[end:]
+
+          old = '''    except Exception as exc:
+              result["error"] = f"{type(exc).__name__}: {exc}"
+              result["command_output_enabled"] = False
+          '''
+          new = '''    except Exception as exc:
+              result["error"] = f"{type(exc).__name__}: {exc}"
+              result["passed"] = False
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('exception result anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          finally_start = text.index('    finally:', text.index('    except Exception as exc:'))
+          write_index = text.index('        write_result(output_path, result)', finally_start)
+          old_final_prefix = text[finally_start:write_index]
+          tracking_prefix_end = old_final_prefix.index('        if (\n')
+          tracking_prefix = old_final_prefix[:tracking_prefix_end]
+          new_final = tracking_prefix + '''        if (
+              release_evidence is None
+              and publisher is not None
+              and command_message is not None
+              and command_crc is not None
+              and last_snapshot is not None
+              and config is not None
+          ):
+              result["emergency_zero_release_attempted"] = True
+
+              def build_fault_release_frame(weight: float):
+                  nonlocal last_snapshot
+                  current = buffer.snapshot() if buffer is not None else None
+                  current = current or last_snapshot
+                  if current is None:
+                      raise RuntimeError("no measured LowState is available for fault release")
+                  last_snapshot = current
+                  return build_measured_hold_frame(
+                      current.all_q_rad,
+                      dual_arm_from_all_joints(current.all_q_rad),
+                      mode_pr=current.mode_pr,
+                      mode_machine=current.mode_machine,
+                      weight=weight,
+                      config=config.hold,
+                  )
+
+              def publish_fault_release_frame(frame) -> None:
+                  _apply_frame(command_message, frame)
+                  command_message.crc = command_crc.Crc(command_message)
+                  publisher.Write(command_message)
+                  result["published_frames"] += 1
+
+              try:
+                  release_evidence = execute_release_sequence(
+                      start_weight=last_successful_weight,
+                      ramp_s=config.ramp_down_s,
+                      zero_cycles=config.release_zero_cycles,
+                      publish_hz=config.publish_hz,
+                      build_ramp_frame=build_fault_release_frame,
+                      build_zero_frame=lambda: build_fault_release_frame(0.0),
+                      publish_frame=publish_fault_release_frame,
+                  )
+              except Exception as release_exc:
+                  result["emergency_zero_release_error"] = (
+                      f"{type(release_exc).__name__}: {release_exc}"
+                  )
+
+          if release_evidence is not None:
+              result.update(release_evidence.as_dict())
+              result["release_zero_frames"] = release_evidence.release_zero_frames_sent
+              result["command_output_enabled"] = release_evidence.output_state_unknown
+              if release_evidence.release_fault is not None:
+                  result["passed"] = False
+              if not release_evidence.zero_release_completed:
+                  result["passed"] = False
+          elif publisher is not None:
+              result["output_state_unknown"] = True
+              result["command_output_enabled"] = True
+              result["passed"] = False
+          else:
+              result.setdefault("output_state_unknown", False)
+              result["command_output_enabled"] = False
+
+          '''
+          text = text[:finally_start] + new_final + text[write_index:]
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Add direct-release regression test
+        run: |
+          cat > hardware/g1_arm_bridge/test_g1_right_arm_jog_direct_release.py <<'PY'
+          #!/usr/bin/env python3
+          """Static regression checks for direct Jog shared release integration (R46)."""
+          from __future__ import annotations
+
+          import ast
+          import unittest
+          from pathlib import Path
+
+          HERE = Path(__file__).resolve().parent
+          SOURCE = HERE / "g1_right_arm_jog.py"
+
+
+          class DirectJogReleaseIntegrationTests(unittest.TestCase):
+              @classmethod
+              def setUpClass(cls) -> None:
+                  cls.source = SOURCE.read_text(encoding="utf-8")
+                  cls.tree = ast.parse(cls.source)
+                  cls.main = next(
+                      node
+                      for node in cls.tree.body
+                      if isinstance(node, ast.FunctionDef) and node.name == "main"
+                  )
+                  cls.main_text = ast.unparse(cls.main)
+
+              def test_direct_controller_uses_shared_release_contract(self) -> None:
+                  self.assertIn(
+                      "from arm_sdk_release_contract import ReleaseEvidence, execute_release_sequence",
+                      self.source,
+                  )
+                  self.assertGreaterEqual(
+                      self.main_text.count("execute_release_sequence"),
+                      2,
+                  )
+                  self.assertIn("release_evidence.as_dict()", self.main_text)
+
+              def test_active_weight_is_recorded_only_after_successful_write(self) -> None:
+                  publish = self.main_text.index("publisher.Write(command_message)")
+                  recorded = self.main_text.index(
+                      "last_successful_weight = float(current_weight)", publish
+                  )
+                  self.assertLess(publish, recorded)
+
+              def test_fault_handler_does_not_claim_output_disabled(self) -> None:
+                  handler = next(
+                      item
+                      for item in next(
+                          node for node in self.main.body if isinstance(node, ast.Try)
+                      ).handlers
+                      if isinstance(item, ast.ExceptHandler)
+                  )
+                  handler_text = ast.unparse(handler)
+                  self.assertNotIn("command_output_enabled", handler_text)
+                  self.assertIn("result['passed'] = False", handler_text)
+
+              def test_finalizer_fails_closed_without_release_evidence(self) -> None:
+                  self.assertIn("output_state_unknown", self.main_text)
+                  self.assertIn("release_evidence is None", self.main_text)
+                  self.assertIn("result['command_output_enabled'] = True", self.main_text)
+                  self.assertNotIn("release_started_s = time.monotonic()", self.main_text)
+
+
+          if __name__ == "__main__":
+              unittest.main(verbosity=2)
+          PY
+
+      - name: Validate patched source
+        run: |
+          python -m py_compile hardware/g1_arm_bridge/g1_right_arm_jog.py
+          python hardware/g1_arm_bridge/test_g1_right_arm_jog_direct_release.py
+          python hardware/g1_arm_bridge/test_arm_sdk_release_contract.py
+          python hardware/g1_arm_bridge/test_g1_right_arm_jog_entry.py
+
+      - name: Commit migration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add hardware/g1_arm_bridge/g1_right_arm_jog.py hardware/g1_arm_bridge/test_g1_right_arm_jog_direct_release.py
+          git diff --cached --check
+          git commit -m 'fix: integrate direct Jog shared release finalizer (R46)'
+          git push origin HEAD:main

@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Supported startup-precheck entrypoint with per-run LowState provenance.
+"""Supported startup-precheck entrypoint with per-run state provenance.
 
-The underlying precheck remains read-only and creates no DDS entity. This wrapper
-requires an explicit run token, persists the latest validated base-state sample,
-and binds the result to the exact startup config/model/collision sources used by
-the current checkout before supported physical consumers may reuse it.
+The underlying precheck remains read-only. This wrapper requires an explicit
+forward token, requires raw ``rt/odommodestate`` coordinates from the supported
+read-only bridge, persists the latest validated base-state sample, and binds the
+result to the exact startup config/model/collision sources used by the checkout.
 """
 
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
+from typing import Any
 
 import check_startup_readiness as precheck
 from startup_state_binding_guard import base_state_to_dict, build_state_binding
@@ -60,12 +62,45 @@ def validate_forward_token(token: str) -> str:
     return value
 
 
-def install_forward_token_guard(expected_token: str) -> dict[str, int]:
-    """Require the exact token before the canonical LowState parser is called."""
+def _finite_vector(value: object, length: int, name: str) -> list[float]:
+    if not isinstance(value, list) or len(value) != length:
+        raise precheck.LowStatePacketError(f"{name}_invalid")
+    try:
+        result = [float(item) for item in value]
+    except (TypeError, ValueError) as exc:
+        raise precheck.LowStatePacketError(f"{name}_invalid") from exc
+    if not all(math.isfinite(item) for item in result):
+        raise precheck.LowStatePacketError(f"{name}_nonfinite")
+    return result
+
+
+def _validated_raw_odom(base_state: object) -> dict[str, list[float]]:
+    if not isinstance(base_state, dict) or base_state.get("valid") is not True:
+        raise precheck.LowStatePacketError("raw_odom_binding_requires_valid_base")
+    position = _finite_vector(
+        base_state.get("odom_position_m"), 3, "odom_position_m"
+    )
+    quaternion = _finite_vector(
+        base_state.get("odom_quaternion_xyzw"), 4, "odom_quaternion_xyzw"
+    )
+    norm = math.sqrt(sum(value * value for value in quaternion))
+    if abs(norm - 1.0) > 1.0e-3:
+        raise precheck.LowStatePacketError("odom_quaternion_not_normalized")
+    return {
+        "odom_position_m": position,
+        "odom_quaternion_xyzw": quaternion,
+    }
+
+
+def install_forward_token_guard(expected_token: str) -> dict[str, Any]:
+    """Require exact token and raw odom evidence before canonical parsing succeeds."""
 
     token = validate_forward_token(expected_token)
     original_parse = precheck.parse_lowstate_telemetry
-    state = {"verified_packets": 0}
+    state: dict[str, Any] = {
+        "verified_packets": 0,
+        "latest_raw_odom": None,
+    }
 
     def guarded_parse(payload: bytes):
         try:
@@ -76,8 +111,10 @@ def install_forward_token_guard(expected_token: str) -> dict[str, int]:
             return original_parse(payload)
         if raw.get("forward_token") != token:
             raise precheck.LowStatePacketError("forward_token_mismatch")
+        raw_odom = _validated_raw_odom(raw.get("base_state"))
         packet = original_parse(payload)
         state["verified_packets"] += 1
+        state["latest_raw_odom"] = raw_odom
         return packet
 
     precheck.parse_lowstate_telemetry = guarded_parse
@@ -112,9 +149,8 @@ def main() -> int:
     sys.argv = [sys.argv[0], *argv]
     result_code = precheck.main()
 
-    # Add provenance and exact static model/config evidence without persisting
-    # the nonce itself. If this write fails, supported physical consumers reject
-    # the artifact because the required evidence is absent.
+    # Add run provenance and exact static/odometry evidence. If enrichment fails,
+    # supported physical consumers fail closed because required evidence is absent.
     try:
         payload = json.loads(output_path.read_text(encoding="utf-8"))
         if isinstance(payload, dict):
@@ -123,6 +159,10 @@ def main() -> int:
                 "forward_token_verified": state["verified_packets"] > 0,
                 "verified_packet_count": state["verified_packets"],
             }
+            raw_odom = state.get("latest_raw_odom")
+            latest_base = payload.get("latest_base_state")
+            if isinstance(latest_base, dict) and isinstance(raw_odom, dict):
+                latest_base.update(raw_odom)
             payload["startup_state_binding"] = build_state_binding(config_path)
             temporary = output_path.with_suffix(output_path.suffix + ".tmp")
             temporary.write_text(json.dumps(payload, indent=2), encoding="utf-8")

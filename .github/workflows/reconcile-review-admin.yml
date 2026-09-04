@@ -39,7 +39,8 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/CODE_INDEX.md logs/review/20260903/source_checks.csv logs/review/20260903/source_checks_summary_20260904.json
+          git add docs/CODE_INDEX.md
+          git add -f logs/review/20260903/source_checks.csv logs/review/20260903/source_checks_summary_20260904.json
           git diff --cached --check
           if git diff --cached --quiet; then
             echo 'No generated changes.'

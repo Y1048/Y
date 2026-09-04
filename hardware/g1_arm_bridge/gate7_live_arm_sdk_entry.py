@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Supported Gate 7 physical entrypoint with fail-closed safety guards.
 
-This wrapper creates no DDS entity itself. It installs safety guards before
-calling the existing live adapter: per-run relay provenance, explicit live-vs-
-replay command provenance, retired-session rejection, finite ACTIVE collision
-evidence, final post-shaping collision validation, continuous acquisition
-freshness, provenance-bound 29-joint precheck binding, and LowState IMU/motor
-health supervision.
+This wrapper creates no command publisher itself. It installs safety guards before
+calling the existing live adapter: relay/live provenance, retired-session
+rejection, ACTIVE collision evidence, final post-shaping collision validation,
+continuous acquisition freshness, provenance-bound full-body precheck binding,
+LowState IMU/motor health, and read-only runtime base/odometry supervision.
 """
 
 from __future__ import annotations
@@ -38,6 +37,10 @@ from lowstate_health_guard import (
     require_latest_lowstate_health,
 )
 from precheck_provenance_guard import require_provenance_bound_precheck
+from runtime_base_state_guard import (
+    install_unitree_base_state_subscription,
+    require_latest_runtime_base_state,
+)
 
 
 def _argument_path(name: str, default: Path) -> Path:
@@ -105,6 +108,7 @@ def install_supported_path_guards(
 
     def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
         require_latest_lowstate_health(live.LowStateBuffer)
+        require_latest_runtime_base_state()
         original_snapshot_match(snapshot, precheck, maximum_delta_rad)
         return validate_full_body_snapshot_matches_precheck(
             snapshot,
@@ -139,6 +143,7 @@ def install_supported_path_guards(
 
     def guarded_acquire_weight(elapsed_s, ramp_s, maximum_weight):
         require_latest_lowstate_health(live.LowStateBuffer)
+        require_latest_runtime_base_state()
         sock = guarded_wait_for_active.socket
         if sock is None:
             raise RuntimeError("Mink acquisition socket was not registered")
@@ -207,6 +212,7 @@ def install_supported_path_guards(
         mode_machine,
     ):
         require_latest_lowstate_health(live.LowStateBuffer)
+        require_latest_runtime_base_state()
         tick = original_step(
             self,
             sample,
@@ -252,6 +258,9 @@ def main() -> int:
         acquisition_timeout_s=gate7_config.input_timeout_s,
         expected_relay_token=expected_relay_token,
     )
+    # This is a read-only subscription. It is installed before the core imports
+    # ChannelSubscriber inside live.main(), so publisher-boundary checks see it.
+    install_unitree_base_state_subscription()
     return live.main()
 
 

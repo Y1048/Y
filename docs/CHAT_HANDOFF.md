@@ -45,9 +45,9 @@ Key current state:
 - **R21/R51** supported LowState startup paths use per-run forward tokens and provenance/state-bound prechecks.
 - **R1/R3/R34/R64** have source fixes with offline regression coverage.
 - **R2/R33/R41/R42** supported Gate 7/Jog collision/acquisition guards have offline regression coverage.
-- **R40** persists validated base-state evidence and SHA-256 binding for startup config, G1 XML, collision controller and common model source; supported consumers reject mismatched artifacts. Live base-state rebinding at the publisher boundary remains open.
-- **R50** supported paths supervise LowState IMU roll/pitch and motor temperature/fault/tau finiteness. Live base/odometry, remote/deadman and CRC/integrity remain open.
-- **R46** is now integrated into `g1_right_arm_jog.py` itself. Planned and fault release use the shared SDK-neutral release finalizer, last successful transmitted weight is tracked after successful writes, and missing/incomplete release evidence is fail-closed. The supported entry wrapper remains as an additional result guard.
+- **R46** is integrated into `g1_right_arm_jog.py` itself. Planned and fault release use the shared SDK-neutral finalizer, last successful transmitted weight is tracked after successful writes, and incomplete/missing release evidence is fail-closed. The wrapper remains as an additional result guard.
+- **R40** persists validated startup base evidence and model/config/source hashes. Supported Gate 6/Gate 7/Jog entrypoints additionally subscribe read-only to `rt/odommodestate` and require the current controller-runtime base to remain fresh and bounded before/while command authority is used. Exact startup-precheck odometry-origin continuity is still not proven.
+- **R50** supported paths supervise LowState IMU roll/pitch, motor temperature/fault/tau finiteness, and current runtime base/odometry stability. Remote/deadman and CRC/integrity checks remain open because no reviewed Python SDK field/API contract has yet been established for them.
 
 ## 4. Offline regression evidence
 
@@ -62,18 +62,18 @@ Run 33822226143 : PASS
 
 ```text
 .github/workflows/offline-safety-regression.yml
-Run 33823115876 : PASS
+Run 33823568106 : PASS
 ```
 
-48 unittest cases plus the Gate 6 interruption-release offline contract script cover shared/Gate 6 release, Gate 7 acquisition/final collision checks, LowState health supervision, Jog full-body/permit/final-segment safety, direct Jog shared-release integration and wrapper result semantics.
+58 unittest cases plus the Gate 6 interruption-release offline contract script cover shared/Gate 6 release, Gate 7 acquisition/final collision checks, LowState IMU/motor health, runtime base/odometry stability, Jog full-body/permit/final-segment safety, direct Jog shared-release integration and wrapper result semantics.
 
 These workflows create no Unitree publisher, DDS endpoint, WSL runtime, Unity/Quest runtime or G1 connection.
 
 ## 5. Immediate next work
 
 ```text
-1. R40: add current base-state publisher-boundary comparison if a reliable live base source is confirmed.
-2. R50: only add live base/remote/CRC checks after verifying actual Unitree SDK fields read-only.
+1. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first.
+2. R40 exact startup-precheck-to-runtime odometry-origin continuity remains open.
 3. Plan simulation/WSL integration checks with hardware output locked.
 4. Regenerate the canonical review ledger/CODE_INDEX and continue remaining static-only file review.
 ```
@@ -89,6 +89,7 @@ Do not expand physical testing yet.
 - Repository hardware authorization remains locked.
 - Do not assume G1 Ethernet, WSL DDS, Unity, Quest or any publisher is currently running.
 - No physical command, G1 file mutation, service/mode change or administrator network change is authorized by this handoff.
+- The new runtime-base guard adds only a read-only `rt/odommodestate` subscriber; it has not been executed against the G1 in this remediation session.
 - Preserve calibration and intentional local work; inspect Git state before cleanup/reset/restore.
 
 ## 8. Historical handoff

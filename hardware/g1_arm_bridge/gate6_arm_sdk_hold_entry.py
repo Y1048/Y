@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Supported Gate 6 entrypoint with LowState health and precheck provenance guards."""
+"""Supported Gate 6 entrypoint with LowState/base health and precheck guards."""
 
 from __future__ import annotations
+
+import sys
 
 import gate6_arm_sdk_hold as hold
 from lowstate_health_guard import (
@@ -9,6 +11,10 @@ from lowstate_health_guard import (
     require_latest_lowstate_health,
 )
 from precheck_provenance_guard import require_provenance_bound_precheck
+from runtime_base_state_guard import (
+    install_unitree_base_state_subscription,
+    require_latest_runtime_base_state,
+)
 
 
 def install_supported_gate6_guards() -> None:
@@ -29,6 +35,7 @@ def install_supported_gate6_guards() -> None:
     def guarded_collect(buffer, config):
         result = original_collect(buffer, config)
         require_latest_lowstate_health(hold.LowStateBuffer)
+        require_latest_runtime_base_state()
         return result
 
     hold._collect_settled_snapshot = guarded_collect
@@ -37,6 +44,7 @@ def install_supported_gate6_guards() -> None:
 
     def guarded_blend_weight(*args, **kwargs):
         require_latest_lowstate_health(hold.LowStateBuffer)
+        require_latest_runtime_base_state()
         return original_blend_weight(*args, **kwargs)
 
     hold.blend_weight = guarded_blend_weight
@@ -45,6 +53,10 @@ def install_supported_gate6_guards() -> None:
 
 def main() -> int:
     install_supported_gate6_guards()
+    # Validate-only is intentionally SDK-free. Any run that can reach a physical
+    # DDS subscriber installs the additional read-only odometry subscriber first.
+    if "--validate-only" not in sys.argv[1:]:
+        install_unitree_base_state_subscription()
     return hold.main()
 
 

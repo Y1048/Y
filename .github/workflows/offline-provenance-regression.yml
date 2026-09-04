@@ -3,7 +3,7 @@ name: Offline provenance regressions
 on:
   push:
     branches:
-      - refactor/teleop-architecture
+      - main
     paths:
       - '.github/workflows/offline-provenance-regression.yml'
       - 'START_VR_HAND_TO_MUJOCO.bat'
@@ -44,7 +44,7 @@ jobs:
           python hardware/g1_arm_bridge/test_gate7_live_entrypoint.py
           python hardware/g1_arm_bridge/test_gate7_replay_provenance.py
 
-      - name: Startup provenance static guards
+      - name: Startup provenance and state binding
         run: |
           python hardware/g1_arm_bridge/test_lowstate_provenance_launchers.py
           python hardware/g1_arm_bridge/test_physical_precheck_provenance_entries.py

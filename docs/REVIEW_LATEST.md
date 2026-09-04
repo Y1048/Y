@@ -21,9 +21,26 @@ This file is the current entry point for the precision review. It does not repla
 
 The review is still incomplete. A file appearing in the index or static ledger is not thereby fully reviewed or correct.
 
-## Coverage ledger status
+## Current reconciled coverage
 
-`logs/review/20260903/source_checks.csv` remains the old bounded snapshot with 117 `full_text_review` and 147 `static_only` entries. Later review/remediation work has not been folded into that canonical count. Do not quote 117/264 as current effective coverage. `docs/CODE_INDEX.md` is also stale after the remediation additions.
+The canonical bounded ledger and code index were regenerated from the current `main` checkout on 2026-09-04.
+
+```text
+total current scoped files : 302
+full_text_review           : 158
+static_only                : 144
+static check failures      : 0
+```
+
+Authoritative files:
+
+```text
+logs/review/20260903/source_checks.csv
+logs/review/20260903/source_checks_summary_20260904.json
+docs/CODE_INDEX.md
+```
+
+The semantic rule is deliberately conservative: prior decisions are preserved, explicit continuation deltas can promote a path to `full_text_review`, and newly discovered files default to `static_only`. Therefore 158/302 is a review-state count, not a correctness score.
 
 ## Remediation status
 
@@ -37,11 +54,11 @@ The review is still incomplete. A file appearing in the index or static ledger i
 | R2 | SUPPORTED GATE 7 PATH MITIGATED; core path open | Final-segment collision guard tests PASS |
 | R41 | SUPPORTED GATE 7 PATH MITIGATED; core parser open | Active-clearance and entry tests PASS |
 | R33 | SUPPORTED GATE 7 PATH MITIGATED; core live adapter open | Acquisition freshness/order tests PASS |
-| R40 | PARTIAL SUPPORTED-PATH MITIGATION | 29-joint + model/config/source binding plus current runtime odometry stability; exact startup/runtime odometry-origin continuity remains open |
+| R40 | SUPPORTED PHYSICAL PATH SOURCE MITIGATION COMPLETE; physical validation pending | 29-joint/model/config binding plus raw startup/runtime `rt/odommodestate` position/quaternion continuity and live base stability checks |
 | R42 | SUPPORTED JOG PATH MITIGATED; direct controller path still uses entry-installed collision/full-body guard | Permit/full-body/final-segment tests PASS |
-| R50 | PARTIAL SUPPORTED-PATH MITIGATION | IMU/motor health + current runtime base/odometry stability tests PASS; remote/deadman/CRC remain open |
+| R50 | PARTIAL SUPPORTED-PATH MITIGATION | IMU/motor health + current runtime base/odometry stability PASS; remote/deadman/CRC remain open |
 | R21 | SUPPORTED HARDWARE-SYNC PATH MITIGATED | Startup provenance tests PASS |
-| R51 | SUPPORTED PHYSICAL STARTUP PATHS MITIGATED | Per-run token/precheck tests PASS |
+| R51 | SUPPORTED PHYSICAL STARTUP PATHS MITIGATED | Per-run token/precheck/raw-odom tests PASS |
 | R23 | IMPLEMENTED; process validation pending | Static failure-propagation assertion PASS; BAT process run pending |
 | R35 | SUPPORTED GATE 7 RELAY PATH MITIGATED | Relay token/retired-session tests PASS |
 | R65 | SUPPORTED UNITY/MINK PATH MITIGATED | Source clock/backlog/sender tests PASS |
@@ -53,30 +70,30 @@ Two robot-offline workflows are active on `main`.
 
 ```text
 .github/workflows/offline-provenance-regression.yml
-Run 33822226143 : PASS
+Run 33824261133 : PASS
 ```
 
-This covers 54 tests across backend command ingress, Unity source-clock/backlog provenance, Gate 7 relay/replay/hardware provenance, startup provenance/state binding, and live Mink producer provenance.
+This covers command ingress, Unity source-clock/backlog provenance, Gate 7 relay/replay/hardware provenance, startup token/state/raw-odometry binding, and live Mink producer provenance.
 
 ```text
 .github/workflows/offline-safety-regression.yml
-Run 33823568106 : PASS
+Run 33824155653 : PASS
 ```
 
-This covers 58 unittest cases plus the Gate 6 interruption-release offline contract script across shared/Gate 6 release, Gate 7 release/acquisition/final collision guards, LowState IMU/motor health, runtime base/odometry stability, Jog permit/full-body/final-segment safety, direct Jog shared-release integration, and the supported Jog result guard.
+This covers release finalization, Gate 7 collision/acquisition guards, LowState IMU/motor health, runtime base/odometry stability and startup/runtime odometry continuity, Jog safety/final-segment checks, and direct Jog shared-release integration.
 
 Both workflows are offline from the robot: no Unitree publisher, DDS endpoint, WSL runtime, Unity/Quest runtime or G1 connection is created.
 
 ## Current priority groups
 
 ```text
-1. Do not invent R50 remote/deadman/CRC checks: verify actual read-only SDK fields first
-2. R40 exact startup-base-to-runtime-base origin continuity remains open
-3. Simulation/WSL integration checks with hardware output locked
-4. Canonical review-ledger/CODE_INDEX regeneration and remaining static-only file review
+1. Continue the 144 remaining static-only files, prioritizing backend protocol/config/calibration and launch/test surfaces
+2. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first
+3. Plan simulation/WSL integration checks with hardware output locked
+4. Keep the reconciled ledger/CODE_INDEX current after each review batch
 ```
 
-R46 is no longer an open direct-controller release-result gap, and current-process base movement is now fail-closed on supported Gate 6/Gate 7/Jog entrypoints. Physical testing must still not be expanded: the actual SDK field compatibility has not been verified against a connected G1, remote/deadman/CRC evidence is unresolved, and no WSL/DDS or G1 runtime validation has been performed for these fixes.
+R40's source-side startup/runtime odometry continuity is now closed on supported paths, but physical validation is not. Do not expand physical testing yet: actual connected-G1 SDK field compatibility, remote/deadman/CRC evidence, and WSL/DDS runtime behavior remain unverified.
 
 ## Safety boundary
 

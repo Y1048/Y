@@ -46,6 +46,7 @@ jobs:
 
       - name: Startup provenance and state binding
         run: |
+          python hardware/g1_arm_bridge/test_check_startup_readiness_entry.py
           python hardware/g1_arm_bridge/test_lowstate_provenance_launchers.py
           python hardware/g1_arm_bridge/test_physical_precheck_provenance_entries.py
           python hardware/g1_arm_bridge/test_precheck_provenance_guard.py

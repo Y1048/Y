@@ -4,8 +4,8 @@
 This wrapper creates no command publisher itself. It installs safety guards before
 calling the existing live adapter: relay/live provenance, retired-session
 rejection, ACTIVE collision evidence, final post-shaping collision validation,
-continuous acquisition freshness, provenance-bound full-body precheck binding,
-LowState IMU/motor health, and read-only runtime base/odometry supervision.
+continuous acquisition freshness, provenance-bound full-body/startup-odometry
+binding, LowState IMU/motor health, and read-only runtime base supervision.
 """
 
 from __future__ import annotations
@@ -40,6 +40,7 @@ from precheck_provenance_guard import require_provenance_bound_precheck
 from runtime_base_state_guard import (
     install_unitree_base_state_subscription,
     require_latest_runtime_base_state,
+    require_runtime_base_matches_precheck,
 )
 
 
@@ -109,6 +110,7 @@ def install_supported_path_guards(
     def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
         require_latest_lowstate_health(live.LowStateBuffer)
         require_latest_runtime_base_state()
+        require_runtime_base_matches_precheck(precheck)
         original_snapshot_match(snapshot, precheck, maximum_delta_rad)
         return validate_full_body_snapshot_matches_precheck(
             snapshot,
@@ -258,8 +260,6 @@ def main() -> int:
         acquisition_timeout_s=gate7_config.input_timeout_s,
         expected_relay_token=expected_relay_token,
     )
-    # This is a read-only subscription. It is installed before the core imports
-    # ChannelSubscriber inside live.main(), so publisher-boundary checks see it.
     install_unitree_base_state_subscription()
     return live.main()
 

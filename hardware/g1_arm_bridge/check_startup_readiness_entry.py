@@ -2,9 +2,9 @@
 """Supported startup-precheck entrypoint with per-run LowState provenance.
 
 The underlying precheck remains read-only and creates no DDS entity. This wrapper
-requires an explicit run token on supported launcher paths and accepts only UDP
-telemetry carrying that exact token before delegating to
-``check_startup_readiness.py``.
+requires an explicit run token, persists the latest validated base-state sample,
+and binds the result to the exact startup config/model/collision sources used by
+the current checkout before supported physical consumers may reuse it.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 import check_startup_readiness as precheck
+from startup_state_binding_guard import base_state_to_dict, build_state_binding
 
 
 TOKEN_MIN_LENGTH = 16
@@ -83,6 +84,19 @@ def install_forward_token_guard(expected_token: str) -> dict[str, int]:
     return state
 
 
+def install_latest_base_state_persistence() -> None:
+    """Extend the existing 29-joint persisted snapshot with validated base state."""
+
+    original = precheck.latest_full_body_snapshot
+
+    def enriched(packet):
+        result = original(packet)
+        result["latest_base_state"] = base_state_to_dict(packet.telemetry.base_state)
+        return result
+
+    precheck.latest_full_body_snapshot = enriched
+
+
 def main() -> int:
     argv = sys.argv[1:]
     token = _pop_option(argv, "--expected-forward-token")
@@ -92,11 +106,15 @@ def main() -> int:
         )
     token = validate_forward_token(token)
     output_path = _option_path(argv, "--output", precheck.DEFAULT_RESULT_PATH)
+    config_path = _option_path(argv, "--config", precheck.DEFAULT_CONFIG_PATH)
     state = install_forward_token_guard(token)
+    install_latest_base_state_persistence()
     sys.argv = [sys.argv[0], *argv]
     result_code = precheck.main()
 
-    # Add provenance evidence without persisting the nonce itself.
+    # Add provenance and exact static model/config evidence without persisting
+    # the nonce itself. If this write fails, supported physical consumers reject
+    # the artifact because the required evidence is absent.
     try:
         payload = json.loads(output_path.read_text(encoding="utf-8"))
         if isinstance(payload, dict):
@@ -105,12 +123,11 @@ def main() -> int:
                 "forward_token_verified": state["verified_packets"] > 0,
                 "verified_packet_count": state["verified_packets"],
             }
+            payload["startup_state_binding"] = build_state_binding(config_path)
             temporary = output_path.with_suffix(output_path.suffix + ".tmp")
             temporary.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             temporary.replace(output_path)
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        # Preserve the underlying precheck return code; result-file write failures
-        # are already reported by that process. The nonce itself is never logged.
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
         pass
     return result_code
 

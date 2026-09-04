@@ -29,8 +29,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install offline test dependency
-        run: python -m pip install --disable-pip-version-check numpy
+      - name: Install offline test dependencies
+        run: python -m pip install --disable-pip-version-check numpy mujoco
 
       - name: Backend command ingress
         run: |

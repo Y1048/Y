@@ -74,11 +74,25 @@ def base_state_to_dict(base_state: Any) -> dict[str, Any]:
     }
 
 
+def _require_finite_vector(base: dict[str, Any], name: str, length: int) -> list[float]:
+    value = base.get(name)
+    if not isinstance(value, list) or len(value) != length:
+        raise ValueError(f"startup precheck base-state {name} is invalid")
+    if not all(
+        isinstance(item, (int, float))
+        and not isinstance(item, bool)
+        and math.isfinite(float(item))
+        for item in value
+    ):
+        raise ValueError(f"startup precheck base-state {name} is non-finite")
+    return [float(item) for item in value]
+
+
 def require_state_binding(
     payload: dict[str, Any],
     config_path: Path = DEFAULT_STARTUP_CONFIG,
 ) -> dict[str, Any]:
-    """Fail closed if precheck base/model evidence is absent or stale relative to code."""
+    """Fail closed if precheck base/model/odom evidence is absent or stale."""
 
     if not isinstance(payload, dict):
         raise ValueError("startup precheck must be an object")
@@ -93,18 +107,33 @@ def require_state_binding(
     if not isinstance(base, dict) or base.get("valid") is not True:
         raise ValueError("startup precheck lacks a valid base-state sample")
     age = base.get("last_packet_age_s")
-    if not isinstance(age, (int, float)) or isinstance(age, bool) or not math.isfinite(float(age)) or float(age) < 0.0:
+    if (
+        not isinstance(age, (int, float))
+        or isinstance(age, bool)
+        or not math.isfinite(float(age))
+        or float(age) < 0.0
+    ):
         raise ValueError("startup precheck base-state age is invalid")
-    position = base.get("position_m")
-    quaternion = base.get("quaternion_xyzw")
-    velocity = base.get("velocity_mps")
+
+    _require_finite_vector(base, "position_m", 3)
+    quaternion = _require_finite_vector(base, "quaternion_xyzw", 4)
+    _require_finite_vector(base, "velocity_mps", 3)
+    odom_quaternion = _require_finite_vector(base, "odom_quaternion_xyzw", 4)
+    _require_finite_vector(base, "odom_position_m", 3)
+
+    for values, label in (
+        (quaternion, "quaternion_xyzw"),
+        (odom_quaternion, "odom_quaternion_xyzw"),
+    ):
+        norm = math.sqrt(sum(item * item for item in values))
+        if abs(norm - 1.0) > 1.0e-3:
+            raise ValueError(f"startup precheck base-state {label} is not normalized")
+
     yaw_speed = base.get("yaw_speed_rad_s")
-    vectors = ((position, 3, "position"), (quaternion, 4, "quaternion"), (velocity, 3, "velocity"))
-    for value, length, label in vectors:
-        if not isinstance(value, list) or len(value) != length:
-            raise ValueError(f"startup precheck base-state {label} is invalid")
-        if not all(isinstance(item, (int, float)) and not isinstance(item, bool) and math.isfinite(float(item)) for item in value):
-            raise ValueError(f"startup precheck base-state {label} is non-finite")
-    if not isinstance(yaw_speed, (int, float)) or isinstance(yaw_speed, bool) or not math.isfinite(float(yaw_speed)):
+    if (
+        not isinstance(yaw_speed, (int, float))
+        or isinstance(yaw_speed, bool)
+        or not math.isfinite(float(yaw_speed))
+    ):
         raise ValueError("startup precheck base-state yaw speed is invalid")
     return payload

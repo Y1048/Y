@@ -42,54 +42,71 @@ The precision review records R1-R67 and remains incomplete. `REVIEW_LATEST.md` i
 Key current state:
 
 - **R15/R35/R65** supported command provenance/freshness paths are source-mitigated and current-checkout CI is green.
-- **R21/R51** supported LowState startup paths use per-run forward tokens and provenance/state-bound prechecks.
+- **R21/R51** supported LowState startup paths use per-run forward tokens and provenance/state/raw-odometry-bound prechecks.
 - **R1/R3/R34/R64** have source fixes with offline regression coverage.
 - **R2/R33/R41/R42** supported Gate 7/Jog collision/acquisition guards have offline regression coverage.
 - **R46** is integrated into `g1_right_arm_jog.py` itself. Planned and fault release use the shared SDK-neutral finalizer, last successful transmitted weight is tracked after successful writes, and incomplete/missing release evidence is fail-closed. The wrapper remains as an additional result guard.
-- **R40** persists validated startup base evidence and model/config/source hashes. Supported Gate 6/Gate 7/Jog entrypoints additionally subscribe read-only to `rt/odommodestate` and require the current controller-runtime base to remain fresh and bounded before/while command authority is used. Exact startup-precheck odometry-origin continuity is still not proven.
+- **R40** supported physical paths now bind current 29-joint/model/config evidence and raw `rt/odommodestate` position/quaternion back to the startup precheck, while also requiring live base stability. This is source-side complete for the supported path but still lacks connected-G1 physical validation.
 - **R50** supported paths supervise LowState IMU roll/pitch, motor temperature/fault/tau finiteness, and current runtime base/odometry stability. Remote/deadman and CRC/integrity checks remain open because no reviewed Python SDK field/API contract has yet been established for them.
 
-## 4. Offline regression evidence
+## 4. Reconciled review coverage
+
+The canonical review ledger and code index were regenerated from the current `main` checkout.
+
+```text
+total current scoped files : 302
+full_text_review           : 158
+static_only                : 144
+static check failures      : 0
+```
+
+Use these files as the current administrative record:
+
+```text
+logs/review/20260903/source_checks.csv
+logs/review/20260903/source_checks_summary_20260904.json
+docs/CODE_INDEX.md
+```
+
+The 144 `static_only` files are the remaining review queue; the review is not complete.
+
+## 5. Offline regression evidence
 
 Active workflows on `main`:
 
 ```text
 .github/workflows/offline-provenance-regression.yml
-Run 33822226143 : PASS
+Run 33824261133 : PASS
 ```
 
-54 tests cover command ingress, source-clock/backlog handling, relay/replay provenance, startup provenance/state binding and live Mink producer provenance.
+This covers command ingress, source-clock/backlog handling, relay/replay provenance, startup token/state/raw-odometry binding and live Mink producer provenance.
 
 ```text
 .github/workflows/offline-safety-regression.yml
-Run 33823568106 : PASS
+Run 33824155653 : PASS
 ```
 
-58 unittest cases plus the Gate 6 interruption-release offline contract script cover shared/Gate 6 release, Gate 7 acquisition/final collision checks, LowState IMU/motor health, runtime base/odometry stability, Jog full-body/permit/final-segment safety, direct Jog shared-release integration and wrapper result semantics.
+This covers release finalization, Gate 7 acquisition/final collision checks, LowState IMU/motor health, runtime base/odometry stability, startup/runtime odometry continuity, Jog full-body/permit/final-segment safety, direct Jog shared-release integration and wrapper result semantics.
 
 These workflows create no Unitree publisher, DDS endpoint, WSL runtime, Unity/Quest runtime or G1 connection.
 
-## 5. Immediate next work
+## 6. Immediate next work
 
 ```text
-1. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first.
-2. R40 exact startup-precheck-to-runtime odometry-origin continuity remains open.
+1. Continue the 144 static-only files, prioritizing backend protocol/config/calibration and launch/test surfaces.
+2. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first.
 3. Plan simulation/WSL integration checks with hardware output locked.
-4. Regenerate the canonical review ledger/CODE_INDEX and continue remaining static-only file review.
+4. Reconcile CODE_INDEX/source_checks again after each substantial review batch.
 ```
 
 Do not expand physical testing yet.
-
-## 6. Coverage/admin debt
-
-`logs/review/20260903/source_checks.csv` is the old 117/264 bounded snapshot and is not current effective coverage. Post-snapshot work is recorded in `source_checks_delta_20260904.csv`. `docs/CODE_INDEX.md` is stale after remediation additions.
 
 ## 7. Hardware boundary
 
 - Repository hardware authorization remains locked.
 - Do not assume G1 Ethernet, WSL DDS, Unity, Quest or any publisher is currently running.
 - No physical command, G1 file mutation, service/mode change or administrator network change is authorized by this handoff.
-- The new runtime-base guard adds only a read-only `rt/odommodestate` subscriber; it has not been executed against the G1 in this remediation session.
+- Runtime-base changes add only read-only `rt/odommodestate` subscriptions on supported physical paths; they have not been executed against the G1 in this remediation session.
 - Preserve calibration and intentional local work; inspect Git state before cleanup/reset/restore.
 
 ## 8. Historical handoff

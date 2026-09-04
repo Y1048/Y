@@ -38,8 +38,10 @@ jobs:
           python hardware/g1_arm_bridge/test_gate7_live_safety_guard.py
           python hardware/g1_arm_bridge/test_gate7_acquisition_guard.py
 
-      - name: Runtime LowState health supervision
-        run: python hardware/g1_arm_bridge/test_lowstate_health_guard.py
+      - name: Runtime LowState and base supervision
+        run: |
+          python hardware/g1_arm_bridge/test_lowstate_health_guard.py
+          python hardware/g1_arm_bridge/test_runtime_base_state_guard.py
 
       - name: Jog safety and release boundary
         run: |

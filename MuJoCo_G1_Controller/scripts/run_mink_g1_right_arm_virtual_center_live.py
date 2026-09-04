@@ -26,6 +26,7 @@ import mujoco
 import mujoco.viewer
 import numpy as np
 import mink
+from mink.tasks.task import Task  # Backward-compatible public re-export.
 
 import run_mink_g1_right_arm_prototype as base
 from g1_mink_feasible_target import FeasibleTargetPlanner

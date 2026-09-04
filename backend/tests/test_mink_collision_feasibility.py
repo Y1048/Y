@@ -45,7 +45,10 @@ class CollisionFeasibilityTests(unittest.TestCase):
         path = InspectDirectPath(self.planner, self.q, end, spacing_deg=0.05, goal=self.goal)
         self.assertTrue(path["sampled_valid"])
         self.assertGreaterEqual(path["checked_samples"], 21)
-        self.assertAlmostEqual(path["velocity_only_minimum_duration_s"], 1 / 40)
+        self.assertAlmostEqual(
+            path["velocity_only_minimum_duration_s"],
+            1.0 / probe.live.PROXIMAL_MAX_JOINT_VELOCITY_DEG_S,
+        )
         self.assertEqual(path["goal_error"]["merit_increasing_intervals"], path["checked_samples"] - 1)
 
     def test_path_rejects_unsafe_middle_even_with_valid_endpoints(self):
@@ -108,7 +111,10 @@ class CollisionFeasibilityTests(unittest.TestCase):
         self.assertEqual(len(route["legs"]), 2)
         self.assertAlmostEqual(route["joint_path_length_deg"], 1)
         self.assertAlmostEqual(route["maximum_joint_excursion_deg"], 1)
-        self.assertAlmostEqual(route["velocity_only_minimum_duration_s"], 1 / 40)
+        self.assertAlmostEqual(
+            route["velocity_only_minimum_duration_s"],
+            1.0 / probe.live.PROXIMAL_MAX_JOINT_VELOCITY_DEG_S,
+        )
 
     def test_shortcut_rechecks_saved_pose_match_flag(self):
         end = self.q.copy()

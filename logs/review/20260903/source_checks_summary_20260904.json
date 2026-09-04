@@ -2,8 +2,8 @@
   "schema": "g1.review.source_checks.summary.v2",
   "scope_source": "backend.tools.build_code_index.CollectFiles",
   "total_current_files": 302,
-  "full_text_review": 158,
-  "static_only": 144,
+  "full_text_review": 176,
+  "static_only": 126,
   "static_check_failures": 0,
   "delta_promotions_not_in_current_scope": [],
   "semantic_rule": "Preserve prior full_text_review/static_only, overlay explicit delta records, default new files to static_only."

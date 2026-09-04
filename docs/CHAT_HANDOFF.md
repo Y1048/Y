@@ -25,7 +25,7 @@ Primary branch : main
 Old main archive : archive/old-main-20260820
 ```
 
-`main` now contains the former `refactor/teleop-architecture` work. The old refactor branch has been retired by the user. Do not target it in new automation or Codex instructions.
+`main` contains the former `refactor/teleop-architecture` work. The old refactor branch has been retired by the user. Do not target it in new automation or Codex instructions.
 
 The default launcher remains:
 
@@ -42,12 +42,12 @@ The precision review records R1-R67 and remains incomplete. `REVIEW_LATEST.md` i
 Key current state:
 
 - **R15/R35/R65** supported command provenance/freshness paths are source-mitigated and current-checkout CI is green.
-- **R21/R51** supported LowState startup paths use per-run forward tokens and provenance-bound prechecks.
+- **R21/R51** supported LowState startup paths use per-run forward tokens and provenance/state-bound prechecks.
 - **R1/R3/R34/R64** have source fixes with offline regression coverage.
 - **R2/R33/R41/R42** supported Gate 7/Jog collision/acquisition guards have offline regression coverage.
-- **R40** now persists validated base-state evidence and SHA-256 binding for startup config, G1 XML, collision controller and common model source; supported consumers reject mismatched artifacts. Live base-state rebinding at the publisher boundary remains open.
+- **R40** persists validated base-state evidence and SHA-256 binding for startup config, G1 XML, collision controller and common model source; supported consumers reject mismatched artifacts. Live base-state rebinding at the publisher boundary remains open.
 - **R50** supported paths supervise LowState IMU roll/pitch and motor temperature/fault/tau finiteness. Live base/odometry, remote/deadman and CRC/integrity remain open.
-- **R46** supported Jog wrapper/result semantics are guarded, but the direct core controller still has its legacy internal release implementation.
+- **R46** is now integrated into `g1_right_arm_jog.py` itself. Planned and fault release use the shared SDK-neutral release finalizer, last successful transmitted weight is tracked after successful writes, and missing/incomplete release evidence is fail-closed. The supported entry wrapper remains as an additional result guard.
 
 ## 4. Offline regression evidence
 
@@ -62,21 +62,20 @@ Run 33822226143 : PASS
 
 ```text
 .github/workflows/offline-safety-regression.yml
-Run 33822295391 : PASS
+Run 33823115876 : PASS
 ```
 
-44 unittest cases plus the Gate 6 interruption-release offline contract script cover release finalization, Gate 7 acquisition/final collision checks, LowState health supervision and Jog safety/result boundaries.
+48 unittest cases plus the Gate 6 interruption-release offline contract script cover shared/Gate 6 release, Gate 7 acquisition/final collision checks, LowState health supervision, Jog full-body/permit/final-segment safety, direct Jog shared-release integration and wrapper result semantics.
 
 These workflows create no Unitree publisher, DDS endpoint, WSL runtime, Unity/Quest runtime or G1 connection.
 
 ## 5. Immediate next work
 
 ```text
-1. R50: only add live base/remote/CRC checks after verifying actual Unitree SDK fields read-only.
-2. R46: integrate the shared release contract into g1_right_arm_jog.py itself.
-3. R40: add current base-state publisher-boundary comparison if a reliable live base source is confirmed.
-4. Plan simulation/WSL integration checks with hardware output locked.
-5. Regenerate the canonical review ledger/CODE_INDEX and continue remaining static-only file review.
+1. R40: add current base-state publisher-boundary comparison if a reliable live base source is confirmed.
+2. R50: only add live base/remote/CRC checks after verifying actual Unitree SDK fields read-only.
+3. Plan simulation/WSL integration checks with hardware output locked.
+4. Regenerate the canonical review ledger/CODE_INDEX and continue remaining static-only file review.
 ```
 
 Do not expand physical testing yet.

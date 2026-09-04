@@ -25,66 +25,57 @@ from pathlib import Path
 import mujoco
 import mujoco.viewer
 import numpy as np
-
 import mink
-from mink.tasks.task import Task
 
 import run_mink_g1_right_arm_prototype as base
 from g1_mink_feasible_target import FeasibleTargetPlanner
+from g1_mink_collision_policy import (
+    COLLISION_PROFILE_HARDWARE_GUARDED,
+    COLLISION_PROFILE_MINK_DEFAULT,
+    COLLISION_PROFILES,
+    MINK_DEFAULT_QP_RESERVE_M,
+    TELEOP_COLLISION_TARGET_DISTANCE_M,
+    ResolveCollisionProfile,
+)
+from g1_virtual_center_tasks import (
+    ASSIST_ENTER_MARGIN_DEG,
+    ASSIST_RELEASE_MARGIN_DEG,
+    ASSIST_FULL_MARGIN_DEG,
+    ASSIST_LATCH_FLOOR,
+    ASSIST_MAX,
+    ORIENTATION_COST_MIN_SCALE,
+    ORIENTATION_ERROR_NORMAL_MAX_DEG,
+    ORIENTATION_ERROR_LIMIT_MAX_DEG,
+    PROXIMAL_MAX_JOINT_VELOCITY_DEG_S,
+    WRIST_MAX_JOINT_VELOCITY_DEG_S,
+    VIRTUAL_CENTER_PROXIMAL_DAMPING_COST,
+    VIRTUAL_CENTER_WRIST_DAMPING_COST,
+    VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE,
+    VirtualCenterOrientationTask,
+    orientation_limit_policy,
+    virtual_center_damping_costs,
+    virtual_center_posture_costs,
+    virtual_center_velocity_limits,
+)
+from g1_mink_diagnostics import orientation_diagnostics
+from g1_gate7_feedback import (
+    DUAL_ARM_JOINT_INDICES,
+    GATE7_SIMULATION_FEEDBACK_HOST,
+    GATE7_SIMULATION_FEEDBACK_PORT,
+    GATE7_SIMULATION_FEEDBACK_TIMEOUT_S,
+    MAX_GATE7_FEEDBACK_PACKET_BYTES,
+    Gate7SimulationFeedback,
+    Gate7SimulationFeedbackError,
+    apply_gate7_simulation_feedback,
+    drain_gate7_simulation_feedback,
+    parse_gate7_feedback_packet,
+    should_apply_gate7_feedback,
+)
 from g1_teleop.inspection_demo import (
     InspectionDemoTracker,
     append_inspection_result,
 )
-from g1_teleop.gate7_simulation_feedback import (
-    DUAL_ARM_JOINT_INDICES,
-    Gate7SimulationFeedback,
-    Gate7SimulationFeedbackError,
-    parse_packet as parse_gate7_feedback_packet,
-    should_apply as should_apply_gate7_feedback,
-)
 
-
-# static stand 키보드 기본 1배 속도: 모든 팔 관절에 0.08 rad/s.
-PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = math.degrees(0.08)
-WRIST_MAX_JOINT_VELOCITY_DEG_S = math.degrees(0.08)
-# 관절 이동 비용과 자세 복원 비용을 구분한다. 모터 감쇠 게인과는 별개다.
-VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03
-VIRTUAL_CENTER_WRIST_DAMPING_COST = 0.015
-VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE = 0.05
-
-# MuJoCo-only operation can reproduce upstream Mink's CollisionAvoidanceLimit
-# defaults.  Physical Gate 7 keeps a separate, explicit margin above its
-# independent 12 mm command stop.
-COLLISION_PROFILE_MINK_DEFAULT = "mink-default"
-COLLISION_PROFILE_HARDWARE_GUARDED = "hardware-guarded"
-COLLISION_PROFILES = {
-    COLLISION_PROFILE_MINK_DEFAULT: (0.005, 0.010),
-    COLLISION_PROFILE_HARDWARE_GUARDED: (0.020, 0.040),
-}
-MINK_DEFAULT_QP_RESERVE_M = 0.0005
-
-# Compatibility name for offline tools that intentionally audit the guarded
-# physical-output candidate policy. New runtime code resolves a named profile.
-TELEOP_COLLISION_TARGET_DISTANCE_M = COLLISION_PROFILES[
-    COLLISION_PROFILE_HARDWARE_GUARDED
-][0]
-
-
-def ResolveCollisionProfile(name: str) -> tuple[float, float]:
-    """Return (minimum, detection) distances for one named runtime profile."""
-    try:
-        return COLLISION_PROFILES[name]
-    except KeyError as exc:
-        raise ValueError(f"unknown collision profile: {name}") from exc
-
-ASSIST_ENTER_MARGIN_DEG = 18.0
-ASSIST_RELEASE_MARGIN_DEG = 28.0
-ASSIST_FULL_MARGIN_DEG = 5.0
-ASSIST_LATCH_FLOOR = 0.08
-ASSIST_MAX = 1.0
-ORIENTATION_COST_MIN_SCALE = 0.25
-ORIENTATION_ERROR_NORMAL_MAX_DEG = 180.0
-ORIENTATION_ERROR_LIMIT_MAX_DEG = 12.0
 
 INSPECTION_APPROACH_RADIUS_M = 0.08
 INSPECTION_CONTACT_RADIUS_M = 0.04
@@ -101,199 +92,6 @@ INSPECTION_MARKER_COLORS = {
     "holding": (1.0, 0.35, 0.05, 0.95),
     "complete": (0.10, 1.0, 0.25, 1.0),
 }
-GATE7_SIMULATION_FEEDBACK_HOST = "127.0.0.1"
-GATE7_SIMULATION_FEEDBACK_PORT = 5012
-GATE7_SIMULATION_FEEDBACK_TIMEOUT_S = 0.25
-MAX_GATE7_FEEDBACK_PACKET_BYTES = 16384
-
-
-def virtual_center_damping_costs(model: mujoco.MjModel) -> np.ndarray:
-    """기준 제어기 상수를 바꾸지 않고 이 제어기 전용 관절 감쇠를 만든다."""
-    costs = np.zeros(int(model.nv), dtype=float)
-    for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS):
-        joint_id = base._joint_id(model, name)
-        dof = int(model.jnt_dofadr[joint_id])
-        costs[dof] = (
-            VIRTUAL_CENTER_PROXIMAL_DAMPING_COST
-            if index < 4
-            else VIRTUAL_CENTER_WRIST_DAMPING_COST
-        )
-    return costs
-
-
-def virtual_center_posture_costs(model: mujoco.MjModel) -> np.ndarray:
-    """회전식을 변형하지 않고 손목의 중립 자세 복원 비용만 낮춘다."""
-    costs = np.full(int(model.nv), base.POSTURE_COST, dtype=float)
-    for name in base.g1.RIGHT_ARM_JOINTS[4:]:
-        dof = int(model.jnt_dofadr[base._joint_id(model, name)])
-        costs[dof] *= VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE
-    return costs
-
-
-def orientation_diagnostics(target_rotation, wrist_rotation) -> dict:
-    """오차 크기만이 아닌 목표/실제 회전도 기록해 오프라인 재현에 사용한다."""
-    return {
-        "target_rotation_matrix_robot": target_rotation.tolist(),
-        "wrist_rotation_matrix_robot": wrist_rotation.tolist(),
-        "orientation_solver_policy": "exact_jacobian_weighted_posture_v1",
-    }
-
-
-def virtual_center_velocity_limits() -> dict[str, float]:
-    """어깨/팔꿈치는 안정적으로, 손목 3축은 더 빠르게 제한한다."""
-    return {
-        name: math.radians(
-            PROXIMAL_MAX_JOINT_VELOCITY_DEG_S
-            if index < 4
-            else WRIST_MAX_JOINT_VELOCITY_DEG_S
-        )
-        for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS)
-    }
-
-
-def orientation_limit_policy(
-    min_margin_deg: float,
-    assist_latched: bool,
-) -> tuple[bool, float, float, float]:
-    """손목 한계 여유로 보조 상태 표시값과 회전 비용/오차 상한을 정한다."""
-    if assist_latched:
-        assist_latched = min_margin_deg < ASSIST_RELEASE_MARGIN_DEG
-    elif min_margin_deg <= ASSIST_ENTER_MARGIN_DEG:
-        assist_latched = True
-
-    if not assist_latched:
-        return False, 0.0, 1.0, ORIENTATION_ERROR_NORMAL_MAX_DEG
-
-    span = ASSIST_ENTER_MARGIN_DEG - ASSIST_FULL_MARGIN_DEG
-    normalized = np.clip(
-        (ASSIST_ENTER_MARGIN_DEG - min_margin_deg) / span,
-        0.0,
-        1.0,
-    )
-    pressure = float(normalized * normalized * (3.0 - 2.0 * normalized))
-    assist_gain = ASSIST_LATCH_FLOOR + pressure * (
-        ASSIST_MAX - ASSIST_LATCH_FLOOR
-    )
-    orientation_cost_scale = 1.0 - pressure * (
-        1.0 - ORIENTATION_COST_MIN_SCALE
-    )
-    orientation_error_max_deg = ORIENTATION_ERROR_NORMAL_MAX_DEG - pressure * (
-        ORIENTATION_ERROR_NORMAL_MAX_DEG - ORIENTATION_ERROR_LIMIT_MAX_DEG
-    )
-    return (
-        True,
-        float(assist_gain),
-        float(orientation_cost_scale),
-        float(orientation_error_max_deg),
-    )
-
-
-class VirtualCenterOrientationTask(Task):
-    """정확한 yaw-link 회전식과 손목 한계 근처의 추종 완화를 사용한다."""
-
-    last_assist_gain = 0.0
-    last_min_wrist_margin_deg = float("inf")
-    last_orientation_cost_scale = 1.0
-    last_orientation_error_cap_deg = ORIENTATION_ERROR_NORMAL_MAX_DEG
-    last_unclipped_orientation_error_deg = 0.0
-    assist_latched = False
-
-    def __init__(self, model) -> None:
-        self.inner = mink.FrameTask(
-            frame_name="right_wrist_yaw_link",
-            frame_type="body",
-            position_cost=0.0,
-            orientation_cost=1.0,
-            gain=base.FRAME_GAIN,
-            lm_damping=base.LM_DAMPING,
-        )
-        self.model = model
-        self.proximal_dofs = [
-            int(model.jnt_dofadr[base._joint_id(model, name)])
-            for name in base.g1.RIGHT_ARM_JOINTS[:4]
-        ]
-        self.wrist_joint_ids = [
-            base._joint_id(model, name)
-            for name in base.g1.RIGHT_ARM_JOINTS[4:]
-        ]
-        super().__init__(
-            cost=np.array(
-                [
-                    0.0,
-                    0.0,
-                    0.0,
-                    base.ORIENTATION_COST,
-                    base.ORIENTATION_COST,
-                    base.ORIENTATION_COST,
-                ],
-                dtype=float,
-            ),
-            gain=base.FRAME_GAIN,
-            lm_damping=base.LM_DAMPING,
-        )
-
-    def set_target(self, target) -> None:
-        self.inner.set_target(target)
-
-    def set_target_from_configuration(self, configuration) -> None:
-        self.inner.set_target_from_configuration(configuration)
-
-    def compute_error(self, configuration) -> np.ndarray:
-        error = self.inner.compute_error(configuration)
-        rotation_error = error[3:6]
-        rotation_norm = float(np.linalg.norm(rotation_error))
-        VirtualCenterOrientationTask.last_unclipped_orientation_error_deg = (
-            math.degrees(rotation_norm)
-        )
-        maximum = math.radians(
-            VirtualCenterOrientationTask.last_orientation_error_cap_deg
-        )
-        if rotation_norm > maximum and rotation_norm > 1e-9:
-            error = error.copy()
-            error[3:6] *= maximum / rotation_norm
-        return error
-
-    def _update_limit_policy(self, configuration) -> None:
-        model = configuration.model
-        q = configuration.q
-        margins: list[float] = []
-
-        for joint_id in self.wrist_joint_ids:
-            if not bool(model.jnt_limited[joint_id]):
-                continue
-            qpos = int(model.jnt_qposadr[joint_id])
-            low, high = model.jnt_range[joint_id]
-            value = float(q[qpos])
-            margin = max(0.0, min(value - float(low), float(high) - value))
-            margins.append(math.degrees(margin))
-
-        min_margin = min(margins) if margins else float("inf")
-        VirtualCenterOrientationTask.last_min_wrist_margin_deg = min_margin
-
-        latched, assist, cost_scale, error_cap_deg = orientation_limit_policy(
-            min_margin,
-            VirtualCenterOrientationTask.assist_latched,
-        )
-        VirtualCenterOrientationTask.assist_latched = latched
-        VirtualCenterOrientationTask.last_assist_gain = assist
-        VirtualCenterOrientationTask.last_orientation_cost_scale = cost_scale
-        VirtualCenterOrientationTask.last_orientation_error_cap_deg = error_cap_deg
-        self.cost[3:6] = base.ORIENTATION_COST * cost_scale
-
-    def compute_qp_objective(self, configuration):
-        self._update_limit_policy(configuration)
-        return super().compute_qp_objective(configuration)
-
-    def compute_qp_residual(self, configuration):
-        # Mink 0.0.13+ assembles low-rank tasks through this optimized path.
-        # Keep the adaptive policy active for both old and new solver versions.
-        self._update_limit_policy(configuration)
-        return super().compute_qp_residual(configuration)
-
-    def compute_jacobian(self, configuration) -> np.ndarray:
-        # 어깨/팔꿈치 열을 줄이면 실제 회전 변화와 QP의 예측이 달라진다.
-        # 손목 우선 선택은 별도의 자세 비용에서 처리한다.
-        return self.inner.compute_jacobian(configuration)
 
 
 def parse_args() -> argparse.Namespace:
@@ -324,59 +122,6 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     return parser.parse_args()
-
-
-def drain_gate7_simulation_feedback(
-    sock: socket.socket,
-    last_stream_id: str | None,
-    last_sequence: int,
-) -> tuple[Gate7SimulationFeedback | None, str | None, int, int, int]:
-    """Drain localhost feedback and retain only the newest ordered packet."""
-    latest = None
-    accepted = 0
-    rejected = 0
-    stream_id = last_stream_id
-    sequence = last_sequence
-    while True:
-        try:
-            payload, source = sock.recvfrom(MAX_GATE7_FEEDBACK_PACKET_BYTES)
-        except BlockingIOError:
-            break
-        if source[0] != GATE7_SIMULATION_FEEDBACK_HOST:
-            rejected += 1
-            continue
-        try:
-            packet = parse_gate7_feedback_packet(payload)
-        except (Gate7SimulationFeedbackError, TypeError, ValueError):
-            rejected += 1
-            continue
-        if packet.stream_id != stream_id:
-            stream_id = packet.stream_id
-            sequence = -1
-        if packet.sequence <= sequence:
-            rejected += 1
-            continue
-        sequence = packet.sequence
-        latest = packet
-        accepted += 1
-    return latest, stream_id, sequence, accepted, rejected
-
-
-def apply_gate7_simulation_feedback(
-    configuration: mink.Configuration,
-    all_qpos_ids: list[int],
-    feedback: Gate7SimulationFeedback,
-) -> None:
-    """Apply only the 14 arm joints to the in-memory MuJoCo configuration."""
-    if len(all_qpos_ids) != 29:
-        raise ValueError("all_qpos_ids must contain all 29 G1 joints")
-    feedback_q = configuration.q.copy()
-    for joint_index, value in zip(
-        DUAL_ARM_JOINT_INDICES,
-        feedback.dual_arm_q_rad,
-    ):
-        feedback_q[all_qpos_ids[joint_index]] = value
-    configuration.update(feedback_q)
 
 
 def main() -> None:
@@ -542,6 +287,7 @@ def main() -> None:
     gate7_feedback_accepted = 0
     gate7_feedback_rejected = 0
     gate7_feedback_applied = False
+
     print("============================================================")
     print("G1 Mink LIVE VIRTUAL-CENTER experiment")
     print("Internal position : right_wrist_roll_link")
@@ -624,10 +370,8 @@ def main() -> None:
                         all_qpos_ids,
                         gate7_feedback,
                     )
-                    # A completed safety return invalidates the old operator
-                    # offset. Require the normal explicit alignment before the
-                    # next active hand-tracking session.
                     clutch_reference = None
+
                 roll_pose = configuration.get_transform_frame_to_world(
                     "right_wrist_roll_link", "body"
                 )
@@ -665,8 +409,7 @@ def main() -> None:
                         raw_target - clutch_reference["input_position"]
                     )
                     operator_target_position = (
-                        clutch_reference["yaw_position"]
-                        + input_position_delta
+                        clutch_reference["yaw_position"] + input_position_delta
                     )
                     current_center_to_yaw = (
                         yaw_pose.translation() - roll_pose.translation()
@@ -680,8 +423,6 @@ def main() -> None:
                     target_center_position = desired_center_position
                     target_rotation = desired_target_rotation
 
-                    # 원래 손 목표는 보존한다. 별도 QP 예측 경로의 첫 단계만
-                    # 적용하고, 검증된 앞쪽 자세의 FK를 초록 목표로 보낸다.
                     feasible_plan = feasible_planner.Plan(
                         configuration.q.copy(),
                         base._matrix_to_se3(target_rotation, operator_target_position),
@@ -705,8 +446,6 @@ def main() -> None:
                     VirtualCenterOrientationTask.assist_latched = False
                     VirtualCenterOrientationTask.last_assist_gain = 0.0
 
-                # Keep collision geometry, constraints, and derived MuJoCo
-                # state synchronized after Mink integrates the kinematic qpos.
                 mujoco.mj_forward(model, configuration.data)
                 roll_pose = configuration.get_transform_frame_to_world(
                     "right_wrist_roll_link", "body"
@@ -715,9 +454,6 @@ def main() -> None:
                     "right_wrist_yaw_link", "body"
                 )
 
-                # Keep the external yaw-wrist target identical to the Unity
-                # command. The internal roll-center target compensates the
-                # current roll-to-yaw offset before Mink solves the joint motion.
                 center_error = target_center_position - roll_pose.translation()
                 external_target_position = operator_target_position.copy()
                 configuration.data.mocap_pos[target_mocap_id] = external_target_position
@@ -791,16 +527,10 @@ def main() -> None:
                     append_inspection_result(
                         INSPECTION_RESULTS_PATH,
                         {
-                            "completed_at": time.strftime(
-                                "%Y-%m-%dT%H:%M:%S"
-                            ),
+                            "completed_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
                             "session_id": command_update.session_id or "",
-                            "elapsed_s": round(
-                                inspection_snapshot.elapsed_s, 4
-                            ),
-                            "final_distance_m": round(
-                                inspection_snapshot.distance_m, 6
-                            ),
+                            "elapsed_s": round(inspection_snapshot.elapsed_s, 4),
+                            "final_distance_m": round(inspection_snapshot.distance_m, 6),
                             "minimum_distance_m": round(
                                 inspection_snapshot.minimum_distance_m, 6
                             ),
@@ -843,9 +573,7 @@ def main() -> None:
                     packet["right_arm"].update({
                         "collision_profile": collision_profile,
                         "collision_min_distance_m": collision_min_distance_m,
-                        "collision_detection_distance_m": (
-                            collision_detection_distance_m
-                        ),
+                        "collision_detection_distance_m": collision_detection_distance_m,
                         "feasible_target_position": feasible_target_position.tolist(),
                         "feasible_target_delta": (
                             feasible_target_position - (
@@ -858,7 +586,9 @@ def main() -> None:
                         "feasible_target_policy": feasible_target_policy,
                     })
                     packet["right_arm"]["orientation_error_deg"] = orientation_error_deg
-                    packet["right_arm"].update(orientation_diagnostics(target_rotation, current_rotation))
+                    packet["right_arm"].update(
+                        orientation_diagnostics(target_rotation, current_rotation)
+                    )
                     packet["right_arm"]["orientation_assist_gain"] = (
                         VirtualCenterOrientationTask.last_assist_gain
                     )
@@ -885,12 +615,8 @@ def main() -> None:
                         "distance_m": inspection_snapshot.distance_m,
                         "hold_progress": inspection_snapshot.hold_progress,
                         "elapsed_s": inspection_snapshot.elapsed_s,
-                        "minimum_distance_m": (
-                            inspection_snapshot.minimum_distance_m
-                        ),
-                        "complete": (
-                            inspection_snapshot.state.value == "complete"
-                        ),
+                        "minimum_distance_m": inspection_snapshot.minimum_distance_m,
+                        "complete": inspection_snapshot.state.value == "complete",
                     }
                     _send_state = base._send_state
                     _send_state(
@@ -964,9 +690,7 @@ def main() -> None:
                                 None if gate7_feedback is None else gate7_feedback.state
                             ),
                             "gate7_simulation_feedback_age_s": (
-                                None
-                                if gate7_feedback is None
-                                else feedback_age_s
+                                None if gate7_feedback is None else feedback_age_s
                             ),
                             "gate7_simulation_feedback_accepted": (
                                 gate7_feedback_accepted
@@ -982,12 +706,8 @@ def main() -> None:
                             "collision_profile": collision_profile,
                             "collision_pair_count": len(collision_pairs),
                             "collision_min_distance_m": collision_min_distance_m,
-                            "qp_collision_min_distance_m": (
-                                qp_collision_min_distance_m
-                            ),
-                            "gate7_hard_stop_distance_m": (
-                                base.COLLISION_MIN_DISTANCE_M
-                            ),
+                            "qp_collision_min_distance_m": qp_collision_min_distance_m,
+                            "gate7_hard_stop_distance_m": base.COLLISION_MIN_DISTANCE_M,
                             "collision_detection_distance_m": collision_detection_distance_m,
                             "minimum_clearance_m": min_clearance,
                             "nearest_collision_geoms": nearest_collision_geoms,
@@ -1058,20 +778,12 @@ def main() -> None:
                             ),
                             "inspection_state": inspection_snapshot.state.value,
                             "inspection_target_source": "static_demo",
-                            "inspection_target_position": (
-                                inspection_target_position.tolist()
-                            ),
-                            "inspection_tool_tip_position": (
-                                inspection_tool_position.tolist()
-                            ),
+                            "inspection_target_position": inspection_target_position.tolist(),
+                            "inspection_tool_tip_position": inspection_tool_position.tolist(),
                             "inspection_distance_m": inspection_snapshot.distance_m,
-                            "inspection_hold_progress": (
-                                inspection_snapshot.hold_progress
-                            ),
+                            "inspection_hold_progress": inspection_snapshot.hold_progress,
                             "inspection_elapsed_s": inspection_snapshot.elapsed_s,
-                            "inspection_complete": (
-                                inspection_snapshot.state.value == "complete"
-                            ),
+                            "inspection_complete": inspection_snapshot.state.value == "complete",
                             "speed_based_mode_switch": False,
                             "proximal_hard_freeze": False,
                             "max_joint_velocity_deg_s": WRIST_MAX_JOINT_VELOCITY_DEG_S,

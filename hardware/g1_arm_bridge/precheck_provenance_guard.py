@@ -5,9 +5,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from startup_state_binding_guard import require_state_binding
+
 
 def require_provenance_bound_precheck(payload: dict[str, Any]) -> dict[str, Any]:
-    """Reject a precheck not produced from the supported per-run token path."""
+    """Reject a precheck not produced from the supported bound startup path."""
 
     if not isinstance(payload, dict):
         raise ValueError("startup precheck must be an object")
@@ -34,4 +36,4 @@ def require_provenance_bound_precheck(payload: dict[str, Any]) -> dict[str, Any]
         raise ValueError(
             "startup precheck token-verified packet count does not match accepted LowState count"
         )
-    return payload
+    return require_state_binding(payload)

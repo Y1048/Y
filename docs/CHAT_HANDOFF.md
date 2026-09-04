@@ -45,10 +45,10 @@ Key state:
 - **R21/R51** supported LowState startup paths use per-run forward tokens and provenance/state/raw-odometry-bound prechecks.
 - **R1/R3/R34/R64** have source fixes with offline regression coverage.
 - **R2/R33/R41/R42** supported Gate 7/Jog collision/acquisition guards have offline regression coverage.
-- **R46** is integrated into `g1_right_arm_jog.py` itself; planned/fault release share the SDK-neutral finalizer and incomplete evidence is fail-closed.
+- **R46** is integrated into `g1_right_arm_jog.py`; planned/fault release share the SDK-neutral finalizer and incomplete evidence is fail-closed.
 - **R40** supported physical paths bind current 29-joint/model/config evidence and raw `rt/odommodestate` position/quaternion back to startup, while requiring live base stability. Connected-G1 validation is still not done.
 - **R50** supported paths supervise LowState IMU roll/pitch, motor temperature/fault/tau finiteness, and runtime base/odometry stability. Remote/deadman and CRC/integrity remain open until actual read-only SDK fields are verified.
-- **R27/R32** were reconfirmed by the backend-core full-text review and remain open. R27 is generic SE(3) matrix validation; R32 is direct V1 protocol integer coercion versus strict V2.
+- **R20/R27/R32** remain open. Latest full-text review extended R20 to `inspect_feasible_target_return.py`; R27 is generic SE(3) matrix validation; R32 is direct V1 protocol integer coercion versus strict V2.
 
 ## 4. Reconciled review coverage
 
@@ -56,8 +56,8 @@ Current canonical ledger:
 
 ```text
 total current scoped files : 302
-full_text_review           : 176
-static_only                : 126
+full_text_review           : 186
+static_only                : 116
 static check failures      : 0
 ```
 
@@ -69,7 +69,14 @@ logs/review/20260903/source_checks_summary_20260904.json
 docs/CODE_INDEX.md
 ```
 
-The latest review batch is [`REVIEW_20260904_BACKEND_CORE.md`](REVIEW_20260904_BACKEND_CORE.md). It reviewed protocol/config/calibration/transforms/camera/runtime core plus directly relevant tests and introduced no new R-number. The 126 `static_only` files remain the review queue.
+Latest review batches:
+
+```text
+docs/REVIEW_20260904_BACKEND_CORE.md
+docs/REVIEW_20260904_BACKEND_SUPPORT.md
+```
+
+The 116 `static_only` files remain the review queue.
 
 ## 5. Offline regression evidence
 
@@ -88,8 +95,8 @@ These workflows are robot-offline and create no Unitree publisher, DDS endpoint,
 ## 6. Immediate next work
 
 ```text
-1. Continue the 126 static-only files, prioritizing remaining backend tests/helpers and launch/test surfaces.
-2. Keep R27/R32 remediation separate from review bookkeeping.
+1. Continue the 116 static-only files, prioritizing remaining backend diagnostic tests/tools and launch/test surfaces.
+2. Keep R20/R27/R32 remediation separate from review bookkeeping.
 3. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first.
 4. Plan simulation/WSL integration checks with hardware output locked.
 5. Reconcile CODE_INDEX/source_checks after each substantial review batch.

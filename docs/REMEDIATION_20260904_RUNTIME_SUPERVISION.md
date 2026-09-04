@@ -25,59 +25,74 @@ motor motorstate == 0
 
 The active/acquisition boundaries require the latest health result to be clean. A new unsafe condition raises into the existing fault/release handling rather than allowing authority acquisition/tracking to continue. Release helpers themselves are not blocked by this guard.
 
-## Runtime base/odometry stability
+## Runtime base/odometry stability and startup binding
 
-Added:
+Relevant files:
 
 ```text
 hardware/g1_arm_bridge/runtime_base_state_guard.py
+hardware/g1_arm_bridge/read_only_lowstate_entry.py
+hardware/g1_arm_bridge/check_startup_readiness_entry.py
+hardware/g1_arm_bridge/startup_state_binding_guard.py
 hardware/g1_arm_bridge/test_runtime_base_state_guard.py
 ```
 
-The existing read-only hardware bridge already establishes the repository-side SDK contract for `rt/odommodestate` using `SportModeState_`, with `position`, `imu_state.quaternion`, `velocity`, and `yaw_speed`. The new supported-path guard reuses that same source contract through a lazy **read-only** subscriber. It does not create a Unitree publisher or command message.
+The existing read-only hardware bridge establishes the repository-side SDK contract for `rt/odommodestate` using `SportModeState_`, with `position`, `imu_state.quaternion`, `velocity`, and `yaw_speed`. The supported read-only startup entry now preserves both the normalized startup base sample and the raw source-odometry position/quaternion in the token-bound precheck artifact.
 
-At runtime the base pose is normalized against the first valid odometry sample of that controller process. The supported Gate 6/Gate 7/Jog entrypoints now require a recent stable base at their existing publisher/acquisition/control guard boundaries.
+Supported Gate 6/Gate 7/Jog entrypoints install a lazy **read-only** runtime `rt/odommodestate` subscriber. The runtime monitor retains both process-relative stability state and current raw source-odometry coordinates. Before publisher/acquisition authority is accepted it compares those raw coordinates to the startup-precheck sample.
 
-Default fail-closed limits are:
+Default fail-closed runtime limits are:
 
 ```text
-base packet age          <= 0.25 s
-samples                  >= 3
-invalid base packets     == 0
-translation from origin  <= 0.05 m
-linear speed             <= 0.15 m/s
-yaw speed                <= 0.25 rad/s
-relative yaw drift       <= 8 deg
+base packet age                    <= 0.25 s
+samples                            >= 3
+invalid base packets               == 0
+translation from runtime origin    <= 0.05 m
+linear speed                       <= 0.15 m/s
+yaw speed                          <= 0.25 rad/s
+relative yaw drift                 <= 8 deg
+startup/runtime raw odom position  <= 0.05 m
+startup/runtime raw odom rotation  <= 8 deg
 ```
 
 Integration points:
 
 ```text
-Gate 6 : settled-state boundary and every authority-weight evaluation
-Gate 7 : pre-publisher snapshot binding, acquisition-weight evaluation, every tracked Step
-Jog    : pre-publisher/full-body binding and every controlled joint advance
+Gate 6 : settled-state publisher boundary + continuous authority-weight guard
+Gate 7 : pre-publisher full-body/base binding + acquisition + tracked Step
+Jog    : pre-publisher full-body/base binding + each controlled advance
 ```
 
 `--validate-only` paths for Gate 6/Jog remain SDK-free and do not install the odometry subscriber.
 
 ### R40 boundary
 
-This materially improves R40 because a supported publisher can no longer proceed solely from a historic 29-joint startup artifact while the current base is absent, stale, moving, or has drifted beyond the bounded runtime origin.
+The earlier R40 gap was that the physical publisher boundary was not bound to current full-body/base state. The supported path now combines:
 
-It does **not** prove that the runtime odometry normalizer has exactly the same origin as the earlier startup-precheck forwarder. The new runtime monitor intentionally establishes a fresh process-local origin. Therefore R40 remains **partial** rather than fully closed: exact startup-base-to-publisher-base origin continuity is still not proven.
+```text
+29-joint startup/current comparison
+startup model/config/source SHA-256 binding
+per-run LowState provenance token
+startup raw odometry position/quaternion
+current raw odometry position/quaternion
+runtime base freshness/motion limits
+```
+
+Therefore the **source-side supported path mitigation for R40 is complete**. This is not a physical-validation claim: actual connected-G1 compatibility of `rt/odommodestate` fields and runtime behavior still requires read-only/physical verification.
 
 ## Offline verification
 
-Current `main` workflow:
+Current relevant runs:
 
 ```text
 .github/workflows/offline-safety-regression.yml
-Run 33823568106 : PASS
+Run 33824155653 : PASS
+
+.github/workflows/offline-provenance-regression.yml
+Run 33824261133 : PASS
 ```
 
-The run contains 58 unittest cases plus the Gate 6 interruption-release offline contract script. The new runtime-base subset contains 10 passing tests covering nominal multi-sample state, stale state, translation drift, linear speed, yaw speed, yaw drift, invalid packet handling, read-only source structure, supported-entry integration, and validate-only SDK isolation.
-
-The same run also keeps the existing LowState health, release, Gate 7 collision/acquisition, and Jog safety/release regressions green.
+Safety coverage includes runtime base freshness, translation, linear speed, yaw speed, yaw drift, invalid packet handling and startup/runtime raw-odometry continuity. Provenance coverage includes per-run startup token verification plus required raw odometry evidence.
 
 ## Explicitly still open
 
@@ -92,17 +107,15 @@ firmware/controller ownership acknowledgement after release
 
 The repository currently contains no reviewed Python evidence for a canonical remote/deadman field or a LowState CRC validation API that can be added without guessing. Do not invent those checks. Verify the actual read-only Unitree SDK message contract first.
 
-The actual connected-G1 compatibility of the Python fields used by both health and odometry guards still requires read-only verification before widening physical trials. Missing/changed fields are intended to fail closed.
-
 Status:
 
 ```text
-R50 IMU/motor health on supported WSL paths : MITIGATED + OFFLINE CI PASS
-R50 base/odometry stability                 : MITIGATED + OFFLINE CI PASS
-R50 remote/deadman/CRC                      : OPEN pending verified SDK evidence
-R40 current-runtime base stability          : MITIGATED
-R40 exact startup/runtime base-origin bind  : OPEN
-Physical validation                         : NOT AUTHORIZED / NOT RUN
+R40 supported-path source binding            : MITIGATED + OFFLINE CI PASS
+R40 connected-G1 validation                  : NOT RUN
+R50 IMU/motor health                         : MITIGATED + OFFLINE CI PASS
+R50 base/odometry stability                  : MITIGATED + OFFLINE CI PASS
+R50 remote/deadman/CRC                       : OPEN pending verified SDK evidence
+Physical validation                          : NOT AUTHORIZED / NOT RUN
 ```
 
 No WSL/DDS/G1 runtime, Unity, Quest or physical publisher test was executed for this remediation evidence. Repository hardware authorization remains locked.

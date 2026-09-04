@@ -12,6 +12,7 @@ This file is the current entry point for the precision review. It does not repla
 - [`REVIEW_20260903_CONTINUATION_3.md`](REVIEW_20260903_CONTINUATION_3.md): R40-R49
 - [`REVIEW_20260903_CONTINUATION_4.md`](REVIEW_20260903_CONTINUATION_4.md): R50-R59
 - [`REVIEW_20260903_CONTINUATION_5.md`](REVIEW_20260903_CONTINUATION_5.md): R60-R67
+- [`REVIEW_20260904_BACKEND_CORE.md`](REVIEW_20260904_BACKEND_CORE.md): backend protocol/config/calibration/camera/runtime core review; no new finding, R27/R32 reconfirmed
 - [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md): R64/release batch
 - [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): R2/R33/R40/R41/R42 supported-path mitigation
 - [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R40/R50 runtime supervision
@@ -23,12 +24,12 @@ The review is still incomplete. A file appearing in the index or static ledger i
 
 ## Current reconciled coverage
 
-The canonical bounded ledger and code index were regenerated from the current `main` checkout on 2026-09-04.
+The canonical bounded ledger and code index were regenerated from the current `main` checkout after the backend-core review batch.
 
 ```text
 total current scoped files : 302
-full_text_review           : 158
-static_only                : 144
+full_text_review           : 176
+static_only                : 126
 static check failures      : 0
 ```
 
@@ -40,7 +41,7 @@ logs/review/20260903/source_checks_summary_20260904.json
 docs/CODE_INDEX.md
 ```
 
-The semantic rule is deliberately conservative: prior decisions are preserved, explicit continuation deltas can promote a path to `full_text_review`, and newly discovered files default to `static_only`. Therefore 158/302 is a review-state count, not a correctness score.
+The semantic rule is deliberately conservative: prior decisions are preserved, explicit continuation deltas can promote a path to `full_text_review`, and newly discovered files default to `static_only`. Therefore 176/302 is a review-state count, not a correctness score.
 
 ## Remediation status
 
@@ -63,6 +64,8 @@ The semantic rule is deliberately conservative: prior decisions are preserved, e
 | R35 | SUPPORTED GATE 7 RELAY PATH MITIGATED | Relay token/retired-session tests PASS |
 | R65 | SUPPORTED UNITY/MINK PATH MITIGATED | Source clock/backlog/sender tests PASS |
 | R15 | SOURCE MITIGATION COMPLETE ON SUPPORTED LIVE PATH; runtime validation pending | Live/replay/relay/hardware provenance tests PASS |
+| R27 | OPEN | Full-text backend review reconfirmed that generic calibration/transform matrix boundaries do not enforce SO(3) |
+| R32 | OPEN | Full-text backend review reconfirmed V1 direct protocol integer coercion differs from strict V2 |
 
 ## Current-checkout offline CI
 
@@ -87,10 +90,11 @@ Both workflows are offline from the robot: no Unitree publisher, DDS endpoint, W
 ## Current priority groups
 
 ```text
-1. Continue the 144 remaining static-only files, prioritizing backend protocol/config/calibration and launch/test surfaces
-2. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first
-3. Plan simulation/WSL integration checks with hardware output locked
-4. Keep the reconciled ledger/CODE_INDEX current after each review batch
+1. Continue the 126 remaining static-only files, prioritizing remaining backend tests/helpers and launch/test surfaces
+2. R27/R32 remain known open backend-contract issues; remediate separately from review bookkeeping
+3. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first
+4. Plan simulation/WSL integration checks with hardware output locked
+5. Keep the reconciled ledger/CODE_INDEX current after each review batch
 ```
 
 R40's source-side startup/runtime odometry continuity is now closed on supported paths, but physical validation is not. Do not expand physical testing yet: actual connected-G1 SDK field compatibility, remote/deadman/CRC evidence, and WSL/DDS runtime behavior remain unverified.

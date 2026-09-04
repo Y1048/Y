@@ -30,6 +30,7 @@ from arm_sdk_hold_contract import (
     dual_arm_from_all_joints,
 )
 from arm_sdk_hold_contract import RIGHT_ARM_JOINT_NAMES
+from arm_sdk_release_contract import ReleaseEvidence, execute_release_sequence
 from right_arm_jog_contract import ArmJointJogController, ArmJointJogLimits
 from gate6_arm_sdk_hold import (
     LowStateBuffer,
@@ -623,7 +624,11 @@ def main() -> int:
     publisher = None
     command_message = None
     command_crc = None
+    buffer = None
+    snapshot = None
     last_snapshot = None
+    last_successful_weight = 0.0
+    release_evidence: ReleaseEvidence | None = None
     controller: ArmJointJogController | None = None
     pending_joint: str | None = None
     returning_for_switch = False
@@ -1038,6 +1043,7 @@ def main() -> int:
                 command_message.crc = command_crc.Crc(command_message)
                 publisher.Write(command_message)
                 result["published_frames"] += 1
+                last_successful_weight = float(current_weight)
                 if tick is not None:
                     maximum_observed_error = max(
                         maximum_observed_error,
@@ -1096,16 +1102,14 @@ def main() -> int:
                     last_report_s = now_s
 
             print(f"[RELEASE] reason={release_reason}")
-            release_started_s = time.monotonic()
-            release_initial_weight = current_weight
-            while True:
-                now_s = time.monotonic()
-                release_elapsed_s = now_s - release_started_s
-                ratio = min(1.0, release_elapsed_s / config.ramp_down_s)
-                weight = release_initial_weight * (1.0 - ratio)
-                current = buffer.snapshot() or snapshot
+
+            def build_release_frame(weight: float):
+                nonlocal last_snapshot
+                current = buffer.snapshot() or last_snapshot or snapshot
+                if current is None:
+                    raise RuntimeError("no measured LowState is available for release")
                 last_snapshot = current
-                frame = build_measured_hold_frame(
+                return build_measured_hold_frame(
                     current.all_q_rad,
                     dual_arm_from_all_joints(current.all_q_rad),
                     mode_pr=current.mode_pr,
@@ -1113,49 +1117,53 @@ def main() -> int:
                     weight=weight,
                     config=config.hold,
                 )
+
+            def publish_release_frame(frame) -> None:
                 _apply_frame(command_message, frame)
                 command_message.crc = command_crc.Crc(command_message)
                 publisher.Write(command_message)
                 result["published_frames"] += 1
-                if ratio >= 1.0:
-                    break
-                time.sleep(period_s)
 
-            for _ in range(config.release_zero_cycles):
-                current = buffer.snapshot() or snapshot
-                last_snapshot = current
-                frame = build_measured_hold_frame(
-                    current.all_q_rad,
-                    dual_arm_from_all_joints(current.all_q_rad),
-                    mode_pr=current.mode_pr,
-                    mode_machine=current.mode_machine,
-                    weight=0.0,
-                    config=config.hold,
-                )
-                _apply_frame(command_message, frame)
-                command_message.crc = command_crc.Crc(command_message)
-                publisher.Write(command_message)
-                result["published_frames"] += 1
-                result["release_zero_frames"] += 1
-                time.sleep(period_s)
-
-            final = buffer.snapshot() or snapshot
+            release_evidence = execute_release_sequence(
+                start_weight=last_successful_weight,
+                ramp_s=config.ramp_down_s,
+                zero_cycles=config.release_zero_cycles,
+                publish_hz=config.publish_hz,
+                build_ramp_frame=build_release_frame,
+                build_zero_frame=lambda: build_release_frame(0.0),
+                publish_frame=publish_release_frame,
+            )
+            result.update(release_evidence.as_dict())
+            result["release_zero_frames"] = release_evidence.release_zero_frames_sent
+            release_ok = bool(
+                release_evidence.zero_release_completed
+                and release_evidence.release_fault is None
+            )
+            final = buffer.snapshot() or last_snapshot or snapshot
             result.update(
-                passed=True,
-                command_output_enabled=False,
+                passed=release_ok,
+                command_output_enabled=release_evidence.output_state_unknown,
                 release_reason=release_reason,
-                final_right_arm_deg=[
-                    math.degrees(final.all_q_rad[index]) for index in range(22, 29)
-                ],
+                final_right_arm_deg=(
+                    []
+                    if final is None
+                    else [
+                        math.degrees(final.all_q_rad[index])
+                        for index in range(22, 29)
+                    ]
+                ),
                 maximum_command_measurement_error_deg=math.degrees(
                     maximum_observed_error
                 ),
             )
-            print("[PASS] Right-arm jog ended with Arm SDK weight zero.")
+            if release_ok:
+                print("[PASS] Right-arm jog ended with a verified zero-weight tail.")
+            else:
+                print("[FAULT] Right-arm jog release evidence is incomplete or faulted.")
 
     except Exception as exc:
         result["error"] = f"{type(exc).__name__}: {exc}"
-        result["command_output_enabled"] = False
+        result["passed"] = False
         if controller is not None:
             result["active_joint_at_fault"] = controller.joint_name
             result["pending_joint_at_fault"] = pending_joint
@@ -1183,37 +1191,68 @@ def main() -> int:
             result["latest_arming_joint_error_deg"] = latest_arming_errors_deg
             result["maximum_arming_joint_error_deg"] = maximum_arming_errors_deg
         if (
-            publisher is not None
+            release_evidence is None
+            and publisher is not None
             and command_message is not None
             and command_crc is not None
             and last_snapshot is not None
             and config is not None
-            and result["release_zero_frames"] < config.release_zero_cycles
         ):
             result["emergency_zero_release_attempted"] = True
-            try:
-                zero_frame = build_measured_hold_frame(
-                    last_snapshot.all_q_rad,
-                    dual_arm_from_all_joints(last_snapshot.all_q_rad),
-                    mode_pr=last_snapshot.mode_pr,
-                    mode_machine=last_snapshot.mode_machine,
-                    weight=0.0,
+
+            def build_fault_release_frame(weight: float):
+                nonlocal last_snapshot
+                current = buffer.snapshot() if buffer is not None else None
+                current = current or last_snapshot
+                if current is None:
+                    raise RuntimeError("no measured LowState is available for fault release")
+                last_snapshot = current
+                return build_measured_hold_frame(
+                    current.all_q_rad,
+                    dual_arm_from_all_joints(current.all_q_rad),
+                    mode_pr=current.mode_pr,
+                    mode_machine=current.mode_machine,
+                    weight=weight,
                     config=config.hold,
                 )
-                remaining = (
-                    config.release_zero_cycles - result["release_zero_frames"]
+
+            def publish_fault_release_frame(frame) -> None:
+                _apply_frame(command_message, frame)
+                command_message.crc = command_crc.Crc(command_message)
+                publisher.Write(command_message)
+                result["published_frames"] += 1
+
+            try:
+                release_evidence = execute_release_sequence(
+                    start_weight=last_successful_weight,
+                    ramp_s=config.ramp_down_s,
+                    zero_cycles=config.release_zero_cycles,
+                    publish_hz=config.publish_hz,
+                    build_ramp_frame=build_fault_release_frame,
+                    build_zero_frame=lambda: build_fault_release_frame(0.0),
+                    publish_frame=publish_fault_release_frame,
                 )
-                for _ in range(remaining):
-                    _apply_frame(command_message, zero_frame)
-                    command_message.crc = command_crc.Crc(command_message)
-                    publisher.Write(command_message)
-                    result["published_frames"] += 1
-                    result["release_zero_frames"] += 1
-                    time.sleep(1.0 / config.publish_hz)
             except Exception as release_exc:
                 result["emergency_zero_release_error"] = (
                     f"{type(release_exc).__name__}: {release_exc}"
                 )
+
+        if release_evidence is not None:
+            result.update(release_evidence.as_dict())
+            result["release_zero_frames"] = release_evidence.release_zero_frames_sent
+            result["command_output_enabled"] = release_evidence.output_state_unknown
+            if release_evidence.release_fault is not None:
+                result["passed"] = False
+            if not release_evidence.zero_release_completed:
+                result["passed"] = False
+        elif publisher is not None:
+            result["output_state_unknown"] = True
+            result["command_output_enabled"] = True
+            result["passed"] = False
+        else:
+            result.setdefault("output_state_unknown", False)
+            result["command_output_enabled"] = False
+
         write_result(output_path, result)
         print(f"Result saved to: {output_path.resolve()}")
     return 0 if result["passed"] else 2

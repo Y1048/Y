@@ -10,6 +10,7 @@ from types import SimpleNamespace
 
 from runtime_base_state_guard import (
     RuntimeBaseStateMonitor,
+    validate_runtime_base_matches_precheck,
     validate_runtime_base_snapshot,
 )
 
@@ -36,6 +37,16 @@ def _yaw_quaternion_wxyz(yaw_rad: float):
         0.0,
         math.sin(yaw_rad / 2.0),
     )
+
+
+def _precheck(position=(0.0, 0.0, 0.0), quaternion=(0.0, 0.0, 0.0, 1.0)):
+    return {
+        "latest_base_state": {
+            "valid": True,
+            "odom_position_m": list(position),
+            "odom_quaternion_xyzw": list(quaternion),
+        }
+    }
 
 
 class RuntimeBaseStateGuardTests(unittest.TestCase):
@@ -130,6 +141,43 @@ class RuntimeBaseStateGuardTests(unittest.TestCase):
                 now_monotonic_s=snapshot.received_monotonic_s,
             )
 
+    def test_runtime_raw_odom_matches_startup_precheck(self) -> None:
+        monitor = RuntimeBaseStateMonitor()
+        for _ in range(3):
+            monitor.callback(_Message(position=(1.20, -0.30, 0.75)))
+        snapshot = monitor.snapshot()
+        self.assertIsNotNone(snapshot)
+        validate_runtime_base_matches_precheck(
+            snapshot,
+            _precheck(position=(1.21, -0.30, 0.75)),
+        )
+
+    def test_runtime_startup_odom_position_mismatch_fails(self) -> None:
+        monitor = RuntimeBaseStateMonitor()
+        for _ in range(3):
+            monitor.callback(_Message(position=(1.20, -0.30, 0.75)))
+        snapshot = monitor.snapshot()
+        self.assertIsNotNone(snapshot)
+        with self.assertRaisesRegex(RuntimeError, "position mismatch"):
+            validate_runtime_base_matches_precheck(
+                snapshot,
+                _precheck(position=(1.30, -0.30, 0.75)),
+            )
+
+    def test_runtime_startup_odom_orientation_mismatch_fails(self) -> None:
+        monitor = RuntimeBaseStateMonitor()
+        for _ in range(3):
+            monitor.callback(_Message())
+        snapshot = monitor.snapshot()
+        self.assertIsNotNone(snapshot)
+        yaw = math.radians(9.0)
+        expected_xyzw = [0.0, 0.0, math.sin(yaw / 2.0), math.cos(yaw / 2.0)]
+        with self.assertRaisesRegex(RuntimeError, "orientation mismatch"):
+            validate_runtime_base_matches_precheck(
+                snapshot,
+                _precheck(quaternion=expected_xyzw),
+            )
+
     def test_source_is_read_only_subscriber_only(self) -> None:
         source = (
             Path(__file__).resolve().parent / "runtime_base_state_guard.py"
@@ -150,6 +198,7 @@ class RuntimeBaseStateGuardTests(unittest.TestCase):
             self.assertIn("runtime_base_state_guard", source)
             self.assertIn("install_unitree_base_state_subscription", source)
             self.assertIn("require_latest_runtime_base_state", source)
+            self.assertIn("require_runtime_base_matches_precheck", source)
 
     def test_validate_only_paths_do_not_require_unitree_base_import(self) -> None:
         here = Path(__file__).resolve().parent

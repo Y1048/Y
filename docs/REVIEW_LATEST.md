@@ -14,6 +14,12 @@ This file is the current entry point for the precision review. It does not repla
 - [`REVIEW_20260903_CONTINUATION_5.md`](REVIEW_20260903_CONTINUATION_5.md): R60-R67
 - [`REVIEW_20260904_BACKEND_CORE.md`](REVIEW_20260904_BACKEND_CORE.md): backend protocol/config/calibration/camera/runtime core review; no new finding, R27/R32 reconfirmed
 - [`REVIEW_20260904_BACKEND_SUPPORT.md`](REVIEW_20260904_BACKEND_SUPPORT.md): inspection/admin/feedback/diagnostic helper review; R20 extended to `inspect_feasible_target_return.py`
+- [`REVIEW_20260904_BACKEND_DIAGNOSTICS.md`](REVIEW_20260904_BACKEND_DIAGNOSTICS.md): Mink collision/feasibility/step diagnostic review; R20/R27 reconfirmed and R24 extended to stale velocity expectations
+- [`REVIEW_20260904_BACKEND_DIAGNOSTICS_2.md`](REVIEW_20260904_BACKEND_DIAGNOSTICS_2.md): Mink benchmark/render/tracking/reach review; no new finding, R20/R24/R27 boundary reconfirmed
+- [`REVIEW_20260904_BACKEND_DIAGNOSTICS_3.md`](REVIEW_20260904_BACKEND_DIAGNOSTICS_3.md): remaining backend virtual-center/camera helpers; R24/R53 extended, R27 boundary retained
+- [`REVIEW_20260904_LAUNCHERS.md`](REVIEW_20260904_LAUNCHERS.md): remaining `tools/*.bat` and launcher source review; no new finding, existing launcher findings reconfirmed
+- [`REVIEW_20260904_CONFIG_AND_FRAME.md`](REVIEW_20260904_CONFIG_AND_FRAME.md): configuration, camera-profile and wrist-frame source review; R66 reconfirmed, physical locks unchanged
+- [`REVIEW_20260904_RECOVERY_MULTISTRATEGY.md`](REVIEW_20260904_RECOVERY_MULTISTRATEGY.md): deferred multi-strategy recovery experiment review; R53/R55 reconfirmed
 - [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md): R64/release batch
 - [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): R2/R33/R40/R41/R42 supported-path mitigation
 - [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R40/R50 runtime supervision
@@ -29,8 +35,8 @@ The canonical bounded ledger and code index were regenerated from current `main`
 
 ```text
 total current scoped files : 302
-full_text_review           : 186
-static_only                : 116
+full_text_review           : 268
+static_only                : 34
 static check failures      : 0
 ```
 
@@ -42,7 +48,7 @@ logs/review/20260903/source_checks_summary_20260904.json
 docs/CODE_INDEX.md
 ```
 
-The semantic rule is deliberately conservative: prior decisions are preserved, explicit continuation deltas can promote a path to `full_text_review`, and newly discovered files default to `static_only`. Therefore 186/302 is a review-state count, not a correctness score.
+The semantic rule is deliberately conservative: prior decisions are preserved, explicit continuation deltas can promote a path to `full_text_review`, and newly discovered files default to `static_only`. Therefore 268/302 is a review-state count, not a correctness score.
 
 ## Remediation status
 
@@ -66,6 +72,8 @@ The semantic rule is deliberately conservative: prior decisions are preserved, e
 | R65 | SUPPORTED UNITY/MINK PATH MITIGATED | Source clock/backlog/sender tests PASS |
 | R15 | SOURCE MITIGATION COMPLETE ON SUPPORTED LIVE PATH; runtime validation pending | Live/replay/relay/hardware provenance tests PASS |
 | R20 | OPEN; additional surface confirmed | `inspect_feasible_target_return.py` can print/write `REVIEW_REQUIRED` while returning process success |
+| R24 | OPEN; stale diagnostic/test velocity assumptions confirmed | report still claims `40/100 deg/s`; collision-feasibility test expects `1/40 s` while current cap is `0.08 rad/s` |
+| R53 | OPEN; additional shared-model writers confirmed | camera validation and visibility tests can rewrite the common generated MuJoCo XML |
 | R27 | OPEN | Full-text backend review reconfirmed that generic calibration/transform matrix boundaries do not enforce SO(3) |
 | R32 | OPEN | Full-text backend review reconfirmed V1 direct protocol integer coercion differs from strict V2 |
 
@@ -92,8 +100,8 @@ Both workflows are offline from the robot: no Unitree publisher, DDS endpoint, W
 ## Current priority groups
 
 ```text
-1. Continue the 116 remaining static-only files, prioritizing remaining backend diagnostic tests/tools and launch/test surfaces
-2. R20/R27/R32 remain known open backend-contract/tool issues; remediate separately from review bookkeeping
+1. Continue the 34 remaining posture-sweep, TWIST2 experiment and hardware-helper static-only files
+2. R20/R24/R27/R32 remain known open backend-contract/tool issues; remediate separately from review bookkeeping
 3. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first
 4. Plan simulation/WSL integration checks with hardware output locked
 5. Keep the reconciled ledger/CODE_INDEX current after each review batch

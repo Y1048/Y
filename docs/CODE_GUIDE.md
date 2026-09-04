@@ -209,7 +209,9 @@ Mink는 문제를 조립하고 `qpsolvers.solve_problem`을 호출한다. 프로
 | virtual-center proximal / wrist damping cost | 0.03 / 0.015 | 어깨·팔꿈치 움직임에 더 큰 비용 |
 | `LM_DAMPING`, `QP_DAMPING` | 1e-5 / 1e-8 | task별 / QP 전체 정규화 |
 | proximal / wrist velocity cap | 각각 0.08 rad/s (약 4.58 deg/s) | static stand 키보드 기본 1배와 동일한 수치의 상한; 추종 동작 동일 보장은 아님 |
-| teleop clearance / detection distance | 20 / 40 mm | 충돌 여유 목표 / 거리 제약 감지 시작 범위 |
+| local `mink-default` clearance / detection | 5 / 10 mm | Mink 1.3.0 기본값; Unity/MuJoCo 로컬 실행의 기본 프로필 |
+| physical `hardware-guarded` clearance / detection | 20 / 40 mm | 실제 출력 후보 경로에서 명시적으로 강제하는 추가 여유 |
+| Gate 7 command hard stop | 12 mm | 실제 출력 어댑터의 독립 검사; Mink 목표 거리와 별도 |
 | `COLLISION_GAIN` | 0.85 | 거리 기반 접근 제한 |
 | assist enter / release / full margin | 18 / 28 / 5 deg | 손목 한계 접근 시 히스테리시스 |
 | orientation cost 최소 배율 | 0.25 | 한계 근처 회전 추종을 완화 |

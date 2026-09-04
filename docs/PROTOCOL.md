@@ -191,7 +191,10 @@ robot = [operator.z, -operator.x, operator.y]
     "target_delta": [0.04, -0.02, 0.01],
     "position_error": 0.012,
     "workspace_limited": false,
-    "collision_limited": false
+    "collision_limited": false,
+    "collision_profile": "mink-default",
+    "collision_min_distance_m": 0.005,
+    "collision_detection_distance_m": 0.01
   },
   "timestamp": 1787212345.25
 }
@@ -211,7 +214,18 @@ robot = [operator.z, -operator.x, operator.y]
 | `right_arm.position_error` | 목표와 실제 손목 위치 오차, meter |
 | `right_arm.workspace_limited` | controller workspace 제한 여부 |
 | `right_arm.collision_limited` | 충돌 때문에 step이 제한되었는지 여부 |
+| `right_arm.collision_profile` | `mink-default` 또는 `hardware-guarded`; 실행 경로가 고른 충돌 정책 |
+| `right_arm.collision_min_distance_m` | QP와 후단 샘플 검사에 함께 적용한 최소 거리 |
+| `right_arm.collision_detection_distance_m` | Mink 충돌 inequality가 활성화되기 시작하는 거리 |
 | `timestamp` | controller wall-clock time |
+
+일반 `START_VR_HAND_TO_MUJOCO.bat`와 `START_MUJOCO_ONLY.bat`는 검증된
+로컬 Unity/MuJoCo 실행은 `mink-default` 5/10 mm를 기본으로 사용한다.
+`hardware-guarded` 20/40 mm는 실제 출력 후보를 만드는 하드웨어 표시 경로에서만
+명시적으로 선택한다.
+Gate 7 물리 실행기는 `--hardware-display`를 전달해 사용자가 다른 인자를
+주더라도 `hardware-guarded`를 강제한다. 실제 출력 어댑터의 12 mm hard stop은
+이 프로필과 별도의 최종 명령 검사다.
 
 기존 `right_arm` 필드는 하위 호환과 오른팔 제어 진단을 위해 유지한다. Unity는
 29개 이름의 개수와 정확한 순서를 확인한 뒤 전신 프리뷰에 적용하고, 구형 패킷은

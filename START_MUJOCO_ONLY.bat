@@ -30,10 +30,11 @@ if errorlevel 1 (
 echo [START] MuJoCo G1 right-arm Mink controller only
 echo [INFO] Unity and Meta Horizon Link will not be started.
 echo [INFO] Scene: control
+echo [PROFILE] Collision: mink-default ^(5 mm minimum, 10 mm detection^)
 
 echo.
 cd /d "%CONTROLLER_ROOT%"
-py -3.11 scripts\run_mink_g1_right_arm_virtual_center_live.py
+py -3.11 scripts\run_mink_g1_right_arm_virtual_center_live.py --collision-profile mink-default
 
 set "EXIT_CODE=%ERRORLEVEL%"
 echo.

@@ -40,7 +40,8 @@ class FeasibleTargetPlanner:
 
     def __init__(self, model, position_task, orientation_task, posture_task,
                  damping_task, limits, constraints, solver, clearance_m,
-                 velocity_limits, horizon_steps=3):
+                 velocity_limits, horizon_steps=3,
+                 require_merit_decrease=True, allow_local_detour=False):
         if horizon_steps < 1 or clearance_m <= 0:
             raise ValueError("positive look-ahead and clearance required")
         self.model = model
@@ -54,6 +55,11 @@ class FeasibleTargetPlanner:
         self.solver = solver
         self.clearance_m = clearance_m
         self.horizon_steps = horizon_steps
+        self.require_merit_decrease = require_merit_decrease
+        self.allow_local_detour = allow_local_detour
+        self.detour_goal = None
+        self.detour_start_position = None
+        self.detour_frames = 0
         self.geom_pairs = base._build_collision_pairs(model)[1]
         self.right_dofs = base._right_arm_dof_indices(model)
         self.frozen_dofs = base._frozen_dof_indices(model, self.right_dofs)
@@ -86,7 +92,7 @@ class FeasibleTargetPlanner:
         return (base.POSITION_COST ** 2 * float(position_error @ position_error)
                 + rotation_scale ** 2 * rotation_error ** 2)
 
-    def Plan(self, current_q, goal):
+    def _PlanGoal(self, current_q, goal):
         """모델 qpos와 yaw-link 목표를 받아 검증된 첫 단계 및 예측 끝점을 반환한다.
 
         current_q는 오른팔 7개 배열이 아니라 모델 전체 qpos다. 목표 위치는 m,
@@ -116,7 +122,10 @@ class FeasibleTargetPlanner:
             # Mink는 task 오차/Jacobian과 제한을 QP로 조립하고 solver가 푼 dq/dt를 반환한다.
             velocity = mink.solve_ik(
                 self.configuration, self.tasks, base.DT, solver=self.solver,
-                damping=base.QP_DAMPING, limits=self.limits, constraints=self.constraints)
+                damping=base.QP_DAMPING,
+                limits=self.limits,
+                constraints=self.constraints,
+            )
             if current_policy is None:
                 # Predicted future wrist margins must not latch the actual
                 # controller's hysteresis or overwrite its diagnostics.
@@ -140,7 +149,8 @@ class FeasibleTargetPlanner:
                 self.configuration.integrate_inplace(velocity, base.DT * fraction)
                 candidate = self.configuration.q.copy()
                 improvement = merit - self.GetMerit(goal, rotation_scale)
-                if improvement <= max(1e-10, merit * 1e-8):
+                merit_improved = improvement > max(1e-10, merit * 1e-8)
+                if self.require_merit_decrease and not merit_improved:
                     continue
                 path_clear = True
                 for interval in (0.25, 0.5, 0.75, 1.0):
@@ -158,7 +168,7 @@ class FeasibleTargetPlanner:
                 result.target_q = candidate.copy()
                 result.target_position = self.configuration.get_transform_frame_to_world(
                     "right_wrist_yaw_link", "body").translation().copy()
-                result.status = "following"
+                result.status = "following" if merit_improved else "following_tangent"
                 accepted = True
                 break
             if not accepted:
@@ -170,3 +180,60 @@ class FeasibleTargetPlanner:
                 setattr(type(self.orientation_task), name, value)
             self.orientation_task.cost[:] = current_cost
         return result
+
+    def ResetDetour(self):
+        self.detour_goal = None
+        self.detour_start_position = None
+        self.detour_frames = 0
+
+    def Plan(self, current_q, goal):
+        """Track the operator goal and locally escape a blocked simulation QP."""
+        if not self.allow_local_detour:
+            return self._PlanGoal(current_q, goal)
+
+        self.configuration.update(current_q)
+        current_pose = self.configuration.get_transform_frame_to_world(
+            "right_wrist_yaw_link", "body"
+        )
+        if self.detour_goal is not None:
+            plan = self._PlanGoal(current_q, self.detour_goal)
+            self.detour_frames += 1
+            self.configuration.update(plan.next_q)
+            next_pose = self.configuration.get_transform_frame_to_world(
+                "right_wrist_yaw_link", "body"
+            )
+            travelled = float(np.linalg.norm(
+                next_pose.translation() - self.detour_start_position
+            ))
+            if plan.accepted_steps == 0 or travelled >= 0.04 or self.detour_frames >= 30:
+                self.ResetDetour()
+            if plan.accepted_steps > 0:
+                plan.status = "detour_following"
+            return plan
+
+        direct = self._PlanGoal(current_q, goal)
+        if direct.accepted_steps > 0 or not direct.valid:
+            return direct
+        if np.linalg.norm(goal.translation() - current_pose.translation()) < 0.02:
+            return direct
+
+        # Right-arm robot frame: negative Y moves away from the torso.
+        directions = (
+            np.array([0.0, -1.0, 0.0]),
+            np.array([0.0, -0.70710678, 0.70710678]),
+            np.array([0.70710678, -0.70710678, 0.0]),
+        )
+        for direction in directions:
+            waypoint_position = current_pose.translation() + 0.08 * direction
+            waypoint = base._matrix_to_se3(
+                current_pose.rotation().as_matrix(), waypoint_position
+            )
+            candidate = self._PlanGoal(current_q, waypoint)
+            if candidate.accepted_steps == 0:
+                continue
+            self.detour_goal = waypoint
+            self.detour_start_position = current_pose.translation().copy()
+            self.detour_frames = 1
+            candidate.status = "detour_following"
+            return candidate
+        return direct

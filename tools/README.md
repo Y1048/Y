@@ -53,7 +53,14 @@
 ```powershell
 .\tools\TEST_MINK_WRIST_FRAME.bat
 .\tools\TEST_G1_MINK_FK_PARITY.bat
+.\tools\TEST_MINK_COLLISION_TANGENT_OFFLINE.bat
 ```
+
+`TEST_MINK_COLLISION_TANGENT_OFFLINE.bat`는 2026-09-04 Quest 시험에서
+측정한 5 mm 충돌 경계 자세를 네트워크 없이 재현한다. 기존 단조 merit 정책이
+즉시 정지하는 것과 로컬 waypoint 정책이 5 mm를 유지하며 바깥쪽으로 우회한 뒤
+원래 목표 오차를 다시 줄이는 것을 비교한다.
+Unitree SDK, DDS publisher와 로봇 명령은 사용하지 않는다.
 
 ## Hardware read-only and synchronization
 

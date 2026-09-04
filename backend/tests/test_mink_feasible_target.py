@@ -60,6 +60,13 @@ class FeasibleTargetTest(unittest.TestCase):
             q = plan.next_q
         self.assertLess(np.linalg.norm(self.Pose(q).translation() - goal.translation()), 0.005)
 
+    def test_named_collision_profiles_keep_simulation_and_hardware_separate(self):
+        live = probe.live
+        self.assertEqual((0.005, 0.010), live.ResolveCollisionProfile("mink-default"))
+        self.assertEqual((0.020, 0.040), live.ResolveCollisionProfile("hardware-guarded"))
+        with self.assertRaisesRegex(ValueError, "unknown collision profile"):
+            live.ResolveCollisionProfile("unsafe-implicit-profile")
+
     def test_invalid_start_is_not_a_feasible_green_target(self):
         planner = BuildPlanner(self.model, self.initial)
         q = self.initial.copy()
@@ -134,6 +141,102 @@ class FeasibleTargetTest(unittest.TestCase):
         self.assertEqual(plan.accepted_steps, 0)
         np.testing.assert_array_equal(plan.next_q, self.initial)
 
+    def test_local_tangent_policy_accepts_geometry_safe_non_decreasing_step(self):
+        planner = BuildPlanner(self.model, self.initial)
+        planner.horizon_steps = 1
+        planner.require_merit_decrease = False
+        goal_q = self.initial.copy()
+        goal_q[self.qpos[0]] += 0.1
+        velocity = np.zeros(self.model.nv)
+        velocity[planner.right_dofs[0]] = 0.01
+        with patch.object(mink, "solve_ik", return_value=velocity), \
+                patch.object(planner, "GetMerit", return_value=1.0), \
+                patch.object(planner, "CheckConfiguration", return_value=True):
+            plan = planner.Plan(self.initial, self.Pose(goal_q))
+        self.assertEqual("following_tangent", plan.status)
+        self.assertEqual(1, plan.accepted_steps)
+        self.assertGreater(np.linalg.norm(plan.next_q - self.initial), 0.0)
+
+    def test_hardware_policy_rejects_non_decreasing_step(self):
+        planner = BuildPlanner(self.model, self.initial)
+        planner.horizon_steps = 1
+        planner.require_merit_decrease = True
+        goal_q = self.initial.copy()
+        goal_q[self.qpos[0]] += 0.1
+        velocity = np.zeros(self.model.nv)
+        velocity[planner.right_dofs[0]] = 0.01
+        with patch.object(mink, "solve_ik", return_value=velocity), \
+                patch.object(planner, "GetMerit", return_value=1.0), \
+                patch.object(planner, "CheckConfiguration", return_value=True):
+            plan = planner.Plan(self.initial, self.Pose(goal_q))
+        self.assertEqual("local_limit", plan.status)
+        self.assertEqual(0, plan.accepted_steps)
+        np.testing.assert_array_equal(plan.next_q, self.initial)
+
+    def test_measured_collision_boundary_keeps_moving_tangentially(self):
+        """Regression from the 2026-09-04 Quest trace at the 5 mm boundary."""
+        measured_q = self.initial.copy()
+        measured_q[self.qpos] = [
+            0.071870, -0.021806, 0.492269, 0.455173,
+            -0.177581, -0.376277, 0.483779,
+        ]
+        measured_pose = self.Pose(measured_q)
+        measured_position_error = np.array([
+            -0.001011, 0.142811, -0.013623,
+        ])
+        goal = probe.base._matrix_to_se3(
+            measured_pose.rotation().as_matrix(),
+            measured_pose.translation() + measured_position_error,
+        )
+
+        strict = BuildPlanner(self.model, measured_q)
+        strict.clearance_m = 0.005
+        strict.horizon_steps = 1
+        for index, limit in enumerate(strict.limits):
+            if isinstance(limit, mink.CollisionAvoidanceLimit):
+                strict.limits[index] = mink.CollisionAvoidanceLimit(
+                    self.model,
+                    geom_pairs=probe.base._build_collision_pairs(self.model)[0],
+                    minimum_distance_from_collisions=0.005,
+                    collision_detection_distance=0.010,
+                    gain=probe.base.COLLISION_GAIN,
+                    broadphase=True,
+                )
+        strict_plan = strict.Plan(measured_q, goal)
+        self.assertEqual("local_limit", strict_plan.status)
+        self.assertEqual(0, strict_plan.accepted_steps)
+
+        tangent = BuildPlanner(self.model, measured_q)
+        tangent.clearance_m = 0.005
+        tangent.horizon_steps = 1
+        tangent.require_merit_decrease = False
+        tangent.allow_local_detour = True
+        for index, limit in enumerate(tangent.limits):
+            if isinstance(limit, mink.CollisionAvoidanceLimit):
+                tangent.limits[index] = mink.CollisionAvoidanceLimit(
+                    self.model,
+                    geom_pairs=probe.base._build_collision_pairs(self.model)[0],
+                    minimum_distance_from_collisions=0.0055,
+                    collision_detection_distance=0.010,
+                    gain=probe.base.COLLISION_GAIN,
+                    broadphase=True,
+                )
+        q = measured_q.copy()
+        start_error = np.linalg.norm(measured_position_error)
+        minimum_clearance = tangent.GetClearance(q)
+        moving_frames = 0
+        for _ in range(180):
+            plan = tangent.Plan(q, goal)
+            moving_frames += int(plan.accepted_steps > 0)
+            q = plan.next_q
+            minimum_clearance = min(minimum_clearance, tangent.GetClearance(q))
+        final_error = np.linalg.norm(
+            goal.translation() - self.Pose(q).translation()
+        )
+        self.assertGreaterEqual(moving_frames, 120)
+        self.assertLess(final_error, start_error)
+        self.assertGreaterEqual(minimum_clearance, 0.005 - 1e-7)
+
     def test_runtime_publishes_separate_feasible_and_raw_targets_without_sockets(self):
         live, base = probe.live, probe.base
         updates = []
@@ -154,7 +257,8 @@ class FeasibleTargetTest(unittest.TestCase):
         with ExitStack() as stack:
             stack.enter_context(patch.object(live, "parse_args", return_value=SimpleNamespace(
                 gate7_feedback_port=5012, show_inspection_scene=False,
-                disable_gate7_simulation_feedback=True)))
+                disable_gate7_simulation_feedback=True,
+                collision_profile=live.COLLISION_PROFILE_MINK_DEFAULT)))
             stack.enter_context(patch.object(base, "_prepare_mink_xml"))
             stack.enter_context(patch.object(base, "_open_udp_socket"))
             stack.enter_context(patch.object(live.socket, "socket"))
@@ -174,6 +278,10 @@ class FeasibleTargetTest(unittest.TestCase):
         self.assertFalse(packets[-1]["right_arm"]["feasible_target_valid"])
         self.assertTrue(packets[2]["right_arm"]["feasible_target_valid"])
         arm = packets[2]["right_arm"]
+        self.assertEqual("mink-default", arm["collision_profile"])
+        self.assertEqual("mink_local_detour_checked_v1", arm["feasible_target_policy"])
+        self.assertEqual(0.005, arm["collision_min_distance_m"])
+        self.assertEqual(0.010, arm["collision_detection_distance_m"])
         self.assertGreater(np.linalg.norm(np.array(arm["target_position"]) - arm["feasible_target_position"]), 0.1)
         np.testing.assert_allclose(arm["target_delta"], [0.2, 0, 0], atol=1e-12)
         from arm_sdk_teleop_contract import parse_mink_arm_sample

@@ -10,7 +10,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from compare_mink_step_acceptance import (
-    EvaluateStep, EvaluateLookahead, InspectMerit, InspectEndpointSolutions, BuildPlanner, IncrementCollisionLimit, ResolvedCollisionLimit,
+    EvaluateStep, EvaluateDirectMinkDefaultStep, EvaluateLookahead, InspectMerit, InspectEndpointSolutions, BuildPlanner, IncrementCollisionLimit, ResolvedCollisionLimit,
     WristPositionTask, FullOrientationErrorTask, CenterRedundancy, GetLimitAvoidanceStep,
     GetWristOnlySegments, probe,
 )
@@ -56,6 +56,27 @@ class MinkStepAcceptanceComparisonTests(unittest.TestCase):
             q, decision = EvaluateStep(planner, self.initial, self.Goal(goal_q), False)
         self.assertEqual("invalid_velocity", decision["status"])
         np.testing.assert_array_equal(q, self.initial)
+
+    def test_direct_mink_ablation_keeps_frozen_dofs_and_finite_output(self):
+        planner = BuildPlanner(self.model, self.initial)
+        goal_q = self.initial.copy()
+        goal_q[self.addresses[0]] -= 0.05
+        candidate, decision = EvaluateDirectMinkDefaultStep(
+            planner, self.initial, self.Goal(goal_q)
+        )
+        self.assertEqual("direct_mink_step", decision["status"])
+        self.assertTrue(np.isfinite(candidate).all())
+        velocity = np.zeros(self.model.nv)
+        probe.mujoco.mj_differentiatePos(
+            self.model, velocity, probe.base.DT, self.initial, candidate
+        )
+        np.testing.assert_allclose(velocity[planner.frozen_dofs], 0.0, atol=1e-7)
+        self.assertTrue(
+            np.all(
+                np.abs(velocity[planner.right_dofs])
+                <= planner.velocity_caps + 1e-6
+            )
+        )
 
     def test_merit_only_hold_is_distinguished_from_collision(self):
         planner = BuildPlanner(self.model, self.initial)

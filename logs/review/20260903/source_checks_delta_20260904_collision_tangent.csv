@@ -1,0 +1,2 @@
+path,semantic_review,remediation_status,finding,commit,verification
+tools/TEST_MINK_COLLISION_TANGENT_OFFLINE.bat,full_text_review,review_complete,R20,working_tree,measured_boundary_unittest_pass

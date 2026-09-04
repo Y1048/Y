@@ -52,10 +52,30 @@ VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03
 VIRTUAL_CENTER_WRIST_DAMPING_COST = 0.015
 VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE = 0.05
 
-# Mink keeps a soft clearance margin above Gate 7's 12 mm hard-stop line.
-# Using the same value for both layers caused normal solver discretization to
-# alternate between TRACK and SAFETY_HOLD at the boundary.
-TELEOP_COLLISION_TARGET_DISTANCE_M = 0.020
+# MuJoCo-only operation can reproduce upstream Mink's CollisionAvoidanceLimit
+# defaults.  Physical Gate 7 keeps a separate, explicit margin above its
+# independent 12 mm command stop.
+COLLISION_PROFILE_MINK_DEFAULT = "mink-default"
+COLLISION_PROFILE_HARDWARE_GUARDED = "hardware-guarded"
+COLLISION_PROFILES = {
+    COLLISION_PROFILE_MINK_DEFAULT: (0.005, 0.010),
+    COLLISION_PROFILE_HARDWARE_GUARDED: (0.020, 0.040),
+}
+MINK_DEFAULT_QP_RESERVE_M = 0.0005
+
+# Compatibility name for offline tools that intentionally audit the guarded
+# physical-output candidate policy. New runtime code resolves a named profile.
+TELEOP_COLLISION_TARGET_DISTANCE_M = COLLISION_PROFILES[
+    COLLISION_PROFILE_HARDWARE_GUARDED
+][0]
+
+
+def ResolveCollisionProfile(name: str) -> tuple[float, float]:
+    """Return (minimum, detection) distances for one named runtime profile."""
+    try:
+        return COLLISION_PROFILES[name]
+    except KeyError as exc:
+        raise ValueError(f"unknown collision profile: {name}") from exc
 
 ASSIST_ENTER_MARGIN_DEG = 18.0
 ASSIST_RELEASE_MARGIN_DEG = 28.0
@@ -294,6 +314,15 @@ def parse_args() -> argparse.Namespace:
         "--disable-gate7-simulation-feedback",
         action="store_true",
     )
+    parser.add_argument(
+        "--collision-profile",
+        choices=tuple(COLLISION_PROFILES),
+        default=COLLISION_PROFILE_MINK_DEFAULT,
+        help=(
+            "mink-default uses upstream Mink 5/10 mm for local simulation; "
+            "hardware-guarded is selected explicitly by the Gate 7 hardware path"
+        ),
+    )
     return parser.parse_args()
 
 
@@ -359,6 +388,18 @@ def main() -> None:
     args = parse_args()
     if not 1 <= args.gate7_feedback_port <= 65535:
         raise ValueError("gate7-feedback-port must be within 1..65535")
+    collision_profile = getattr(
+        args, "collision_profile", COLLISION_PROFILE_MINK_DEFAULT
+    )
+    collision_min_distance_m, collision_detection_distance_m = (
+        ResolveCollisionProfile(collision_profile)
+    )
+    local_tangent_steps_enabled = (
+        collision_profile == COLLISION_PROFILE_MINK_DEFAULT
+    )
+    qp_collision_min_distance_m = collision_min_distance_m + (
+        MINK_DEFAULT_QP_RESERVE_M if local_tangent_steps_enabled else 0.0
+    )
     base._prepare_mink_xml(show_inspection_scene=args.show_inspection_scene)
     model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
     base._apply_operational_joint_limits(model)
@@ -406,8 +447,8 @@ def main() -> None:
         mink.CollisionAvoidanceLimit(
             model=model,
             geom_pairs=collision_pairs,
-            minimum_distance_from_collisions=TELEOP_COLLISION_TARGET_DISTANCE_M,
-            collision_detection_distance=base.COLLISION_DETECTION_DISTANCE_M,
+            minimum_distance_from_collisions=qp_collision_min_distance_m,
+            collision_detection_distance=collision_detection_distance_m,
             gain=base.COLLISION_GAIN,
             broadphase=True,
         ),
@@ -416,8 +457,15 @@ def main() -> None:
     solver = base._select_solver()
     feasible_planner = FeasibleTargetPlanner(
         model, position_task, orientation_task, posture_task, damping_task,
-        limits, constraints, solver, TELEOP_COLLISION_TARGET_DISTANCE_M,
+        limits, constraints, solver, collision_min_distance_m,
         velocity_limits,
+        require_merit_decrease=not local_tangent_steps_enabled,
+        allow_local_detour=local_tangent_steps_enabled,
+    )
+    feasible_target_policy = (
+        "mink_local_detour_checked_v1"
+        if local_tangent_steps_enabled
+        else "checked_local_lookahead_v1"
     )
 
     target_mocap_id = int(model.body("udp_target").mocapid[0])
@@ -494,7 +542,6 @@ def main() -> None:
     gate7_feedback_accepted = 0
     gate7_feedback_rejected = 0
     gate7_feedback_applied = False
-
     print("============================================================")
     print("G1 Mink LIVE VIRTUAL-CENTER experiment")
     print("Internal position : right_wrist_roll_link")
@@ -602,6 +649,7 @@ def main() -> None:
                     }
                     target_rotation = clutch_reference["yaw_rotation"].copy()
                     posture_task.set_target(configuration.q.copy())
+                    feasible_planner.ResetDetour()
                     VirtualCenterOrientationTask.assist_latched = False
                     operator_target_position = yaw_pose.translation().copy()
                     feasible_target_position = yaw_pose.translation().copy()
@@ -653,6 +701,7 @@ def main() -> None:
                     position_task.set_target_from_configuration(configuration)
                     orientation_task.set_target_from_configuration(configuration)
                     posture_task.set_target(configuration.q.copy())
+                    feasible_planner.ResetDetour()
                     VirtualCenterOrientationTask.assist_latched = False
                     VirtualCenterOrientationTask.last_assist_gain = 0.0
 
@@ -703,7 +752,7 @@ def main() -> None:
                         )
                 collision_limited = bool(
                     min_clearance is not None
-                    and min_clearance <= base.COLLISION_DETECTION_DISTANCE_M
+                    and min_clearance <= collision_detection_distance_m
                 )
 
                 inspection_tool_position = data.xpos[
@@ -792,6 +841,11 @@ def main() -> None:
                     state_sequence += 1
                     packet["right_arm"]["position_error"] = position_error
                     packet["right_arm"].update({
+                        "collision_profile": collision_profile,
+                        "collision_min_distance_m": collision_min_distance_m,
+                        "collision_detection_distance_m": (
+                            collision_detection_distance_m
+                        ),
                         "feasible_target_position": feasible_target_position.tolist(),
                         "feasible_target_delta": (
                             feasible_target_position - (
@@ -801,7 +855,7 @@ def main() -> None:
                         ).tolist(),
                         "feasible_target_valid": feasible_target_valid,
                         "feasible_target_status": feasible_target_status,
-                        "feasible_target_policy": "checked_local_lookahead_v1",
+                        "feasible_target_policy": feasible_target_policy,
                     })
                     packet["right_arm"]["orientation_error_deg"] = orientation_error_deg
                     packet["right_arm"].update(orientation_diagnostics(target_rotation, current_rotation))
@@ -925,14 +979,16 @@ def main() -> None:
                             "received_packets": received_total,
                             "rejected_packets": rejected_total,
                             "solver": solver,
+                            "collision_profile": collision_profile,
                             "collision_pair_count": len(collision_pairs),
-                            "collision_min_distance_m": (
-                                TELEOP_COLLISION_TARGET_DISTANCE_M
+                            "collision_min_distance_m": collision_min_distance_m,
+                            "qp_collision_min_distance_m": (
+                                qp_collision_min_distance_m
                             ),
                             "gate7_hard_stop_distance_m": (
                                 base.COLLISION_MIN_DISTANCE_M
                             ),
-                            "collision_detection_distance_m": base.COLLISION_DETECTION_DISTANCE_M,
+                            "collision_detection_distance_m": collision_detection_distance_m,
                             "minimum_clearance_m": min_clearance,
                             "nearest_collision_geoms": nearest_collision_geoms,
                             "nearest_collision_bodies": nearest_collision_bodies,
@@ -963,7 +1019,7 @@ def main() -> None:
                             "feasible_target_position": feasible_target_position.tolist(),
                             "feasible_target_valid": feasible_target_valid,
                             "feasible_target_status": feasible_target_status,
-                            "feasible_target_policy": "checked_local_lookahead_v1",
+                            "feasible_target_policy": feasible_target_policy,
                             "input_position_delta": input_position_delta.tolist(),
                             "external_target_delta": (
                                 external_target_position

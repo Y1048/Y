@@ -14,6 +14,12 @@ set "CHECK_ONLY=0"
 set "DISPLAY_MODE=simulation"
 if /I "%~1"=="--hardware-display" set "DISPLAY_MODE=hardware"
 if /I "%~2"=="--hardware-display" set "DISPLAY_MODE=hardware"
+rem Local Unity/MuJoCo uses Mink's upstream 5/10 mm collision distances.
+rem The hardware-display path below always overrides this with its guarded profile.
+set "COLLISION_PROFILE=mink-default"
+if /I "%~1"=="--mink-default" set "COLLISION_PROFILE=mink-default"
+if /I "%~2"=="--mink-default" set "COLLISION_PROFILE=mink-default"
+if /I "%DISPLAY_MODE%"=="hardware" set "COLLISION_PROFILE=hardware-guarded"
 if /I "%~1"=="--baseline" (
     set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype_entry.py"
     set "IK_MODE=baseline"
@@ -139,7 +145,12 @@ if "%UNITY_PROJECT_RUNNING%"=="0" (
 
 if "%UDP_RUNNING%"=="0" (
     echo [START] Mink/DAQP G1 right-arm controller: %IK_MODE%
-    start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%"
+    if /I "%IK_MODE%"=="virtual-center" (
+        echo [PROFILE] Collision: %COLLISION_PROFILE%
+        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE%
+    ) else (
+        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%"
+    )
 ) else (
     echo [KEEP] A UDP controller is already listening on port %UDP_PORT%.
 )
@@ -178,6 +189,7 @@ if "%IK_MODE%"=="virtual-center" (
 echo   DAQP QP solver preferred
 echo   Non-right-arm DOFs frozen
 echo   Joint, velocity, and collision limits enabled
+if /I "%IK_MODE%"=="virtual-center" echo   Collision profile: %COLLISION_PROFILE%
 echo   Gate 7 command provenance: explicit live_mink
 echo.
 echo Marker colors:

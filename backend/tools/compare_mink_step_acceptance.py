@@ -289,6 +289,67 @@ def EvaluateStep(planner, current_q, goal, require_merit=True, audit=False, cons
     return current_q.copy(), result
 
 
+def EvaluateDirectMinkDefaultStep(planner, current_q, goal):
+    """Apply one upstream-style solve/integrate step without the local acceptor.
+
+    This is an offline ablation. It deliberately omits FeasibleTargetPlanner's
+    monotone merit, backtracking, and sampled path rejection so their effect can
+    be separated from Mink's own hard QP inequalities.
+    """
+    planner.configuration.update(current_q)
+    yaw = planner.configuration.get_transform_frame_to_world(
+        "right_wrist_yaw_link", "body"
+    )
+    roll = planner.configuration.get_transform_frame_to_world(
+        "right_wrist_roll_link", "body"
+    )
+    center = goal.translation() - (yaw.translation() - roll.translation())
+    planner.position_task.set_target(
+        probe.base._matrix_to_se3(roll.rotation().as_matrix(), center)
+    )
+    planner.orientation_task.set_target(
+        probe.base._matrix_to_se3(goal.rotation().as_matrix(), yaw.translation())
+    )
+    velocity = probe.mink.solve_ik(
+        planner.configuration,
+        planner.tasks,
+        probe.base.DT,
+        solver=planner.solver,
+        damping=probe.base.QP_DAMPING,
+        limits=planner.limits,
+        constraints=planner.constraints,
+    )
+    valid_velocity = (
+        np.isfinite(velocity).all()
+        and np.all(
+            np.abs(velocity[planner.right_dofs]) <= planner.velocity_caps + 1e-6
+        )
+        and np.all(np.abs(velocity[planner.frozen_dofs]) <= 1e-7)
+    )
+    if not valid_velocity:
+        planner.configuration.update(current_q)
+        return current_q.copy(), {
+            "status": "invalid_velocity",
+            "fraction": 0.0,
+            "merit_rejections": 0,
+            "geometry_rejections": 0,
+            "merit_only_block": False,
+            "minimum_path_clearance_mm": planner.GetClearance(current_q) * 1000,
+        }
+    planner.configuration.integrate_inplace(velocity, probe.base.DT)
+    candidate = planner.configuration.q.copy()
+    return candidate, {
+        "status": "direct_mink_step",
+        "fraction": 1.0,
+        "merit_rejections": 0,
+        "geometry_rejections": 0,
+        "merit_only_block": False,
+        "minimum_path_clearance_mm": min(
+            planner.GetClearance(current_q), planner.GetClearance(candidate)
+        ) * 1000,
+    }
+
+
 def InspectBoundary(planner, q, velocity):
     """Compare the QP increment inequality with the independent FK check."""
     model = planner.model
@@ -483,8 +544,21 @@ def Summarize(samples, dt):
 def RunVariant(model, initial_q, goals, require_merit, hold_s=6.0, increment_bound=False, reserve_m=0.0,
                resolve_witness=False, consistent_position=False, task_damping=None, cartesian_position=False,
                full_orientation=False, recover_reserve=True, center_redundancy=False, limit_margin_rad=None,
-               horizon_steps=1):
+               horizon_steps=1, direct_mink_default=False):
     planner = BuildPlanner(model, initial_q)
+    if direct_mink_default:
+        planner.clearance_m = 0.005
+        for index, limit in enumerate(planner.limits):
+            if isinstance(limit, probe.mink.CollisionAvoidanceLimit):
+                planner.limits[index] = probe.mink.CollisionAvoidanceLimit(
+                    model,
+                    geom_pairs=probe.base._build_collision_pairs(model)[0],
+                    gain=limit.gain,
+                    minimum_distance_from_collisions=0.005,
+                    collision_detection_distance=0.010,
+                    bound_relaxation=limit.bound_relaxation,
+                    broadphase=limit.broadphase,
+                )
     if consistent_position:
         planner.position_task = probe.mink.FrameTask("right_wrist_yaw_link", "body", probe.base.POSITION_COST, 0,
             gain=probe.base.FRAME_GAIN, lm_damping=probe.base.LM_DAMPING)
@@ -528,7 +602,11 @@ def RunVariant(model, initial_q, goals, require_merit, hold_s=6.0, increment_bou
         if phase == "return" and held_goal_audit is None:
             held_goal_audit = InspectMerit(planner, q, targets[-1])
         started = time.perf_counter()
-        if horizon_steps == 1:
+        if direct_mink_default:
+            candidate, decision = EvaluateDirectMinkDefaultStep(
+                planner, q, goal
+            )
+        elif horizon_steps == 1:
             candidate, decision = EvaluateStep(planner, q, goal, require_merit, phase not in audited_phases,
                 consistent_position, center_redundancy, limit_margin_rad)
         else:
@@ -605,7 +683,7 @@ def main():
                         help="Use synthetic FK wrist cycles, not capture targets; 1=roll, 2=pitch, 3=yaw")
     parser.add_argument("--endpoint-audit", type=Path,
                         help="Existing result JSON: inspect its held goals only, without replay")
-    parser.add_argument("--variants", nargs="+", choices=("current_merit", "geometry_only", "increment_bound", "increment_reserve", "resolved_witness", "resolved_no_merit", "consistent_wrist", "resolved_damped", "exact_cartesian", "consistent_merit", "consistent_tangent", "nullspace_center", "limit_avoidance"),
+    parser.add_argument("--variants", nargs="+", choices=("current_merit", "geometry_only", "increment_bound", "increment_reserve", "resolved_witness", "resolved_no_merit", "consistent_wrist", "resolved_damped", "exact_cartesian", "consistent_merit", "consistent_tangent", "nullspace_center", "limit_avoidance", "direct_mink_default"),
                         default=["current_merit", "geometry_only"])
     args = parser.parse_args()
     if args.wrist_only and args.endpoint_audit:
@@ -668,7 +746,8 @@ def main():
                                           recover_reserve=name not in ("consistent_tangent", "nullspace_center", "limit_avoidance"),
                                           center_redundancy=name in ("nullspace_center", "limit_avoidance"),
                                           limit_margin_rad=math.radians(probe.live.ASSIST_ENTER_MARGIN_DEG) if name == "limit_avoidance" else None,
-                                          horizon_steps=args.horizon_steps)
+                                          horizon_steps=args.horizon_steps,
+                                          direct_mink_default=name == "direct_mink_default")
             entry["variants"][name] = metrics
             sample_path = args.result_json.with_name(args.result_json.stem + f"_s{index}_{name}.jsonl")
             sample_path.parent.mkdir(parents=True, exist_ok=True)

@@ -68,6 +68,23 @@ class MinkCommandProvenanceTests(unittest.TestCase):
             'set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\\scripts\\run_mink_g1_right_arm_virtual_center_live.py"',
             launcher,
         )
+        self.assertIn('set "COLLISION_PROFILE=mink-default"', launcher)
+        self.assertIn(
+            'if /I "%~1"=="--mink-default" set "COLLISION_PROFILE=mink-default"',
+            launcher,
+        )
+        self.assertIn(
+            'if /I "%DISPLAY_MODE%"=="hardware" set "COLLISION_PROFILE=hardware-guarded"',
+            launcher,
+        )
+
+        hardware_launcher = (
+            PROJECT_ROOT / "tools" / "START_G1_GATE7_LIVE_HARDWARE.bat"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            'START_VR_HAND_TO_MUJOCO.bat" --hardware-display',
+            hardware_launcher,
+        )
 
     def test_relay_requires_explicit_live_marker(self) -> None:
         guard = (

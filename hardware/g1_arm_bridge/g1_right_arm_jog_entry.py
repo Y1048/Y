@@ -2,9 +2,9 @@
 """Supported WSL entrypoint for right-arm Jog safety guards.
 
 Before delegating to ``g1_right_arm_jog.py`` this wrapper installs fail-closed
-result semantics, permit provenance, all-29-joint binding, final swept collision
-checks, LowState IMU/motor health, and read-only runtime base/odometry stability
-supervision. It creates no command publisher itself.
+result semantics, permit provenance, all-29-joint/startup-odometry binding,
+final swept collision checks, LowState IMU/motor health, and read-only runtime
+base stability supervision. It creates no command publisher itself.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ from right_arm_jog_safety_guard import (
 from runtime_base_state_guard import (
     install_unitree_base_state_subscription,
     require_latest_runtime_base_state,
+    require_runtime_base_matches_precheck,
 )
 
 
@@ -141,6 +142,7 @@ def install_jog_safety_guards(
     def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
         require_latest_lowstate_health(jog.LowStateBuffer)
         require_latest_runtime_base_state()
+        require_runtime_base_matches_precheck(precheck)
         original_snapshot_match(snapshot, precheck, maximum_delta_rad)
         return validate_jog_runtime_full_body(
             snapshot.all_q_rad,

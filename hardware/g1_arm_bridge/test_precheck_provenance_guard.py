@@ -6,6 +6,7 @@ from __future__ import annotations
 import copy
 import unittest
 
+from g1_base_state import BASE_STATE_TOPIC
 from precheck_provenance_guard import require_provenance_bound_precheck
 from startup_state_binding_guard import build_state_binding
 
@@ -22,7 +23,7 @@ class PrecheckProvenanceGuardTests(unittest.TestCase):
             "startup_state_binding": build_state_binding(),
             "latest_base_state": {
                 "valid": True,
-                "topic": "rt/sportmodestate",
+                "topic": BASE_STATE_TOPIC,
                 "received_packets": 20,
                 "invalid_packets": 0,
                 "last_packet_age_s": 0.01,
@@ -30,6 +31,8 @@ class PrecheckProvenanceGuardTests(unittest.TestCase):
                 "quaternion_xyzw": [0.0, 0.0, 0.0, 1.0],
                 "velocity_mps": [0.0, 0.0, 0.0],
                 "yaw_speed_rad_s": 0.0,
+                "odom_position_m": [1.25, -0.40, 0.78],
+                "odom_quaternion_xyzw": [0.0, 0.0, 0.0, 1.0],
             },
         }
 
@@ -60,6 +63,17 @@ class PrecheckProvenanceGuardTests(unittest.TestCase):
         payload = self._payload()
         payload["latest_base_state"]["valid"] = False
         with self.assertRaisesRegex(ValueError, "base-state"):
+            require_provenance_bound_precheck(payload)
+
+    def test_raw_odometry_evidence_and_topic_are_required(self) -> None:
+        payload = self._payload()
+        payload["latest_base_state"].pop("odom_position_m")
+        with self.assertRaisesRegex(ValueError, "odom_position_m"):
+            require_provenance_bound_precheck(payload)
+
+        payload = self._payload()
+        payload["latest_base_state"]["topic"] = "rt/not_odom"
+        with self.assertRaisesRegex(ValueError, "canonical odometry"):
             require_provenance_bound_precheck(payload)
 
     def test_model_or_config_hash_mismatch_is_rejected(self) -> None:

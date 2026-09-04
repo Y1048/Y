@@ -20,6 +20,7 @@ This file is the current entry point for the precision review. It does not repla
 - [`REVIEW_20260904_LAUNCHERS.md`](REVIEW_20260904_LAUNCHERS.md): remaining `tools/*.bat` and launcher source review; no new finding, existing launcher findings reconfirmed
 - [`REVIEW_20260904_CONFIG_AND_FRAME.md`](REVIEW_20260904_CONFIG_AND_FRAME.md): configuration, camera-profile and wrist-frame source review; R66 reconfirmed, physical locks unchanged
 - [`REVIEW_20260904_RECOVERY_MULTISTRATEGY.md`](REVIEW_20260904_RECOVERY_MULTISTRATEGY.md): deferred multi-strategy recovery experiment review; R53/R55 reconfirmed
+- [`REVIEW_20260904_REMAINING_EXPERIMENTS_AND_HARDWARE_HELPERS.md`](REVIEW_20260904_REMAINING_EXPERIMENTS_AND_HARDWARE_HELPERS.md): final posture-sweep, TWIST2 and hardware-helper full-text review; no new finding, existing R20/R43-R45/R49/R50/R53/R54/R56 boundaries reconfirmed
 - [`REMEDIATION_20260904.md`](REMEDIATION_20260904.md): R64/release batch
 - [`REMEDIATION_20260904_CONTINUATION.md`](REMEDIATION_20260904_CONTINUATION.md): R2/R33/R40/R41/R42 supported-path mitigation
 - [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R40/R50 runtime supervision
@@ -27,16 +28,17 @@ This file is the current entry point for the precision review. It does not repla
 - [`REMEDIATION_20260904_STATE_BINDING.md`](REMEDIATION_20260904_STATE_BINDING.md): R40 base/model/config binding
 - [`REMEDIATION_20260904_DIRECT_JOG_RELEASE.md`](REMEDIATION_20260904_DIRECT_JOG_RELEASE.md): R46 direct-controller release integration
 
-The review is still incomplete. A file appearing in the index or static ledger is not thereby fully reviewed or correct.
+The bounded source inventory has now been read in full. Full-text coverage does
+not mean the code is correct or that open findings are remediated.
 
 ## Current reconciled coverage
 
 The canonical bounded ledger and code index were regenerated from current `main` after the backend-support review batch.
 
 ```text
-total current scoped files : 302
-full_text_review           : 268
-static_only                : 34
+total current scoped files : 308
+full_text_review           : 308
+static_only                : 0
 static check failures      : 0
 ```
 
@@ -48,7 +50,10 @@ logs/review/20260903/source_checks_summary_20260904.json
 docs/CODE_INDEX.md
 ```
 
-The semantic rule is deliberately conservative: prior decisions are preserved, explicit continuation deltas can promote a path to `full_text_review`, and newly discovered files default to `static_only`. Therefore 268/302 is a review-state count, not a correctness score.
+The semantic rule is deliberately conservative: prior decisions are preserved,
+explicit continuation deltas can promote a path to `full_text_review`, and newly
+discovered files default to `static_only`. Therefore 308/308 is a review-state
+count, not a correctness score or physical acceptance.
 
 ## Remediation status
 
@@ -100,11 +105,11 @@ Both workflows are offline from the robot: no Unitree publisher, DDS endpoint, W
 ## Current priority groups
 
 ```text
-1. Continue the 34 remaining posture-sweep, TWIST2 experiment and hardware-helper static-only files
-2. R20/R24/R27/R32 remain known open backend-contract/tool issues; remediate separately from review bookkeeping
+1. R20/R24/R27/R32 remain known open backend-contract/tool issues; remediate separately from review bookkeeping
+2. Preserve the experimental TWIST2 R43-R45/R49 block before any physical use
 3. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first
 4. Plan simulation/WSL integration checks with hardware output locked
-5. Keep the reconciled ledger/CODE_INDEX current after each review batch
+5. Keep the reconciled ledger/CODE_INDEX current when files change
 ```
 
 R40's source-side startup/runtime odometry continuity is closed on supported paths, but physical validation is not. Do not expand physical testing yet: actual connected-G1 SDK field compatibility, remote/deadman/CRC evidence, and WSL/DDS runtime behavior remain unverified.

@@ -10,7 +10,7 @@
 - Python 선언은 AST로 추출하며 C#/C++/배치의 호출 그래프를 자동 추정하지 않는다.
 - 상태는 2026-09-03 확인 범위다. 이후 변경은 다시 검토해야 한다.
 
-대상 파일: **303개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
+대상 파일: **308개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
 
 ## 포함 범위
 
@@ -41,12 +41,16 @@ py -3.11 backend/tools/build_code_index.py --check
 | 파일 | 줄 수 | 상태 | Python 최상위 선언(최대 5개) | SHA256 앞 12자리 |
 | --- | ---: | --- | --- | --- |
 | [MuJoCo_G1_Controller/scripts/export_g1_mink_fk_reference.py](../MuJoCo_G1_Controller/scripts/export_g1_mink_fk_reference.py) | 79 | 목록 확인 | mujoco_to_unity_delta, main | `48576cf30900` |
+| [MuJoCo_G1_Controller/scripts/g1_gate7_feedback.py](../MuJoCo_G1_Controller/scripts/g1_gate7_feedback.py) | 77 | 목록 확인 | drain_gate7_simulation_feedback, apply_gate7_simulation_feedback | `a3b14b20de41` |
+| [MuJoCo_G1_Controller/scripts/g1_mink_collision_policy.py](../MuJoCo_G1_Controller/scripts/g1_mink_collision_policy.py) | 27 | 목록 확인 | ResolveCollisionProfile | `690f7acc0dbd` |
 | [MuJoCo_G1_Controller/scripts/g1_mink_command_provenance.py](../MuJoCo_G1_Controller/scripts/g1_mink_command_provenance.py) | 37 | 목록 확인 | mark_live_mink_packet, wrap_state_packet_factory | `b852ec80fc67` |
+| [MuJoCo_G1_Controller/scripts/g1_mink_diagnostics.py](../MuJoCo_G1_Controller/scripts/g1_mink_diagnostics.py) | 10 | 목록 확인 | orientation_diagnostics | `a3b8dbe9cd27` |
 | [MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py](../MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py) | 239 | 입출력 확인 | FeasiblePlan, FeasibleTargetPlanner | `550fde8d5867` |
 | [MuJoCo_G1_Controller/scripts/g1_right_arm_common.py](../MuJoCo_G1_Controller/scripts/g1_right_arm_common.py) | 413 | 목록 확인 | _load_hardware_initial_right_arm_degrees, find_body, make_demo_xml, joint_qpos_addr, set_joint (+5) | `14885a5cbd68` |
+| [MuJoCo_G1_Controller/scripts/g1_virtual_center_tasks.py](../MuJoCo_G1_Controller/scripts/g1_virtual_center_tasks.py) | 211 | 목록 확인 | virtual_center_damping_costs, virtual_center_posture_costs, virtual_center_velocity_limits, orientation_limit_policy, VirtualCenterOrientationTask | `83358d370445` |
 | [MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py](../MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py) | 812 | 목록 확인 | _update_reachability_limit, _find_body, _prepare_mink_xml, _joint_id, _apply_operational_joint_limits (+20) | `950fe331d1a5` |
 | [MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype_entry.py](../MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype_entry.py) | 20 | 목록 확인 | main | `aebdd2dc962a` |
-| [MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py](../MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py) | 1109 | 입출력 확인 | ResolveCollisionProfile, virtual_center_damping_costs, virtual_center_posture_costs, orientation_diagnostics, virtual_center_velocity_limits (+6) | `ea5896890bb1` |
+| [MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py](../MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py) | 822 | 입출력 확인 | parse_args, main | `2aed7ae0511e` |
 | [MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live_entry.py](../MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live_entry.py) | 19 | 목록 확인 | main | `d1983100a9de` |
 | [MuJoCo_G1_Controller/scripts/test_mink_command_provenance.py](../MuJoCo_G1_Controller/scripts/test_mink_command_provenance.py) | 101 | 목록 확인 | MinkCommandProvenanceTests | `7819cd59119e` |
 | [MuJoCo_G1_Controller/scripts/test_mink_wrist_frame_contract.py](../MuJoCo_G1_Controller/scripts/test_mink_wrist_frame_contract.py) | 99 | 목록 확인 | require, require_pattern, forbid, main | `30cc0d077b66` |
@@ -99,11 +103,12 @@ py -3.11 backend/tools/build_code_index.py --check
 | [backend/tests/test_live_receiver.py](../backend/tests/test_live_receiver.py) | 243 | 목록 확인 | FakeSocket, legacy_packet, legacy_disengage_packet, legacy_tracking_disengage_packet, legacy_workspace_exit_packet (+2) | `b1f1f90f6d43` |
 | [backend/tests/test_mink_candidate_benchmark.py](../backend/tests/test_mink_candidate_benchmark.py) | 309 | 목록 확인 | BenchmarkTests | `266fcfe97edb` |
 | [backend/tests/test_mink_collision_diagnostics.py](../backend/tests/test_mink_collision_diagnostics.py) | 203 | 목록 확인 | MinkCollisionDiagnosticsTest | `291354c1067e` |
-| [backend/tests/test_mink_collision_feasibility.py](../backend/tests/test_mink_collision_feasibility.py) | 123 | 목록 확인 | CollisionFeasibilityTests | `734201ef55d0` |
+| [backend/tests/test_mink_collision_feasibility.py](../backend/tests/test_mink_collision_feasibility.py) | 129 | 목록 확인 | CollisionFeasibilityTests | `56c40659ba98` |
 | [backend/tests/test_mink_command_stream.py](../backend/tests/test_mink_command_stream.py) | 272 | 목록 확인 | FakeSocket, packet, MinkCommandStreamTest | `1fc5b8f38131` |
 | [backend/tests/test_mink_distance_invariance.py](../backend/tests/test_mink_distance_invariance.py) | 120 | 목록 확인 | DistanceInvarianceTests | `3dc5048606a4` |
 | [backend/tests/test_mink_feasible_target.py](../backend/tests/test_mink_feasible_target.py) | 293 | 목록 확인 | FeasibleTargetTest | `d559f122e580` |
 | [backend/tests/test_mink_reachability_limit.py](../backend/tests/test_mink_reachability_limit.py) | 33 | 목록 확인 | MinkReachabilityLimitTest | `d3feecf0bd93` |
+| [backend/tests/test_mink_runtime_refactor_compatibility.py](../backend/tests/test_mink_runtime_refactor_compatibility.py) | 71 | 목록 확인 | MinkRuntimeRefactorCompatibilityTest | `b5030515059f` |
 | [backend/tests/test_mink_step_acceptance_comparison.py](../backend/tests/test_mink_step_acceptance_comparison.py) | 458 | 목록 확인 | MinkStepAcceptanceComparisonTests | `ca56251a63ad` |
 | [backend/tests/test_mink_task_cost_contract.py](../backend/tests/test_mink_task_cost_contract.py) | 47 | 목록 확인 | ExampleTask, MinkTaskCostContractTest | `62ece4cc7488` |
 | [backend/tests/test_mink_tracking_lag.py](../backend/tests/test_mink_tracking_lag.py) | 48 | 목록 확인 | TrackingLagTests | `82469d1c0233` |

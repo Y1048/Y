@@ -50,15 +50,16 @@ Key state:
 - **R50** supported paths supervise LowState IMU roll/pitch, motor temperature/fault/tau finiteness, and runtime base/odometry stability. Remote/deadman and CRC/integrity remain open until actual read-only SDK fields are verified.
 - **R20/R24/R27/R32** remain open. Latest full-text review reconfirmed R20 benchmark/replay exit semantics, extended R24 to remaining stale velocity tests, retained R27 as the generic SE(3) matrix-validation boundary, and left R32 as direct V1 protocol integer coercion versus strict V2.
 - **R53** remains open. Camera validation and inspection-scene tests add shared generated-MuJoCo-XML writer surfaces to the existing model/evidence provenance finding.
+- The bounded 308-file source inventory is fully read. This closes the review queue only; it does not close any R-number or authorize physical output.
 
 ## 4. Reconciled review coverage
 
 Current canonical ledger:
 
 ```text
-total current scoped files : 302
-full_text_review           : 268
-static_only                : 34
+total current scoped files : 308
+full_text_review           : 308
+static_only                : 0
 static check failures      : 0
 ```
 
@@ -81,11 +82,11 @@ docs/REVIEW_20260904_BACKEND_DIAGNOSTICS_3.md
 docs/REVIEW_20260904_LAUNCHERS.md
 docs/REVIEW_20260904_CONFIG_AND_FRAME.md
 docs/REVIEW_20260904_RECOVERY_MULTISTRATEGY.md
+docs/REVIEW_20260904_REMAINING_EXPERIMENTS_AND_HARDWARE_HELPERS.md
 ```
 
-The 34 `static_only` files remain the review queue. Backend diagnostic/test,
-`tools/*.bat` launcher, configuration/frame and multi-strategy batches are
-complete at the current scope.
+The current bounded inventory has no remaining `static_only` files. This is
+full-text review coverage, not a correctness or physical-validation claim.
 
 ## 5. Offline regression evidence
 
@@ -104,11 +105,11 @@ These workflows are robot-offline and create no Unitree publisher, DDS endpoint,
 ## 6. Immediate next work
 
 ```text
-1. Continue the 34 remaining posture-sweep, TWIST2 experiment and hardware-helper static-only files.
-2. Keep R20/R24/R27/R32 remediation separate from review bookkeeping.
+1. Keep R20/R24/R27/R32 remediation separate from completed review bookkeeping.
+2. Preserve the experimental TWIST2 R43-R45/R49 block before any physical use.
 3. Do not invent R50 remote/deadman/CRC checks; verify actual read-only Unitree SDK fields first.
 4. Plan simulation/WSL integration checks with hardware output locked.
-5. Reconcile CODE_INDEX/source_checks after each substantial review batch.
+5. Reconcile CODE_INDEX/source_checks whenever scoped files change.
 ```
 
 Do not expand physical testing yet.

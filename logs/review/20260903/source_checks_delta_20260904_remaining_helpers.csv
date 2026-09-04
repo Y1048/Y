@@ -1,0 +1,40 @@
+path,semantic_review,remediation_status,finding,commit,verification
+MuJoCo_G1_Controller/scripts/g1_gate7_feedback.py,full_text_review,review_complete,NONE,working_tree,full source read; compatibility test
+MuJoCo_G1_Controller/scripts/g1_mink_collision_policy.py,full_text_review,review_complete,NONE,working_tree,full source read; compatibility test
+MuJoCo_G1_Controller/scripts/g1_mink_diagnostics.py,full_text_review,review_complete,NONE,working_tree,full source read; compatibility test
+MuJoCo_G1_Controller/scripts/g1_virtual_center_tasks.py,full_text_review,review_complete,NONE,working_tree,full source read; compatibility test
+backend/tests/test_mink_runtime_refactor_compatibility.py,full_text_review,review_complete,NONE,working_tree,full source read
+experiments/startup_recovery_posture_sweep/RUN_POSTURE_SWEEP.bat,full_text_review,review_complete,R54,working_tree,full source read
+experiments/startup_recovery_posture_sweep/RUN_STANDARD_POSTURE_SWEEP.bat,full_text_review,review_complete,R54,working_tree,full source read
+experiments/startup_recovery_posture_sweep/run_sweep.py,full_text_review,review_complete,R53/R54,working_tree,full source read
+experiments/startup_recovery_posture_sweep/single_pose_runner.py,full_text_review,review_complete,R53,working_tree,full source read
+experiments/startup_recovery_posture_sweep/test_sweep.py,full_text_review,review_complete,R53/R54 coverage boundary,working_tree,full source read
+experiments/twist2_right_arm_manual/TEST_OFFLINE.bat,full_text_review,review_complete,R43-R45/R49 coverage boundary,working_tree,full source read
+experiments/twist2_right_arm_manual/twist2_right_arm_trial.cpp,full_text_review,review_complete,R43-R45/R49,working_tree,full source read
+hardware/g1_arm_bridge/g1_base_state.py,full_text_review,review_complete,R40/R50 supported boundary,working_tree,full source read
+hardware/g1_arm_bridge/generate_fake_mink_targets.py,full_text_review,review_complete,R15 provenance boundary,working_tree,full source read
+hardware/g1_arm_bridge/lowstate_health_guard.py,full_text_review,review_complete,R50,working_tree,full source read
+hardware/g1_arm_bridge/mink_target_dry_run.py,full_text_review,review_complete,R20,working_tree,full source read
+hardware/g1_arm_bridge/probe_joint_motion.py,full_text_review,review_complete,NONE,working_tree,full source read; not executed
+hardware/g1_arm_bridge/test_arm_sdk_hold_contract.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_arm_sdk_teleop_contract.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_experimental_stateful_gate7_controller.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_fake_mink_safety_e2e.py,full_text_review,review_complete,R20 coverage boundary,working_tree,full source read
+hardware/g1_arm_bridge/test_g1_base_state.py,full_text_review,review_complete,R40/R50 coverage,working_tree,full source read
+hardware/g1_arm_bridge/test_g1_right_arm_jog.py,full_text_review,review_complete,cleanup only,working_tree,full source read
+hardware/g1_arm_bridge/test_gate6_arm_sdk_hold.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_gate7_first_live_profile.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_gate7_live_dry_run.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_gate7_live_dry_run_e2e.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_gate7_visible_motion_profile.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_hardware_state.py,full_text_review,review_complete,R40/R50 coverage,working_tree,full source read
+hardware/g1_arm_bridge/test_lowstate_health_guard.py,full_text_review,review_complete,R50 coverage,working_tree,full source read
+hardware/g1_arm_bridge/test_mink_safety_pipeline.py,full_text_review,review_complete,R20 coverage boundary,working_tree,full source read
+hardware/g1_arm_bridge/test_physical_precheck_provenance_entries.py,full_text_review,review_complete,R21/R51 coverage,working_tree,full source read
+hardware/g1_arm_bridge/test_right_arm_jog_contract.py,full_text_review,review_complete,R42/R46 coverage,working_tree,full source read
+hardware/g1_arm_bridge/test_safety_gate.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/test_validate_right_arm_jog_collision_path.py,full_text_review,review_complete,R40/R42 coverage,working_tree,full source read
+hardware/g1_arm_bridge/validate_right_arm_jog_collision_path.py,full_text_review,review_complete,R40/R42 boundary,working_tree,full source read
+hardware/g1_arm_bridge/verify_arm_sdk_message_offline.py,full_text_review,review_complete,NONE,working_tree,full source read
+hardware/g1_arm_bridge/verify_initial_pose_sync.py,full_text_review,review_complete,R53,working_tree,full source read; not executed
+tools/DETECT_G1_NETWORK_ADMIN.ps1,full_text_review,review_complete,R56,working_tree,full source read; not executed

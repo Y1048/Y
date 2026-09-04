@@ -8,6 +8,8 @@ import math
 from pathlib import Path
 from typing import Any
 
+from g1_base_state import BASE_STATE_TOPIC
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = "g1.startup_precheck.state_binding.v1"
@@ -106,6 +108,8 @@ def require_state_binding(
     base = payload.get("latest_base_state")
     if not isinstance(base, dict) or base.get("valid") is not True:
         raise ValueError("startup precheck lacks a valid base-state sample")
+    if base.get("topic") != BASE_STATE_TOPIC:
+        raise ValueError("startup precheck base-state topic is not canonical odometry")
     age = base.get("last_packet_age_s")
     if (
         not isinstance(age, (int, float))

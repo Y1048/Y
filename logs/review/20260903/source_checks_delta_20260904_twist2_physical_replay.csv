@@ -1,0 +1,4 @@
+path,semantic_review,remediation_status,finding,commit,verification
+experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat,full_text_review,review_complete,NONE,working_tree,full source read; local-only launcher contract checked
+experiments/twist2_right_arm_manual/replay_physical_csv_mujoco.py,full_text_review,review_complete,NONE,working_tree,full source read; real CSV validate-only and MuJoCo mapping tests passed
+experiments/twist2_right_arm_manual/test_replay_physical_csv_mujoco.py,full_text_review,test_review_complete,NONE,working_tree,5 tests passed including real capture

@@ -10,7 +10,7 @@
 - Python 선언은 AST로 추출하며 C#/C++/배치의 호출 그래프를 자동 추정하지 않는다.
 - 상태는 2026-09-03 확인 범위다. 이후 변경은 다시 검토해야 한다.
 
-대상 파일: **308개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
+대상 파일: **311개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
 
 ## 포함 범위
 
@@ -174,6 +174,9 @@ py -3.11 backend/tools/build_code_index.py --check
 | [experiments/startup_recovery_posture_sweep/single_pose_runner.py](../experiments/startup_recovery_posture_sweep/single_pose_runner.py) | 48 | 목록 확인 | ParseArguments, Main | `537e1f51ce89` |
 | [experiments/startup_recovery_posture_sweep/test_sweep.py](../experiments/startup_recovery_posture_sweep/test_sweep.py) | 74 | 목록 확인 | StartupRecoveryPostureSweepTests | `b17abad23a99` |
 | [experiments/twist2_right_arm_manual/TEST_OFFLINE.bat](../experiments/twist2_right_arm_manual/TEST_OFFLINE.bat) | 18 | 목록 확인 | - | `53a20610cefb` |
+| [experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat](../experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat) | 34 | 목록 확인 | - | `a4e2c141ef04` |
+| [experiments/twist2_right_arm_manual/replay_physical_csv_mujoco.py](../experiments/twist2_right_arm_manual/replay_physical_csv_mujoco.py) | 219 | 목록 확인 | PhysicalSample, _FiniteValue, LoadPhysicalCsv, BuildSummary, ParseArguments (+1) | `2d72f4abd74e` |
+| [experiments/twist2_right_arm_manual/test_replay_physical_csv_mujoco.py](../experiments/twist2_right_arm_manual/test_replay_physical_csv_mujoco.py) | 81 | 목록 확인 | ReplayPhysicalCsvMuJoCoTests | `0de94441a4a5` |
 | [experiments/twist2_right_arm_manual/twist2_right_arm_trial.cpp](../experiments/twist2_right_arm_manual/twist2_right_arm_trial.cpp) | 1205 | 목록 확인 | - | `e61d8a3cf830` |
 | [experiments/twist2_right_arm_manual/verify_offline.py](../experiments/twist2_right_arm_manual/verify_offline.py) | 213 | 목록 확인 | CheckCondition, GetFunction, GetDeclaration, GetLinuxPath, RunLocal (+4) | `f23e6091c4ee` |
 | [hardware/g1_arm_bridge/arm_sdk_hold_contract.py](../hardware/g1_arm_bridge/arm_sdk_hold_contract.py) | 364 | 목록 확인 | ArmSdkHoldConfig, HoldValidation, ArmSdkCommandFrame, _finite_vector, _uint8 (+6) | `7096d037e98e` |

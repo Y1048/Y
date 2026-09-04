@@ -115,6 +115,12 @@ G1 환경의 SDK/Torch 버전·아키텍처 호환성은 따로 확인해야 한
 작은 `+/- 1 step` 시험이 아니다. 상세 수치, CSV 해시 및 아직 확인하지 않은
 안전 범위는 [`../../docs/PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md`](../../docs/PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md)에 기록했다.
 
+물리 CSV를 PC의 G1 MuJoCo 모델에 같은 관절 순서로 재생하려면
+`VIEW_PHYSICAL_CSV_MUJOCO.bat`을 실행한다. 이 재생기는 CSV의 실측
+`q_0..q_28`만 읽으며 Unitree SDK, DDS, 소켓과 로봇 명령을 사용하지 않는다.
+MuJoCo에서 `Q` 구간이 뒤쪽, `Z` 구간이 앞쪽으로 보이는지 확인하면 실제 G1과
+PC 모델의 shoulder-pitch 부호가 같은지 시각적으로 판정할 수 있다.
+
 ## 다음 물리 시험 전 남은 단계
 
 1. `R43`, `R44`, `R45`, `R49`의 실험 경로 제한을 유지하고 변경 시 별도 검토.

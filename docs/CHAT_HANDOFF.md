@@ -57,8 +57,8 @@ Key state:
 Current canonical ledger:
 
 ```text
-total current scoped files : 308
-full_text_review           : 308
+total current scoped files : 311
+full_text_review           : 311
 static_only                : 0
 static check failures      : 0
 ```
@@ -118,6 +118,12 @@ q and moved it forward. The run also included an absolute-zero `A` input, so it
 is not a strict +/- one-step acceptance test. See
 [`PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md`](PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md).
 Do not expand physical testing without a new exact approval.
+
+The captured 1,538-row full-body CSV now has a local-only visual replay at
+`experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat`. It maps
+measured `q_0..q_28` directly to the canonical MuJoCo motor order and creates no
+Unitree SDK, DDS, socket, publisher or robot command. Automated schema/model
+validation passes; the human visual sign comparison is still pending.
 
 ## 6A. Rejected Mink collision-boundary experiment
 

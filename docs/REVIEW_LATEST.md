@@ -17,6 +17,7 @@ This file is the current entry point for the precision review. It does not repla
 - [`REMEDIATION_20260904_RUNTIME_SUPERVISION.md`](REMEDIATION_20260904_RUNTIME_SUPERVISION.md): R50 runtime supervision
 - [`REMEDIATION_20260904_PROVENANCE.md`](REMEDIATION_20260904_PROVENANCE.md): R15/R21/R23/R35/R51/R65 provenance/freshness
 - [`REMEDIATION_20260904_STATE_BINDING.md`](REMEDIATION_20260904_STATE_BINDING.md): R40 base/model/config binding
+- [`REMEDIATION_20260904_DIRECT_JOG_RELEASE.md`](REMEDIATION_20260904_DIRECT_JOG_RELEASE.md): R46 direct-controller release integration
 
 The review is still incomplete. A file appearing in the index or static ledger is not thereby fully reviewed or correct.
 
@@ -32,12 +33,12 @@ The review is still incomplete. A file appearing in the index or static ledger i
 | R1 | IMPLEMENTED; integration/physical validation pending | Release regression PASS in offline safety CI |
 | R3 | IMPLEMENTED; integration/physical validation pending | Gate 6 interruption/fault regression PASS |
 | R34 | IMPLEMENTED; integration/physical validation pending | Gate 6 fault-release regression PASS |
-| R46 | SUPPORTED-LAUNCHER MITIGATION; direct controller open | Wrapper/result tests PASS; direct core integration still open |
+| R46 | IMPLEMENTED IN DIRECT CONTROLLER; runtime/physical validation pending | Shared release finalizer integrated in `g1_right_arm_jog.py`; direct/wrapper release regressions PASS |
 | R2 | SUPPORTED GATE 7 PATH MITIGATED; core path open | Final-segment collision guard tests PASS |
 | R41 | SUPPORTED GATE 7 PATH MITIGATED; core parser open | Active-clearance and entry tests PASS |
 | R33 | SUPPORTED GATE 7 PATH MITIGATED; core live adapter open | Acquisition freshness/order tests PASS |
 | R40 | PARTIAL SUPPORTED-PATH MITIGATION | 29-joint binding + precheck base evidence + model/config/source hashes; live base rebinding remains open |
-| R42 | SUPPORTED JOG PATH MITIGATED; direct controller open | Permit/full-body/final-segment tests PASS |
+| R42 | SUPPORTED JOG PATH MITIGATED; direct controller path still uses entry-installed collision/full-body guard | Permit/full-body/final-segment tests PASS |
 | R50 | PARTIAL SUPPORTED-PATH MITIGATION | IMU/motor health tests PASS; base/remote/CRC remain open |
 | R21 | SUPPORTED HARDWARE-SYNC PATH MITIGATED | Startup provenance tests PASS |
 | R51 | SUPPORTED PHYSICAL STARTUP PATHS MITIGATED | Per-run token/precheck tests PASS |
@@ -48,7 +49,7 @@ The review is still incomplete. A file appearing in the index or static ledger i
 
 ## Current-checkout offline CI
 
-Two robot-offline workflows are now active on `main`.
+Two robot-offline workflows are active on `main`.
 
 ```text
 .github/workflows/offline-provenance-regression.yml
@@ -59,24 +60,23 @@ This covers 54 tests across backend command ingress, Unity source-clock/backlog 
 
 ```text
 .github/workflows/offline-safety-regression.yml
-Run 33822295391 : PASS
+Run 33823115876 : PASS
 ```
 
-This covers 44 unittest cases plus the Gate 6 interruption-release offline contract script across shared/Gate 6 release, Gate 7 release/acquisition/final collision guards, LowState health supervision, and Jog safety/result boundaries.
+This covers 48 unittest cases plus the Gate 6 interruption-release offline contract script across shared/Gate 6 release, Gate 7 release/acquisition/final collision guards, LowState health supervision, Jog permit/full-body/final-segment safety, direct Jog shared-release integration, and the supported Jog result guard.
 
 Both workflows are offline from the robot: no Unitree publisher, DDS endpoint, WSL runtime, Unity/Quest runtime or G1 connection is created.
 
 ## Current priority groups
 
 ```text
-1. R50 remaining runtime evidence: live base/odometry, remote/deadman, CRC/integrity where SDK fields are verified
-2. R46 direct Jog controller release integration
-3. R40 remaining live base-state publisher-boundary rebinding
-4. Simulation/WSL integration checks after offline suites remain green
-5. Canonical review-ledger/CODE_INDEX regeneration and remaining static-only file review
+1. R40 remaining live base-state publisher-boundary rebinding
+2. R50 remaining runtime evidence: live base/odometry, remote/deadman, CRC/integrity where SDK fields are verified
+3. Simulation/WSL integration checks after offline suites remain green
+4. Canonical review-ledger/CODE_INDEX regeneration and remaining static-only file review
 ```
 
-Do not expand physical testing yet. Offline regression coverage is now materially broader, but R40/R50 and direct R46 still contain open physical-path boundaries.
+R46 is no longer an open direct-controller release-result gap. Do not expand physical testing yet: R40/R50 still contain open physical-state supervision boundaries and no WSL/DDS or G1 runtime validation has been performed for these fixes.
 
 ## Safety boundary
 

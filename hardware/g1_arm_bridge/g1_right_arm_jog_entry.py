@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Supported WSL entrypoint for right-arm Jog safety guards.
 
-The physical controller remains in ``g1_right_arm_jog.py``. This wrapper creates
-no DDS entity itself. Before delegating to the controller it installs fail-closed
-result semantics, permit provenance validation, provenance-bound all-29-joint
-precheck binding, final swept-segment collision checks, and LowState IMU/motor
-supervision.
+Before delegating to ``g1_right_arm_jog.py`` this wrapper installs fail-closed
+result semantics, permit provenance, all-29-joint binding, final swept collision
+checks, LowState IMU/motor health, and read-only runtime base/odometry stability
+supervision. It creates no command publisher itself.
 """
 
 from __future__ import annotations
@@ -26,6 +25,10 @@ from right_arm_jog_safety_guard import (
     validate_jog_final_segment,
     validate_jog_permit_provenance,
     validate_jog_runtime_full_body,
+)
+from runtime_base_state_guard import (
+    install_unitree_base_state_subscription,
+    require_latest_runtime_base_state,
 )
 
 
@@ -137,6 +140,7 @@ def install_jog_safety_guards(
 
     def guarded_snapshot_match(snapshot, precheck, maximum_delta_rad):
         require_latest_lowstate_health(jog.LowStateBuffer)
+        require_latest_runtime_base_state()
         original_snapshot_match(snapshot, precheck, maximum_delta_rad)
         return validate_jog_runtime_full_body(
             snapshot.all_q_rad,
@@ -168,6 +172,7 @@ def install_jog_safety_guards(
         hold_config,
     ):
         require_latest_lowstate_health(jog.LowStateBuffer)
+        require_latest_runtime_base_state()
         precheck = state.get("precheck")
         if precheck is None:
             raise RuntimeError("startup precheck is unavailable during Jog control")
@@ -218,6 +223,8 @@ def main() -> int:
         original_write_result(path, payload)
 
     jog.write_result = guarded_write_result
+    if "--validate-only" not in argv:
+        install_unitree_base_state_subscription()
     return jog.main()
 
 

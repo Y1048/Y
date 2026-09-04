@@ -14,6 +14,7 @@ from precheck_provenance_guard import require_provenance_bound_precheck
 from runtime_base_state_guard import (
     install_unitree_base_state_subscription,
     require_latest_runtime_base_state,
+    require_runtime_base_matches_precheck,
 )
 
 
@@ -21,12 +22,15 @@ def install_supported_gate6_guards() -> None:
     if getattr(hold, "_supported_gate6_guards_installed", False):
         return
     install_lowstate_health_tracking(hold.LowStateBuffer)
+    state = {"precheck": None}
 
     original_precheck = hold.validate_precheck
 
     def guarded_precheck(path, maximum_age_s):
         payload = original_precheck(path, maximum_age_s)
-        return require_provenance_bound_precheck(payload)
+        payload = require_provenance_bound_precheck(payload)
+        state["precheck"] = payload
+        return payload
 
     hold.validate_precheck = guarded_precheck
 
@@ -36,6 +40,10 @@ def install_supported_gate6_guards() -> None:
         result = original_collect(buffer, config)
         require_latest_lowstate_health(hold.LowStateBuffer)
         require_latest_runtime_base_state()
+        precheck = state.get("precheck")
+        if precheck is None:
+            raise RuntimeError("startup precheck is unavailable for Gate 6 base binding")
+        require_runtime_base_matches_precheck(precheck)
         return result
 
     hold._collect_settled_snapshot = guarded_collect

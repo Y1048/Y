@@ -24,7 +24,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install offline dependencies
-        run: python -m pip install --disable-pip-version-check numpy
+        run: python -m pip install --disable-pip-version-check numpy mujoco
 
       - name: Shared and Gate 6 release
         run: |

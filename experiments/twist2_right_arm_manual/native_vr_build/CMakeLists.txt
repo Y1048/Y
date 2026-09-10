@@ -128,22 +128,33 @@ function(add_twist2_executable target source)
   configure_torch(${target})
 endfunction()
 
-add_twist2_executable(g1_twist2_vr_native_draft "${CMAKE_CURRENT_LIST_DIR}/../twist2_vr_native_draft.cpp")
-target_include_directories(g1_twist2_vr_native_draft PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
+# This branch does not carry three legacy source files. Keep the cycle target
+# reproducible without inventing/replacing them or using untracked robot files.
+option(BUILD_LEGACY_NATIVE_TARGETS "Build legacy native/receive/UDP targets" OFF)
+if(BUILD_LEGACY_NATIVE_TARGETS)
+  foreach(source twist2_vr_native_draft.cpp pc_native_receive_probe.cpp twist2_mink_udp_trial.cpp)
+    if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../${source}")
+      message(FATAL_ERROR "Legacy source missing: ${source}; use BUILD_LEGACY_NATIVE_TARGETS=OFF for cycle-only")
+    endif()
+  endforeach()
+  add_twist2_executable(g1_twist2_vr_native_draft "${CMAKE_CURRENT_LIST_DIR}/../twist2_vr_native_draft.cpp")
+  target_include_directories(g1_twist2_vr_native_draft PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
 
-# Explicit build only: experimental semantics cannot replace the diagnostic binary.
-add_twist2_executable(g1_twist2_vr_split_candidate "${CMAKE_CURRENT_LIST_DIR}/../twist2_vr_native_draft.cpp")
-set_target_properties(g1_twist2_vr_split_candidate PROPERTIES EXCLUDE_FROM_ALL TRUE)
-target_compile_definitions(g1_twist2_vr_split_candidate PRIVATE TWIST2_SPLIT_CANDIDATE=1)
-target_include_directories(g1_twist2_vr_split_candidate PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
+  # Explicit build only: experimental semantics cannot replace the diagnostic binary.
+  add_twist2_executable(g1_twist2_vr_split_candidate "${CMAKE_CURRENT_LIST_DIR}/../twist2_vr_native_draft.cpp")
+  set_target_properties(g1_twist2_vr_split_candidate PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  target_compile_definitions(g1_twist2_vr_split_candidate PRIVATE TWIST2_SPLIT_CANDIDATE=1)
+  target_include_directories(g1_twist2_vr_split_candidate PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
 
-add_twist2_executable(g1_pc_native_receive_probe "${CMAKE_CURRENT_LIST_DIR}/../pc_native_receive_probe.cpp")
-set_target_properties(g1_pc_native_receive_probe PROPERTIES EXCLUDE_FROM_ALL TRUE)
-target_include_directories(g1_pc_native_receive_probe PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
+  add_twist2_executable(g1_pc_native_receive_probe "${CMAKE_CURRENT_LIST_DIR}/../pc_native_receive_probe.cpp")
+  set_target_properties(g1_pc_native_receive_probe PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  target_include_directories(g1_pc_native_receive_probe PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
 
-add_twist2_executable(g1_twist2_mink_udp_trial "${CMAKE_CURRENT_LIST_DIR}/../twist2_mink_udp_trial.cpp")
-set_target_properties(g1_twist2_mink_udp_trial PROPERTIES EXCLUDE_FROM_ALL TRUE)
-target_include_directories(g1_twist2_mink_udp_trial PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
+  add_twist2_executable(g1_twist2_mink_udp_trial "${CMAKE_CURRENT_LIST_DIR}/../twist2_mink_udp_trial.cpp")
+  set_target_properties(g1_twist2_mink_udp_trial PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  target_include_directories(g1_twist2_mink_udp_trial PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
+
+endif()
 
 # Separate opt-in cycle candidate; never replaces the preserved UDP trial.
 add_twist2_executable(g1_twist2_mink_cycle_trial "${CMAKE_CURRENT_LIST_DIR}/../twist2_mink_cycle_trial.cpp")

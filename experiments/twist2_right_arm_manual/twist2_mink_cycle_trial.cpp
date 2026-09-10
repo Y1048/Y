@@ -10,9 +10,11 @@
 #include "native_snapshot_freshness.hpp"
 #include "native_state_tick.hpp"
 #include "verified_regular_handoff.hpp"
+#include "regular_handoff_safety.hpp"
 #include <functional>
 
 #include <unitree/common/thread/thread.hpp>
+#include <unitree/common/thread/recurrent_thread.hpp>
 #include <unitree/robot/b2/motion_switcher/motion_switcher_client.hpp>
 #include <unitree/robot/g1/loco/g1_loco_client.hpp>
 #include <unitree/robot/channel/channel_publisher.hpp>
@@ -225,6 +227,13 @@ class Controller {
     loco_->Init();
   }
 
+  ~Controller() {
+    // Stop callbacks while their state/mutex members are still alive.
+    active_.store(false);
+    writer_.reset();
+    subscriber_.reset();
+  }
+
   void wait_for_state() {
     const auto deadline = Clock::now() + std::chrono::seconds(10);
     while (!has_state_.load() && Clock::now() < deadline) {
@@ -413,6 +422,9 @@ class Controller {
     std::cout << '\n';
     std::cout << "[handoff] releasing motion service: " << name << '\n';
     set_capture_desired();
+    // A thrown/failed release has an uncertain outcome. Do not let the main
+    // scope unwind until the observed owner is resolved, even at acquisition.
+    owner_phase_ = regular_handoff::OwnerPhase::WriterStopped;
     const std::int32_t released = switcher_->ReleaseMode();
     if (released != 0) {
       throw std::runtime_error(
@@ -423,6 +435,7 @@ class Controller {
     // 500-Hz writer active immediately after a successful release; do not put
     // another potentially throwing operation in this handoff gap.
     activated_at_ = Clock::now();
+    owner_phase_ = regular_handoff::OwnerPhase::Holding;
     active_.store(true);
   }
 
@@ -450,141 +463,153 @@ class Controller {
     planned_.store(true);
   }
 
-  [[noreturn]] void finish() {
-    std::cout << "[position hold] " << reason()
-              << "; automatic AI handoff is disabled and the last valid "
-                 "TWIST2 position command remains active; keep this process "
-                 "running until another verified owner is ready\n";
-    for (;;)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  [[noreturn]] void finish() noexcept {
+    try {
+      std::cout << "[position hold] " << reason()
+                << "; last valid TWIST2 position command remains active; "
+                   "no automatic retry or process exit\n";
+    } catch (...) {}
+    for (;;) ::usleep(100000);
   }
 
-  [[noreturn]] void resume_position_hold_after_failed_regular_handoff(
-      const std::string& detail) {
-    {
-      std::lock_guard<std::mutex> lock(reason_mutex_);
-      reason_ = "Regular handoff failed with no active motion service: " + detail;
-    }
-    activated_at_ = Clock::now();
+  double Now() const noexcept {
+    return std::chrono::duration<double>(Clock::now().time_since_epoch()).count();
+  }
+
+  int CheckMode(std::string& name) {
+    std::string form;
+    return switcher_->CheckMode(form, name);
+  }
+
+  int GetFsmId(int& id) { return loco_->GetFsmId(id); }
+
+  bool StateValid() const {
+    Clock::time_point received;
+    const LowState state = snapshot(nullptr, &received);
+    validate_state(state, kVelocityLimit, false, received, true);
+    return true;
+  }
+
+  void PrepareInactiveWriter() {
+    if (active_.load() ||
+        owner_phase_ != regular_handoff::OwnerPhase::WriterStopped)
+      throw std::logic_error("writer preparation requires stopped owner");
+    if (!writer_) start_writer();
+  }
+
+  void CancelPreparedWriter() noexcept { if (!active_.load()) writer_.reset(); }
+
+  bool EnablePreparedWriter(double observation_started) noexcept {
+    const auto enabled_at = Clock::now();
+    const double now = std::chrono::duration<double>(
+        enabled_at.time_since_epoch()).count();
+    if (!writer_ || active_.load() || !handoff_requested_.load() ||
+        owner_phase_ != regular_handoff::OwnerPhase::WriterStopped ||
+        !regular_handoff::FreshInterval(observation_started, now))
+      return false;
+    // No RPC, logging, allocation or mutex acquisition after the freshness
+    // check. The thread was created inactive before the new CheckMode call.
+    activated_at_ = enabled_at;
+    owner_phase_ = regular_handoff::OwnerPhase::Holding;
     active_.store(true);
-    writer_ = unitree::common::CreateRecurrentThreadEx(
-        "g1_twist2_500hz", UT_CPU_ID_NONE, 2000,
-        &Controller::write_cycle, this);
-    std::cout << "[handoff fallback] CheckMode confirmed no active service; "
-                 "resumed the last valid TWIST2 position hold\n";
-    finish();
+    return true;
   }
 
-  void verified_regular_handoff() {
-    // Keep publishing the final position until the upper body has actually
-    // settled. SelectMode is never called while the 500-Hz writer is alive.
-    const auto settle_deadline = Clock::now() + std::chrono::seconds(10);
-    auto stable_since = Clock::time_point{};
-    while (Clock::now() < settle_deadline) {
-      Clock::time_point received;
-      const LowState state = snapshot(nullptr, &received);
-      validate_state(state, kVelocityLimit, false, received, true);
-      const WriterFrame command_frame = writer_frame();
-      bool stable = command_frame.valid;
-      for (std::size_t joint = 15; joint < kDofs; ++joint) {
-        stable = stable &&
-                 std::abs(state.motor_state()[joint].q() -
-                          command_frame.target[joint]) <=
-                     PdReadySettle::error_limit &&
-                 std::abs(state.motor_state()[joint].dq()) <=
-                     PdReadySettle::speed_limit;
-      }
-      if (!stable) {
-        stable_since = Clock::time_point{};
-      } else if (stable_since == Clock::time_point{}) {
-        stable_since = Clock::now();
-      } else if (Clock::now() - stable_since >= std::chrono::seconds(1)) {
-        break;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-    if (stable_since == Clock::time_point{} ||
-        Clock::now() - stable_since < std::chrono::seconds(1)) {
-      throw std::runtime_error("Regular handoff refused: upper body did not settle");
-    }
+  int regular_fsm_id() const noexcept { return start_fsm_id_; }
 
-    std::cout << "[handoff] upper body stable; stopping LowCmd writer before SelectMode(ai)\n";
-    active_.store(false);
-    writer_.reset();
-    const std::int32_t selected = switcher_->SelectMode("ai");
-    if (selected != 0)
-      std::cout << "[handoff] SelectMode(ai) returned " << selected
-                << "; classifying the observed owner before any fallback\n";
-
+  bool monitor_regular_handoff() {
     VerifiedRegularHandoffGate gate(start_fsm_id_);
-    const auto verify_deadline = Clock::now() + std::chrono::seconds(10);
-    std::string last_name;
-    int last_mode_result = -1;
-    while (Clock::now() < verify_deadline) {
-      std::string form;
-      std::string name;
-      const int mode_result = switcher_->CheckMode(form, name);
-      last_mode_result = mode_result;
-      last_name = name;
-      int fsm_id = -1;
-      const int fsm_result = loco_->GetFsmId(fsm_id);
-      bool state_valid = false;
-      try {
-        Clock::time_point received;
-        const LowState state = snapshot(nullptr, &received);
-        validate_state(state, kVelocityLimit, false, received, true);
-        state_valid = true;
-      } catch (...) {
-        state_valid = false;
-      }
-      const double now = std::chrono::duration<double>(
-          Clock::now().time_since_epoch()).count();
-      if (gate.Update(now, mode_result, name, fsm_result, fsm_id,
-                      state_valid)) {
-        publisher_.reset();
-        std::cout << "[SHUTDOWN COMPLETE] Regular service ai and FSM "
-                  << fsm_id << " verified stable for 1 s\n";
-        return;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    }
-    if (last_mode_result == 0 && last_name.empty()) {
-      resume_position_hold_after_failed_regular_handoff(
-          "SelectMode result=" + std::to_string(selected));
-    }
-    std::cout << "[handoff unverified] observed service result="
-              << last_mode_result << " name='" << last_name
-              << "'; LowCmd remains stopped to prevent owner overlap. "
-                 "This process will keep monitoring and will not exit.\n";
+    const double verify_deadline = Now() + 10.0;
     for (;;) {
-      std::string form;
-      std::string name;
-      const int mode_result = switcher_->CheckMode(form, name);
-      int fsm_id = -1;
-      const int fsm_result = loco_->GetFsmId(fsm_id);
-      bool state_valid = false;
+      const auto observation = regular_handoff::Observe(*this);
+      if (gate.Update(observation.finished, observation.mode_result,
+                      observation.mode, observation.fsm_result,
+                      observation.fsm_id,
+                      observation.state_valid && observation.Fresh())) {
+        publisher_.reset();
+        owner_phase_ = regular_handoff::OwnerPhase::RegularVerified;
+        std::fputs("[SHUTDOWN COMPLETE] Regular ai/FSM and fresh LowState "
+                   "verified for a sampled continuous second\n", stdout);
+        return true;
+      }
+      const bool delayed = Now() >= verify_deadline;
+      if (delayed && observation.Fresh() && observation.mode_result == 0 &&
+          observation.mode.empty() && regular_handoff::ResumeOnFreshEmpty(*this)) {
+        std::fputs("[handoff fallback] new, fresh CheckMode confirmed an empty "
+                   "service; resumed TWIST2 position hold\n", stdout);
+        return false;
+      }
+      // Failed/slow RPC, ai, other service, invalid state: no writer restart.
+      // Observe catches RPC exceptions and invalidates partial observations.
+      ::usleep(delayed ? 100000 : 50000);
+    }
+  }
+
+  void ProtectOwnerLifetime() noexcept {
+    // This method is called before Controller/dependencies can unwind. It is
+    // also applied to normal returns, so neither kind of exit drops an owner.
+    if (owner_phase_ == regular_handoff::OwnerPhase::BeforeTakeover ||
+        owner_phase_ == regular_handoff::OwnerPhase::RegularVerified)
+      return;
+    handoff_requested_.store(true);  // no allocation in the recovery latch
+    if (owner_phase_ == regular_handoff::OwnerPhase::Holding) finish();
+    std::fputs("[handoff unverified] LowCmd remains stopped to prevent owner "
+               "overlap; retaining this process and monitoring\n", stderr);
+    for (;;) {
       try {
+        if (monitor_regular_handoff()) return;
+        finish();
+      } catch (...) {
+        // Includes errors outside RPC observation. Unknown ownership is never
+        // turned into an unconditional LowCmd restart or process exit.
+        ::usleep(100000);
+      }
+    }
+  }
+
+  bool verified_regular_handoff() {
+    // An exception/refusal before stopping the writer keeps the current hold.
+    bool settled = false;
+    try {
+      const auto deadline = Clock::now() + std::chrono::seconds(10);
+      ContinuousObservationWindow window(1.0, 0.05);
+      while (Clock::now() < deadline) {
         Clock::time_point received;
         const LowState state = snapshot(nullptr, &received);
         validate_state(state, kVelocityLimit, false, received, true);
-        state_valid = true;
-      } catch (...) {
-        state_valid = false;
+        const WriterFrame command_frame = writer_frame();
+        const double now = Now();
+        bool stable = command_frame.valid && regular_handoff::FreshInterval(
+            command_frame.write_returned_s, now, 0.02);
+        for (std::size_t joint = 15; joint < kDofs; ++joint) {
+          stable = stable &&
+                   std::abs(state.motor_state()[joint].q() -
+                            command_frame.target[joint]) <= PdReadySettle::error_limit &&
+                   std::abs(state.motor_state()[joint].dq()) <= PdReadySettle::speed_limit;
+        }
+        if (window.Update(now, stable)) { settled = true; break; }
+        ::usleep(10000);
       }
-      const double now = std::chrono::duration<double>(
-          Clock::now().time_since_epoch()).count();
-      if (gate.Update(now, mode_result, name, fsm_result, fsm_id,
-                      state_valid)) {
-        publisher_.reset();
-        std::cout << "[SHUTDOWN COMPLETE] delayed Regular verification succeeded\n";
-        return;
-      }
-      if (mode_result == 0 && name.empty()) {
-        resume_position_hold_after_failed_regular_handoff(
-            "service became empty during delayed verification");
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    } catch (...) { settled = false; }
+    if (!settled) {
+      std::fputs("[handoff refused] settle timeout/invalid state; current "
+                 "TWIST2 writer remains active\n", stderr);
+      return false;
     }
+
+    active_.store(false);
+    owner_phase_ = regular_handoff::OwnerPhase::WriterStopped;
+    // Drain any write already inside the callback before mode selection.
+    { std::lock_guard<std::mutex> lock(write_cycle_mutex_); }
+    writer_.reset();
+    try {
+      const auto selected = switcher_->SelectMode("ai");
+      if (selected != 0)
+        std::fputs("[handoff] selection returned an error; observing owner\n", stderr);
+    } catch (...) {
+      std::fputs("[handoff] selection threw; observing owner without retry\n", stderr);
+    }
+    return monitor_regular_handoff();
   }
 
   void print_stats() const {
@@ -650,6 +675,7 @@ class Controller {
   }
 
   void write_cycle() {
+    std::lock_guard<std::mutex> write_lock(write_cycle_mutex_);
     if (!active_.load()) {
       return;
     }
@@ -794,6 +820,8 @@ class Controller {
             .count());
   }
 
+  regular_handoff::OwnerPhase owner_phase_{regular_handoff::OwnerPhase::BeforeTakeover};
+  std::mutex write_cycle_mutex_;
   std::function<std::string()> input_watchdog_;
   WriterFrameStore writer_frames_;
   mutable std::mutex state_mutex_;
@@ -967,7 +995,7 @@ int main(int argc, char** argv) {
            "TWIST2 legs " << policy_seconds
         << " s -> safe-waypoint return -> TWIST2 position hold\n";
     if (handoff_only) {
-      std::cout<<"[HANDOFF ONLY] Hold all 29 captured targets through capture/blend, then stop the LowCmd writer and request verified Regular ai/FSM handoff. No arm trajectory and no UDP input.\n";
+      std::cout<<"[HANDOFF ONLY] Keep captured upper-body references; blend the legs into TWIST2 for 4 s after 1 s capture, then request verified Regular ai/FSM handoff. No arm trajectory and no UDP input. This is NOT a whole-body no-motion test.\n";
     } else if (pd_trial) {
       if(pd_sweep)
         std::cout<<"[PD TRIAL] Move both arms to Mink ready pose, run the small-signal sweep, settle under the same owner, stop the LowCmd writer, then request and verify Regular ai/FSM handoff.\n";
@@ -1060,8 +1088,8 @@ int main(int argc, char** argv) {
               << " ms\n";
 
     // Allocate all policy-loop storage before releasing the built-in service.
-    // After handoff, every potentially throwing operation is inside the latch
-    // block below so a failure cannot bypass the position-hold/AI handback path.
+    // The protected owner scope below also covers post-loop artifacts and
+    // handoff. An exception must not unwind an unresolved owner.
     ObservationHistory history;
     std::vector<double> inference_ms;
     std::vector<Sample> samples;
@@ -1180,6 +1208,7 @@ int main(int argc, char** argv) {
       udp_enabled=true;
     };
     if(!pd_active)enable_udp();
+    return regular_handoff::RunOwnerProtected(controller, [&]() -> int {
     controller.start_writer();
     controller.handoff_and_activate();
 
@@ -1481,6 +1510,7 @@ int main(int argc, char** argv) {
       // The persistent owner intentionally never returns from finish().  Seal
       // the comparison artifacts first so a completed PD run remains usable
       // even though the LowCmd hold continues until a successor owner exists.
+      const bool artifacts_sealed = regular_handoff::TryArtifact([&]() {
       csv.Finish();
       const nlohmann::json persistent_result={{"schema","g1.pd.result.v1"},
         {"reason",controller.reason()},
@@ -1489,19 +1519,37 @@ int main(int argc, char** argv) {
         {"run_sha256",sha256sum(csv_directory/"run.json")},
         {"policy_samples",samples.size()},
         {"pd_sweep_completed",pd_sweep_completed},
-        {"owner_state","persistent_twist2_position_hold"}};
+        {"owner_state","persistent_twist2_position_hold"},
+        {"record_kind","pre_handoff_checkpoint"}};
       {
         std::ofstream metadata;
         metadata.exceptions(std::ios::failbit|std::ios::badbit);
         metadata.open(csv_directory/"result.json");
         metadata<<persistent_result.dump(2)<<'\n';metadata.close();
       }
-      std::cout << "[CSV SEALED] " << csv_path
-                << "; result.json written before persistent hold\n";
+      });
+      if (!artifacts_sealed)
+        std::fputs("[artifact error] sealing/hash/result failed; ownership is "
+                   "retained and planned handoff processing continues\n", stderr);
       if(controller.reason()=="pd sweep completed"||
          controller.reason()=="handoff-only completed"){
-        controller.verified_regular_handoff();
-        return 0;
+        const bool verified = controller.verified_regular_handoff();
+        const bool outcome_recorded = regular_handoff::TryArtifact([&]() {
+          std::ofstream outcome;
+          outcome.exceptions(std::ios::failbit | std::ios::badbit);
+          outcome.open(csv_directory / "handoff.json");
+          const nlohmann::json result={
+              {"schema","g1.regular.handoff.v1"},
+              {"owner_state",verified ? "regular_ai_verified" : "persistent_twist2_position_hold"},
+              {"expected_fsm",controller.regular_fsm_id()},
+              {"artifacts_sealed",artifacts_sealed},
+              {"physical_safety_validated",false}};
+          outcome << result.dump(2) << '\n';
+          outcome.close();
+        });
+        if (!outcome_recorded)
+          std::fputs("[artifact error] handoff.json could not be recorded\n", stderr);
+        if (verified) return artifacts_sealed && outcome_recorded ? 0 : 1;
       }
       controller.finish();
     }
@@ -1582,6 +1630,7 @@ int main(int argc, char** argv) {
     std::cout << "}\n";
     std::cout << "[position hold] no damping command or automatic AI handoff was issued\n";
     return completed ? 0 : 1;
+    });  // owner remains alive throughout exception recovery
   } catch (const c10::Error& error) {
     std::cerr << "[fatal] Torch error: "
               << error.what_without_backtrace() << '\n';

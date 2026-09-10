@@ -12,9 +12,16 @@ if($Preview -and $Mode -ne 'All'){throw 'Preview requires All'}
 if($Mode -eq 'Check'){
  Write-Host "CANDIDATE profile=$Profile; pdSweep=$PdSweep; pinch or Select/B returns through safe waypoint while TWIST2 remains the command owner."
  Write-Host 'yesterday: 0.7 rad/s, 10 deg/s^2; today: arm90/wrist180 deg/s, 60 deg/s^2.'
- Write-Host "G1 binary SHA256 required: $expectedRobotSha256"
+ Write-Host "Last confirmed G1 SHA256 (remote rebuild NOT reverified): $expectedRobotSha256"
  Write-Host 'Separate G1 directory /home/unitree/g1_mink_cycle_compare_20260909; verified-Regular-handoff candidate; no damping output; no process started.'
- Write-Host 'Pinch/Select/B/Ctrl+C/Q requests checked return while TWIST2 keeps ownership; automatic Regular handoff is disabled.'
+ if($HandoffOnly){
+  Write-Host 'Handoff-only: captured upper-body references, 1 s capture and 4 s TWIST2 leg blend; no arm trajectory or UDP input. NOT a whole-body no-motion test.'
+ }elseif($PdSweep){
+  Write-Host 'PD-sweep completion requests verified Regular handoff; no physical run is authorized.'
+ }else{
+  Write-Host 'UDP pinch/Select/B/Ctrl+C/Q returns to hold; automatic Regular handoff stays disabled for UDP.'
+ }
+ Write-Host 'Robot/All remain blocked, including HandoffOnly. Offline tests do not approve physical operation.'
  Write-Host $robotBlockedReason -ForegroundColor Red
  exit 0
 }

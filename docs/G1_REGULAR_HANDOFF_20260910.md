@@ -940,3 +940,24 @@ Working VR/UDP/LowCmd/IK, source XML/meshes, actual gains and Robot/All blocks a
 unchanged. Isolated worktree, no G1 connection/DDS/SDK/motor output or deployment.
 Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_PERJOINT.md. Complete the
 current offline experiment/audit; never copy research gains to the live launcher.
+
+
+## 2026-09-12 — deterministic per-joint result processing correction
+
+The1020formal integrations finished on4eed0c5b763f03b121a1929eacd53c3ae750c97b.
+Final audit rejected summary comparison because as_completed ordered failure
+lists differently from the case-id readback. Verified that sorting ONLY those
+failure lists makes the original/rebuilt summaries identical: counts, all
+numeric metrics, eligibility, rankings and selected vector are unchanged.
+
+Fix make_summary by sorting input records by case_id; add reverse-input-order
+regression. No controller, source model, candidate, threshold or simulation
+trace change.28per-joint tests passed after this correction. Original full
+suite had255pass/1C++skip locally,256/256pass on inspected hosted run34623413791,
+job103342607795. Those hosted counts apply to4eed0c5, not this processing patch.
+
+Retain original summary and all48manifest source/model/mesh inputs byte-for-byte
+under the raw result folder. Corrected audit uses that original input archive,
+not a rewritten provenance manifest. CaseJSON/trace and frozen selection remain
+unchanged. Complete the saved-data audit before final outcome promotion. No
+additional dynamics or physical/G1/DDS operation is part of this correction.

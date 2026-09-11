@@ -146,6 +146,8 @@ def audit(folder,source_root=None):
     save(folder/'audit.json',result);return result
 
 def make_summary(records,plan,selection,manifest_hash,selection_hash):
+    # Parallel completion order must not affect diagnostic failure lists.
+    records = sorted(records, key=lambda r:r["case_id"])
     # Ranking with every planned case also checks candidate identity/completeness.
     pj.ranking(records,plan)
     phases=sorted({r['phase'] for r in records});ranks={}

@@ -56,6 +56,16 @@ class GainsAndPlanTest(unittest.TestCase):
         jobs=study.jobs([pj.Gains(),pj.Gains((100,240,100,100))],study.search_conditions(23)[:1],'test')
         rs=[dict(j,eligible=i==1,metrics={'active_rmse_rad':.001 if i==0 else .01},reason='',exclusions=[]) for i,j in enumerate(jobs)]
         self.assertEqual(tuple(study.winner(rs,jobs).kp),(100,240,100,100))
+    def test_summary_invariant_to_parallel_completion_order(self):
+        plan=study.jobs([pj.Gains()],study.search_conditions(23)[:2],'diagnostic')
+        records=[dict(j,completed=False,eligible=False,reason='synthetic',exclusions=['synthetic'],
+          metrics=None,joint_limit_guard={'event':None,'minimum_soft_margin_rad':[.2]*29,
+          'minimum_hard_margin_rad':[.25]*29}) for j in plan]
+        normal=study.make_summary(records,plan,{},'manifest','selection')
+        reversed_order=study.make_summary(list(reversed(records)),plan,{},'manifest','selection')
+        self.assertEqual(normal,reversed_order)
+        self.assertEqual([v['case_id'] for v in normal['ranking']['diagnostic'][0]['failures']],
+                         sorted(j['case_id'] for j in plan))
     def test_bad_workers_before_output(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'result'

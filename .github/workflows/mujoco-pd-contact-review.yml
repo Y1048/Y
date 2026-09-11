@@ -1,0 +1,22 @@
+name: MuJoCo PD contact diagnosis
+on:
+  push:
+    branches: [codex/g1-regular-handoff-20260910]
+    paths:
+      - 'experiments/twist2_right_arm_manual/probe_mujoco_pd_contacts.py'
+      - '.github/workflows/mujoco-pd-contact-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contact-pairs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r experiments/twist2_right_arm_manual/mujoco_pd_requirements.txt
+      - name: Observe unchanged contact geometry and forces
+        run: python -B experiments/twist2_right_arm_manual/probe_mujoco_pd_contacts.py

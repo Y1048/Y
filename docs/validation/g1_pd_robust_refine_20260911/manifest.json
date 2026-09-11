@@ -1,0 +1,815 @@
+{
+  "schema": "g1.pd.robust-refinement.run.v1",
+  "simulation_only": true,
+  "full_study": true,
+  "gain_pairs": [
+    [
+      40.0,
+      5.0
+    ],
+    [
+      56.0,
+      3.0
+    ],
+    [
+      72,
+      0.6
+    ],
+    [
+      72,
+      0.7
+    ],
+    [
+      72,
+      0.8
+    ],
+    [
+      72,
+      0.9
+    ],
+    [
+      72,
+      1.0
+    ],
+    [
+      72,
+      1.2
+    ],
+    [
+      72,
+      1.5
+    ],
+    [
+      72,
+      2.0
+    ],
+    [
+      80,
+      0.6
+    ],
+    [
+      80,
+      0.7
+    ],
+    [
+      80,
+      0.8
+    ],
+    [
+      80,
+      0.9
+    ],
+    [
+      80,
+      1.0
+    ],
+    [
+      80,
+      1.2
+    ],
+    [
+      80,
+      1.5
+    ],
+    [
+      80,
+      2.0
+    ],
+    [
+      88,
+      0.6
+    ],
+    [
+      88,
+      0.7
+    ],
+    [
+      88,
+      0.8
+    ],
+    [
+      88,
+      0.9
+    ],
+    [
+      88,
+      1.0
+    ],
+    [
+      88,
+      1.2
+    ],
+    [
+      88,
+      1.5
+    ],
+    [
+      88,
+      2.0
+    ],
+    [
+      96,
+      0.6
+    ],
+    [
+      96,
+      0.7
+    ],
+    [
+      96,
+      0.8
+    ],
+    [
+      96,
+      0.9
+    ],
+    [
+      96,
+      1.0
+    ],
+    [
+      96,
+      1.2
+    ],
+    [
+      96,
+      1.5
+    ],
+    [
+      96,
+      2.0
+    ],
+    [
+      100.0,
+      0.1
+    ],
+    [
+      100,
+      0.6
+    ],
+    [
+      100,
+      0.7
+    ],
+    [
+      100,
+      0.8
+    ],
+    [
+      100,
+      0.9
+    ],
+    [
+      100,
+      1.0
+    ],
+    [
+      100,
+      1.2
+    ],
+    [
+      100,
+      1.5
+    ],
+    [
+      100,
+      2.0
+    ],
+    [
+      100.0,
+      3.0
+    ]
+  ],
+  "calibration": [
+    {
+      "family": "motor",
+      "parameters": [
+        "nominal",
+        1,
+        0,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "friction_zero",
+        0,
+        0,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "friction_025",
+        0.25,
+        0,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "friction_050",
+        0.5,
+        0,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "delay_1ms",
+        1,
+        0.001,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "delay_2ms",
+        1,
+        0.002,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "delay_4ms",
+        1,
+        0.004,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "delay_8ms",
+        1,
+        0.008,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "lag_2ms",
+        1,
+        0,
+        0.002,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "lag_5ms",
+        1,
+        0,
+        0.005,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "lag_10ms",
+        1,
+        0,
+        0.01,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "zero_friction_lag_2ms",
+        0,
+        0,
+        0.002,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "zero_friction_lag_5ms",
+        0,
+        0,
+        0.005,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "zero_friction_delay_2ms",
+        0,
+        0.002,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "zero_friction_delay_4ms",
+        0,
+        0.004,
+        0,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "combined",
+        0.25,
+        0.002,
+        0.002,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "dt_half",
+        1,
+        0,
+        0,
+        0.0005
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "combined_half",
+        0,
+        0.002,
+        0.002,
+        0.0005
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "mass_075",
+        0.001,
+        0.75,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "mass_125",
+        0.001,
+        1.25,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "damping_050",
+        0.001,
+        1.0,
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "damping_200",
+        0.001,
+        1.0,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "friction_add_010",
+        0.001,
+        1.0,
+        1.0,
+        0.1
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "friction_add_025",
+        0.001,
+        1.0,
+        1.0,
+        0.25
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "combined_low",
+        0.001,
+        0.75,
+        0.5,
+        0.1
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "combined_high",
+        0.001,
+        1.25,
+        2.0,
+        0.25
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "combined_half",
+        0.0005,
+        1.25,
+        2.0,
+        0.25
+      ]
+    }
+  ],
+  "holdout": [
+    {
+      "family": "motor",
+      "parameters": [
+        "hold_f0125_d3_l3",
+        0.125,
+        0.003,
+        0.003,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "hold_f000_d3_l3",
+        0.0,
+        0.003,
+        0.003,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "hold_f050_d6_l2",
+        0.5,
+        0.006,
+        0.002,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "hold_f025_d2_l8",
+        0.25,
+        0.002,
+        0.008,
+        0.001
+      ]
+    },
+    {
+      "family": "motor",
+      "parameters": [
+        "hold_f000_d1_l8",
+        0.0,
+        0.001,
+        0.008,
+        0.001
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "hold_mass110_damp075_f005",
+        0.001,
+        1.1,
+        0.75,
+        0.05
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "hold_mass140_damp125_f015",
+        0.001,
+        1.4,
+        1.25,
+        0.15
+      ]
+    },
+    {
+      "family": "model",
+      "parameters": [
+        "hold_mass060_damp075",
+        0.001,
+        0.6,
+        0.75,
+        0.0
+      ]
+    }
+  ],
+  "finalist_top_count": 6,
+  "fixed_comparison_controls": [
+    [
+      40.0,
+      5.0
+    ],
+    [
+      56.0,
+      3.0
+    ],
+    [
+      80.0,
+      1.0
+    ],
+    [
+      100.0,
+      1.0
+    ],
+    [
+      100.0,
+      2.0
+    ]
+  ],
+  "created_utc": "2026-09-11T10:21:52.988746+00:00",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "source_sha256": {
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_robust_refine.py": "cc808d299f5e39c0e72d96c65a30ad0826434773d74870709b444799709525e1",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_sweep.py": "347f25a3fe9e019b7f9afcc4811d7cf1b26ae40b13dc78d2fc9579c633a0fe97",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand.py": "7baa8d173a027e8d9244ffd48ea74fb3273229388c4c3171f8b3875ca95047e4",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_motor_stress.py": "7203e5989f72acf48c17da47866fb537b345a80d7b3693b5f6dfb35f1d3ba920",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_contract.py": "c16f65cc16abc7be6e54486826fe5de75512d57f877be04fccd4534e40e7db13",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_fixture.py": "7f9eec1c2be83c434b97282acaae62af1f3a8d79d7f7c9b40e90dc4941be850f",
+    "experiments\\twist2_right_arm_manual\\joint_limit_guard.py": "79fedc75b0d338c4c32d7bf25d539ecf47f3b786cffeb3a1eeced43c62602ca2",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_limit_replay.py": "695fbd0b21f426d0da9d54bbe46130b6d3b233ca1f0f7e8f0eb9b6f01bcf2364",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand_audit.py": "261c2105590eb833eab9ae19b531744b229755c99ce38da1346af1483f069910",
+    "experiments\\twist2_right_arm_manual\\pd_small_signal_trial.hpp": "a7b8562ab1acb11071fbd264c4494d1b686437647875053565c6e132a92906fe",
+    "references\\lower_body\\twist2_deploy\\cpp_g1_twist2\\twist2_common.hpp": "2db4dea94bf469429010563bee36f1cab8005d688c87a2eb8772aca1f51dbba6"
+  },
+  "asset_sha256": {
+    "MuJoCo_G1_Controller\\external\\unitree_mujoco\\unitree_robots\\g1\\g1_29dof.xml": "5a7f31b62a02dc86546046fb8f23dd70663f8fadc3fc49f68758bbe54ebf921a",
+    "meshes\\pelvis.STL": "5ba6bbc888e630550140d3c26763f10206da8c8bd30ed886b8ede41c61f57a31",
+    "meshes\\pelvis_contour_link.STL": "5cc5c2c7a312329e3feeb2b03d3fc09fc29705bd01864f6767e51be959662420",
+    "meshes\\left_hip_pitch_link.STL": "4725168105ee768ee31638ef22b53f6be2d7641bfd7cfefe803488d884776fa4",
+    "meshes\\left_hip_roll_link.STL": "91f25922ee8a7c3152790051bebad17b4d9cd243569c38fe340285ff93a97acf",
+    "meshes\\left_hip_yaw_link.STL": "a16d88aa6ddac8083aa7ad55ed317bea44b1fa003d314fba88965b7ed0f3b55b",
+    "meshes\\left_knee_link.STL": "8d92b9e3d3a636761150bb8025e32514c4602b91c7028d523ee42b3e632de477",
+    "meshes\\left_ankle_pitch_link.STL": "d49e3abc6f5b12e532062cd575b87b5ef40cd2a3fc18f54a1ca5bba4f773d51d",
+    "meshes\\left_ankle_roll_link.STL": "c4092af943141d4d9f74232f3cfa345afc6565f46a077793b8ae0e68b39dc33f",
+    "meshes\\right_hip_pitch_link.STL": "e4f3c99d7f4a7d34eadbef9461fc66e3486cb5442db1ec50c86317d459f1a9c6",
+    "meshes\\right_hip_roll_link.STL": "4c254ef66a356f492947f360dd931965477b631e3fcc841f91ccc46d945d54f6",
+    "meshes\\right_hip_yaw_link.STL": "e479c2936ca2057e9eb2f7dff6c189b7419d7b8484dea0b298cbb36a2a6aa668",
+    "meshes\\right_knee_link.STL": "63c4008449c9bbe701a6e2b557b7a252e90cf3a5abcf54cee46862b9a69f8ec8",
+    "meshes\\right_ankle_pitch_link.STL": "15be426539ec1be70246d4d82a168806db64a41301af8b35c197a33348c787a9",
+    "meshes\\right_ankle_roll_link.STL": "4b66222ea56653e627711b56d0a8949b4920da5df091da0ceb343f54e884e3a5",
+    "meshes\\waist_yaw_link.STL": "2883f20e03f09b669b5b4ce10677ee6b5191c0934b584d7cbaef2d0662856ffb",
+    "meshes\\waist_roll_link.STL": "34f0aa73f41131230be4d25876c944fdf6c24d62553f199ff8b980c15e8913df",
+    "meshes\\torso_link.STL": "e96d023f0368a4e3450b86ca5d4f10227d8141156a373e7da8cb3c93266523e0",
+    "meshes\\logo_link.STL": "8571a0a19bc4916fa55f91449f51d5fdefd751000054865a842449429d5f155b",
+    "meshes\\head_link.STL": "d297328b3569fc85074355e76cba6c889d19de5361224bcd3c5b8ce82e13b9b6",
+    "meshes\\waist_support_link.STL": "1fae9e1bb609848a1667d32eed8d6083ae443538a306843056a2a660f1b2926a",
+    "meshes\\left_shoulder_pitch_link.STL": "f0d1cfd02fcf0d42f95e678eeca33da3afbcc366ffba5c052847773ec4f31d52",
+    "meshes\\left_shoulder_roll_link.STL": "fb9df21687773522598dc384f1a2945c7519f11cbc8bd372a49170316d6eee88",
+    "meshes\\left_shoulder_yaw_link.STL": "1aa97e9748e924336567992181f78c7cd0652fd52a4afcca3df6b2ef6f9e712e",
+    "meshes\\left_elbow_link.STL": "fa752198accd104d5c4c3a01382e45165b944fbbc5acce085059223324e5bed3",
+    "meshes\\left_wrist_roll_link.STL": "edc387c9a0ba8c2237e9b296d32531426fabeb6f53e58df45c76106bca74148c",
+    "meshes\\left_wrist_pitch_link.STL": "b251d8e05047f695d0f536cd78c11973cfa4e78d08cfe82759336cc3471de3a9",
+    "meshes\\left_wrist_yaw_link.STL": "83f8fb3a726bf9613d65dd14f0f447cb918c3c95b3938042a0c9c09749267d3b",
+    "meshes\\left_rubber_hand.STL": "cff2221a690fa69303f61fce68f2d155c1517b52efb6ca9262dd56e0bc6e70fe",
+    "meshes\\right_shoulder_pitch_link.STL": "24cdb387e0128dfe602770a81c56cdce3a0181d34d039a11d1aaf8819b7b8c02",
+    "meshes\\right_shoulder_roll_link.STL": "962b97c48f9ce9e8399f45dd9522e0865d19aa9fd299406b2d475a8fc4a53e81",
+    "meshes\\right_shoulder_yaw_link.STL": "a0b76489271da0c72461a344c9ffb0f0c6e64f019ea5014c1624886c442a2fe5",
+    "meshes\\right_elbow_link.STL": "1be925d7aa268bb8fddf5362b9173066890c7d32092c05638608126e59d1e2ab",
+    "meshes\\right_wrist_roll_link.STL": "a7ee9212ff5b94d6cb7f52bb1bbf3f352194d5b598acff74f4c77d340c5b344f",
+    "meshes\\right_wrist_pitch_link.STL": "d22f8f3b3127f15a63e5be1ee273cd5075786c3142f1c3d9f76cbf43d2a26477",
+    "meshes\\right_wrist_yaw_link.STL": "bc9dece2d12509707e0057ba2e48df8f3d56db0c79410212963a25e8a50f61a6",
+    "meshes\\right_rubber_hand.STL": "99533b778bca6246144fa511bb9d4e555e075c641f2a0251e04372869cd99d67"
+  },
+  "joint_limit_envelope": {
+    "schema": "g1.joint-limit-envelope.v1",
+    "joints": 29,
+    "hard_lower": [
+      -2.5307,
+      -0.5236,
+      -2.7576,
+      -0.087267,
+      -0.87267,
+      -0.2618,
+      -2.5307,
+      -2.9671,
+      -2.7576,
+      -0.087267,
+      -0.87267,
+      -0.2618,
+      -2.618,
+      -0.52,
+      -0.52,
+      -3.0892,
+      -1.5882,
+      -2.618,
+      -1.0472,
+      -1.97222,
+      -1.61443,
+      -1.61443,
+      -3.0892,
+      -2.2515,
+      -2.618,
+      -1.0472,
+      -1.97222,
+      -1.61443,
+      -1.61443
+    ],
+    "hard_upper": [
+      2.8798,
+      2.9671,
+      2.7576,
+      2.8798,
+      0.5236,
+      0.2618,
+      2.8798,
+      0.5236,
+      2.7576,
+      2.8798,
+      0.5236,
+      0.2618,
+      2.618,
+      0.52,
+      0.52,
+      2.6704,
+      2.2515,
+      2.618,
+      2.0944,
+      1.97222,
+      1.61443,
+      1.61443,
+      2.6704,
+      1.5882,
+      2.618,
+      2.0944,
+      1.97222,
+      1.61443,
+      1.61443
+    ],
+    "soft_lower": [
+      -2.4807,
+      -0.47359999999999997,
+      -2.7076000000000002,
+      -0.037266999999999995,
+      -0.8226699999999999,
+      -0.2118,
+      -2.4807,
+      -2.9171,
+      -2.7076000000000002,
+      -0.037266999999999995,
+      -0.8226699999999999,
+      -0.2118,
+      -2.568,
+      -0.47000000000000003,
+      -0.47000000000000003,
+      -3.0392,
+      -1.5382,
+      -2.568,
+      -0.9971999999999999,
+      -1.922222054,
+      -1.564429558,
+      -1.564429558,
+      -3.0392,
+      -2.2015000000000002,
+      -2.568,
+      -0.9971999999999999,
+      -1.922222054,
+      -1.564429558,
+      -1.564429558
+    ],
+    "soft_upper": [
+      2.8298,
+      2.9171,
+      2.7076000000000002,
+      2.8298,
+      0.47359999999999997,
+      0.2118,
+      2.8298,
+      0.47359999999999997,
+      2.7076000000000002,
+      2.8298,
+      0.47359999999999997,
+      0.2118,
+      2.568,
+      0.47000000000000003,
+      0.47000000000000003,
+      2.6204,
+      2.2015000000000002,
+      2.568,
+      2.0444,
+      1.922222054,
+      1.564429558,
+      1.564429558,
+      2.6204,
+      1.5382,
+      2.568,
+      2.0444,
+      1.922222054,
+      1.564429558,
+      1.564429558
+    ],
+    "inner_lower": [
+      -2.4307000000000003,
+      -0.4236,
+      -2.6576000000000004,
+      0.012733000000000008,
+      -0.7726699999999999,
+      -0.1618,
+      -2.4307000000000003,
+      -2.8671,
+      -2.6576000000000004,
+      0.012733000000000008,
+      -0.7726699999999999,
+      -0.1618,
+      -2.5180000000000002,
+      -0.42000000000000004,
+      -0.42000000000000004,
+      -2.9892000000000003,
+      -1.4882,
+      -2.5180000000000002,
+      -0.9471999999999998,
+      -1.8722220539999999,
+      -1.514429558,
+      -1.514429558,
+      -2.9892000000000003,
+      -2.1515000000000004,
+      -2.5180000000000002,
+      -0.9471999999999998,
+      -1.8722220539999999,
+      -1.514429558,
+      -1.514429558
+    ],
+    "inner_upper": [
+      2.7798000000000003,
+      2.8671,
+      2.6576000000000004,
+      2.7798000000000003,
+      0.4236,
+      0.1618,
+      2.7798000000000003,
+      0.4236,
+      2.6576000000000004,
+      2.7798000000000003,
+      0.4236,
+      0.1618,
+      2.5180000000000002,
+      0.42000000000000004,
+      0.42000000000000004,
+      2.5704000000000002,
+      2.1515000000000004,
+      2.5180000000000002,
+      1.9944,
+      1.8722220539999999,
+      1.514429558,
+      1.514429558,
+      2.5704000000000002,
+      1.4882,
+      2.5180000000000002,
+      1.9944,
+      1.8722220539999999,
+      1.514429558,
+      1.514429558
+    ],
+    "reserve_rad": 0.05,
+    "reaction_s": 0.02,
+    "assumed_brake_rad_s2": 1.0,
+    "assumed_outward_acceleration_rad_s2": 2.0,
+    "physical_braking_validated": false,
+    "hard_limit_source": "XML joint range, not measured physical hard stop"
+  },
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false
+}

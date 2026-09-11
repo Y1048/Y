@@ -1,0 +1,1232 @@
+{
+  "schema": "g1.pd.robust-refinement.summary.v1",
+  "complete": true,
+  "simulation_only": true,
+  "total_cases": 1268,
+  "unique_gain_pairs": 44,
+  "calibration_cases": 1188,
+  "holdout_cases": 80,
+  "completed": 1240,
+  "eligible": 1240,
+  "rejected": 28,
+  "rejection_reasons": {
+    "measured_velocity_limit": 8,
+    "ready_pose_not_settled_in_final_warmup_second": 17,
+    "joint_stopping_envelope_exhausted": 3
+  },
+  "guard_event_reasons": {
+    "joint_stopping_envelope_exhausted": 3
+  },
+  "minimum_observed_soft_margin_rad": 0.21179860170853562,
+  "minimum_observed_model_hard_margin_rad": 0.26179860170853564,
+  "calibration_ranking": [
+    {
+      "pair": [
+        100,
+        0.7
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.008797747774430233,
+      "partial_worst_rmse_rad": 0.008797747774430233,
+      "mean_rmse_rad": 0.006337992597820728,
+      "max_hold_overshoot_rad": 0.0014413770046003416,
+      "max_joint22_torque_nm": 1.3865802537468894,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        0.8
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.008880548054545046,
+      "partial_worst_rmse_rad": 0.008880548054545046,
+      "mean_rmse_rad": 0.006413423180539023,
+      "max_hold_overshoot_rad": 0.0014312876680002418,
+      "max_joint22_torque_nm": 1.3874714904000882,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        0.9
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.008965672503933438,
+      "partial_worst_rmse_rad": 0.008965672503933438,
+      "mean_rmse_rad": 0.00649120875766604,
+      "max_hold_overshoot_rad": 0.001461383028187796,
+      "max_joint22_torque_nm": 1.388187061869905,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        1.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009053082789575787,
+      "partial_worst_rmse_rad": 0.009053082789575787,
+      "mean_rmse_rad": 0.006571412607902828,
+      "max_hold_overshoot_rad": 0.001490945489214246,
+      "max_joint22_torque_nm": 1.3887731868503923,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        0.7
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009116568717829543,
+      "partial_worst_rmse_rad": 0.009116568717829543,
+      "mean_rmse_rad": 0.006584774267757698,
+      "max_hold_overshoot_rad": 0.0014401582473676788,
+      "max_joint22_torque_nm": 1.3748734951026385,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        0.8
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.00920513115230044,
+      "partial_worst_rmse_rad": 0.00920513115230044,
+      "mean_rmse_rad": 0.006660986638819295,
+      "max_hold_overshoot_rad": 0.0014753242599667427,
+      "max_joint22_torque_nm": 1.377212390280006,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        1.2
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009234384785583066,
+      "partial_worst_rmse_rad": 0.009234384785583066,
+      "mean_rmse_rad": 0.006739202226530673,
+      "max_hold_overshoot_rad": 0.0015474821303351205,
+      "max_joint22_torque_nm": 1.38966078550384,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        0.9
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.00929564593545591,
+      "partial_worst_rmse_rad": 0.00929564593545591,
+      "mean_rmse_rad": 0.006739895172550025,
+      "max_hold_overshoot_rad": 0.0015128645273408403,
+      "max_joint22_torque_nm": 1.3790715828365827,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        1.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009388105854040901,
+      "partial_worst_rmse_rad": 0.009388105854040901,
+      "mean_rmse_rad": 0.00682154619941982,
+      "max_hold_overshoot_rad": 0.001548901738442604,
+      "max_joint22_torque_nm": 1.3805499767535796,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        1.5
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009520751646238584,
+      "partial_worst_rmse_rad": 0.009520751646238584,
+      "mean_rmse_rad": 0.007009341306065302,
+      "max_hold_overshoot_rad": 0.0016230166797464862,
+      "max_joint22_torque_nm": 1.3902376495943691,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        1.2
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009578820783859208,
+      "partial_worst_rmse_rad": 0.009578820783859208,
+      "mean_rmse_rad": 0.006993245887608502,
+      "max_hold_overshoot_rad": 0.0016158252094888859,
+      "max_joint22_torque_nm": 1.382655191323481,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        0.7
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009854925565470648,
+      "partial_worst_rmse_rad": 0.009854925565470648,
+      "mean_rmse_rad": 0.007146747767452015,
+      "max_hold_overshoot_rad": 0.0015969646927744274,
+      "max_joint22_torque_nm": 1.3617313323810836,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        1.5
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009878477552351734,
+      "partial_worst_rmse_rad": 0.009878477552351734,
+      "mean_rmse_rad": 0.0072714824689111245,
+      "max_hold_overshoot_rad": 0.0017017736499625735,
+      "max_joint22_torque_nm": 1.3841736662282222,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        0.8
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.009953705970874619,
+      "partial_worst_rmse_rad": 0.009953705970874619,
+      "mean_rmse_rad": 0.007223223013450345,
+      "max_hold_overshoot_rad": 0.0015959883066007652,
+      "max_joint22_torque_nm": 1.3649045195349143,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        2.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010031248917777055,
+      "partial_worst_rmse_rad": 0.010031248917777055,
+      "mean_rmse_rad": 0.007504849399966696,
+      "max_hold_overshoot_rad": 0.0017162374546536296,
+      "max_joint22_torque_nm": 1.390377676880148,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        0.9
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.01005388581713841,
+      "partial_worst_rmse_rad": 0.01005388581713841,
+      "mean_rmse_rad": 0.007303792672326637,
+      "max_hold_overshoot_rad": 0.0016489284087590206,
+      "max_joint22_torque_nm": 1.3673134806866998,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        1.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010155768556562054,
+      "partial_worst_rmse_rad": 0.010155768556562054,
+      "mean_rmse_rad": 0.007387979205438875,
+      "max_hold_overshoot_rad": 0.0016983416219435998,
+      "max_joint22_torque_nm": 1.369118823052623,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        1.2
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010364636273014245,
+      "partial_worst_rmse_rad": 0.010364636273014245,
+      "mean_rmse_rad": 0.007567393579173566,
+      "max_hold_overshoot_rad": 0.0017863017132303816,
+      "max_joint22_torque_nm": 1.3714564117314731,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        96,
+        2.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010410446039347345,
+      "partial_worst_rmse_rad": 0.010410446039347345,
+      "mean_rmse_rad": 0.007784458664361104,
+      "max_hold_overshoot_rad": 0.0018023525276833763,
+      "max_joint22_torque_nm": 1.3850101257075522,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        0.6
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010665322871593002,
+      "partial_worst_rmse_rad": 0.010665322871593002,
+      "mean_rmse_rad": 0.007699363066022729,
+      "max_hold_overshoot_rad": 0.0018808760044065898,
+      "max_joint22_torque_nm": 1.3640733337948068,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        1.5
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010691228512022262,
+      "partial_worst_rmse_rad": 0.010691228512022262,
+      "mean_rmse_rad": 0.007863584248130056,
+      "max_hold_overshoot_rad": 0.0018921469529202262,
+      "max_joint22_torque_nm": 1.3729885249501377,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        0.7
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010769752052896084,
+      "partial_worst_rmse_rad": 0.010769752052896084,
+      "mean_rmse_rad": 0.007779702310663929,
+      "max_hold_overshoot_rad": 0.0018383024076767118,
+      "max_joint22_torque_nm": 1.3650006705944604,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        0.8
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010875126593793073,
+      "partial_worst_rmse_rad": 0.010875126593793073,
+      "mean_rmse_rad": 0.007863901940048065,
+      "max_hold_overshoot_rad": 0.001793806095024858,
+      "max_joint22_torque_nm": 1.3653160856610471,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        0.9
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.010981978344195311,
+      "partial_worst_rmse_rad": 0.010981978344195311,
+      "mean_rmse_rad": 0.007952102882037503,
+      "max_hold_overshoot_rad": 0.0018609243279392174,
+      "max_joint22_torque_nm": 1.365237076345879,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        1.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.011090590141270616,
+      "partial_worst_rmse_rad": 0.011090590141270616,
+      "mean_rmse_rad": 0.008044274337916558,
+      "max_hold_overshoot_rad": 0.001921859228068451,
+      "max_joint22_torque_nm": 1.3649221052270162,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        3.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.01114859094817806,
+      "partial_worst_rmse_rad": 0.01114859094817806,
+      "mean_rmse_rad": 0.008627707881367689,
+      "max_hold_overshoot_rad": 0.0017594527108248381,
+      "max_joint22_torque_nm": 1.3909968753868736,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        88,
+        2.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.011269144914620992,
+      "partial_worst_rmse_rad": 0.011269144914620992,
+      "mean_rmse_rad": 0.00841624988950884,
+      "max_hold_overshoot_rad": 0.0020030360027457617,
+      "max_joint22_torque_nm": 1.3737400418287244,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        1.2
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.011314282642884229,
+      "partial_worst_rmse_rad": 0.011314282642884229,
+      "mean_rmse_rad": 0.008240705358724256,
+      "max_hold_overshoot_rad": 0.0020262239464368947,
+      "max_joint22_torque_nm": 1.3639617244499487,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        1.5
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.011666489249056753,
+      "partial_worst_rmse_rad": 0.011666489249056753,
+      "mean_rmse_rad": 0.008564018565525015,
+      "max_hold_overshoot_rad": 0.0021435463699175927,
+      "max_joint22_torque_nm": 1.362450668608046,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        0.6
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.011791624456623288,
+      "partial_worst_rmse_rad": 0.011791624456623288,
+      "mean_rmse_rad": 0.008418157115042037,
+      "max_hold_overshoot_rad": 0.00233957289312825,
+      "max_joint22_torque_nm": 1.3754849227381212,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        0.7
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.011895225283773675,
+      "partial_worst_rmse_rad": 0.011895225283773675,
+      "mean_rmse_rad": 0.008513866803357984,
+      "max_hold_overshoot_rad": 0.0022253687529244226,
+      "max_joint22_torque_nm": 1.3695813860800015,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        0.8
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.012002826755720411,
+      "partial_worst_rmse_rad": 0.012002826755720411,
+      "mean_rmse_rad": 0.008613002036371794,
+      "max_hold_overshoot_rad": 0.0021273625863334755,
+      "max_joint22_torque_nm": 1.3646598421043235,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        0.9
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.012114182819599579,
+      "partial_worst_rmse_rad": 0.012114182819599579,
+      "mean_rmse_rad": 0.008715637346119406,
+      "max_hold_overshoot_rad": 0.002197728835310858,
+      "max_joint22_torque_nm": 1.3606089991386003,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        1.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.012229034879496949,
+      "partial_worst_rmse_rad": 0.012229034879496949,
+      "mean_rmse_rad": 0.008821801686954966,
+      "max_hold_overshoot_rad": 0.0022618665134200022,
+      "max_joint22_torque_nm": 1.3573063531987641,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        2.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.012293939641713665,
+      "partial_worst_rmse_rad": 0.012293939641713665,
+      "mean_rmse_rad": 0.009166917160653768,
+      "max_hold_overshoot_rad": 0.0022504430779428097,
+      "max_joint22_torque_nm": 1.3611114360883698,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        1.2
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.012468386776298662,
+      "partial_worst_rmse_rad": 0.012468386776298662,
+      "mean_rmse_rad": 0.00904496133231042,
+      "max_hold_overshoot_rad": 0.002366574790226894,
+      "max_joint22_torque_nm": 1.3524471397423135,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        1.5
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.012849788227161645,
+      "partial_worst_rmse_rad": 0.012849788227161645,
+      "mean_rmse_rad": 0.009406459462008394,
+      "max_hold_overshoot_rad": 0.002474623510156454,
+      "max_joint22_torque_nm": 1.347971939848854,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        2.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.013535251359185553,
+      "partial_worst_rmse_rad": 0.013535251359185553,
+      "mean_rmse_rad": 0.010073449470597618,
+      "max_hold_overshoot_rad": 0.0025522908589067084,
+      "max_joint22_torque_nm": 1.3452169752002268,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        56.0,
+        3.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 27,
+      "selectable_worst_rmse_rad": 0.01885829556344455,
+      "partial_worst_rmse_rad": 0.01885829556344455,
+      "mean_rmse_rad": 0.014502562653208708,
+      "max_hold_overshoot_rad": 0.0028796058219952014,
+      "max_joint22_torque_nm": 1.3057018392985167,
+      "minimum_soft_margin_rad": 0.21179860170853562,
+      "failures": []
+    },
+    {
+      "pair": [
+        40.0,
+        5.0
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 26,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.030471549704300716,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/zero_friction_delay_4ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        88,
+        0.6
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 26,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.009757269526912082,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/zero_friction_lag_5ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        96,
+        0.6
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 26,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.009029845571839572,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/zero_friction_lag_5ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100.0,
+        0.1
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 18,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.008347356210548275,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/combined",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/combined_half",
+          "reason": "joint_stopping_envelope_exhausted",
+          "exclusions": [
+            "joint_stopping_envelope_exhausted"
+          ]
+        },
+        {
+          "scenario": "motor/delay_8ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "motor/friction_zero",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/lag_10ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "motor/zero_friction_delay_2ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "motor/zero_friction_delay_4ms",
+          "reason": "joint_stopping_envelope_exhausted",
+          "exclusions": [
+            "joint_stopping_envelope_exhausted"
+          ]
+        },
+        {
+          "scenario": "motor/zero_friction_lag_2ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/zero_friction_lag_5ms",
+          "reason": "joint_stopping_envelope_exhausted",
+          "exclusions": [
+            "joint_stopping_envelope_exhausted"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        0.6
+      ],
+      "conditions_observed": 27,
+      "conditions_required": 27,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 25,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.008717333468731093,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/zero_friction_delay_4ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/zero_friction_lag_5ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    }
+  ],
+  "holdout_ranking": [
+    {
+      "pair": [
+        100.0,
+        2.0
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 8,
+      "selectable_worst_rmse_rad": 0.009753118167789277,
+      "partial_worst_rmse_rad": 0.009753118167789277,
+      "mean_rmse_rad": 0.007193690093713741,
+      "max_hold_overshoot_rad": 0.0016324334350727443,
+      "max_joint22_torque_nm": 1.393814291386409,
+      "minimum_soft_margin_rad": 0.21179860170874357,
+      "failures": []
+    },
+    {
+      "pair": [
+        80.0,
+        1.0
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 8,
+      "selectable_worst_rmse_rad": 0.010864236018087557,
+      "partial_worst_rmse_rad": 0.010864236018087557,
+      "mean_rmse_rad": 0.007683578393999243,
+      "max_hold_overshoot_rad": 0.0018137639142387363,
+      "max_joint22_torque_nm": 1.3718427633361279,
+      "minimum_soft_margin_rad": 0.21179860170874357,
+      "failures": []
+    },
+    {
+      "pair": [
+        56.0,
+        3.0
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": true,
+      "eligible_count": 8,
+      "selectable_worst_rmse_rad": 0.018143391188226842,
+      "partial_worst_rmse_rad": 0.018143391188226842,
+      "mean_rmse_rad": 0.013900159369195428,
+      "max_hold_overshoot_rad": 0.0027964642742970003,
+      "max_joint22_torque_nm": 1.2988615561887633,
+      "minimum_soft_margin_rad": 0.21179860170874357,
+      "failures": []
+    },
+    {
+      "pair": [
+        40.0,
+        5.0
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 6,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.029216284864734498,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d3_l3",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f050_d6_l2",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        96,
+        0.7
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 5,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.00894641966221461,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d1_l8",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f000_d3_l3",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f025_d2_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        96,
+        0.8
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 6,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.00902590910385092,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d1_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f025_d2_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        0.7
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 5,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.008627577734953354,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d1_l8",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f000_d3_l3",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f025_d2_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        0.8
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 6,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.008703309778429008,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d1_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "motor/hold_f025_d2_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        0.9
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 7,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.008780833202468244,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d1_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        1.0
+      ],
+      "conditions_observed": 8,
+      "conditions_required": 8,
+      "all_conditions_present": true,
+      "all_conditions_eligible": false,
+      "eligible_count": 7,
+      "selectable_worst_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.008860258825946973,
+      "mean_rmse_rad": null,
+      "max_hold_overshoot_rad": null,
+      "max_joint22_torque_nm": null,
+      "minimum_soft_margin_rad": null,
+      "failures": [
+        {
+          "scenario": "motor/hold_f000_d1_l8",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    }
+  ],
+  "calibration_order_survivors": [
+    [
+      100,
+      2.0
+    ],
+    [
+      80,
+      1.0
+    ],
+    [
+      56.0,
+      3.0
+    ]
+  ],
+  "manifest_sha256": "c8d12c3b8d9e74552c4c76e95a678e54c1ca23b1c51c03fad6801588dc5d5426",
+  "selection_rule": "eligible in every calibration condition; minimize worst original-reference RMSE; freeze finalists before holdout",
+  "global_or_local_optimum_proven": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "limitations": [
+    "fixed pelvis; joint22 excitation only; gains grouped22..25",
+    "hypothetical uncertainty, not calibrated G1 latency/braking",
+    "finite grid with Kp100 ceiling",
+    "timestep changes ideal motor PD evaluation rate",
+    "no IK/cost tuning, live VR or physical validation"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "tested_commit": "7577ed97fcf1f0ae8e9edf4777ef03f9dabaf380",
+  "run_id": 34589643742,
+  "job_id": 103231729623,
+  "job": "robust-refinement",
+  "conclusion": "success",
+  "tests": 109,
+  "passed": 109,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "duration_s": 83.398,
+  "environment": {
+    "os": "Ubuntu 24.04.5",
+    "python": "3.11.16",
+    "mujoco": "3.3.7",
+    "numpy": "2.4.6"
+  },
+  "decoded_log_inspected": true,
+  "full_grid_executed_by_this_ci": false,
+  "scope": "regression allowlist including actual eight-case smoke study and C++ trajectory parity"
+}

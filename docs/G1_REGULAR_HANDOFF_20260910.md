@@ -571,3 +571,37 @@ The original dirty PC worktree remains untouched; computation uses a detached
 worktree. No robot, DDS, SDK, motor execution or deployment. Fixed-pelvis and
 hypothetical motor/model uncertainty are not physical validation. Next permitted
 work is to complete/audit this offline plan and record its outcome.
+
+
+## 2026-09-11 — completed robust PD refinement and held-out validation
+
+Tested code `7577ed97fcf1f0ae8e9edf4777ef03f9dabaf380`; base `6b1421703bfef6a8ac2a84687ced15e2be8124fa`.
+This append closes the previous running entry without changing the engine or
+relabeling prior results. Full protocol/table/limits:
+[G1_PD_ROBUST_REFINEMENT_20260911.md](G1_PD_ROBUST_REFINEMENT_20260911.md).
+
+Actual isolated Windows study:1268 attempts,
+1188 calibration +80 holdout;
+1240 completed/1240 eligible/28 rejected.
+44pairs saw identical27conditions; 10 finalists/controls were
+frozen BEFORE eight prespecified holdouts. Selection rule and raw case hashes
+were verified. Survivors in unchanged calibration order:[[100, 2.0], [80, 1.0], [56.0, 3.0]].
+The first surviving pair in frozen calibration order is **100/2**. Its worst calibration RMSE is **0.0100312489177771 rad** and worst held-out RMSE **0.00975311816778928 rad**. The nominal RMSE is **0.00755652846809067 rad**. This is a finite-grid simulation screening result, NOT hardware gains or an optimum proof.
+
+All29 guard, reserve, stopping assumptions and original limits remain.
+Observed minimum soft/model-hard margins:0.211798601708536/0.261798601708536rad.
+Guard reasons:{"joint_stopping_envelope_exhausted": 3}.
+No physical safety invariant, hardware recommendation or deployment is claimed.
+
+Local tests108pass/1C++skip/0fail. Inspected hosted run34589643742,
+job103231729623:109pass/0skip/0fail, including C++ parity.
+CI tests and eight-case smoke only; full study ran on Windows, not CI.
+Reloaded1268 q22 traces and36772 all-joint
+minimum/witness records. Full all29 trajectories are not independently replayed.
+Raw source/model hashes and preserved original runtime paths were checked.
+
+Evidence:`docs/validation/g1_pd_robust_refine_20260911/`.
+Raw copied/hash-verified at`C:\Users\user\Documents\G1_PD_RobustRefine_20260911`.
+Original live dirty worktree, VR/UDP/controller/C++reference, source XML/meshes,
+physical gains and IK damp/cost unchanged. No real G1,DDS,SDK,ARM,GUI/BAT,
+motor output or launch-block removal. Continue offline only.

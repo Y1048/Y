@@ -1,0 +1,26 @@
+{
+  "base": "6b1421703bfef6a8ac2a84687ced15e2be8124fa",
+  "tested_code": "7577ed97fcf1f0ae8e9edf4777ef03f9dabaf380",
+  "protected_paths": [
+    "experiments/twist2_right_arm_manual/mujoco_pd_sweep.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_contract.py",
+    "experiments/twist2_right_arm_manual/joint_limit_guard.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_motor_stress.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_expand.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_fixture.py",
+    "experiments/twist2_right_arm_manual/pd_small_signal_trial.hpp",
+    "experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp",
+    "experiments/twist2_right_arm_manual/mink_live_cycle_target.hpp",
+    "experiments/twist2_right_arm_manual/mink_udp_target.hpp",
+    "tools/START_TWIST2_MINK_CYCLE_CANDIDATE.ps1",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1",
+    "MuJoCo_G1_Controller/scripts",
+    "hardware/g1_arm_bridge"
+  ],
+  "diff_empty": true,
+  "recorded_source_bytes_checked": true,
+  "retained_files_verified": true,
+  "retained_results": "C:\\Users\\user\\Documents\\G1_PD_RobustRefine_20260911",
+  "hardware_config_modified": false,
+  "recommended_hardware_gains": null
+}

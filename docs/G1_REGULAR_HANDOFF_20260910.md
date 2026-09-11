@@ -675,3 +675,47 @@ Raw copy/hash verified at`C:\Users\user\Documents\G1_PD_AccuracyStability_202609
 VR/UDP/LowCmd/IK settings, source XML/meshes and real gains remain unchanged.
 No G1,DDS,SDK,physical output,ARM deployment or launch-block removal.
 Continue offline; do not auto-apply simulation candidates.
+
+
+## 2026-09-11 — strict minimum-error finite-grid search started
+
+Base `1d7b1f76111034a468774e5748eae8d30da5b42d`. User prioritizes the lowest
+tracking error while retaining stable behavior and every all29 limit rule.
+Additive experiment only: mujoco_pd_minerror.py, tests, manual, isolated CI.
+The guarded dynamics, all29 inner reserve/stopping assumptions, quality
+thresholds, original roundtrip, C++ contract, model limits and live paths are
+unchanged. No IK damp/cost or actual gain change.
+
+This experiment explicitly replaces the previous2% accuracy preference WITHIN
+ITS OWN ranking only: first require every known quality condition, then minimize
+worst ORIGINAL-reference RMSE; endpoint motion only breaks exact numerical ties.
+482 distinct pairs: broad Kp16..100 plus Kp96/98/99/99.5/100 and Kd1.200..1.350
+at0.005 resolution, with comparison controls. Kp100 ceiling is retained.
+45 previously observed scenarios are now known calibration.16 new scenarios
+are frozen before the first run (seed20260911 parameter generation, not random
+motor noise). Do not call reused conditions fresh validation.
+
+Rerun the seed controls over all45 to establish feasible bounds. A partial
+maximum error is a lower bound on a candidate's final maximum; a strictly
+worse bound can exclude it without all remaining simulations. Every grid cell
+gets a full result, an actual failed-constraint witness, or a pruning proof
+referencing a fully tested incumbent. Keep those categories distinct; report
+ACTUAL simulations, not the full482x45 Cartesian product. Eight top fully tested
+pairs plus seed controls are frozen before the16 new conditions are run.
+Discrete-grid calibration optimality is not a continuous or physical optimum,
+and the shortlist does not prove whole-grid optimality on unobserved conditions.
+
+Validation before this commit:24 new tests passed including actual six-case
+smoke and full-state audit. Initial prototype smoke caught a tuple/list
+serialization comparison issue; JSON normalization was fixed before the full
+run, without a dynamics change. Complete Windows allowlist159 discovered:
+158 passed,1 C++ compilation test skipped,zero failures/errors. Hosted outcome
+not yet claimed. Full optimization is in progress; append audited outcomes,
+actual counts, exclusions and hashes afterwards. Source/model identities are
+frozen in manifest.json; failed smoke evidence is retained separately.
+
+Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_MINERROR.md.
+No robot connection,DDS,SDK,motor output,GUI/BAT or ARM deployment. Working VR
+files and original dirty PC worktree are not overwritten. Charging-time
+Robot/All blocks remain. Finish and audit this offline plan before promoting
+a simulation candidate; never auto-apply it to G1.

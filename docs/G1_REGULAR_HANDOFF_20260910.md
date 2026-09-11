@@ -261,3 +261,39 @@ completion, while preserving the existing VR mode. Before any later approved
 physical use, reconcile the working baseline and candidate separately and review
 the actual executable/hash and launch conditions. Do not auto-apply a selected
 gain to normal VR operation or change the trajectory without recording its scope.
+
+## 2026-09-11 — separate fixed-pelvis MuJoCo round-trip PD experiment
+
+Base: `27a6134c7576898e2d793a72673a81a9c3532d0d`.
+Scope: additive offline experiment. Existing VR launcher, runtime, UDP adapters,
+C++ PD reference, live gains, XML/meshes and robot binary remain unchanged.
+
+Added `mujoco_pd_contract.py`, `mujoco_pd_sweep.py`, tests, isolated requirements,
+`tools/RUN_MUJOCO_PD_SWEEP.bat`, a GitHub-hosted offline workflow, and the usage
+manual `experiments/twist2_right_arm_manual/MUJOCO_PD_SWEEP.md`.
+
+The G1 XML is modified only in memory to fix pelvis. All 29 hinge states then
+come from torque-driven mj_step, not qpos playback. Use the inherited joint22
++8/-8/ready reference (3 cycles), proximal-group gains, 50 Hz reference and
+500 Hz writer limiting. Each pair starts from a reset MjData and identical
+3 s warmup. The ideal internal PD is evaluated at the 1 ms physics timestep;
+this is not a measurement of the actual G1 motor loop. dq_cmd and tau_ff are zero.
+
+CSV separates original reference, limited command and simulated response.
+Summary reports RMSE, overshoot, endpoint settling, speed/torque and limit/contact
+ratios. Incomplete/contact/numerical/guard-failed or heavily limited trials are
+excluded from ranking. No result is automatically applied to hardware.
+
+Verification at this commit: 14 local math/summary tests passed, including
+sample-by-sample comparison with the actual C++ PdSmallSignalTrial header and
+100 randomized scalar limiter comparisons. Uploaded Python blobs were matched
+to the locally tested file hashes. Local MuJoCo installation was unavailable
+(network/package download failed); do NOT call this a passed dynamics run yet.
+The workflow is configured to require MuJoCo, run the full dynamics suite and
+3x3 sweep, and reject socket audit events during the sweep. Its actual result
+must be recorded in a subsequent dated entry after inspection, not assumed.
+
+Not verified: MuJoCo runtime at this commit, Windows launcher/GUI, free-base
+TWIST2 standing balance, physical gains, actual handoff/SDK/ARM deployment.
+Next permitted action: inspect and fix offline CI results, record measurements,
+then compare timestep/model sensitivity offline. Robot/All remain blocked.

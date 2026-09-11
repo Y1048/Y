@@ -1,0 +1,67 @@
+name: MuJoCo round-trip PD offline
+on:
+  push:
+    branches: [codex/g1-regular-handoff-20260910]
+    paths:
+      - 'experiments/twist2_right_arm_manual/mujoco_pd*'
+      - 'experiments/twist2_right_arm_manual/test_mujoco_pd_sweep.py'
+      - 'tools/RUN_MUJOCO_PD_SWEEP.bat'
+      - '.github/workflows/mujoco-pd-offline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fixed-pelvis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      G1_REQUIRE_MUJOCO: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated simulation dependencies
+        run: python -m pip install -r experiments/twist2_right_arm_manual/mujoco_pd_requirements.txt
+      - name: Math, original C++ parity, actual dynamics and VR preservation
+        working-directory: experiments/twist2_right_arm_manual
+        run: python -B test_mujoco_pd_sweep.py -v
+      - name: Full 3 by 3 sweep with socket creation forbidden
+        run: |
+          python -B - <<'PY'
+          import runpy, sys
+          def block_network(event, args):
+              if event.startswith('socket.'):
+                  raise RuntimeError('Offline test forbids networking: ' + event)
+          sys.addaudithook(block_network)
+          path = 'experiments/twist2_right_arm_manual'
+          sys.path.insert(0, path)
+          sys.argv = [path + '/mujoco_pd_sweep.py', '--kp-values', '40', '48', '56',
+                      '--kd-values', '3', '5', '7', '--output', 'mujoco-pd-results']
+          runpy.run_path(sys.argv[0], run_name='__main__')
+          PY
+      - name: Publish comparison in job summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path('mujoco-pd-results/summary.json')
+          if p.exists():
+              d=json.loads(p.read_text())
+              print(json.dumps(d, indent=2))
+              with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+                  f.write('## Simulation only: fixed-pelvis PD sweep\n')
+                  f.write('No hardware gains were changed. This does not validate standing balance.\n\n')
+                  f.write('|Kp|Kd|Completed|Eligible|Reference RMSE (rad)|Reason|\n|---|---|---|---|---|---|\n')
+                  for r in d['candidates']:
+                      m=r['metrics']
+                      f.write(f"|{r['kp_proximal']}|{r['kd_proximal']}|{r['completed']}|{r['eligible']}|{m['reference_rmse_joint22_rad'] if m else 'N/A'}|{r['reason'] or ', '.join(r['exclusion_reasons'])}|\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mujoco-pd-fixed-pelvis
+          path: mujoco-pd-results
+          if-no-files-found: warn
+          retention-days: 14

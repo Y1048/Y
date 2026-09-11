@@ -4,7 +4,7 @@ on:
     branches: [codex/g1-regular-handoff-20260910]
     paths:
       - 'experiments/twist2_right_arm_manual/mujoco_pd*'
-      - 'experiments/twist2_right_arm_manual/test_mujoco_pd_sweep.py'
+      - 'experiments/twist2_right_arm_manual/test_mujoco_pd*.py'
       - 'tools/RUN_MUJOCO_PD_SWEEP.bat'
       - '.github/workflows/mujoco-pd-offline.yml'
   workflow_dispatch:
@@ -26,7 +26,9 @@ jobs:
         run: python -m pip install -r experiments/twist2_right_arm_manual/mujoco_pd_requirements.txt
       - name: Math, original C++ parity, actual dynamics and VR preservation
         working-directory: experiments/twist2_right_arm_manual
-        run: python -B test_mujoco_pd_sweep.py -v
+        run: |
+          python -B test_mujoco_pd_sweep.py -v
+          python -B test_mujoco_pd_fixture.py -v
       - name: Full 3 by 3 sweep with socket creation forbidden
         run: |
           python -B - <<'PY'

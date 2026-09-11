@@ -23,6 +23,8 @@ import numpy as np
 from mujoco_pd_contract import (ROOT, REFERENCE, REFERENCE_DT, WRITER_DT,
                                 RoundTrip, candidate_gains, load_contract, writer_target)
 
+from mujoco_pd_fixture import ROOT_PARENT_PAIRS, preserve_root_parent_filter
+
 MODEL = ROOT / "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/g1_29dof.xml"
 # This shared module contains only the canonical tuple and typing imports.
 sys.path.insert(0, str(ROOT / "hardware/g1_arm_bridge"))
@@ -66,6 +68,7 @@ def load_model(path: Path, timestep: float):
     free = pelvis.find("joint[@name='floating_base_joint']")
     if free is None or free.get("type") != "free":
         raise ValueError("Expected the unmodified G1 free-base source model")
+    preserve_root_parent_filter(tree, pelvis)
     pelvis.remove(free)  # fixed fixture; NOT evidence about standing balance
     compiler = tree.find("compiler")
     if compiler is None:
@@ -294,11 +297,13 @@ def main(argv=None) -> int:
         out = out.resolve()
         out.mkdir(parents=True, exist_ok=False)
         source_paths = [Path(__file__), Path(__file__).with_name("mujoco_pd_contract.py"), REFERENCE,
+                        Path(__file__).with_name("mujoco_pd_fixture.py"),
                         Path(__file__).with_name("pd_small_signal_trial.hpp"),
                         ROOT / "hardware/g1_arm_bridge/g1_joint_contract.py"]
         manifest = {"schema": "g1.mujoco.pd.run.v1", "simulation_only": True, "status": "running",
                     "model": "g1_29dof, fixed pelvis; all 29 hinges torque-driven",
                     "balance_validated": False, "hardware_validated": False,
+                    "restored_source_parent_filter": list(ROOT_PARENT_PAIRS),
                     "mujoco": mujoco.__version__, "numpy": np.__version__, "python": platform.python_version(),
                     "platform": platform.platform(), "timestep_s": args.timestep,
                     "reference_hz": 50, "writer_hz": 500, "ideal_motor_hz": 1/args.timestep,

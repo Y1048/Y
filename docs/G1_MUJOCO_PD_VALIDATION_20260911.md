@@ -28,3 +28,39 @@ magnitudes using mj_contactForce. It never suppresses collisions or changes
 runtime, fixture, gains or acceptance policy. A separate hosted workflow runs
 this diagnostic without Python socket events. Result is pending inspection at
 commit creation. The main handoff will link the measured resolution.
+
+## Diagnosed source and fixture correction
+
+Base: `fcfb2160d8c1ac54e272ea69b970e4b34596d410`.
+Actions `34564228397`, job `103152936418` succeeded. Its 40/5 probe observed
+18,265 physics steps and exactly two contacting body pairs throughout:
+`pelvis / left_hip_pitch_link` and `pelvis / right_hip_pitch_link`. These were
+ACTIVE contacts, not harmless margin-only flags. Peak simulated forces were
+41,090.08 N and 38,854.48 N, with initial penetrations under 0.7 mm. Those
+forces are artifacts of this fixture, NOT measured forces on a G1.
+
+Removing the pelvis free joint makes its weld root static/world. MuJoCo's
+normal parent-child collision filtering is not applied to that static parent,
+so assembly contacts appear that the original free-root model filtered out.
+Primary reference: MuJoCo computation documentation, Collision detection /
+Filtering, https://mujoco.readthedocs.io/en/3.3.5/computation/.
+
+Correction: `mujoco_pd_fixture.py` recreates ONLY the source pelvis direct-child
+filter for left_hip_pitch, right_hip_pitch, and waist_yaw in the in-memory model.
+It validates the exact source topology and refuses explicitly disabled parent
+filters or explicit geom pairs. No source XML/mesh, collision mask, nonadjacent
+collision, trajectory, gain, hardware code, or ranking threshold is changed.
+The generated exclusions and helper hash are recorded in run.json.
+
+Add regressions comparing original free-root collision pairs, the broken fixed
+fixture, and the corrected fixture; preserve geometry masks; demonstrate that
+an added nonadjacent wrist obstacle still causes contact; require a completed
+40/5 trial to be contact-free. Existing contact exclusion in ranking is retained.
+Local pure math/summary/XML tests: **18/18 passed**, with exact uploaded engine
+blob matching the tested file. Hosted **21+6 tests** and nine-pair sweep are
+pending at commit creation and must be inspected before claiming a result.
+
+Limitations remain fixed pelvis, ideal motors, uncalibrated inertial/friction
+parameters, no TWIST2 standing balance, no physical validation, and no local
+Windows GUI test. This correction restores a documented source-model behavior;
+it is not a calibration of the real robot.

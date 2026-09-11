@@ -537,3 +537,37 @@ workflow. No physical guarantee, robot connection, DDS or motor output.
 Evidence: `docs/validation/g1_pd_limits_20260911/hosted_ci.json`.
 Next permitted work remains offline; actual braking/latency and hardware
 owner integration must be validated before a physical guard is deployed.
+
+
+## 2026-09-11 — robust PD refinement protocol and verified offline regressions
+
+Base `6b1421703bfef6a8ac2a84687ced15e2be8124fa`. Additive optimization driver,
+regressions, usage manual and isolated CI. No modification of the existing
+PD engine, all29 limit envelope, torque path, C++ reference, XML/meshes, live
+VR/UDP/controller code, motor gains or IK damp/cost. All physical blocks remain.
+
+The prespecified search compares44 pairs over the SAME27 existing motor/model
+conditions (1188 simulations). No nominal-only shortlist substitutes for this
+common-condition comparison. All27 must pass before minimizing worst original
+reference RMSE. Freeze the best6 plus fixed controls before checking8 separate,
+prespecified holdout scenarios. Do not retune on the holdout outcome or increase
+the existing Kp100 ceiling. Missing/rejected cases are not selectable.
+
+Actual validation before this code commit:19 new tests passed. The full local
+allowlist then passed108 tests, skipped1 C++ compiler-dependent parity test,
+with0 failures/errors out of109. Windows Python3.11.9/MuJoCo3.3.7/NumPy2.4.6.
+The smoke study is8 cases, not the full experiment. It verified zero-change
+parity with the existing guarded motor engine and original trace, minimum
+margin evidence, holdout isolation, duplicate/missing case refusal and artifact
+modification detection. The new hosted workflow includes the C++ parity test;
+its outcome is NOT claimed before inspection.
+
+The full optimization is running at this commit; final counts, ranking and
+holdout pass/fail are not yet claimed. Its source/model identities are frozen
+in the run manifest. Append the inspected full result instead of replacing
+this historical entry. Usage: experiments/twist2_right_arm_manual/MUJOCO_PD_ROBUST_REFINEMENT.md.
+
+The original dirty PC worktree remains untouched; computation uses a detached
+worktree. No robot, DDS, SDK, motor execution or deployment. Fixed-pelvis and
+hypothetical motor/model uncertainty are not physical validation. Next permitted
+work is to complete/audit this offline plan and record its outcome.

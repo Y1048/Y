@@ -605,3 +605,42 @@ Raw copied/hash-verified at`C:\Users\user\Documents\G1_PD_RobustRefine_20260911`
 Original live dirty worktree, VR/UDP/controller/C++reference, source XML/meshes,
 physical gains and IK damp/cost unchanged. No real G1,DDS,SDK,ARM,GUI/BAT,
 motor output or launch-block removal. Continue offline only.
+
+
+## 2026-09-11 — accuracy and endpoint stability, frozen new validation
+
+Base `41b25f87a7bbf959c658d1c023f74ebe260d3f23`. Additive offline search.
+User objective: low tracking error AND stable response, with all previous
+joint-limit restrictions retained. Do not equate low nominal RMSE with stability.
+
+Added mujoco_pd_accuracy_stability.py, regression tests, usage manual and
+isolated hosted workflow. Twelve fixed gain pairs share35 known conditions;
+previous holdouts are explicitly now calibration data, not independent tests.
+Ten NEW conditions are frozen before the first run. The first4 preferred pairs
+plus100/2,80/1,56/3 controls are frozen before those new conditions are inspected.
+No gains, thresholds or cases are retuned to rescue held-out failures.
+
+Existing all29 limit/warmup/velocity/contact/command guards remain unchanged.
+Additional performance screen: final100ms of all9 holds must have q22 error
+<=0.02rad and speed<=0.1rad/s; all right7 tail p2p<=0.005rad and RMS speed<=0.05rad/s.
+After all conditions pass, minimize worst original-reference RMSE. Within2%
+of the calibration minimum, prefer less right7 tail RMS motion, then less
+position variation. Report both accuracy leader and Pareto tradeoffs; this is
+not proof that one pair simultaneously minimizes all objectives.
+
+All29 q/dq/reference/command arrays are now also saved at500Hz for every run.
+The independent reader recomputes endpoint metrics, verifies compact/full q22
+parity, all29 sampled margins, physics-rate extrema/witness coverage and frozen
+selection. Full physics-rate trajectories/continuous safety are NOT proven.
+
+Actual code validation: four-case smoke completed and audited. Full local
+allowlist135 discovered:134 passed,1 compiler-dependent C++ parity skipped,
+0 failures/errors. Windows Python3.11.9, MuJoCo3.3.7, NumPy2.4.6. Hosted result
+is not claimed at this commit. The full optimization is still running; append
+its inspected outcome, counts, exclusions and source/artifact hashes afterwards.
+
+Use `experiments/twist2_right_arm_manual/MUJOCO_PD_ACCURACY_STABILITY.md`.
+Original guarded simulation engine, reference, model XML/meshes, live VR/UDP/
+LowCmd code, IK damp/cost, physical gains and Robot/All blocks are unchanged.
+No G1, DDS, SDK, physical output, ARM build or deployment. Live dirty PC worktree
+is not reset/cleaned/overwritten. Next action: finish/audit this offline study.

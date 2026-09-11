@@ -867,3 +867,41 @@ hypothetical motor parameters are not physical balance, thermal/noise/backlash
 or continuous-time safety validation. No G1,DDS,SDK,motor output,ARM deployment,
 robot launcher execution or launch-block removal. Original dirty live tree is
 not reset/cleaned/overwritten. Append inspected completion and failures here.
+
+
+## 2026-09-12 — operating matrix completed and audited
+
+Base `4b9dde3d0c11e54672e71243ed0092ebae70b017`; tested implementation `df0620d800bf37b57dc414b2a85f7848fd7035c7`. Closes the running entry above.
+1728 actual attempts:1440 main+288 long. Completed1636;
+quality eligible1226; rejected502.
+NONE of the12 tested common group-gain pairs passes every operating cell. No common PD optimum or hardware gain is promoted.
+Keep prior22-only optima scoped; other-axis endpoint error was not formerly
+part of that optimization objective. Do not promote a partial/failed group.
+
+Every12pairs x144operating cells was attempted:four individual proximal axes,
+4/8/12deg amplitudes,10/20/30deg/s speed caps,elbow start shifts,12repeats and30s
+post-hold. Original C++ reference/engine/VR control is not replaced by this
+separate operating runner. Same tolerances now cover the excited axis as well
+as22. The post-step velocity check includes the final step. No threshold or
+joint limit was relaxed; no compensation or projection added to hide errors.
+Base failures:{"ready_pose_not_settled_in_final_warmup_second": 92}.
+All exclusion labels(overlapping):{"active_tail_error_rad": 410, "post_hold_last_second_not_settled": 64, "ready_pose_not_settled_in_final_warmup_second": 92}.
+Guard events:{}.
+All29 observed minimum soft/model-hard margin:
+0.211798601205472/0.261798601205472rad.
+
+Read back1728 full29 traces,19602672 sampled rows and
+50112 guard extrema records. Source/mesh hashes,
+analytic held references, matrix coverage, scores/quality and rankings verified.
+The initial local test wrapper failed on Windows spawn; its evidence is retained
+and the entire suite was rerun using a corrected local wrapper without code changes.
+Final local228pass/1C++skip/0fail; inspected hosted run34616834178 job103320746401:
+229pass/0skip/0fail. Full study on Windows; CI tests+smoke only.
+
+Report:G1_PD_OPERATING_20260912.md. Compact evidence:
+docs/validation/g1_pd_operating_20260912/. Raw retained/hash-verified at`C:\Users\user\Documents\G1_PD_Operating_20260912`.
+Nominal roll static/trace diagnostics are descriptive, not real motor identification.
+Original live dirty tree, actual gains,VR/UDP/LowCmd/IK,source model and launch
+blocks are preserved. No robot,DDS,SDK,motor output or ARM deployment. No thermal,
+noise/backlash,free-base or continuous-time guarantee. Continue separately scoped
+offline per-joint verification; do not auto-apply a common group candidate.

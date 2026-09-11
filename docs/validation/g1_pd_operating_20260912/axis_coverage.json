@@ -1,0 +1,41 @@
+[
+  {
+    "joint": 22,
+    "runs": 432,
+    "completed": 409,
+    "eligible": 408,
+    "reasons": {
+      "ready_pose_not_settled_in_final_warmup_second": 23,
+      "active_tail_error_rad": 1
+    }
+  },
+  {
+    "joint": 23,
+    "runs": 432,
+    "completed": 409,
+    "eligible": 0,
+    "reasons": {
+      "active_tail_error_rad": 409,
+      "ready_pose_not_settled_in_final_warmup_second": 23,
+      "post_hold_last_second_not_settled": 64
+    }
+  },
+  {
+    "joint": 24,
+    "runs": 432,
+    "completed": 409,
+    "eligible": 409,
+    "reasons": {
+      "ready_pose_not_settled_in_final_warmup_second": 23
+    }
+  },
+  {
+    "joint": 25,
+    "runs": 432,
+    "completed": 409,
+    "eligible": 409,
+    "reasons": {
+      "ready_pose_not_settled_in_final_warmup_second": 23
+    }
+  }
+]

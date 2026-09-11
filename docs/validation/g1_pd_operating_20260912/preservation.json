@@ -1,0 +1,22 @@
+{
+  "base": "4b9dde3d0c11e54672e71243ed0092ebae70b017",
+  "tested_code": "df0620d800bf37b57dc414b2a85f7848fd7035c7",
+  "protected_paths": [
+    "tools/START_TWIST2_MINK_CYCLE_CANDIDATE.ps1",
+    "MuJoCo_G1_Controller",
+    "hardware/g1_arm_bridge",
+    "references",
+    "experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp",
+    "experiments/twist2_right_arm_manual/mujoco_pd_sweep.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_contract.py",
+    "experiments/twist2_right_arm_manual/joint_limit_guard.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_coupled_stress.py"
+  ],
+  "protected_diff_empty": true,
+  "live_status_unchanged": true,
+  "retained_path": "C:\\Users\\user\\Documents\\G1_PD_Operating_20260912",
+  "retained_result_bytes": 15466746376,
+  "copied_files_hash_verified": 3463,
+  "physical_gains_changed": false,
+  "robot_io_initialized": false
+}

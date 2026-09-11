@@ -1,0 +1,13 @@
+{
+  "tested_commit": "df0620d800bf37b57dc414b2a85f7848fd7035c7",
+  "run_id": 34616834178,
+  "job_id": 103320746401,
+  "conclusion": "success",
+  "passed": 229,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "decoded_logs_inspected": true,
+  "scope": "GitHub-hosted Ubuntu full test allowlist and smoke/parity; not the full1728 experiment",
+  "observed_log": "Ran 229 tests in 437.719s; OK"
+}

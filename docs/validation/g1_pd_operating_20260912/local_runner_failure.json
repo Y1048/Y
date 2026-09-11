@@ -1,0 +1,21 @@
+{
+  "scope": "untracked Windows test wrapper, not simulation code",
+  "initial_counts": {
+    "discovered": 221,
+    "passed": 219,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 1
+  },
+  "error": "BrokenProcessPool due to missing main-entry import guard",
+  "corrected_wrapper_sha256": "8ba7e91563dbbef94f7ab5bdaf010e8f576cb9301ce97cd7835d9b818721ca19",
+  "failed_log_sha256": "514e53048d084d0c1d7158975ce5153849b4b4a7b982ee5be32d73b00ad1c62a",
+  "simulation_source_changed": false,
+  "retest_counts": {
+    "discovered": 229,
+    "passed": 228,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0
+  }
+}

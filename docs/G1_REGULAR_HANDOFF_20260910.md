@@ -829,3 +829,41 @@ Evidence:docs/validation/g1_pd_coupled_20260911/.
 Live dirty tree, VR/UDP/LowCmd/IK settings, real gains, XML/meshes and Robot/All
 blocks preserved. No robot connection,DDS,SDK,motor output or ARM deployment.
 All possible cases remain untested; continue separately scoped offline work only.
+
+
+## 2026-09-12 — wider operating-envelope verification started
+
+Base `4b9dde3d0c11e54672e71243ed0092ebae70b017`. User requests substantially
+more coverage. Add a separate operating core and full-matrix runner, tests,
+manual and hosted workflow; retain original VR/UDP/LowCmd, simulation engine,
+model XML/meshes, joint-limit guard, actual gains and IK damp/cost unchanged.
+
+Declared plan:1728 actual attempts, no pruning. Main1440=12 group-gain pairs
+x4 independently excited proximal joints22..25 x5 motion/start profiles x6
+combined model/motor scenarios. Long288=12pairs x4axes x3 repetition/soak/start
+profiles x2scenarios. Maximum12round trips,30s extra hold, amplitudes4/8/12deg,
+speed caps10/20/30deg/s and elbow baseline offsets+/-10deg. This explicitly
+extends the offline reference; it does not replace the original C++ trial.
+The original0.05rad reserve and29-joint pre/post/final checks remain, and the
+new engine also rejects post-step velocity violations, including the last step.
+
+Endpoint tolerance is unchanged in value and now applies both to joint22 and
+the actually excited axis. Preserve right7 residual-motion checks; audit every
+hold and the whole last second of an extended post-hold. Worst original-reference
+RMSE is selectable ONLY after every declared cell passes. If no common group
+pair qualifies, report none rather than relaxing tolerance or hiding an axis.
+
+Observed before this commit:36 new tests passed, including exact all29 default
+parity with the inherited engine, coupled-model parity, generalized references,
+non-pitch excitation, final-state limit fault, reference/score/trace tampering
+and a two-case smoke audit. That smoke reproduced the nominal23-axis endpoint
+error failure at100/1.4; do not equate the former22-only optimum with a common
+four-axis optimum. The full1728 study and complete legacy allowlist are running;
+final counts, hardware-free coverage and hosted result are NOT yet claimed.
+
+Use experiments/twist2_right_arm_manual/MUJOCO_PD_OPERATING.md. Full29 sampled
+states/torques and physics-rate guard witnesses are recorded. Fixed pelvis and
+hypothetical motor parameters are not physical balance, thermal/noise/backlash
+or continuous-time safety validation. No G1,DDS,SDK,motor output,ARM deployment,
+robot launcher execution or launch-block removal. Original dirty live tree is
+not reset/cleaned/overwritten. Append inspected completion and failures here.

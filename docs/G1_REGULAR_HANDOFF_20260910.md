@@ -445,3 +445,39 @@ Next permitted work: offline uncertainty/expanded-grid comparison while
 preserving this baseline. No automatic gain application or replacement of the
 working VR setup. Robot/All remain blocked during charging; no physical trial
 is authorized by these completed simulation checks.
+
+
+## 2026-09-11 — expanded PD grid and torque-path uncertainty screening
+
+Base `b61def51ae57cac7a31daf9d169abece6a5cd615`; retain all earlier results as historical evidence.
+Added expanded/model driver, torque-delay/lag/friction driver, independent
+compressed-trace auditor and tests. One pre-existing test assertion now accepts
+native Windows manifest separators. Existing dynamics engine, C++ reference,
+VR launcher/UDP/LowCmd code, XML/meshes and live gains were not changed.
+
+Actual runs:448 expanded/model +270 motor/friction =718 attempts;
+678 completed/eligible,40 excluded.192 coarse +56 fine distinct nominal pairs.
+100/0.1 wins nominal RMSE but passes only9/18 motor/friction conditions.
+100/1,100/2,80/1 pass18/18;100/1 has the lowest worst-case error among fully
+eligible pairs in that15-pair comparison. Boundary Kp100 is not a proven
+optimum or a hardware recommendation. No automatic deployment.
+
+Final tests:60 passed,1 skipped,zero failures/errors.
+The one skipped test needs a C++ compiler absent on this Windows host.
+All718 traces were reloaded and hash/metric/cycle/eligibility checked;
+15 common nominal q22 arrays matched exactly. Other-joint aggregate metrics
+and physics counters are recorded but not fully reconstructed from compact
+joint22-only traces. Exact source/model bytes were checked against manifests.
+
+The actual local vanilla/StandardMinkPlanner/UpstreamMinkTracking route was
+inspected, not assumed to use hierarchical proximal cost100. PD bypasses IK;
+no damp/cost change or IK optimum is claimed. Uncommitted local VR work was
+not overwritten or merged into this isolated experiment.
+
+Full protocol, measurements and limits:
+[G1_MUJOCO_PD_EXPANDED_20260911.md](G1_MUJOCO_PD_EXPANDED_20260911.md).
+Compact evidence:`docs/validation/g1_pd_expanded_20260911/`.
+Raw traces retained at`C:\Users\user\Documents\G1_PD_Expanded_20260911`.
+No G1, DDS, SDK, motor output, GUI/BAT, ARM build or deployment.
+Fixed pelvis and hypothetical torque-path uncertainty do not validate standing
+balance or real motor behavior. Robot/All blocks remain. Next work:offline only.

@@ -1,0 +1,382 @@
+{
+  "schema": "g1.pd.motor-stress.summary.v1",
+  "complete": true,
+  "simulation_only": true,
+  "count": 270,
+  "completed_count": 244,
+  "eligible_count": 244,
+  "ranking": [
+    {
+      "pair": [
+        100,
+        1
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.006616652673669812,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        2
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.0076064275034816034,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        1
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.008211547077596557,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        3
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.00875673114626974,
+      "failures": []
+    },
+    {
+      "pair": [
+        72,
+        1
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.008898216823472364,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        2
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.009310148347222501,
+      "failures": []
+    },
+    {
+      "pair": [
+        64,
+        1
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.009818960697766168,
+      "failures": []
+    },
+    {
+      "pair": [
+        80,
+        3
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.010708339398967431,
+      "failures": []
+    },
+    {
+      "pair": [
+        56,
+        3
+      ],
+      "all_present": true,
+      "all_eligible": true,
+      "eligible_count": 18,
+      "required": 18,
+      "worst_rmse": 0.01474327992839838,
+      "failures": []
+    },
+    {
+      "pair": [
+        100,
+        5
+      ],
+      "all_present": true,
+      "all_eligible": false,
+      "eligible_count": 17,
+      "required": 18,
+      "worst_rmse": 0.01133491002146181,
+      "failures": [
+        {
+          "scenario": "zero_friction_delay_4ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        40,
+        5
+      ],
+      "all_present": true,
+      "all_eligible": false,
+      "eligible_count": 17,
+      "required": 18,
+      "worst_rmse": 0.025340248086814638,
+      "failures": [
+        {
+          "scenario": "zero_friction_delay_4ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        0.5
+      ],
+      "all_present": true,
+      "all_eligible": false,
+      "eligible_count": 15,
+      "required": 18,
+      "worst_rmse": 0.006224284815357793,
+      "failures": [
+        {
+          "scenario": "zero_friction_lag_5ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "zero_friction_delay_4ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "combined_half",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        80,
+        0.5
+      ],
+      "all_present": true,
+      "all_eligible": false,
+      "eligible_count": 15,
+      "required": 18,
+      "worst_rmse": 0.007758746735607964,
+      "failures": [
+        {
+          "scenario": "zero_friction_lag_5ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "zero_friction_delay_4ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "combined_half",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100,
+        0.1
+      ],
+      "all_present": true,
+      "all_eligible": false,
+      "eligible_count": 9,
+      "required": 18,
+      "worst_rmse": 0.005935029026582762,
+      "failures": [
+        {
+          "scenario": "friction_zero",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "delay_8ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "lag_10ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "zero_friction_lag_2ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "zero_friction_lag_5ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "zero_friction_delay_2ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "zero_friction_delay_4ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "combined",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "combined_half",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        80,
+        0.1
+      ],
+      "all_present": true,
+      "all_eligible": false,
+      "eligible_count": 9,
+      "required": 18,
+      "worst_rmse": 0.007419066147962457,
+      "failures": [
+        {
+          "scenario": "friction_zero",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "delay_8ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "lag_10ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "zero_friction_lag_5ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "zero_friction_lag_2ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "zero_friction_delay_4ms",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        },
+        {
+          "scenario": "zero_friction_delay_2ms",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "combined",
+          "reason": "ready_pose_not_settled_in_final_warmup_second",
+          "exclusions": [
+            "ready_pose_not_settled_in_final_warmup_second"
+          ]
+        },
+        {
+          "scenario": "combined_half",
+          "reason": "measured_velocity_limit",
+          "exclusions": [
+            "measured_velocity_limit"
+          ]
+        }
+      ]
+    }
+  ],
+  "manifest_sha256": "392d78a0a1c4f25506bf02381cad351f97a02e68df3ef93076fa7cde8ba65a17",
+  "wall_seconds": 164.93800000000192,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false
+}

@@ -227,7 +227,7 @@ class DynamicsTest(unittest.TestCase):
             manifest = json.loads((output / "run.json").read_text())
             self.assertTrue(summary["sweep_complete"])
             self.assertTrue(summary["candidates"][0]["completed"])
-            self.assertIn(relative, manifest["source_sha256"])
+            self.assertIn(str(Path(relative)), manifest["source_sha256"])
             self.assertIsNone(summary["recommended_hardware_gains"])
             csv = output / summary["candidates"][0]["csv"]
             self.assertEqual(hashlib.sha256(csv.read_bytes()).hexdigest(), summary["candidates"][0]["csv_sha256"])

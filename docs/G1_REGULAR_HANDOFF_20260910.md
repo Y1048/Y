@@ -396,3 +396,52 @@ Next permitted work is offline sensitivity/comparison around the screened
 candidates, retaining this reproducible baseline. No automatic gain deployment.
 Robot/All blocks and the charging/no-DDS restriction are unchanged. No physical
 trial is authorized by a passed MuJoCo workflow.
+
+## 2026-09-11 — completed two-timestep comparison and independent CSV verification
+
+Verification implementation: `1c983195c12f509d89e27036117f612e91a70ed6`.
+Result document: `40582a8308c1d229c168f58a817718824e1b8618`.
+This append-only closeout preserves the concurrent `7262645d` documentation
+and all previous code. The full two-grid table, provenance, artifact identifiers,
+usage and limits are recorded in
+[G1_MUJOCO_PD_TIMESTEP_20260911.md](G1_MUJOCO_PD_TIMESTEP_20260911.md).
+
+The added read-only result verifier and seven artifact tests are separate from
+the unchanged simulation engine. `.github/workflows/mujoco-pd-sensitivity.yml`
+runs both full grids and verifies their CSVs; the previous workflow is retained.
+No VR launcher, UDP adapter, LowCmd controller, C++ reference, live gain,
+source model/mesh or deployed binary was modified by this verification addition.
+
+Inspected Actions **34565313166**, job **103156119792**, on **1c983195**:
+**success**, Python **3.11.16**, MuJoCo **3.3.7**, NumPy **2.4.6**.
+
+- **34/34 tests passed, no skips:** 21 main, six fixture and seven artifact tests.
+- **18/18 candidate runs completed and were eligible:** all nine pairs at
+  **1 ms** and **0.5 ms**; three cycles and **7,633 trial samples** per run.
+- All recorded trial contact, arm torque-target limiting and arm hard-clipping
+  ratios were zero. CSV hashes, continuous 500 Hz timestamps, actual gains,
+  cycle/segment coverage, recomputed metrics, eligibility and ranking passed.
+- The full ranking was identical at both timesteps. Maximum relative reference
+  RMSE change was **0.18366134615613872%**. The best tested pair remained
+  **56/3**, with joint22 reference RMSE **0.014649809182167359 rad** at 1 ms
+  and **0.014676715218920633 rad** at 0.5 ms.
+- Protected live-file identity tests passed. The sweeps rejected Python socket
+  audit events; no G1, DDS, SDK or physical motor program was used.
+
+Artifact **mujoco-pd-timestep-comparison**, ID **10185845868**, run
+**34565313166**, contains **23 files**: 18 CSVs, two run manifests, two summaries
+and validation.json. Retention is 14 days; the compact table and hashes are
+committed in the linked report. The base workflow on the same tested commit
+also passed (run **34565313037**, **27 tests** plus its nine-pair 1 ms sweep).
+
+The earlier "timestep sensitivity unverified" entries are historical; the two
+configurations above are now checked. Timestep also changes the ideal motor
+PD evaluation rate, so this is NOT pure integrator convergence. Model/payload/
+friction/delay sensitivity, free-base TWIST2 balance, Windows BAT/GUI, physical
+G1 gains and real handoff remain unverified. The winning pair lies on the grid
+boundary and is not a proven optimum or a hardware recommendation.
+
+Next permitted work: offline uncertainty/expanded-grid comparison while
+preserving this baseline. No automatic gain application or replacement of the
+working VR setup. Robot/All remain blocked during charging; no physical trial
+is authorized by these completed simulation checks.

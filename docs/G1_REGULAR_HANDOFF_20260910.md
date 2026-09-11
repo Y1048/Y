@@ -644,3 +644,34 @@ Original guarded simulation engine, reference, model XML/meshes, live VR/UDP/
 LowCmd code, IK damp/cost, physical gains and Robot/All blocks are unchanged.
 No G1, DDS, SDK, physical output, ARM build or deployment. Live dirty PC worktree
 is not reset/cleaned/overwritten. Next action: finish/audit this offline study.
+
+
+## 2026-09-11 — completed accuracy/stability comparison and full-state audit
+
+Base `41b25f87a7bbf959c658d1c023f74ebe260d3f23`, tested code `f4078fdd3309019a888d47c05197cc05fe118029`. This closes the running entry above.
+Actual full study:490 attempts,420 known-condition calibration,
+70 new validation, 487 completed,
+487 old-guard eligible, 482 endpoint-quality eligible.
+Added quality criteria are performance screening, not model-limit relaxation.
+First survivor in the frozen calibration preference is **100/1.3**. It passes35/35 known and10/10 new conditions. Worst calibration RMSE=0.00932800765182386rad, worst new-condition RMSE=0.00922649250092812rad. This is a finite-grid, finite-horizon simulation candidate, not deployed hardware gains or a proven optimum.
+Frozen survivors:[[100.0, 1.3], [100.0, 1.4], [100.0, 2.0]]. Calibration-only accuracy leader:[100.0, 1.1].
+All rejected conditions and unselected candidates remain explicitly distinguished.
+
+Base reasons:{"ready_pose_not_settled_in_final_warmup_second": 3}.
+Quality reasons:{"max_q22_tail_error_rad": 5}.
+Guard events:{}.
+All29 minimum soft/XML-hard margin:0.211798601708536/0.261798601708536rad.
+No real-world stability/limit invariant or optimality proof is claimed.
+
+Local134pass/1compiler skip/0fail; inspected hosted run34593608750 job103244239811:
+135pass/0skip/0fail including C++ parity. Full study on Windows; CI tests+smoke only.
+All490 compact/full trace pairs and 4452271 full29
+500Hz sample rows audited; physics extrema/witnesses and frozen selection verified.
+Continuous-time/full physics-rate trajectories are not reconstructed.
+
+Details:G1_PD_ACCURACY_STABILITY_20260911.md.
+Evidence:docs/validation/g1_pd_accuracy_stability_20260911/.
+Raw copy/hash verified at`C:\Users\user\Documents\G1_PD_AccuracyStability_20260911`. Existing reference, guarded engine, live
+VR/UDP/LowCmd/IK settings, source XML/meshes and real gains remain unchanged.
+No G1,DDS,SDK,physical output,ARM deployment or launch-block removal.
+Continue offline; do not auto-apply simulation candidates.

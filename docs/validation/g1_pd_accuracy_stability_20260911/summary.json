@@ -1,0 +1,546 @@
+{
+  "schema": "g1.pd.accuracy-stability.summary.v1",
+  "complete": true,
+  "simulation_only": true,
+  "total_cases": 490,
+  "calibration_cases": 420,
+  "validation_cases": 70,
+  "unique_pairs": 12,
+  "completed": 487,
+  "base_eligible": 487,
+  "quality_eligible": 482,
+  "base_rejections": {
+    "ready_pose_not_settled_in_final_warmup_second": 3
+  },
+  "quality_rejection_counts": {
+    "max_q22_tail_error_rad": 5
+  },
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.21179860170853562,
+  "minimum_model_hard_margin_rad": 0.26179860170853564,
+  "calibration_ranking": [
+    {
+      "pair": [
+        100.0,
+        1.1
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009142700180663803,
+      "worst_peak_error_rad": 0.016307952101714,
+      "worst_tail_rms_speed_rad_s": 0.008052095689730318,
+      "worst_tail_p2p_rad": 0.0007323396499493429,
+      "worst_q22_torque_nm": 1.3899450704053014,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.2
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009234384785583066,
+      "worst_peak_error_rad": 0.016563061515168537,
+      "worst_tail_rms_speed_rad_s": 0.007494216656432181,
+      "worst_tail_p2p_rad": 0.0006890960615826836,
+      "worst_q22_torque_nm": 1.390903979669746,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009328007651823863,
+      "worst_peak_error_rad": 0.01682094811634971,
+      "worst_tail_rms_speed_rad_s": 0.006943005352769416,
+      "worst_tail_p2p_rad": 0.000643500690509391,
+      "worst_q22_torque_nm": 1.3916520429168655,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.4
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009423483996599449,
+      "worst_peak_error_rad": 0.017081530011169313,
+      "worst_tail_rms_speed_rad_s": 0.006417189550491146,
+      "worst_tail_p2p_rad": 0.0005981995287029362,
+      "worst_q22_torque_nm": 1.3922460451857204,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.5
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009520751646238584,
+      "worst_peak_error_rad": 0.017344744496033737,
+      "worst_tail_rms_speed_rad_s": 0.0059022577465132516,
+      "worst_tail_p2p_rad": 0.0005521903255566452,
+      "worst_q22_torque_nm": 1.3927149367791218,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.6
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009619715766686944,
+      "worst_peak_error_rad": 0.017610354034902062,
+      "worst_tail_rms_speed_rad_s": 0.005400705465907548,
+      "worst_tail_p2p_rad": 0.0005062084520628951,
+      "worst_q22_torque_nm": 1.3930873320919668,
+      "failures": []
+    },
+    {
+      "pair": [
+        96.0,
+        1.3
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.00967694942534094,
+      "worst_peak_error_rad": 0.017351079751759632,
+      "worst_tail_rms_speed_rad_s": 0.006494876888877998,
+      "worst_tail_p2p_rad": 0.0005894429168006032,
+      "worst_q22_torque_nm": 1.3859790865727177,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.8
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.0098225093713314,
+      "worst_peak_error_rad": 0.018148584397918277,
+      "worst_tail_rms_speed_rad_s": 0.004457345333160227,
+      "worst_tail_p2p_rad": 0.00041760825756376185,
+      "worst_q22_torque_nm": 1.3935928242187732,
+      "failures": []
+    },
+    {
+      "pair": [
+        96.0,
+        1.6
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.009981751522752528,
+      "worst_peak_error_rad": 0.01815048600344958,
+      "worst_tail_rms_speed_rad_s": 0.00503146256799097,
+      "worst_tail_p2p_rad": 0.000450086638533187,
+      "worst_q22_torque_nm": 1.3874570177916483,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        2.0
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.010031248917777055,
+      "worst_peak_error_rad": 0.018695291846087203,
+      "worst_tail_rms_speed_rad_s": 0.003620138659875129,
+      "worst_tail_p2p_rad": 0.000337465473929599,
+      "worst_q22_torque_nm": 1.393814291386409,
+      "failures": []
+    },
+    {
+      "pair": [
+        80.0,
+        1.0
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 35,
+      "quality_pass_count": 35,
+      "worst_rmse_rad": 0.011090590141270616,
+      "worst_peak_error_rad": 0.019090708956112562,
+      "worst_tail_rms_speed_rad_s": 0.010097867797897708,
+      "worst_tail_p2p_rad": 0.000872906103072224,
+      "worst_q22_torque_nm": 1.3718427633361279,
+      "failures": []
+    },
+    {
+      "pair": [
+        56.0,
+        3.0
+      ],
+      "observed": 35,
+      "required": 35,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 35,
+      "quality_pass_count": 32,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "model/combined_half",
+          "base_reason": "",
+          "quality_reasons": [
+            "max_q22_tail_error_rad"
+          ]
+        },
+        {
+          "scenario": "model/combined_high",
+          "base_reason": "",
+          "quality_reasons": [
+            "max_q22_tail_error_rad"
+          ]
+        },
+        {
+          "scenario": "model/hold_mass140_damp125_f015",
+          "base_reason": "",
+          "quality_reasons": [
+            "max_q22_tail_error_rad"
+          ]
+        }
+      ]
+    }
+  ],
+  "calibration_preference": [
+    [
+      100.0,
+      1.2
+    ],
+    [
+      100.0,
+      1.1
+    ],
+    [
+      100.0,
+      1.3
+    ],
+    [
+      100.0,
+      1.4
+    ],
+    [
+      100.0,
+      1.5
+    ],
+    [
+      100.0,
+      1.6
+    ],
+    [
+      96.0,
+      1.3
+    ],
+    [
+      100.0,
+      1.8
+    ],
+    [
+      96.0,
+      1.6
+    ],
+    [
+      100.0,
+      2.0
+    ],
+    [
+      80.0,
+      1.0
+    ]
+  ],
+  "pareto_calibration": [
+    [
+      100.0,
+      1.1
+    ],
+    [
+      100.0,
+      1.2
+    ],
+    [
+      100.0,
+      1.3
+    ],
+    [
+      100.0,
+      1.4
+    ],
+    [
+      100.0,
+      1.5
+    ],
+    [
+      100.0,
+      1.6
+    ],
+    [
+      96.0,
+      1.3
+    ],
+    [
+      100.0,
+      1.8
+    ],
+    [
+      96.0,
+      1.6
+    ],
+    [
+      100.0,
+      2.0
+    ],
+    [
+      80.0,
+      1.0
+    ]
+  ],
+  "validation_ranking": [
+    {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 10,
+      "quality_pass_count": 10,
+      "worst_rmse_rad": 0.009226492500928125,
+      "worst_peak_error_rad": 0.016399287411052052,
+      "worst_tail_rms_speed_rad_s": 0.00817281995412744,
+      "worst_tail_p2p_rad": 0.0007362076626669101,
+      "worst_q22_torque_nm": 1.4050329184419754,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.4
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 10,
+      "quality_pass_count": 10,
+      "worst_rmse_rad": 0.00931612682312316,
+      "worst_peak_error_rad": 0.01665130914932965,
+      "worst_tail_rms_speed_rad_s": 0.007598983514253289,
+      "worst_tail_p2p_rad": 0.0006928682583419721,
+      "worst_q22_torque_nm": 1.405575386247989,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        2.0
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 10,
+      "quality_pass_count": 10,
+      "worst_rmse_rad": 0.009889080000984048,
+      "worst_peak_error_rad": 0.018210654749582653,
+      "worst_tail_rms_speed_rad_s": 0.00448629124200852,
+      "worst_tail_p2p_rad": 0.0004207291219702203,
+      "worst_q22_torque_nm": 1.4075034678360183,
+      "failures": []
+    },
+    {
+      "pair": [
+        56.0,
+        3.0
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 10,
+      "quality_pass_count": 8,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "model/new_mass125_damp075_f015",
+          "base_reason": "",
+          "quality_reasons": [
+            "max_q22_tail_error_rad"
+          ]
+        },
+        {
+          "scenario": "model/new_mass135_damp050_f020",
+          "base_reason": "",
+          "quality_reasons": [
+            "max_q22_tail_error_rad"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        80.0,
+        1.0
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 9,
+      "quality_pass_count": 9,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "motor/new_f000_d2_l9",
+          "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+          "quality_reasons": [
+            "incomplete_nine_hold_tails"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100.0,
+        1.1
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 9,
+      "quality_pass_count": 9,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "motor/new_f000_d2_l9",
+          "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+          "quality_reasons": [
+            "incomplete_nine_hold_tails"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100.0,
+        1.2
+      ],
+      "observed": 10,
+      "required": 10,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 9,
+      "quality_pass_count": 9,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "motor/new_f000_d2_l9",
+          "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+          "quality_reasons": [
+            "incomplete_nine_hold_tails"
+          ]
+        }
+      ]
+    }
+  ],
+  "frozen_order_survivors": [
+    [
+      100.0,
+      1.3
+    ],
+    [
+      100.0,
+      1.4
+    ],
+    [
+      100.0,
+      2.0
+    ]
+  ],
+  "manifest_sha256": "9a4d396ba6881118276ef404144d0465f1be74085b8831ac1d2f3d31662cf8f8",
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "optimum_proven": false,
+  "limitations": [
+    "fixed pelvis; joint22 only, grouped gains22..25",
+    "hypothetical model/torque delay, no real motor identification",
+    "bounded finite grid; stability is finite-horizon observed screening",
+    "all29 trajectories stored at500Hz, limit extrema checked at physics rate",
+    "prior holdouts reused as known calibration, not fresh independent validation",
+    "no IK cost adjustment, full-body balance, noise or large-motion validation"
+  ]
+}

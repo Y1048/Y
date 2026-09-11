@@ -1,0 +1,23 @@
+{
+  "base": "41b25f87a7bbf959c658d1c023f74ebe260d3f23",
+  "tested_code": "f4078fdd3309019a888d47c05197cc05fe118029",
+  "protected_paths": [
+    "tools",
+    "hardware",
+    "MuJoCo_G1_Controller",
+    "experiments/twist2_right_arm_manual/mujoco_pd_sweep.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_contract.py",
+    "experiments/twist2_right_arm_manual/joint_limit_guard.py",
+    "experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp",
+    "experiments/twist2_right_arm_manual/mujoco_pd_robust_refine.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_expand.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_motor_stress.py",
+    "experiments/twist2_right_arm_manual/pd_small_signal_trial.hpp"
+  ],
+  "diff_empty": true,
+  "source_and_asset_raw_hashes_checked": true,
+  "retained_copy_hash_verified": true,
+  "retained": "C:\\Users\\user\\Documents\\G1_PD_AccuracyStability_20260911",
+  "hardware_config_modified": false,
+  "recommended_hardware_gains": null
+}

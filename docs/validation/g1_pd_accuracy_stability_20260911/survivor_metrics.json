@@ -1,0 +1,29 @@
+{
+  "100/1.3": {
+    "nominal_rmse_rad": 0.006859272623171351,
+    "all45_worst_rmse_rad": 0.009328007651823863,
+    "all45_worst_peak_error_rad": 0.01682094811634971,
+    "all45_worst_right7_tail_rms_speed_rad_s": 0.00817281995412744,
+    "all45_worst_right7_tail_p2p_rad": 0.0007362076626669101,
+    "all45_max_joint22_torque_nm": 1.4050329184419754,
+    "all45_min_right7_soft_margin_rad": 1.0735864057259215
+  },
+  "100/1.4": {
+    "nominal_rmse_rad": 0.006952196673044818,
+    "all45_worst_rmse_rad": 0.009423483996599449,
+    "all45_worst_peak_error_rad": 0.017081530011169313,
+    "all45_worst_right7_tail_rms_speed_rad_s": 0.007598983514253289,
+    "all45_worst_right7_tail_p2p_rad": 0.0006928682583419721,
+    "all45_max_joint22_torque_nm": 1.405575386247989,
+    "all45_min_right7_soft_margin_rad": 1.0735879713721572
+  },
+  "100/2": {
+    "nominal_rmse_rad": 0.007556528468090668,
+    "all45_worst_rmse_rad": 0.010031248917777055,
+    "all45_worst_peak_error_rad": 0.018695291846087203,
+    "all45_worst_right7_tail_rms_speed_rad_s": 0.00448629124200852,
+    "all45_worst_right7_tail_p2p_rad": 0.0004207291219702203,
+    "all45_max_joint22_torque_nm": 1.4075034678360183,
+    "all45_min_right7_soft_margin_rad": 1.0735975372035547
+  }
+}

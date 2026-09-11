@@ -1,0 +1,17 @@
+{
+  "tested_commit": "f4078fdd3309019a888d47c05197cc05fe118029",
+  "run_id": 34593608750,
+  "job_id": 103244239811,
+  "conclusion": "success",
+  "passed": 135,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "runtime_s": 185.124,
+  "platform": "Ubuntu24.04.5",
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "decoded_log_inspected": true,
+  "scope": "full regression allowlist with four-case smoke; not full optimization"
+}

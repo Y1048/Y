@@ -905,3 +905,38 @@ Original live dirty tree, actual gains,VR/UDP/LowCmd/IK,source model and launch
 blocks are preserved. No robot,DDS,SDK,motor output or ARM deployment. No thermal,
 noise/backlash,free-base or continuous-time guarantee. Continue separately scoped
 offline per-joint verification; do not auto-apply a common group candidate.
+
+
+## 2026-09-12 — independent PD search started
+
+Base2ae59402367def9d28e823c59e81bc09a5a8040e. User asks to find optimal PD after
+common gains failed roll endpoint accuracy. Additive per-joint research only.
+
+Introduce mujoco_pd_perjoint.py, mujoco_pd_perjoint_study.py,27tests, usage and CI.
+Only the isolated simulator extends joint23 Kp search cap from100 to300 because
+observed pure-PD static load error remained above0.02rad at100. The300 cap is a
+research bound, NOT a motor rating or physical permission. Original hardware,
+C++ and normal simulator100Kp validators remain intact, as do joint/torque/velocity
+limits, inner reserve, stopping assumptions and all endpoint criteria. No feedforward,
+integral action, target bias or IK adjustment. Actual gains are explicit vectors.
+
+Protocol:40roll pairs x6cases; coordinate-search22/24/25; freeze deduplicated
+candidate vectors and verify each on all144previous operating cells; freeze up
+to3 passing vectors before48new operating cases. Fresh parameters are fixed in
+manifest before main dynamics; they are hypothetical, not measured probabilities.
+No data from fresh validation changes candidates, policies or the main result.
+No global optimum is implied by coordinate search or a capped grid.
+
+Observed before main execution:12exploratory probe runs retained separately,
+not included in formal study counts. Increasing roll Kp reduced nominal error;
+low Kd failed delayed dynamics, so nominal error alone cannot select a candidate.
+27new tests passed, including exact old-engine all29 trajectory parity with uniform
+gains, pure-PD torque readback, unchanged live validator, reference/limit tampering
+checks and JSON summary roundtrip. Initial test assertion compared tuple/list;
+its expectation was corrected without a controller change. Full suite and full
+study outcomes remain pending; append actual audited results, not planned counts.
+
+Working VR/UDP/LowCmd/IK, source XML/meshes, actual gains and Robot/All blocks are
+unchanged. Isolated worktree, no G1 connection/DDS/SDK/motor output or deployment.
+Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_PERJOINT.md. Complete the
+current offline experiment/audit; never copy research gains to the live launcher.

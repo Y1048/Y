@@ -1,0 +1,8 @@
+{
+  "discovered": 193,
+  "passed": 192,
+  "skipped": 1,
+  "failures": 0,
+  "errors": 0,
+  "composition": "183-test allowlist plus10 disjoint matrix tests; repeated runs not double-counted"
+}

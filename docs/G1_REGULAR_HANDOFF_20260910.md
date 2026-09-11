@@ -797,3 +797,35 @@ No G1 connection,DDS,SDK,motor output,ARM build,deployment or launch-block remov
 Original dirty live PC tree and all existing VR/UDP/LowCmd/IK/model files remain.
 Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_COUPLED_STRESS.md.
 Next permitted step:complete/audit this offline plan; no automatic gain adoption.
+
+
+## 2026-09-11 — coupled uncertainty full matrix completed and audited
+
+Base `884882d8175676caac7e852547de90b48aa1c700`; tested code `47b85fe66ee43a3a841b3d9657568ec8d00f5ac1`. Closes the running entry above.
+Every declared12gain pairs x81conditions was actually attempted:972 runs,
+969 completed/969 endpoint-quality eligible.
+The first-stage780 calibration+128 frozen validation
+is preserved;64 supplemental runs fill every unselected cell too.
+No pruning, no hidden missing cases, and no failed attempt counted as three cycles.
+The lowest worst-error pair that passed all81 conditions among these12 tested pairs is **100/1.4**. This is only the finite tested matrix, not every continuous or real case.
+Complete descriptive ranking does not become independent future validation data.
+
+Base reasons:{"ready_pose_not_settled_in_final_warmup_second": 3}.
+Quality reasons:{}.
+Guard events:{}.
+All29 min soft/model-hard clearance:0.211798601708536/0.261798601708536rad.
+Original reserve, stop assumptions, endpoint quality and model limits unchanged.
+Prior100/1.275 evidence is historical, not a universal stability assertion.
+See G1_PD_COUPLED_20260911.md for complete table and failure configurations.
+
+Local192pass/1C++skip/0fail; inspected hosted run34609334553 job103295578442:
+193pass/0skip/0fail. CI tests+smoke only; full972 matrix ran in isolated Windows.
+Re-read972 compact/full29 traces,8854377500Hz sample rows and
+28188 extrema records; source/model hashes, all cells,
+mutation evidence, frozen selections and ranks verified. No continuous-time proof.
+Raw copied/hash-verified at`C:\Users\user\Documents\G1_PD_Coupled_20260911`.
+Evidence:docs/validation/g1_pd_coupled_20260911/.
+
+Live dirty tree, VR/UDP/LowCmd/IK settings, real gains, XML/meshes and Robot/All
+blocks preserved. No robot connection,DDS,SDK,motor output or ARM deployment.
+All possible cases remain untested; continue separately scoped offline work only.

@@ -1,0 +1,1026 @@
+[
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_00",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00000",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_01",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00001",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_02",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.004,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00002",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00003",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_04",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00004",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_05",
+      "mass_scale": 0.65,
+      "damping_scale": 1.25,
+      "friction_scale": 0.05,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00005",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_06",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.004,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00006",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_07",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00007",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_08",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00008",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_09",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.003,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00009",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_10",
+      "mass_scale": 0.65,
+      "damping_scale": 0.65,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00010",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_11",
+      "mass_scale": 0.65,
+      "damping_scale": 0.85,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00011",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_12",
+      "mass_scale": 0.9,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00012",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_13",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00013",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_14",
+      "mass_scale": 1.35,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00014",
+    "validation"
+  ],
+  [
+    88.0,
+    2.0,
+    {
+      "name": "validation_15",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.35,
+      "delay_s": 0.003,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00015",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_00",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00016",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_01",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00017",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_02",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.004,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00018",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00019",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_04",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00020",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_05",
+      "mass_scale": 0.65,
+      "damping_scale": 1.25,
+      "friction_scale": 0.05,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00021",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_06",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.004,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00022",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_07",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00023",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_08",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00024",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_09",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.003,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00025",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_10",
+      "mass_scale": 0.65,
+      "damping_scale": 0.65,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00026",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_11",
+      "mass_scale": 0.65,
+      "damping_scale": 0.85,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00027",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_12",
+      "mass_scale": 0.9,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00028",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_13",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00029",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_14",
+      "mass_scale": 1.35,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00030",
+    "validation"
+  ],
+  [
+    96.0,
+    2.0,
+    {
+      "name": "validation_15",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.35,
+      "delay_s": 0.003,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00031",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_00",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00032",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_01",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00033",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_02",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.004,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00034",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00035",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_04",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00036",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_05",
+      "mass_scale": 0.65,
+      "damping_scale": 1.25,
+      "friction_scale": 0.05,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00037",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_06",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.004,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00038",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_07",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00039",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_08",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00040",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_09",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.003,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00041",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_10",
+      "mass_scale": 0.65,
+      "damping_scale": 0.65,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00042",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_11",
+      "mass_scale": 0.65,
+      "damping_scale": 0.85,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00043",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_12",
+      "mass_scale": 0.9,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00044",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_13",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00045",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_14",
+      "mass_scale": 1.35,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00046",
+    "validation"
+  ],
+  [
+    100.0,
+    2.5,
+    {
+      "name": "validation_15",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.35,
+      "delay_s": 0.003,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00047",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_00",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00048",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_01",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00049",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_02",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.004,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00050",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00051",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_04",
+      "mass_scale": 1.1,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00052",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_05",
+      "mass_scale": 0.65,
+      "damping_scale": 1.25,
+      "friction_scale": 0.05,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00053",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_06",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.004,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00054",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_07",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00055",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_08",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00056",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_09",
+      "mass_scale": 1.1,
+      "damping_scale": 1.25,
+      "friction_scale": 0.75,
+      "delay_s": 0.003,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00057",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_10",
+      "mass_scale": 0.65,
+      "damping_scale": 0.65,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00058",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_11",
+      "mass_scale": 0.65,
+      "damping_scale": 0.85,
+      "friction_scale": 0.35,
+      "delay_s": 0.004,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00059",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_12",
+      "mass_scale": 0.9,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00060",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_13",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.004,
+      "lag_s": 0.002,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00061",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_14",
+      "mass_scale": 1.35,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.008,
+      "dt": 0.001
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00062",
+    "validation"
+  ],
+  [
+    100.0,
+    3.0,
+    {
+      "name": "validation_15",
+      "mass_scale": 1.1,
+      "damping_scale": 1.75,
+      "friction_scale": 0.35,
+      "delay_s": 0.003,
+      "lag_s": 0.002,
+      "dt": 0.0005
+    },
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_coupled_20260911_rbej6q9a\\matrix",
+    "extra_00063",
+    "validation"
+  ]
+]

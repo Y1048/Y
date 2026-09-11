@@ -1,0 +1,30 @@
+{
+  "schema": "g1.pd.coupled.matrix.run.v1",
+  "source_sha256": {
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_coupled_matrix.py": "08f89c0f4b3c0e2647cc295cd1b580de7e153b453361e506def8b5a3aa4f62dd",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_coupled_stress.py": "a85ccaf5cce54ae3769a907c8fef46544ffe7935393b5c930fffecbec6ebcfd6",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_accuracy_stability.py": "beeaa1ba453d41950ec9008c9deba8379333e05b5c8e447aea14a19f1d80b52b",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_robust_refine.py": "cc808d299f5e39c0e72d96c65a30ad0826434773d74870709b444799709525e1",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_sweep.py": "347f25a3fe9e019b7f9afcc4811d7cf1b26ae40b13dc78d2fc9579c633a0fe97",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand.py": "7baa8d173a027e8d9244ffd48ea74fb3273229388c4c3171f8b3875ca95047e4",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_motor_stress.py": "7203e5989f72acf48c17da47866fb537b345a80d7b3693b5f6dfb35f1d3ba920",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_contract.py": "c16f65cc16abc7be6e54486826fe5de75512d57f877be04fccd4534e40e7db13",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_fixture.py": "7f9eec1c2be83c434b97282acaae62af1f3a8d79d7f7c9b40e90dc4941be850f",
+    "experiments\\twist2_right_arm_manual\\joint_limit_guard.py": "79fedc75b0d338c4c32d7bf25d539ecf47f3b786cffeb3a1eeced43c62602ca2",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand_audit.py": "261c2105590eb833eab9ae19b531744b229755c99ce38da1346af1483f069910",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_limit_replay.py": "695fbd0b21f426d0da9d54bbe46130b6d3b233ca1f0f7e8f0eb9b6f01bcf2364",
+    "experiments\\twist2_right_arm_manual\\pd_small_signal_trial.hpp": "a7b8562ab1acb11071fbd264c4494d1b686437647875053565c6e132a92906fe",
+    "references\\lower_body\\twist2_deploy\\cpp_g1_twist2\\twist2_common.hpp": "2db4dea94bf469429010563bee36f1cab8005d688c87a2eb8772aca1f51dbba6"
+  },
+  "base_artifact_sha256": {
+    "manifest.json": "36abce645c9f1d977c9f8b97a7ca07cd9114313828864ac68ca10653bbd6abd4",
+    "summary.json": "d5dd5a51cefec32f5b2dad72e44181227712d54d412ac4937aee69bb7ccdc10a",
+    "selection.json": "8a1146d56c9770df622c1351c51a0f42c09375602d4e2a1445c30533fa994e76",
+    "audit.json": "35e4326ac8c88a0e280db8ce43879a2369f52a998d153b794dd8efb19d237a15"
+  },
+  "extra_count": 64,
+  "intent": "Fill every missing pair x validation cell, without pruning or rescue",
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "simulation_only": true
+}

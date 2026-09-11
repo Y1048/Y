@@ -1,0 +1,17 @@
+{
+  "tested_commit": "47b85fe66ee43a3a841b3d9657568ec8d00f5ac1",
+  "run_id": 34609334553,
+  "job_id": 103295578442,
+  "conclusion": "success",
+  "passed": 193,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "log_inspected": true,
+  "test_seconds": 381.019,
+  "runner": "Ubuntu24.04.5",
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "scope": "Regression tests, parity and smoke; not the full 972 simulations"
+}

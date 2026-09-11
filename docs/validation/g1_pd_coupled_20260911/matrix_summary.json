@@ -1,0 +1,309 @@
+{
+  "schema": "g1.pd.coupled.matrix.v1",
+  "complete": true,
+  "full_study": true,
+  "simulation_only": true,
+  "pairs": 12,
+  "conditions_per_pair": 81,
+  "total_cases": 972,
+  "completed": 969,
+  "base_eligible": 969,
+  "quality_eligible": 969,
+  "fully_passing_pairs": [
+    [
+      100.0,
+      1.4
+    ],
+    [
+      100.0,
+      1.5
+    ],
+    [
+      100.0,
+      1.75
+    ],
+    [
+      96.0,
+      1.5
+    ],
+    [
+      100.0,
+      2.0
+    ],
+    [
+      96.0,
+      2.0
+    ],
+    [
+      100.0,
+      2.5
+    ],
+    [
+      88.0,
+      2.0
+    ],
+    [
+      100.0,
+      3.0
+    ]
+  ],
+  "minimum_tested_pair": [
+    100.0,
+    1.4
+  ],
+  "ranking": [
+    {
+      "pair": [
+        100.0,
+        1.4
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.007953802166288363,
+      "worst_peak_error_rad": 0.014481788591828387,
+      "worst_tail_rms_speed_rad_s": 0.008628865217212933,
+      "worst_tail_p2p_rad": 0.0006635209253915697,
+      "worst_q22_torque_nm": 1.1983567634942505,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.5
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.008030737782825158,
+      "worst_peak_error_rad": 0.014740881418072782,
+      "worst_tail_rms_speed_rad_s": 0.007625051678484406,
+      "worst_tail_p2p_rad": 0.0005700093501332382,
+      "worst_q22_torque_nm": 1.1967317641309645,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        1.75
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.008234959037925172,
+      "worst_peak_error_rad": 0.015425438741889841,
+      "worst_tail_rms_speed_rad_s": 0.005670506265338493,
+      "worst_tail_p2p_rad": 0.00038984057725510723,
+      "worst_q22_torque_nm": 1.1936463122149672,
+      "failures": []
+    },
+    {
+      "pair": [
+        96.0,
+        1.5
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.008309905009922767,
+      "worst_peak_error_rad": 0.015218930101951716,
+      "worst_tail_rms_speed_rad_s": 0.007301441017589446,
+      "worst_tail_p2p_rad": 0.0004624866979455744,
+      "worst_q22_torque_nm": 1.1860116635938758,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        2.0
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.008454514060712865,
+      "worst_peak_error_rad": 0.016127652199639977,
+      "worst_tail_rms_speed_rad_s": 0.004307320270819138,
+      "worst_tail_p2p_rad": 0.0002658931584245683,
+      "worst_q22_torque_nm": 1.1919558713680078,
+      "failures": []
+    },
+    {
+      "pair": [
+        96.0,
+        2.0
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.008758781266113432,
+      "worst_peak_error_rad": 0.016624751931182985,
+      "worst_tail_rms_speed_rad_s": 0.004631103335728829,
+      "worst_tail_p2p_rad": 0.00026750056764021646,
+      "worst_q22_torque_nm": 1.1853870742286412,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        2.5
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.008931756319087282,
+      "worst_peak_error_rad": 0.017557918775666065,
+      "worst_tail_rms_speed_rad_s": 0.0030332020972192583,
+      "worst_tail_p2p_rad": 0.00018409743436864634,
+      "worst_q22_torque_nm": 1.190964795765257,
+      "failures": []
+    },
+    {
+      "pair": [
+        88.0,
+        2.0
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.0094469072719554,
+      "worst_peak_error_rad": 0.01772662223057664,
+      "worst_tail_rms_speed_rad_s": 0.006130541896757319,
+      "worst_tail_p2p_rad": 0.00046921034956223795,
+      "worst_q22_torque_nm": 1.1718402022678904,
+      "failures": []
+    },
+    {
+      "pair": [
+        100.0,
+        3.0
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": true,
+      "base_pass_count": 81,
+      "quality_pass_count": 81,
+      "worst_rmse_rad": 0.009449953890467103,
+      "worst_peak_error_rad": 0.019010435454097724,
+      "worst_tail_rms_speed_rad_s": 0.002250486754361449,
+      "worst_tail_p2p_rad": 0.00016413354424860485,
+      "worst_q22_torque_nm": 1.1916315648883353,
+      "failures": []
+    },
+    {
+      "pair": [
+        80.0,
+        1.0
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 80,
+      "quality_pass_count": 80,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "coupled/validation_03",
+          "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+          "quality_reasons": [
+            "incomplete_nine_hold_tails"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 80,
+      "quality_pass_count": 80,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "coupled/validation_03",
+          "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+          "quality_reasons": [
+            "incomplete_nine_hold_tails"
+          ]
+        }
+      ]
+    },
+    {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "observed": 81,
+      "required": 81,
+      "all_present": true,
+      "all_quality_pass": false,
+      "base_pass_count": 80,
+      "quality_pass_count": 80,
+      "worst_rmse_rad": null,
+      "worst_peak_error_rad": null,
+      "worst_tail_rms_speed_rad_s": null,
+      "worst_tail_p2p_rad": null,
+      "worst_q22_torque_nm": null,
+      "failures": [
+        {
+          "scenario": "coupled/validation_03",
+          "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+          "quality_reasons": [
+            "incomplete_nine_hold_tails"
+          ]
+        }
+      ]
+    }
+  ],
+  "base_rejections": {
+    "ready_pose_not_settled_in_final_warmup_second": 3
+  },
+  "quality_rejections": {},
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.21179860170853562,
+  "minimum_model_hard_margin_rad": 0.26179860170853564,
+  "all_possible_cases_tested": false,
+  "physical_stability_proven": false,
+  "continuous_optimum_proven": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "interpretation": "Complete descriptive finite matrix; new conditions now observed, not independent retuning evidence"
+}

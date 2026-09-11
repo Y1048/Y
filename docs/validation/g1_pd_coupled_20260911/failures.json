@@ -1,0 +1,59 @@
+[
+  {
+    "pair": [
+      80.0,
+      1.0
+    ],
+    "scenario": {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+    "quality_reasons": [
+      "incomplete_nine_hold_tails"
+    ]
+  },
+  {
+    "pair": [
+      100.0,
+      1.275
+    ],
+    "scenario": {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+    "quality_reasons": [
+      "incomplete_nine_hold_tails"
+    ]
+  },
+  {
+    "pair": [
+      100.0,
+      1.3
+    ],
+    "scenario": {
+      "name": "validation_03",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "base_reason": "ready_pose_not_settled_in_final_warmup_second",
+    "quality_reasons": [
+      "incomplete_nine_hold_tails"
+    ]
+  }
+]

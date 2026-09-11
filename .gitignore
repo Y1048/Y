@@ -42,6 +42,7 @@ __pycache__/
 *.pyo
 
 .venv/
+/.venv-mujoco-pd/
 venv/
 env/
 ENV/

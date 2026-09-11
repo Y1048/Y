@@ -2,6 +2,10 @@
 from __future__ import annotations
 
 import hashlib
+import contextlib
+import io
+import json
+import runpy
 import importlib.util
 import math
 import os
@@ -143,6 +147,14 @@ class SummaryTest(unittest.TestCase):
             r.update({f"ref_{j}": reference,f"cmd_{j}":0.,f"q_{j}":0.,f"dq_{j}":0.,f"actual_tau_{j}":0.})
         return r
 
+    def test_source_hashes_accept_relative_runpy_paths(self):
+        from mujoco_pd_sweep import source_hashes
+        source = Path(__file__).resolve().with_name("mujoco_pd_sweep.py")
+        with contextlib.chdir(ROOT):
+            relative = source.relative_to(ROOT)
+            self.assertEqual(source_hashes([source]), source_hashes([relative]))
+            self.assertEqual(list(source_hashes([relative])), [str(relative)])
+
     def test_score_uses_original_reference_not_limited_command(self):
         from mujoco_pd_sweep import summarize
         s = summarize([self.row(0),self.row(.002)],True,"",.05)
@@ -201,6 +213,28 @@ class DynamicsTest(unittest.TestCase):
         for r in ar[::50]:
             np.testing.assert_allclose([r[f"ref_{j}"] for j in range(29) if j!=22],
                                        [self.contract.baseline[j] for j in range(29) if j!=22])
+
+    def test_relative_runpy_cli_records_artifacts_and_refuses_overwrite(self):
+        relative = "experiments/twist2_right_arm_manual/mujoco_pd_sweep.py"
+        with tempfile.TemporaryDirectory() as folder, contextlib.chdir(ROOT):
+            entry = runpy.run_path(relative, run_name="offline_cli_regression")
+            output = Path(folder) / "result"
+            args = ["--kp-values", "40", "--kd-values", "5", "--output", str(output)]
+            with contextlib.redirect_stdout(io.StringIO()):
+                status = entry["main"](args)
+            self.assertIn(status, (0, 2))  # no eligible gain is also a recorded outcome
+            summary = json.loads((output / "summary.json").read_text())
+            manifest = json.loads((output / "run.json").read_text())
+            self.assertTrue(summary["sweep_complete"])
+            self.assertTrue(summary["candidates"][0]["completed"])
+            self.assertIn(relative, manifest["source_sha256"])
+            self.assertIsNone(summary["recommended_hardware_gains"])
+            csv = output / summary["candidates"][0]["csv"]
+            self.assertEqual(hashlib.sha256(csv.read_bytes()).hexdigest(), summary["candidates"][0]["csv_sha256"])
+            before = hashlib.sha256((output / "summary.json").read_bytes()).hexdigest()
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(entry["main"](args), 2)
+            self.assertEqual(before, hashlib.sha256((output / "summary.json").read_bytes()).hexdigest())
 
     def test_failing_gain_is_not_ranked(self):
         from mujoco_pd_sweep import run_candidate

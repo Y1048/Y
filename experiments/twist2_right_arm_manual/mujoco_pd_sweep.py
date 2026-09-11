@@ -36,6 +36,12 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def source_hashes(paths: list[Path]) -> dict[str, str]:
+    """Normalize runpy's relative __file__ before writing repository-relative keys."""
+    resolved = [path.resolve() for path in paths]
+    return {str(path.relative_to(ROOT)): sha256(path) for path in resolved}
+
+
 def write_json(path: Path, value: dict) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8")
@@ -301,7 +307,7 @@ def main(argv=None) -> int:
                     "target_dq": 0, "feedforward_torque": 0, "profile": "yesterday",
                     "gain_joints": [22,23,24,25], "gain_pairs": grid,
                     "max_limit_ratio": args.max_limit_ratio, "initial_q": contract.baseline.tolist(),
-                    "asset_sha256": assets, "source_sha256": {str(p.relative_to(ROOT)): sha256(p) for p in source_paths},
+                    "asset_sha256": assets, "source_sha256": source_hashes(source_paths),
                     "state_pairing": "q/dq at command evaluation; actual_tau from that mj_step, not a device acknowledgement",
                     "limitations": ["fixed pelvis cannot validate balance", "ideal torque motors, uncalibrated XML parameters",
                                     "no motor delay/backlash/temperature model", "no Regular service or TWIST2 leg policy"]}

@@ -297,3 +297,32 @@ Not verified: MuJoCo runtime at this commit, Windows launcher/GUI, free-base
 TWIST2 standing balance, physical gains, actual handoff/SDK/ARM deployment.
 Next permitted action: inspect and fix offline CI results, record measurements,
 then compare timestep/model sensitivity offline. Robot/All remain blocked.
+
+## 2026-09-11 — first dynamics CI result and CLI manifest fix
+
+Base: `032f3462abbd09ed836eb76d3a3f550851bda790`.
+CI evidence: Actions run `34563019765`, job `103149451841`.
+
+The first GitHub-hosted MuJoCo run passed **19/19 tests** with Python 3.11.16,
+MuJoCo 3.3.7 and NumPy 2.4.6. Actual torque-driven runs reproduced identical
+40/5 traces from reset, different responses at 56/5, three full cycles, and
+rejection of the deliberately unsuitable 1/0.1 pair. The five protected VR/PD
+source hashes matched. These were simulated responses, not hardware tests.
+
+The separate 3x3 CLI step FAILED before executing its sweep: `runpy.run_path`
+provided a relative `__file__`, but the provenance manifest tried to make it
+relative to an absolute repository root. No 3x3 ranking or artifact existed
+in that failed run. Do not treat the passing unit suite as a completed sweep.
+
+Changes: normalize source paths before hashing; add relative-path math coverage
+and a real relative-runpy CLI regression that checks CSV/JSON hashes and refusal
+to overwrite an existing result. Add only `/.venv-mujoco-pd/` to .gitignore to
+keep the separate simulation environment out of Git. No control math, model,
+trial limits, existing launcher, VR runtime, or hardware values changed.
+
+Local math/summary suite now passes **15/15**. The two modified Python files
+match the uploaded Git blob identities. The new full **21-test** CI suite and
+3x3 sweep are to be inspected after this commit; no pass is claimed for them
+at commit creation. Continue offline only and append the actual outcome here.
+Windows GUI/launcher, timestep/model sensitivity, free-base TWIST2 balance,
+actual SDK/handoff and G1 gains remain unverified. Robot/All remain blocked.

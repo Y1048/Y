@@ -1,0 +1,20 @@
+{
+  "schema": "g1.pd.ci.inspection.v1",
+  "repository": "Y1048/Y",
+  "commit": "c9aea11d1774a823104d10f662896c5c358cfe5a",
+  "run_id": 34629170943,
+  "job_id": 103361523344,
+  "conclusion": "success",
+  "discovered": 282,
+  "passed": 282,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "decoded_log_inspected": true,
+  "runner": "Ubuntu24.04.5",
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "scope": "Regression allowlist and component dynamics, not formal48-case study or original1020 integrations",
+  "later_change": "Only BAT no-argument help exit status; computational Python unchanged"
+}

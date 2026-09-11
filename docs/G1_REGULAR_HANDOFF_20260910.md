@@ -1027,3 +1027,58 @@ identity required for verify; do not substitute an untested checkout. No G1,DDS,
 SDK,publisher/subscriber,motor output,ARM deployment or Robot/All unblocking.
 Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_FINAL.md. Append results after
 actual completion; no global/continuous optimum or physical finalization claim.
+
+
+## 2026-09-12 — final PD review completed; simulation-only candidate retained
+
+Base0634844115368a5e910e07891ec2fcacb221f857; tested code
+c9aea11d1774a823104d10f662896c5c358cfe5a. Closes the running entry above.
+The reusable optimize/finalize/verify path is implemented. This execution used
+finalize on the completed1020-case source, then standalone verify(exit0).
+Source1020 integrations were audited, NOT rerun or counted as new dynamics.
+New48integrations(two vectors x24frozen conditions) all completed and passed.
+
+Retained SIMULATION vector22..25:Kp=[100,300,100,100],Kd=[1.4,4,1.4,1.4].
+Prior192/192 conditions keep the prior criteria; additional24/24 check ALL4
+proximal endpoints, including inactive axes, and entire last1s final hold.
+This does not retroactively assert the new all4 criterion over the old192.
+Selected new worst activeRMSE0.011031113650149922rad; descriptive worst over216
+0.011962761307210974rad. Alternative sameKp,Kd=[3,5,3,3] also24/24, new worst
+0.011236348013604548rad. No final-outcome retuning or selection-order change.
+All4 Kp are on research caps; roll300 exceeds unchanged live100 cap.
+Hardware_approved=false,recommended_hardware_gains=null; no deployable optimum.
+
+No relaxed all29 reserve, stopping envelope, model limit, torque or velocity
+criterion. No guard events; minima soft/modelhard/stopping slack:
+0.2117986012054719/0.2617986012054719/0.1605986012054719rad.
+Recorded torque-limiting and clipping ratios0. No qpos projection or new bias,
+feedforward, integral or IK damp/cost change. Fixed pelvis/individual excitation
+is not simultaneous VR, full-body or continuous-time physical safety proof.
+
+Reread1020original cases and48new full29traces; new1,173,280rows at500Hz and
+1,392margin records. Local282discovered:281pass/1C++compiler skip/0fail.
+Inspected decoded hosted run34629170943,job103361523344 on tested code:
+282pass/0skip/0fail including C++ parity. CI regressions/component dynamics,
+not formal48 or a rerun of1020. Optimize routing was mocked; actual finalize
+and verify modes executed. Pythonhelp and BATmissing-env exit2 checked; full
+configured-env BAT simulation untested. Later BAT-only help exit-status fix
+leaves the frozen computational Python code unchanged.
+
+Raw final bundle confirmed atC:\Users\user\Documents\G1_PD_Final_20260912;
+122files/879998674bytes. Original source study remainsG1_PD_PerJoint_20260912.
+Raw final manifestSHA=f9d9543d7a7f4ffb5076b9cf325e508de4d25eef83f5aa6a3b95019b875bc28a;
+raw candidateSHA=b3a501fa560e8e26c7284093083203fdfa5be27a608514de04afb39be81f110a.
+After successful simulation/audit/export the PC connector stopped responding.
+Closeout is published directly through GitHub. Compact observed result and CI
+metadata are in docs/validation/g1_pd_final_20260912/; raw48-case CSV/full-state
+files are confirmed onPC but NOT uploaded by this fallback. Do not claim a
+complete raw-log GitHub upload. Local isolated worktree has not received this
+fallback commit; read remoteHEAD and reconcile without resetting live files.
+
+Report:G1_PD_FINAL_20260912.md; manual:experiments/twist2_right_arm_manual/MUJOCO_PD_FINAL.md.
+Original live dirty tree unchanged at last successful status check. No G1SSH,
+DDS,SDK,publisher/subscriber,motor output,ARM deployment or Robot/All unblock.
+Final hardware tuning remains blocked by actual drive limits/rates/delay,
+simultaneous VR/free-base behavior,payload/braking/noise/thermal/SDK review.
+Never copy researchKp300 into liveG1 or call a bounded coordinate search a
+universal optimum. Continue offline or separately approved hardware review.

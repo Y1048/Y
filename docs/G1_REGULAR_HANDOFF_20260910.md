@@ -326,3 +326,73 @@ match the uploaded Git blob identities. The new full **21-test** CI suite and
 at commit creation. Continue offline only and append the actual outcome here.
 Windows GUI/launcher, timestep/model sensitivity, free-base TWIST2 balance,
 actual SDK/handoff and G1 gains remain unverified. Robot/All remain blocked.
+
+## 2026-09-11 — corrected MuJoCo fixture and completed nine-pair screening
+
+Base and tested code: `516afef2f5ff74c3aaf198c091f890b6565b2e95`.
+This final entry changes documentation only. Full failed-run history, contact
+probe evidence, corrected metrics and artifact hashes are preserved in
+[G1_MUJOCO_PD_VALIDATION_20260911.md](G1_MUJOCO_PD_VALIDATION_20260911.md).
+Usage is in `experiments/twist2_right_arm_manual/MUJOCO_PD_SWEEP.md`.
+
+### Changes and failed runs retained
+
+After the CLI fix, `610c5bab` passed 21 tests and completed nine trajectories,
+but all were contact-flagged and excluded; no accepted result was claimed.
+`fcfb2160` added the contact probe and hosted diagnostic, which found two
+active pelvis/hip assembly contacts introduced by fixing the free pelvis.
+`516afef2` added `mujoco_pd_fixture.py` and six regressions, restoring only the
+source model's three direct pelvis-child parent exclusions in the in-memory
+fixture. Source XML/meshes, geometry masks and all nonadjacent collision checks
+remain unchanged. This is not a blanket collision-disable or relaxed ranking.
+The manual now explains this correction, and the supplemental record retains
+the invalid earlier run rather than relabeling its results as accepted.
+
+### Actual final validation
+
+GitHub-hosted Actions **34564937652**, job **103155008114**, completed
+**successfully** using Python **3.11.16**, MuJoCo **3.3.7**, NumPy **2.4.6**.
+The completed job status and decoded output log were checked.
+
+- **27/27 tests passed, no skips:** 21 main and six fixture tests, including
+  actual dynamics, reset/repeatability, C++ reference parity, relative CLI and
+  artifact integrity, unsuitable-gain exclusion and protected live-file hashes.
+- Source free-root, broken fixed-root and corrected fixed-root collision tests
+  passed. An added nonadjacent wrist obstacle still produced contact, proving
+  that the relevant collision checks were not globally disabled.
+- **9/9 Kp/Kd pairs completed and were eligible**, each with three cycles and
+  **7,633 trial samples**. All recorded trial contact, torque-target-limiting,
+  hard-clipping and slew-exceeded ratios were zero. No numerical/tracking/
+  velocity guard interrupted these runs.
+- The full sweep ran with Python socket audit events forbidden. No G1 network
+  access, DDS, SDK, physical motor execution or deployed gain change occurred.
+
+In this fixed-pelvis model and tested grid, **Kp=56, Kd=3** had the lowest
+joint22 ORIGINAL-reference RMSE: **0.014649809182167359 rad**, compared with
+**0.025205712094970766 rad** for **40/5**. The full nine-pair table is in the
+supplemental record. These are simulation-screening results, not independently
+identified gains for all arm joints, global optimality, or a hardware recommendation.
+`recommended_hardware_gains=null` and `hardware_config_modified=false` remain.
+
+Successful output is retained in Actions artifact **mujoco-pd-fixed-pelvis**,
+ID **10185682363**, run **34564937652**: run/summary JSON and nine candidate
+CSVs, 11 files total. Its configured retention is 14 days; compact numerical
+results and provenance are also committed in the supplemental document.
+
+### Preservation, limitations and next permitted action
+
+The existing `START_TWIST2_MINK_CYCLE_CANDIDATE.ps1`, robot runtime, UDP/Mink
+adapters, C++ PD trajectory, source XML/meshes and physical gains were not
+changed by this MuJoCo work. The five protected runtime/reference blob checks
+passed. All commits were added to this branch without force-pushing.
+
+The new simulation launcher is `tools/RUN_MUJOCO_PD_SWEEP.bat`; it uses a
+separate `.venv-mujoco-pd` environment and never starts the real launcher.
+Actual verification was on hosted Linux, not local Windows. Windows BAT/GUI,
+timestep and parameter/payload/delay sensitivity, free-base TWIST2 standing
+balance, actual motor behavior and physical handoff remain unverified.
+
+Next permitted work is offline sensitivity/comparison around the screened
+candidates, retaining this reproducible baseline. No automatic gain deployment.
+Robot/All blocks and the charging/no-DDS restriction are unchanged. No physical
+trial is authorized by a passed MuJoCo workflow.

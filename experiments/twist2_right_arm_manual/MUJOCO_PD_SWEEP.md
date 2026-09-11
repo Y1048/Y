@@ -7,8 +7,9 @@
 
 ## 구성과 범위
 
-체크인된 `g1_29dof.xml`을 메모리에서 읽고 pelvis의 free joint만 제거한다.
-질량·관성·마찰·armature·메시·충돌 모델은 원본에서 유지한다. 원본 XML과 메시를
+체크인된 `g1_29dof.xml`을 메모리에서 읽고 pelvis의 free joint를 제거해 골반을 고정한다.
+고정하면 달라지는 부모–자식 충돌 필터는 원본의 의미를 유지하도록 보완한다.
+질량·관성·마찰·armature·메시와 geometry collision mask는 유지하며 원본 XML과 메시를
 수정하거나 생성 모델로 덮어쓰지 않는다. 전신 29개 hinge는 토크로 움직인다.
 초기 상태 설정 뒤에는 `qpos`를 직접 지정하지 않고 `mujoco.mj_step`으로 진행한다.
 
@@ -80,6 +81,20 @@ joint soft limit을 재현한다. 원본처럼 torque clamp가 앞선 slew 제�
 별도로 기록한다. 이상적인 모터 출력에는 XML의 hard actuator limit을 적용한다.
 여기서 이를 고친다며 원본 로봇 writer의 의미를 바꾸지 않는다.
 
+## 고정 골반 모델의 충돌 필터
+
+MuJoCo는 동적 부모와 바로 연결된 자식 사이의 상시 관절 접촉을 기본적으로 제외한다.
+그런데 부모가 world에 고정되면 이 필터가 적용되지 않아, free joint만 제거했던 초기
+시험기에는 골반–고관절 조립부의 인공적인 접촉이 생겼다. 접촉 probe로 부위와 힘을
+확인한 뒤 `mujoco_pd_fixture.py`에서 원본이 이미 제외하던 세 직접 연결부만 복원했다.
+
+복원 대상은 pelvis와 left_hip_pitch_link, right_hip_pitch_link, waist_yaw_link이다.
+팔–몸통 등 비인접 충돌과 obstacle 접촉은 그대로 검사한다. 전체 self-collision을
+끄거나 결과의 contact 플래그를 숨기지 않는다. 생성한 세 pair는 `run.json`에도 기록한다.
+원본 구조가 달라지거나 parent filter를 명시적으로 끈 모델은 재검토하도록 거부한다.
+
+관련 근거와 실패 결과는 `docs/G1_MUJOCO_PD_VALIDATION_20260911.md`에 남겼다.
+
 ## 결과 해석
 
 - `run.json`: 모델/메시/코드 SHA-256, 버전, 주기, 초기값, gain grid, 가정. 실행 시작
@@ -107,6 +122,7 @@ summary가 없으면 run.json만 보고 완료로 판정하지 않는다.
 ```bash
 cd experiments/twist2_right_arm_manual
 G1_REQUIRE_MUJOCO=1 python -B test_mujoco_pd_sweep.py -v
+G1_REQUIRE_MUJOCO=1 python -B test_mujoco_pd_fixture.py -v
 ```
 
 C++ 원본 궤적 대조에는 g++ 또는 `CXX`에 지정한 C++17 컴파일러가 필요하다.

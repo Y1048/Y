@@ -754,3 +754,46 @@ Raw retained/hash-verified:`C:\Users\user\Documents\G1_PD_MinError_20260911`. Ea
 No G1,DDS,SDK,motor output,VR/IK change,ARM deployment or launch-block removal.
 Original dirty live tree unchanged. Continue offline; no automatic gain adoption
 or absolute physical stability/limit guarantee.
+
+
+## 2026-09-11 — coupled uncertainty and complete matrix started
+
+Base `884882d8175676caac7e852547de90b48aa1c700`. User requests more coverage,
+not a claim that all continuous gains or every possible operating condition
+has been tested. Additive offline study, no hardware or live-path changes.
+
+Added mujoco_pd_coupled_stress.py and mujoco_pd_coupled_matrix.py with tests,
+manual and isolated CI. Twelve fixed gain pairs see the same65 calibration
+conditions:nominal + all64 combinations of right-arm mass/inertia scale,
+passive damping scale, friction scale, torque delay, torque lag and timestep.
+Unlike earlier separate model/motor trials these factors coexist in one model.
+All780 calibration cells are simulated without pruning. Freeze top6 plus
+controls, then16 new seeded combined validation conditions. A separate matrix
+completion stage executes ALL missing non-finalist cells too, for a prescribed
+12x81=972 actual attempts. Original selection remains historical; the full81
+ranking is explicitly descriptive after all conditions have been observed.
+Missing or early-refused cells are never counted as completed motions.
+
+The original +/-8deg joint22 reference, grouped gains22..25, Kp100 ceiling,
+all29 guards, 0.05rad reserve, stopping assumptions and endpoint-quality policy
+are preserved. Strict worst original-reference RMSE is the objective only after
+all constraints pass. No qpos projection, limit expansion, new feedforward or
+IK damp/cost adjustment. Model changes are in private MjModel instances only;
+mj_setConst propagates mass/inertia updates. Torque delay/lag is hypothetical,
+not measured G1/network behavior. All29 sampled traces and physics-rate limit
+witnesses are retained and independently read back for checks.
+
+Observed pre-commit validation:24 new coupled tests passed, including exact
+nominal, motor-only and model-only parity against existing guarded trajectories.
+The full local allowlist then passed182 tests, skipped1 original C++ compiler
+parity test, zero failures/errors(183 discovered). Ten separate new matrix tests
+also passed. Thus192 distinct local tests passed,1 skipped; repeated24-test runs
+are not added again. Windows Python3.11.9,MuJoCo3.3.7,NumPy2.4.6.
+Hosted193-test outcome is pending, not yet claimed. Four-case smoke and artifact
+audit passed. The full972-cell study is still running; final counts, rankings,
+failures and hashes will be appended after observed completion and audit.
+
+No G1 connection,DDS,SDK,motor output,ARM build,deployment or launch-block removal.
+Original dirty live PC tree and all existing VR/UDP/LowCmd/IK/model files remain.
+Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_COUPLED_STRESS.md.
+Next permitted step:complete/audit this offline plan; no automatic gain adoption.

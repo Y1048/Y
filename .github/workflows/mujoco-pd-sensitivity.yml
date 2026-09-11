@@ -1,0 +1,89 @@
+name: MuJoCo PD timestep and artifact verification
+on:
+  push:
+    branches: [codex/g1-regular-handoff-20260910]
+    paths:
+      - 'experiments/twist2_right_arm_manual/mujoco_pd*'
+      - 'experiments/twist2_right_arm_manual/test_mujoco_pd_artifacts.py'
+      - '.github/workflows/mujoco-pd-sensitivity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sensitivity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      G1_REQUIRE_MUJOCO: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated simulation dependencies
+        run: python -m pip install -r experiments/twist2_right_arm_manual/mujoco_pd_requirements.txt
+      - name: Existing dynamics and fixture regressions plus artifact integrity
+        working-directory: experiments/twist2_right_arm_manual
+        run: |
+          python -B test_mujoco_pd_sweep.py -v
+          python -B test_mujoco_pd_fixture.py -v
+          python -B test_mujoco_pd_artifacts.py -v
+      - name: Two full grids using the current unchanged simulation engine
+        run: |
+          python -B - <<'PY'
+          import runpy, sys
+          def block_network(event, args):
+              if event.startswith('socket.'):
+                  raise RuntimeError('Offline sweep forbids networking: ' + event)
+          sys.addaudithook(block_network)
+          path = 'experiments/twist2_right_arm_manual'
+          sys.path.insert(0, path)
+          for dt, folder in [('0.001', 'dt_1ms'), ('0.0005', 'dt_0_5ms')]:
+              sys.argv = [path + '/mujoco_pd_sweep.py', '--kp-values', '40', '48', '56',
+                          '--kd-values', '3', '5', '7', '--timestep', dt,
+                          '--output', 'mujoco-pd-sensitivity/' + folder]
+              try:
+                  runpy.run_path(sys.argv[0], run_name='__main__')
+              except SystemExit as error:
+                  if error.code not in (None, 0):
+                      raise
+          PY
+      - name: Recompute CSV metrics and check provenance and ranking
+        run: |
+          python -B experiments/twist2_right_arm_manual/mujoco_pd_validate_results.py \
+            mujoco-pd-sensitivity/dt_1ms mujoco-pd-sensitivity/dt_0_5ms \
+            --output mujoco-pd-sensitivity/validation.json
+      - name: Publish verified measurements
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path('mujoco-pd-sensitivity/validation.json')
+          if p.exists():
+              v=json.loads(p.read_text())
+              brief={'sensitivity':v['sensitivity'], 'runs':[
+                  {'timestep_s':r['timestep_s'], 'mujoco':r['mujoco'], 'numpy':r['numpy'],
+                   'run_sha256':r['run_sha256'], 'summary_sha256':r['summary_sha256'],
+                   'ranking':r['ranking'], 'candidates':r['candidates']} for r in v['runs']]}
+              print('PD_VALIDATION_BRIEF_JSON=' + json.dumps(brief, separators=(',',':')))
+              with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+                  f.write('## Fixed-pelvis simulation only; no hardware gains applied\n')
+                  f.write('CSV hashes and recomputed metrics verified; no claim about standing balance.\n')
+                  for r in v['runs']:
+                      f.write(f"\n### timestep {r['timestep_s']} s\n")
+                      f.write('|Kp|Kd|Completed|Eligible|Original reference RMSE (rad)|\n|---|---|---|---|---|\n')
+                      for c in r['candidates']:
+                          m=c['metrics']
+                          f.write(f"|{c['kp']}|{c['kd']}|{c['completed']}|{c['eligible']}|{m['reference_rmse_joint22_rad'] if m else 'N/A'}|\n")
+                  f.write('\nSensitivity: ' + json.dumps(v['sensitivity']) + '\n')
+          else:
+              print('No validated comparison exists; inspect prior failure. No pass claimed.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mujoco-pd-timestep-comparison
+          path: mujoco-pd-sensitivity
+          if-no-files-found: warn
+          retention-days: 14

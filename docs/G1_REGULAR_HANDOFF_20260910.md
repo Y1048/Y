@@ -719,3 +719,38 @@ No robot connection,DDS,SDK,motor output,GUI/BAT or ARM deployment. Working VR
 files and original dirty PC worktree are not overwritten. Charging-time
 Robot/All blocks remain. Finish and audit this offline plan before promoting
 a simulation candidate; never auto-apply it to G1.
+
+
+## 2026-09-11 — strict minimum-error search completed and audited
+
+Base `1d7b1f76111034a468774e5748eae8d30da5b42d`; tested code `1d768b7cefe44adc4027346aa17f9af1a10e385a`. Closes the running entry.
+482 grid decisions;1161 actual simulations
+(1001 known +160 fresh).
+Completed1100; base eligible1100;
+quality eligible938.
+Decision classes:{"bound_pruned": 248, "constraint_rejected": 223, "fully_evaluated": 11}.
+Known-grid winner:[100.0, 1.275].
+The first strict-calibration-order validation survivor is **100/1.275**. Known45 worst RMSE=0.00930442651158736rad; fresh16 worst RMSE=0.00952406318834176rad. This is a bounded finite-grid, finite-horizon simulation candidate, NOT a physical optimum or deployment.
+Survivors:[[100.0, 1.275], [100.0, 1.28], [100.0, 1.285], [100.0, 1.29], [100.0, 1.295], [100, 1.3], [100.0, 1.325], [100.0, 1.35], [100.0, 1.4], [100, 2.0]]. Pruned conditions were NOT run or claimed
+stable; each exclusion has an actual constraint or minimax-bound witness.
+Verified minimum is restricted to this finite grid and45 known conditions;
+it is not an optimum over all unseen conditions, continuous gains or hardware.
+
+Base refusals:{"joint_stopping_envelope_exhausted": 10, "measured_velocity_limit": 3, "ready_pose_not_settled_in_final_warmup_second": 48}.
+Quality refusals:{"max_q22_tail_error_rad": 162, "max_right7_tail_p2p_rad": 2, "max_right7_tail_rms_speed_rad_s": 3}.
+Guard events:{"joint_stopping_envelope_exhausted": 10}.
+Minimum soft/model-hard clearance:0.211798601708536/0.261798601708536rad.
+No relaxed stability threshold, limit, reference or live gain.
+
+Reloaded1161 full/compact traces,10120147 full29
+sample rows and33669 extrema records; all482 grid
+decisions, incumbent witnesses, frozen hashes and scores checked.
+135 seed full-state trajectories match previous data exactly.
+Local158pass/1C++skip/0fail; inspected hosted run34602915247 job103274322288:
+159pass/0skip/0fail. Full experiment on Windows; CI tests+smoke only.
+
+Details:G1_PD_MINERROR_20260911.md; evidence:docs/validation/g1_pd_minerror_20260911/.
+Raw retained/hash-verified:`C:\Users\user\Documents\G1_PD_MinError_20260911`. Earlier records preserved.
+No G1,DDS,SDK,motor output,VR/IK change,ARM deployment or launch-block removal.
+Original dirty live tree unchanged. Continue offline; no automatic gain adoption
+or absolute physical stability/limit guarantee.

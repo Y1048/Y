@@ -1,0 +1,10143 @@
+[
+  {
+    "pair": [
+      16,
+      0.1
+    ],
+    "index": 0,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0000_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      0.25
+    ],
+    "index": 1,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0001_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      0.5
+    ],
+    "index": 2,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0002_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      0.75
+    ],
+    "index": 3,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0003_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      1.0
+    ],
+    "index": 4,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0004_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      1.2
+    ],
+    "index": 5,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0005_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      1.3
+    ],
+    "index": 6,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0006_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      1.5
+    ],
+    "index": 7,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0007_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      2.0
+    ],
+    "index": 8,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0008_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      3.0
+    ],
+    "index": 9,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0009_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      5.0
+    ],
+    "index": 10,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0010_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      7.0
+    ],
+    "index": 11,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0011_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      10.0
+    ],
+    "index": 12,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0012_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      15.0
+    ],
+    "index": 13,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0013_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      16,
+      20.0
+    ],
+    "index": 14,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0014_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      0.1
+    ],
+    "index": 15,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0015_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      0.25
+    ],
+    "index": 16,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0016_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      0.5
+    ],
+    "index": 17,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0017_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      0.75
+    ],
+    "index": 18,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0018_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      1.0
+    ],
+    "index": 19,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0019_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      1.2
+    ],
+    "index": 20,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0020_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      1.3
+    ],
+    "index": 21,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0021_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      1.5
+    ],
+    "index": 22,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0022_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      2.0
+    ],
+    "index": 23,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0023_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      3.0
+    ],
+    "index": 24,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0024_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      5.0
+    ],
+    "index": 25,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0025_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      7.0
+    ],
+    "index": 26,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0026_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      10.0
+    ],
+    "index": 27,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0027_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      15.0
+    ],
+    "index": 28,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0028_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      20,
+      20.0
+    ],
+    "index": 29,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0029_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      0.1
+    ],
+    "index": 30,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0030_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      0.25
+    ],
+    "index": 31,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0031_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      0.5
+    ],
+    "index": 32,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0032_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      0.75
+    ],
+    "index": 33,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0033_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      1.0
+    ],
+    "index": 34,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0034_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      1.2
+    ],
+    "index": 35,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0035_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      1.3
+    ],
+    "index": 36,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0036_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      1.5
+    ],
+    "index": 37,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0037_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      2.0
+    ],
+    "index": 38,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0038_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      3.0
+    ],
+    "index": 39,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0039_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      5.0
+    ],
+    "index": 40,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0040_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      7.0
+    ],
+    "index": 41,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0041_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      10.0
+    ],
+    "index": 42,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0042_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      15.0
+    ],
+    "index": 43,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0043_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      24,
+      20.0
+    ],
+    "index": 44,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0044_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      0.1
+    ],
+    "index": 45,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0045_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      0.25
+    ],
+    "index": 46,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0046_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      0.5
+    ],
+    "index": 47,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0047_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      0.75
+    ],
+    "index": 48,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0048_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      1.0
+    ],
+    "index": 49,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0049_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      1.2
+    ],
+    "index": 50,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0050_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      1.3
+    ],
+    "index": 51,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0051_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      1.5
+    ],
+    "index": 52,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0052_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      2.0
+    ],
+    "index": 53,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0053_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      3.0
+    ],
+    "index": 54,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0054_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      5.0
+    ],
+    "index": 55,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0055_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      7.0
+    ],
+    "index": 56,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0056_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      10.0
+    ],
+    "index": 57,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0057_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      15.0
+    ],
+    "index": 58,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0058_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      28,
+      20.0
+    ],
+    "index": 59,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0059_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      0.1
+    ],
+    "index": 60,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0060_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      0.25
+    ],
+    "index": 61,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0061_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      0.5
+    ],
+    "index": 62,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0062_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      0.75
+    ],
+    "index": 63,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0063_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      1.0
+    ],
+    "index": 64,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0064_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      1.2
+    ],
+    "index": 65,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0065_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      1.3
+    ],
+    "index": 66,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0066_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      1.5
+    ],
+    "index": 67,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0067_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      2.0
+    ],
+    "index": 68,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0068_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      3.0
+    ],
+    "index": 69,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0069_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      5.0
+    ],
+    "index": 70,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0070_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      7.0
+    ],
+    "index": 71,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0071_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      10.0
+    ],
+    "index": 72,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0072_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      15.0
+    ],
+    "index": 73,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0073_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      32,
+      20.0
+    ],
+    "index": 74,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0074_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      0.1
+    ],
+    "index": 75,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0075_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      0.25
+    ],
+    "index": 76,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0076_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      0.5
+    ],
+    "index": 77,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0077_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      0.75
+    ],
+    "index": 78,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0078_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      1.0
+    ],
+    "index": 79,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0079_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      1.2
+    ],
+    "index": 80,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0080_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      1.3
+    ],
+    "index": 81,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0081_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      1.5
+    ],
+    "index": 82,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0082_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      2.0
+    ],
+    "index": 83,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0083_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      3.0
+    ],
+    "index": 84,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0084_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      5.0
+    ],
+    "index": 85,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0085_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      7.0
+    ],
+    "index": 86,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0086_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      10.0
+    ],
+    "index": 87,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0087_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      15.0
+    ],
+    "index": 88,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0088_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      36,
+      20.0
+    ],
+    "index": 89,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0089_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      0.1
+    ],
+    "index": 90,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0090_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      0.25
+    ],
+    "index": 91,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0091_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      0.5
+    ],
+    "index": 92,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0092_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      0.75
+    ],
+    "index": 93,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0093_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      1.0
+    ],
+    "index": 94,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0094_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      1.2
+    ],
+    "index": 95,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0095_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      1.3
+    ],
+    "index": 96,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0096_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      1.5
+    ],
+    "index": 97,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0097_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      2.0
+    ],
+    "index": 98,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0098_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      3.0
+    ],
+    "index": 99,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0099_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      5.0
+    ],
+    "index": 100,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0100_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      7.0
+    ],
+    "index": 101,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0101_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      10.0
+    ],
+    "index": 102,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0102_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      15.0
+    ],
+    "index": 103,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0103_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      40,
+      20.0
+    ],
+    "index": 104,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0104_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      0.1
+    ],
+    "index": 105,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0105_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      0.25
+    ],
+    "index": 106,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0106_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      0.5
+    ],
+    "index": 107,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0107_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      0.75
+    ],
+    "index": 108,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0108_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      1.0
+    ],
+    "index": 109,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0109_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      1.2
+    ],
+    "index": 110,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0110_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      1.3
+    ],
+    "index": 111,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0111_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      1.5
+    ],
+    "index": 112,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0112_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      2.0
+    ],
+    "index": 113,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0113_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      3.0
+    ],
+    "index": 114,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0114_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      5.0
+    ],
+    "index": 115,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0115_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      7.0
+    ],
+    "index": 116,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0116_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      10.0
+    ],
+    "index": 117,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0117_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      15.0
+    ],
+    "index": 118,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0118_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      44,
+      20.0
+    ],
+    "index": 119,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0119_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      0.1
+    ],
+    "index": 120,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0120_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      0.25
+    ],
+    "index": 121,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0121_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      0.5
+    ],
+    "index": 122,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0122_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      0.75
+    ],
+    "index": 123,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0123_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      1.0
+    ],
+    "index": 124,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0124_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      1.2
+    ],
+    "index": 125,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0125_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      1.3
+    ],
+    "index": 126,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0126_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      1.5
+    ],
+    "index": 127,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0127_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      2.0
+    ],
+    "index": 128,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0128_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      3.0
+    ],
+    "index": 129,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0129_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      5.0
+    ],
+    "index": 130,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0130_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      7.0
+    ],
+    "index": 131,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0131_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      10.0
+    ],
+    "index": 132,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0132_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      15.0
+    ],
+    "index": 133,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0133_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      48,
+      20.0
+    ],
+    "index": 134,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0134_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      0.1
+    ],
+    "index": 135,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0135_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      0.25
+    ],
+    "index": 136,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0136_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      0.5
+    ],
+    "index": 137,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0137_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      0.75
+    ],
+    "index": 138,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0138_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      1.0
+    ],
+    "index": 139,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0139_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      1.2
+    ],
+    "index": 140,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0140_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      1.3
+    ],
+    "index": 141,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0141_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      1.5
+    ],
+    "index": 142,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0142_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      2.0
+    ],
+    "index": 143,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0143_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      3.0
+    ],
+    "index": 144,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0144_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      5.0
+    ],
+    "index": 145,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0145_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      7.0
+    ],
+    "index": 146,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0146_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      10.0
+    ],
+    "index": 147,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0147_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      15.0
+    ],
+    "index": 148,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0148_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      52,
+      20.0
+    ],
+    "index": 149,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0149_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      0.1
+    ],
+    "index": 150,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0150_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      0.25
+    ],
+    "index": 151,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0151_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      0.5
+    ],
+    "index": 152,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0152_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      0.75
+    ],
+    "index": 153,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0153_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      1.0
+    ],
+    "index": 154,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0154_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      1.2
+    ],
+    "index": 155,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0155_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      1.3
+    ],
+    "index": 156,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0156_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      1.5
+    ],
+    "index": 157,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0157_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      2.0
+    ],
+    "index": 158,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0158_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      3.0
+    ],
+    "index": 159,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0159_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      5.0
+    ],
+    "index": 160,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0160_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      7.0
+    ],
+    "index": 161,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0161_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      10.0
+    ],
+    "index": 162,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0162_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      15.0
+    ],
+    "index": 163,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0163_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      56,
+      20.0
+    ],
+    "index": 164,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0164_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      0.1
+    ],
+    "index": 165,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0165_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013135824663089646
+  },
+  {
+    "pair": [
+      60,
+      0.25
+    ],
+    "index": 166,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0166_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01336789698125195
+  },
+  {
+    "pair": [
+      60,
+      0.5
+    ],
+    "index": 167,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0167_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013728079361893877
+  },
+  {
+    "pair": [
+      60,
+      0.75
+    ],
+    "index": 168,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0168_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      1.0
+    ],
+    "index": 169,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0169_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      1.2
+    ],
+    "index": 170,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0170_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      1.3
+    ],
+    "index": 171,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0171_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      1.5
+    ],
+    "index": 172,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0172_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      2.0
+    ],
+    "index": 173,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0173_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      3.0
+    ],
+    "index": 174,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0174_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      5.0
+    ],
+    "index": 175,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0175_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      7.0
+    ],
+    "index": 176,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0176_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      10.0
+    ],
+    "index": 177,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0177_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      15.0
+    ],
+    "index": 178,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0178_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      60,
+      20.0
+    ],
+    "index": 179,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0179_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      64,
+      0.1
+    ],
+    "index": 180,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0180_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012499492378876638
+  },
+  {
+    "pair": [
+      64,
+      0.25
+    ],
+    "index": 181,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0181_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01268270656251936
+  },
+  {
+    "pair": [
+      64,
+      0.5
+    ],
+    "index": 182,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0182_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012980986037838604
+  },
+  {
+    "pair": [
+      64,
+      0.75
+    ],
+    "index": 183,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0183_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013288306100111376
+  },
+  {
+    "pair": [
+      64,
+      1.0
+    ],
+    "index": 184,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0184_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01361142400197012
+  },
+  {
+    "pair": [
+      64,
+      1.2
+    ],
+    "index": 185,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0185_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013882193958860315
+  },
+  {
+    "pair": [
+      64,
+      1.3
+    ],
+    "index": 186,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0186_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01402149282156195
+  },
+  {
+    "pair": [
+      64,
+      1.5
+    ],
+    "index": 187,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0187_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.014307934830739085
+  },
+  {
+    "pair": [
+      64,
+      2.0
+    ],
+    "index": 188,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0188_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.015067067590064627
+  },
+  {
+    "pair": [
+      64,
+      3.0
+    ],
+    "index": 189,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0189_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.016729347641871405
+  },
+  {
+    "pair": [
+      64,
+      5.0
+    ],
+    "index": 190,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0190_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.02036261088882088
+  },
+  {
+    "pair": [
+      64,
+      7.0
+    ],
+    "index": 191,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0191_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      64,
+      10.0
+    ],
+    "index": 192,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0192_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      64,
+      15.0
+    ],
+    "index": 193,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0193_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      64,
+      20.0
+    ],
+    "index": 194,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0194_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      68,
+      0.1
+    ],
+    "index": 195,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0195_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011966935450850126
+  },
+  {
+    "pair": [
+      68,
+      0.25
+    ],
+    "index": 196,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0196_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012088420896483347
+  },
+  {
+    "pair": [
+      68,
+      0.5
+    ],
+    "index": 197,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0197_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012320048608487273
+  },
+  {
+    "pair": [
+      68,
+      0.75
+    ],
+    "index": 198,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0198_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01258839344897101
+  },
+  {
+    "pair": [
+      68,
+      1.0
+    ],
+    "index": 199,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0199_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012884682815558298
+  },
+  {
+    "pair": [
+      68,
+      1.2
+    ],
+    "index": 200,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0200_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013137360234748468
+  },
+  {
+    "pair": [
+      68,
+      1.3
+    ],
+    "index": 201,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0201_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013268250729835326
+  },
+  {
+    "pair": [
+      68,
+      1.5
+    ],
+    "index": 202,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0202_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013538765684593264
+  },
+  {
+    "pair": [
+      68,
+      2.0
+    ],
+    "index": 203,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0203_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.014258880879451092
+  },
+  {
+    "pair": [
+      68,
+      3.0
+    ],
+    "index": 204,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0204_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.015837955305873
+  },
+  {
+    "pair": [
+      68,
+      5.0
+    ],
+    "index": 205,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0205_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01929453577508374
+  },
+  {
+    "pair": [
+      68,
+      7.0
+    ],
+    "index": 206,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0206_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.022853974155183174
+  },
+  {
+    "pair": [
+      68,
+      10.0
+    ],
+    "index": 207,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0207_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      68,
+      15.0
+    ],
+    "index": 208,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0208_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      68,
+      20.0
+    ],
+    "index": 209,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0209_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      72,
+      0.1
+    ],
+    "index": 210,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0210_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011290520193157174
+  },
+  {
+    "pair": [
+      72,
+      0.25
+    ],
+    "index": 211,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0211_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011455212017355684
+  },
+  {
+    "pair": [
+      72,
+      0.5
+    ],
+    "index": 212,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0212_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011692156895274123
+  },
+  {
+    "pair": [
+      72,
+      0.75
+    ],
+    "index": 213,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0213_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011948540883279235
+  },
+  {
+    "pair": [
+      72,
+      1.0
+    ],
+    "index": 214,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0214_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012229034879496949
+  },
+  {
+    "pair": [
+      72,
+      1.2
+    ],
+    "index": 215,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0215_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012468386776298662
+  },
+  {
+    "pair": [
+      72,
+      1.3
+    ],
+    "index": 216,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0216_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012592659857173193
+  },
+  {
+    "pair": [
+      72,
+      1.5
+    ],
+    "index": 217,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0217_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012849788227161645
+  },
+  {
+    "pair": [
+      72,
+      2.0
+    ],
+    "index": 218,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0218_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013535251359185553
+  },
+  {
+    "pair": [
+      72,
+      3.0
+    ],
+    "index": 219,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0219_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.015038579423126744
+  },
+  {
+    "pair": [
+      72,
+      5.0
+    ],
+    "index": 220,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0220_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01833400749640276
+  },
+  {
+    "pair": [
+      72,
+      7.0
+    ],
+    "index": 221,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0221_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.0217442230486712
+  },
+  {
+    "pair": [
+      72,
+      10.0
+    ],
+    "index": 222,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0222_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.026724134622964364
+  },
+  {
+    "pair": [
+      72,
+      15.0
+    ],
+    "index": 223,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0223_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      72,
+      20.0
+    ],
+    "index": 224,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0224_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      76,
+      0.1
+    ],
+    "index": 225,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0225_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01065662286816178
+  },
+  {
+    "pair": [
+      76,
+      0.25
+    ],
+    "index": 226,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0226_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010832042237199128
+  },
+  {
+    "pair": [
+      76,
+      0.5
+    ],
+    "index": 227,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0227_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01109743614355825
+  },
+  {
+    "pair": [
+      76,
+      0.75
+    ],
+    "index": 228,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0228_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01135886798400506
+  },
+  {
+    "pair": [
+      76,
+      1.0
+    ],
+    "index": 229,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0229_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.0116325886272471
+  },
+  {
+    "pair": [
+      76,
+      1.2
+    ],
+    "index": 230,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0230_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011863176414019159
+  },
+  {
+    "pair": [
+      76,
+      1.3
+    ],
+    "index": 231,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0231_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01198250402725764
+  },
+  {
+    "pair": [
+      76,
+      1.5
+    ],
+    "index": 232,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0232_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012228805078832856
+  },
+  {
+    "pair": [
+      76,
+      2.0
+    ],
+    "index": 233,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0233_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012883653229184519
+  },
+  {
+    "pair": [
+      76,
+      3.0
+    ],
+    "index": 234,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0234_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.014317900464236706
+  },
+  {
+    "pair": [
+      76,
+      5.0
+    ],
+    "index": 235,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0235_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01746568335796851
+  },
+  {
+    "pair": [
+      76,
+      7.0
+    ],
+    "index": 236,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0236_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.020737127776857954
+  },
+  {
+    "pair": [
+      76,
+      10.0
+    ],
+    "index": 237,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0237_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.025541626722172864
+  },
+  {
+    "pair": [
+      76,
+      15.0
+    ],
+    "index": 238,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0238_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03300549242509062
+  },
+  {
+    "pair": [
+      76,
+      20.0
+    ],
+    "index": 239,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0239_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      80,
+      0.1
+    ],
+    "index": 240,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0240_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010121205473340342
+  },
+  {
+    "pair": [
+      80,
+      0.25
+    ],
+    "index": 241,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0241_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010293781106955021
+  },
+  {
+    "pair": [
+      80,
+      0.5
+    ],
+    "index": 242,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0242_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01056112173348271
+  },
+  {
+    "pair": [
+      80,
+      0.75
+    ],
+    "index": 243,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0243_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010822281048020669
+  },
+  {
+    "pair": [
+      80,
+      1.0
+    ],
+    "index": 244,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0244_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011090590141270616
+  },
+  {
+    "pair": [
+      80,
+      1.2
+    ],
+    "index": 245,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0245_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011314282642884229
+  },
+  {
+    "pair": [
+      80,
+      1.3
+    ],
+    "index": 246,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0246_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011429512544168735
+  },
+  {
+    "pair": [
+      80,
+      1.5
+    ],
+    "index": 247,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0247_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011666489249056753
+  },
+  {
+    "pair": [
+      80,
+      2.0
+    ],
+    "index": 248,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0248_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012293939641713665
+  },
+  {
+    "pair": [
+      80,
+      3.0
+    ],
+    "index": 249,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0249_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01366502834075494
+  },
+  {
+    "pair": [
+      80,
+      5.0
+    ],
+    "index": 250,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0250_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01667708784914521
+  },
+  {
+    "pair": [
+      80,
+      7.0
+    ],
+    "index": 251,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0251_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.019819212548823965
+  },
+  {
+    "pair": [
+      80,
+      10.0
+    ],
+    "index": 252,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0252_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.0244579852550054
+  },
+  {
+    "pair": [
+      80,
+      15.0
+    ],
+    "index": 253,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0253_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.031700484264995804
+  },
+  {
+    "pair": [
+      80,
+      20.0
+    ],
+    "index": 254,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0254_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      84,
+      0.1
+    ],
+    "index": 255,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0255_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009663159011473094
+  },
+  {
+    "pair": [
+      84,
+      0.25
+    ],
+    "index": 256,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0256_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009826198494911894
+  },
+  {
+    "pair": [
+      84,
+      0.5
+    ],
+    "index": 257,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0257_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010084125885529547
+  },
+  {
+    "pair": [
+      84,
+      0.75
+    ],
+    "index": 258,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0258_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010338587575555336
+  },
+  {
+    "pair": [
+      84,
+      1.0
+    ],
+    "index": 259,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0259_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01059962155967812
+  },
+  {
+    "pair": [
+      84,
+      1.2
+    ],
+    "index": 260,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0260_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010816375135132986
+  },
+  {
+    "pair": [
+      84,
+      1.3
+    ],
+    "index": 261,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0261_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010927644437123052
+  },
+  {
+    "pair": [
+      84,
+      1.5
+    ],
+    "index": 262,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0262_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011155838307400533
+  },
+  {
+    "pair": [
+      84,
+      2.0
+    ],
+    "index": 263,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0263_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011757976532966544
+  },
+  {
+    "pair": [
+      84,
+      3.0
+    ],
+    "index": 264,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0264_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.013070819042579444
+  },
+  {
+    "pair": [
+      84,
+      5.0
+    ],
+    "index": 265,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0265_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01595777155461887
+  },
+  {
+    "pair": [
+      84,
+      7.0
+    ],
+    "index": 266,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0266_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01897934064198981
+  },
+  {
+    "pair": [
+      84,
+      10.0
+    ],
+    "index": 267,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0267_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.023461655879323733
+  },
+  {
+    "pair": [
+      84,
+      15.0
+    ],
+    "index": 268,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0268_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03049255914866592
+  },
+  {
+    "pair": [
+      84,
+      20.0
+    ],
+    "index": 269,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0269_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03691021270905314
+  },
+  {
+    "pair": [
+      88,
+      0.1
+    ],
+    "index": 270,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0270_00",
+      "calibration_0270_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      88,
+      0.25
+    ],
+    "index": 271,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0271_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009416578317005457
+  },
+  {
+    "pair": [
+      88,
+      0.5
+    ],
+    "index": 272,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0272_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009660203045936556
+  },
+  {
+    "pair": [
+      88,
+      0.75
+    ],
+    "index": 273,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0273_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009904153531641513
+  },
+  {
+    "pair": [
+      88,
+      1.0
+    ],
+    "index": 274,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0274_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010155768556562054
+  },
+  {
+    "pair": [
+      88,
+      1.2
+    ],
+    "index": 275,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0275_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010364636273014245
+  },
+  {
+    "pair": [
+      88,
+      1.3
+    ],
+    "index": 276,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0276_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01047171053498883
+  },
+  {
+    "pair": [
+      88,
+      1.5
+    ],
+    "index": 277,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0277_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010691228512022262
+  },
+  {
+    "pair": [
+      88,
+      2.0
+    ],
+    "index": 278,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0278_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.011269144914620992
+  },
+  {
+    "pair": [
+      88,
+      3.0
+    ],
+    "index": 279,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0279_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.012527929241729279
+  },
+  {
+    "pair": [
+      88,
+      5.0
+    ],
+    "index": 280,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0280_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01529918616624757
+  },
+  {
+    "pair": [
+      88,
+      7.0
+    ],
+    "index": 281,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0281_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.018208107697360962
+  },
+  {
+    "pair": [
+      88,
+      10.0
+    ],
+    "index": 282,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0282_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.02254246258156636
+  },
+  {
+    "pair": [
+      88,
+      15.0
+    ],
+    "index": 283,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0283_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.029371551534787925
+  },
+  {
+    "pair": [
+      88,
+      20.0
+    ],
+    "index": 284,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0284_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03563262086456683
+  },
+  {
+    "pair": [
+      92,
+      0.1
+    ],
+    "index": 285,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0285_00",
+      "calibration_0285_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      92,
+      0.25
+    ],
+    "index": 286,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0286_00",
+      "calibration_0286_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      92,
+      0.5
+    ],
+    "index": 287,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0287_00",
+      "calibration_0287_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      92,
+      0.75
+    ],
+    "index": 288,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0288_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009513693618222237
+  },
+  {
+    "pair": [
+      92,
+      1.0
+    ],
+    "index": 289,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0289_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009753898278360915
+  },
+  {
+    "pair": [
+      92,
+      1.2
+    ],
+    "index": 290,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0290_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009953920277887024
+  },
+  {
+    "pair": [
+      92,
+      1.3
+    ],
+    "index": 291,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0291_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01005657293862828
+  },
+  {
+    "pair": [
+      92,
+      1.5
+    ],
+    "index": 292,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0292_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010267125520460633
+  },
+  {
+    "pair": [
+      92,
+      2.0
+    ],
+    "index": 293,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0293_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010821628965538597
+  },
+  {
+    "pair": [
+      92,
+      3.0
+    ],
+    "index": 294,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0294_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01203001090552375
+  },
+  {
+    "pair": [
+      92,
+      5.0
+    ],
+    "index": 295,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0295_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.014694092660981104
+  },
+  {
+    "pair": [
+      92,
+      7.0
+    ],
+    "index": 296,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0296_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.017497806925677886
+  },
+  {
+    "pair": [
+      92,
+      10.0
+    ],
+    "index": 297,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0297_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.02169200978950199
+  },
+  {
+    "pair": [
+      92,
+      15.0
+    ],
+    "index": 298,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0298_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.028328747215648462
+  },
+  {
+    "pair": [
+      92,
+      20.0
+    ],
+    "index": 299,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0299_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03443869629340673
+  },
+  {
+    "pair": [
+      96,
+      0.1
+    ],
+    "index": 300,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0300_00",
+      "calibration_0300_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      96,
+      0.25
+    ],
+    "index": 301,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0301_00",
+      "calibration_0301_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      96,
+      0.5
+    ],
+    "index": 302,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0302_00",
+      "calibration_0302_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      96,
+      0.75
+    ],
+    "index": 303,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0303_00",
+      "calibration_0303_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      96,
+      1.0
+    ],
+    "index": 304,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0304_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009388105854040901
+  },
+  {
+    "pair": [
+      96,
+      1.2
+    ],
+    "index": 305,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0305_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009578820783859208
+  },
+  {
+    "pair": [
+      96.0,
+      1.205
+    ],
+    "index": 306,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0306_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009583685330387046
+  },
+  {
+    "pair": [
+      96.0,
+      1.21
+    ],
+    "index": 307,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0307_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009588554741070475
+  },
+  {
+    "pair": [
+      96.0,
+      1.215
+    ],
+    "index": 308,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0308_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009593427107006955
+  },
+  {
+    "pair": [
+      96.0,
+      1.22
+    ],
+    "index": 309,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0309_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009598303494962072
+  },
+  {
+    "pair": [
+      96.0,
+      1.225
+    ],
+    "index": 310,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0310_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009603184892389838
+  },
+  {
+    "pair": [
+      96.0,
+      1.23
+    ],
+    "index": 311,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0311_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009608071481160912
+  },
+  {
+    "pair": [
+      96.0,
+      1.235
+    ],
+    "index": 312,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0312_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009612963303932343
+  },
+  {
+    "pair": [
+      96.0,
+      1.24
+    ],
+    "index": 313,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0313_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009617859410385869
+  },
+  {
+    "pair": [
+      96.0,
+      1.245
+    ],
+    "index": 314,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0314_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009622760121882262
+  },
+  {
+    "pair": [
+      96.0,
+      1.25
+    ],
+    "index": 315,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0315_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009627663379629406
+  },
+  {
+    "pair": [
+      96.0,
+      1.255
+    ],
+    "index": 316,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0316_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009632570413290593
+  },
+  {
+    "pair": [
+      96.0,
+      1.26
+    ],
+    "index": 317,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0317_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009637482753317078
+  },
+  {
+    "pair": [
+      96.0,
+      1.265
+    ],
+    "index": 318,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0318_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00964240009203224
+  },
+  {
+    "pair": [
+      96.0,
+      1.27
+    ],
+    "index": 319,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0319_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009647322677094217
+  },
+  {
+    "pair": [
+      96.0,
+      1.275
+    ],
+    "index": 320,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0320_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009652250624014444
+  },
+  {
+    "pair": [
+      96.0,
+      1.28
+    ],
+    "index": 321,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0321_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00965718337005721
+  },
+  {
+    "pair": [
+      96.0,
+      1.285
+    ],
+    "index": 322,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0322_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009662117812454282
+  },
+  {
+    "pair": [
+      96.0,
+      1.29
+    ],
+    "index": 323,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0323_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009667056849186366
+  },
+  {
+    "pair": [
+      96.0,
+      1.295
+    ],
+    "index": 324,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0324_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00967200078404575
+  },
+  {
+    "pair": [
+      96,
+      1.3
+    ],
+    "index": 325,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0325_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00967694942534094
+  },
+  {
+    "pair": [
+      96.0,
+      1.305
+    ],
+    "index": 326,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0326_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009681903355496903
+  },
+  {
+    "pair": [
+      96.0,
+      1.31
+    ],
+    "index": 327,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0327_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009686862462910957
+  },
+  {
+    "pair": [
+      96.0,
+      1.315
+    ],
+    "index": 328,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0328_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009691825929193262
+  },
+  {
+    "pair": [
+      96.0,
+      1.32
+    ],
+    "index": 329,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0329_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00969679231765245
+  },
+  {
+    "pair": [
+      96.0,
+      1.325
+    ],
+    "index": 330,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0330_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00970176337284221
+  },
+  {
+    "pair": [
+      96.0,
+      1.33
+    ],
+    "index": 331,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0331_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009706738342410717
+  },
+  {
+    "pair": [
+      96.0,
+      1.335
+    ],
+    "index": 332,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0332_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009711717895306315
+  },
+  {
+    "pair": [
+      96.0,
+      1.34
+    ],
+    "index": 333,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0333_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00971670242014437
+  },
+  {
+    "pair": [
+      96.0,
+      1.345
+    ],
+    "index": 334,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0334_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009721691827726439
+  },
+  {
+    "pair": [
+      96.0,
+      1.35
+    ],
+    "index": 335,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0335_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009726685201452066
+  },
+  {
+    "pair": [
+      96,
+      1.5
+    ],
+    "index": 336,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0336_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009878477552351734
+  },
+  {
+    "pair": [
+      96,
+      2.0
+    ],
+    "index": 337,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0337_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.010410446039347345
+  },
+  {
+    "pair": [
+      96,
+      3.0
+    ],
+    "index": 338,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0338_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01157174604106528
+  },
+  {
+    "pair": [
+      96,
+      5.0
+    ],
+    "index": 339,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0339_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.014136267426473477
+  },
+  {
+    "pair": [
+      96,
+      7.0
+    ],
+    "index": 340,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0340_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.016841587327402673
+  },
+  {
+    "pair": [
+      96,
+      10.0
+    ],
+    "index": 341,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0341_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.020903121668474526
+  },
+  {
+    "pair": [
+      96,
+      15.0
+    ],
+    "index": 342,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0342_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.027356257220594624
+  },
+  {
+    "pair": [
+      96,
+      20.0
+    ],
+    "index": 343,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0343_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03332038311485487
+  },
+  {
+    "pair": [
+      98.0,
+      1.2
+    ],
+    "index": 344,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0344_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009403078029798853
+  },
+  {
+    "pair": [
+      98.0,
+      1.205
+    ],
+    "index": 345,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0345_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009407827675624479
+  },
+  {
+    "pair": [
+      98.0,
+      1.21
+    ],
+    "index": 346,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0346_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009412582217863874
+  },
+  {
+    "pair": [
+      98.0,
+      1.215
+    ],
+    "index": 347,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0347_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009417342275230856
+  },
+  {
+    "pair": [
+      98.0,
+      1.22
+    ],
+    "index": 348,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0348_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009422106403105068
+  },
+  {
+    "pair": [
+      98.0,
+      1.225
+    ],
+    "index": 349,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0349_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00942687313024589
+  },
+  {
+    "pair": [
+      98.0,
+      1.23
+    ],
+    "index": 350,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0350_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009431644557115622
+  },
+  {
+    "pair": [
+      98.0,
+      1.235
+    ],
+    "index": 351,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0351_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009436420725225644
+  },
+  {
+    "pair": [
+      98.0,
+      1.24
+    ],
+    "index": 352,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0352_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009441202378662162
+  },
+  {
+    "pair": [
+      98.0,
+      1.245
+    ],
+    "index": 353,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0353_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009445988605277822
+  },
+  {
+    "pair": [
+      98.0,
+      1.25
+    ],
+    "index": 354,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0354_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009450780359196194
+  },
+  {
+    "pair": [
+      98.0,
+      1.255
+    ],
+    "index": 355,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0355_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009455576573212622
+  },
+  {
+    "pair": [
+      98.0,
+      1.26
+    ],
+    "index": 356,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0356_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009460375344088112
+  },
+  {
+    "pair": [
+      98.0,
+      1.265
+    ],
+    "index": 357,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0357_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00946517812712747
+  },
+  {
+    "pair": [
+      98.0,
+      1.27
+    ],
+    "index": 358,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0358_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00946998603325916
+  },
+  {
+    "pair": [
+      98.0,
+      1.275
+    ],
+    "index": 359,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0359_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009474798906699309
+  },
+  {
+    "pair": [
+      98.0,
+      1.28
+    ],
+    "index": 360,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0360_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009479616480947733
+  },
+  {
+    "pair": [
+      98.0,
+      1.285
+    ],
+    "index": 361,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0361_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009484439086930304
+  },
+  {
+    "pair": [
+      98.0,
+      1.29
+    ],
+    "index": 362,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0362_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00948926617906691
+  },
+  {
+    "pair": [
+      98.0,
+      1.295
+    ],
+    "index": 363,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0363_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009494096561947836
+  },
+  {
+    "pair": [
+      98.0,
+      1.3
+    ],
+    "index": 364,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0364_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00949893128887923
+  },
+  {
+    "pair": [
+      98.0,
+      1.305
+    ],
+    "index": 365,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0365_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009503771342781367
+  },
+  {
+    "pair": [
+      98.0,
+      1.31
+    ],
+    "index": 366,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0366_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009508616998651118
+  },
+  {
+    "pair": [
+      98.0,
+      1.315
+    ],
+    "index": 367,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0367_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009513467066414
+  },
+  {
+    "pair": [
+      98.0,
+      1.32
+    ],
+    "index": 368,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0368_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009518321581017758
+  },
+  {
+    "pair": [
+      98.0,
+      1.325
+    ],
+    "index": 369,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0369_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009523180625764746
+  },
+  {
+    "pair": [
+      98.0,
+      1.33
+    ],
+    "index": 370,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0370_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009528042648419827
+  },
+  {
+    "pair": [
+      98.0,
+      1.335
+    ],
+    "index": 371,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0371_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009532909253002446
+  },
+  {
+    "pair": [
+      98.0,
+      1.34
+    ],
+    "index": 372,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0372_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009537781011917556
+  },
+  {
+    "pair": [
+      98.0,
+      1.345
+    ],
+    "index": 373,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0373_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009542658008490258
+  },
+  {
+    "pair": [
+      98.0,
+      1.35
+    ],
+    "index": 374,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0374_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009547540011630827
+  },
+  {
+    "pair": [
+      99.0,
+      1.2
+    ],
+    "index": 375,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0375_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009317885294321883
+  },
+  {
+    "pair": [
+      99.0,
+      1.205
+    ],
+    "index": 376,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0376_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00932257734492878
+  },
+  {
+    "pair": [
+      99.0,
+      1.21
+    ],
+    "index": 377,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0377_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009327274874912759
+  },
+  {
+    "pair": [
+      99.0,
+      1.215
+    ],
+    "index": 378,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0378_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009331977962235212
+  },
+  {
+    "pair": [
+      99.0,
+      1.22
+    ],
+    "index": 379,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0379_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009336686006398566
+  },
+  {
+    "pair": [
+      99.0,
+      1.225
+    ],
+    "index": 380,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0380_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009341397972479978
+  },
+  {
+    "pair": [
+      99.0,
+      1.23
+    ],
+    "index": 381,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0381_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009346113117007136
+  },
+  {
+    "pair": [
+      99.0,
+      1.235
+    ],
+    "index": 382,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0382_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009350832962557306
+  },
+  {
+    "pair": [
+      99.0,
+      1.24
+    ],
+    "index": 383,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0383_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009355557905936595
+  },
+  {
+    "pair": [
+      99.0,
+      1.245
+    ],
+    "index": 384,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0384_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009360287949593898
+  },
+  {
+    "pair": [
+      99.0,
+      1.25
+    ],
+    "index": 385,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0385_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009365023286163395
+  },
+  {
+    "pair": [
+      99.0,
+      1.255
+    ],
+    "index": 386,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0386_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009369763448788948
+  },
+  {
+    "pair": [
+      99.0,
+      1.26
+    ],
+    "index": 387,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0387_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009374507711353572
+  },
+  {
+    "pair": [
+      99.0,
+      1.265
+    ],
+    "index": 388,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0388_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009379255477422485
+  },
+  {
+    "pair": [
+      99.0,
+      1.27
+    ],
+    "index": 389,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0389_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009384006704844895
+  },
+  {
+    "pair": [
+      99.0,
+      1.275
+    ],
+    "index": 390,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0390_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00938876331996099
+  },
+  {
+    "pair": [
+      99.0,
+      1.28
+    ],
+    "index": 391,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0391_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009393525517641083
+  },
+  {
+    "pair": [
+      99.0,
+      1.285
+    ],
+    "index": 392,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0392_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009398292566702217
+  },
+  {
+    "pair": [
+      99.0,
+      1.29
+    ],
+    "index": 393,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0393_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009403064265403771
+  },
+  {
+    "pair": [
+      99.0,
+      1.295
+    ],
+    "index": 394,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0394_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009407840276781274
+  },
+  {
+    "pair": [
+      99.0,
+      1.3
+    ],
+    "index": 395,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0395_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009412619193144917
+  },
+  {
+    "pair": [
+      99.0,
+      1.305
+    ],
+    "index": 396,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0396_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009417402872004484
+  },
+  {
+    "pair": [
+      99.0,
+      1.31
+    ],
+    "index": 397,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0397_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009422191954686071
+  },
+  {
+    "pair": [
+      99.0,
+      1.315
+    ],
+    "index": 398,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0398_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00942698637865719
+  },
+  {
+    "pair": [
+      99.0,
+      1.32
+    ],
+    "index": 399,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0399_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00943178629973652
+  },
+  {
+    "pair": [
+      99.0,
+      1.325
+    ],
+    "index": 400,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0400_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009436590805582451
+  },
+  {
+    "pair": [
+      99.0,
+      1.33
+    ],
+    "index": 401,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0401_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009441399131860565
+  },
+  {
+    "pair": [
+      99.0,
+      1.335
+    ],
+    "index": 402,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0402_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009446210169628455
+  },
+  {
+    "pair": [
+      99.0,
+      1.34
+    ],
+    "index": 403,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0403_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009451025649943455
+  },
+  {
+    "pair": [
+      99.0,
+      1.345
+    ],
+    "index": 404,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0404_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009455846512864416
+  },
+  {
+    "pair": [
+      99.0,
+      1.35
+    ],
+    "index": 405,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0405_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009460672813423842
+  },
+  {
+    "pair": [
+      99.5,
+      1.2
+    ],
+    "index": 406,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0406_00",
+      "calibration_0406_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.205
+    ],
+    "index": 407,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0407_00",
+      "calibration_0407_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.21
+    ],
+    "index": 408,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0408_00",
+      "calibration_0408_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.215
+    ],
+    "index": 409,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0409_00",
+      "calibration_0409_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.22
+    ],
+    "index": 410,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0410_00",
+      "calibration_0410_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.225
+    ],
+    "index": 411,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0411_00",
+      "calibration_0411_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.23
+    ],
+    "index": 412,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0412_00",
+      "calibration_0412_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      99.5,
+      1.235
+    ],
+    "index": 413,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0413_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009308679334774155
+  },
+  {
+    "pair": [
+      99.5,
+      1.24
+    ],
+    "index": 414,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0414_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.0093133759481411
+  },
+  {
+    "pair": [
+      99.5,
+      1.245
+    ],
+    "index": 415,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0415_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009318078118373261
+  },
+  {
+    "pair": [
+      99.5,
+      1.25
+    ],
+    "index": 416,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0416_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009322785286971745
+  },
+  {
+    "pair": [
+      99.5,
+      1.255
+    ],
+    "index": 417,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0417_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009327497548770623
+  },
+  {
+    "pair": [
+      99.5,
+      1.26
+    ],
+    "index": 418,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0418_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009332213888926815
+  },
+  {
+    "pair": [
+      99.5,
+      1.265
+    ],
+    "index": 419,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0419_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009336934048177712
+  },
+  {
+    "pair": [
+      99.5,
+      1.27
+    ],
+    "index": 420,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0420_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00934165803940757
+  },
+  {
+    "pair": [
+      99.5,
+      1.275
+    ],
+    "index": 421,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0421_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009346386427179203
+  },
+  {
+    "pair": [
+      99.5,
+      1.28
+    ],
+    "index": 422,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0422_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009351120387357088
+  },
+  {
+    "pair": [
+      99.5,
+      1.285
+    ],
+    "index": 423,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0423_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009355859795243563
+  },
+  {
+    "pair": [
+      99.5,
+      1.29
+    ],
+    "index": 424,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0424_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009360603993471515
+  },
+  {
+    "pair": [
+      99.5,
+      1.295
+    ],
+    "index": 425,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0425_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009365352439336038
+  },
+  {
+    "pair": [
+      99.5,
+      1.3
+    ],
+    "index": 426,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0426_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009370104678341044
+  },
+  {
+    "pair": [
+      99.5,
+      1.305
+    ],
+    "index": 427,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0427_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009374860522189861
+  },
+  {
+    "pair": [
+      99.5,
+      1.31
+    ],
+    "index": 428,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0428_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009379621686876977
+  },
+  {
+    "pair": [
+      99.5,
+      1.315
+    ],
+    "index": 429,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0429_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009384388195430438
+  },
+  {
+    "pair": [
+      99.5,
+      1.32
+    ],
+    "index": 430,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0430_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009389159981833768
+  },
+  {
+    "pair": [
+      99.5,
+      1.325
+    ],
+    "index": 431,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0431_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009393937044429052
+  },
+  {
+    "pair": [
+      99.5,
+      1.33
+    ],
+    "index": 432,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0432_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009398718563684908
+  },
+  {
+    "pair": [
+      99.5,
+      1.335
+    ],
+    "index": 433,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0433_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009403503213748096
+  },
+  {
+    "pair": [
+      99.5,
+      1.34
+    ],
+    "index": 434,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0434_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009408290907255517
+  },
+  {
+    "pair": [
+      99.5,
+      1.345
+    ],
+    "index": 435,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0435_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009413084004416747
+  },
+  {
+    "pair": [
+      99.5,
+      1.35
+    ],
+    "index": 436,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0436_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009417882526583784
+  },
+  {
+    "pair": [
+      100,
+      0.1
+    ],
+    "index": 437,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0437_00",
+      "calibration_0437_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100,
+      0.25
+    ],
+    "index": 438,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0438_00",
+      "calibration_0438_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100,
+      0.5
+    ],
+    "index": 439,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0439_00",
+      "calibration_0439_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100,
+      0.75
+    ],
+    "index": 440,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0440_00",
+      "calibration_0440_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100,
+      1.0
+    ],
+    "index": 441,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0441_00",
+      "calibration_0441_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100,
+      1.2
+    ],
+    "index": 442,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0442_00",
+      "calibration_0442_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.205
+    ],
+    "index": 443,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0443_00",
+      "calibration_0443_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.21
+    ],
+    "index": 444,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0444_00",
+      "calibration_0444_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.215
+    ],
+    "index": 445,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0445_00",
+      "calibration_0445_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.22
+    ],
+    "index": 446,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0446_00",
+      "calibration_0446_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.225
+    ],
+    "index": 447,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0447_00",
+      "calibration_0447_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.23
+    ],
+    "index": 448,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0448_00",
+      "calibration_0448_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.235
+    ],
+    "index": 449,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0449_00",
+      "calibration_0449_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.24
+    ],
+    "index": 450,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0450_00",
+      "calibration_0450_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.245
+    ],
+    "index": 451,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0451_00",
+      "calibration_0451_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.25
+    ],
+    "index": 452,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0452_00",
+      "calibration_0452_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": true,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.255
+    ],
+    "index": 453,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0453_00",
+      "calibration_0453_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.26
+    ],
+    "index": 454,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0454_00",
+      "calibration_0454_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.265
+    ],
+    "index": 455,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0455_00",
+      "calibration_0455_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.27
+    ],
+    "index": 456,
+    "status": "constraint_rejected",
+    "case_ids": [
+      "calibration_0456_00",
+      "calibration_0456_01"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": null
+  },
+  {
+    "pair": [
+      100.0,
+      1.275
+    ],
+    "index": 457,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0457_00",
+      "calibration_0457_01",
+      "calibration_0457_02",
+      "calibration_0457_03",
+      "calibration_0457_04",
+      "calibration_0457_05",
+      "calibration_0457_06",
+      "calibration_0457_07",
+      "calibration_0457_08",
+      "calibration_0457_09",
+      "calibration_0457_10",
+      "calibration_0457_11",
+      "calibration_0457_12",
+      "calibration_0457_13",
+      "calibration_0457_14",
+      "calibration_0457_15",
+      "calibration_0457_16",
+      "calibration_0457_17",
+      "calibration_0457_18",
+      "calibration_0457_19",
+      "calibration_0457_20",
+      "calibration_0457_21",
+      "calibration_0457_22",
+      "calibration_0457_23",
+      "calibration_0457_24",
+      "calibration_0457_25",
+      "calibration_0457_26",
+      "calibration_0457_27",
+      "calibration_0457_28",
+      "calibration_0457_29",
+      "calibration_0457_30",
+      "calibration_0457_31",
+      "calibration_0457_32",
+      "calibration_0457_33",
+      "calibration_0457_34",
+      "calibration_0457_35",
+      "calibration_0457_36",
+      "calibration_0457_37",
+      "calibration_0457_38",
+      "calibration_0457_39",
+      "calibration_0457_40",
+      "calibration_0457_41",
+      "calibration_0457_42",
+      "calibration_0457_43",
+      "calibration_0457_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": true,
+    "observed_lower_bound_rad": 0.00930442651158736
+  },
+  {
+    "pair": [
+      100.0,
+      1.28
+    ],
+    "index": 458,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0458_00",
+      "calibration_0458_01",
+      "calibration_0458_02",
+      "calibration_0458_03",
+      "calibration_0458_04",
+      "calibration_0458_05",
+      "calibration_0458_06",
+      "calibration_0458_07",
+      "calibration_0458_08",
+      "calibration_0458_09",
+      "calibration_0458_10",
+      "calibration_0458_11",
+      "calibration_0458_12",
+      "calibration_0458_13",
+      "calibration_0458_14",
+      "calibration_0458_15",
+      "calibration_0458_16",
+      "calibration_0458_17",
+      "calibration_0458_18",
+      "calibration_0458_19",
+      "calibration_0458_20",
+      "calibration_0458_21",
+      "calibration_0458_22",
+      "calibration_0458_23",
+      "calibration_0458_24",
+      "calibration_0458_25",
+      "calibration_0458_26",
+      "calibration_0458_27",
+      "calibration_0458_28",
+      "calibration_0458_29",
+      "calibration_0458_30",
+      "calibration_0458_31",
+      "calibration_0458_32",
+      "calibration_0458_33",
+      "calibration_0458_34",
+      "calibration_0458_35",
+      "calibration_0458_36",
+      "calibration_0458_37",
+      "calibration_0458_38",
+      "calibration_0458_39",
+      "calibration_0458_40",
+      "calibration_0458_41",
+      "calibration_0458_42",
+      "calibration_0458_43",
+      "calibration_0458_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009309132653405485
+  },
+  {
+    "pair": [
+      100.0,
+      1.285
+    ],
+    "index": 459,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0459_00",
+      "calibration_0459_01",
+      "calibration_0459_02",
+      "calibration_0459_03",
+      "calibration_0459_04",
+      "calibration_0459_05",
+      "calibration_0459_06",
+      "calibration_0459_07",
+      "calibration_0459_08",
+      "calibration_0459_09",
+      "calibration_0459_10",
+      "calibration_0459_11",
+      "calibration_0459_12",
+      "calibration_0459_13",
+      "calibration_0459_14",
+      "calibration_0459_15",
+      "calibration_0459_16",
+      "calibration_0459_17",
+      "calibration_0459_18",
+      "calibration_0459_19",
+      "calibration_0459_20",
+      "calibration_0459_21",
+      "calibration_0459_22",
+      "calibration_0459_23",
+      "calibration_0459_24",
+      "calibration_0459_25",
+      "calibration_0459_26",
+      "calibration_0459_27",
+      "calibration_0459_28",
+      "calibration_0459_29",
+      "calibration_0459_30",
+      "calibration_0459_31",
+      "calibration_0459_32",
+      "calibration_0459_33",
+      "calibration_0459_34",
+      "calibration_0459_35",
+      "calibration_0459_36",
+      "calibration_0459_37",
+      "calibration_0459_38",
+      "calibration_0459_39",
+      "calibration_0459_40",
+      "calibration_0459_41",
+      "calibration_0459_42",
+      "calibration_0459_43",
+      "calibration_0459_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009313844260789177
+  },
+  {
+    "pair": [
+      100.0,
+      1.29
+    ],
+    "index": 460,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0460_00",
+      "calibration_0460_01",
+      "calibration_0460_02",
+      "calibration_0460_03",
+      "calibration_0460_04",
+      "calibration_0460_05",
+      "calibration_0460_06",
+      "calibration_0460_07",
+      "calibration_0460_08",
+      "calibration_0460_09",
+      "calibration_0460_10",
+      "calibration_0460_11",
+      "calibration_0460_12",
+      "calibration_0460_13",
+      "calibration_0460_14",
+      "calibration_0460_15",
+      "calibration_0460_16",
+      "calibration_0460_17",
+      "calibration_0460_18",
+      "calibration_0460_19",
+      "calibration_0460_20",
+      "calibration_0460_21",
+      "calibration_0460_22",
+      "calibration_0460_23",
+      "calibration_0460_24",
+      "calibration_0460_25",
+      "calibration_0460_26",
+      "calibration_0460_27",
+      "calibration_0460_28",
+      "calibration_0460_29",
+      "calibration_0460_30",
+      "calibration_0460_31",
+      "calibration_0460_32",
+      "calibration_0460_33",
+      "calibration_0460_34",
+      "calibration_0460_35",
+      "calibration_0460_36",
+      "calibration_0460_37",
+      "calibration_0460_38",
+      "calibration_0460_39",
+      "calibration_0460_40",
+      "calibration_0460_41",
+      "calibration_0460_42",
+      "calibration_0460_43",
+      "calibration_0460_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009318561291542867
+  },
+  {
+    "pair": [
+      100.0,
+      1.295
+    ],
+    "index": 461,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0461_00",
+      "calibration_0461_01",
+      "calibration_0461_02",
+      "calibration_0461_03",
+      "calibration_0461_04",
+      "calibration_0461_05",
+      "calibration_0461_06",
+      "calibration_0461_07",
+      "calibration_0461_08",
+      "calibration_0461_09",
+      "calibration_0461_10",
+      "calibration_0461_11",
+      "calibration_0461_12",
+      "calibration_0461_13",
+      "calibration_0461_14",
+      "calibration_0461_15",
+      "calibration_0461_16",
+      "calibration_0461_17",
+      "calibration_0461_18",
+      "calibration_0461_19",
+      "calibration_0461_20",
+      "calibration_0461_21",
+      "calibration_0461_22",
+      "calibration_0461_23",
+      "calibration_0461_24",
+      "calibration_0461_25",
+      "calibration_0461_26",
+      "calibration_0461_27",
+      "calibration_0461_28",
+      "calibration_0461_29",
+      "calibration_0461_30",
+      "calibration_0461_31",
+      "calibration_0461_32",
+      "calibration_0461_33",
+      "calibration_0461_34",
+      "calibration_0461_35",
+      "calibration_0461_36",
+      "calibration_0461_37",
+      "calibration_0461_38",
+      "calibration_0461_39",
+      "calibration_0461_40",
+      "calibration_0461_41",
+      "calibration_0461_42",
+      "calibration_0461_43",
+      "calibration_0461_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009323282679682786
+  },
+  {
+    "pair": [
+      100.0,
+      1.3
+    ],
+    "index": 462,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0462_00",
+      "calibration_0462_01",
+      "calibration_0462_02",
+      "calibration_0462_03",
+      "calibration_0462_04",
+      "calibration_0462_05",
+      "calibration_0462_06",
+      "calibration_0462_07",
+      "calibration_0462_08",
+      "calibration_0462_09",
+      "calibration_0462_10",
+      "calibration_0462_11",
+      "calibration_0462_12",
+      "calibration_0462_13",
+      "calibration_0462_14",
+      "calibration_0462_15",
+      "calibration_0462_16",
+      "calibration_0462_17",
+      "calibration_0462_18",
+      "calibration_0462_19",
+      "calibration_0462_20",
+      "calibration_0462_21",
+      "calibration_0462_22",
+      "calibration_0462_23",
+      "calibration_0462_24",
+      "calibration_0462_25",
+      "calibration_0462_26",
+      "calibration_0462_27",
+      "calibration_0462_28",
+      "calibration_0462_29",
+      "calibration_0462_30",
+      "calibration_0462_31",
+      "calibration_0462_32",
+      "calibration_0462_33",
+      "calibration_0462_34",
+      "calibration_0462_35",
+      "calibration_0462_36",
+      "calibration_0462_37",
+      "calibration_0462_38",
+      "calibration_0462_39",
+      "calibration_0462_40",
+      "calibration_0462_41",
+      "calibration_0462_42",
+      "calibration_0462_43",
+      "calibration_0462_44"
+    ],
+    "incumbent": null,
+    "force_full": true,
+    "observed_lower_bound_rad": 0.009328007651823863
+  },
+  {
+    "pair": [
+      100.0,
+      1.305
+    ],
+    "index": 463,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0463_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009332736442259812
+  },
+  {
+    "pair": [
+      100.0,
+      1.31
+    ],
+    "index": 464,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0464_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009337469936669533
+  },
+  {
+    "pair": [
+      100.0,
+      1.315
+    ],
+    "index": 465,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0465_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009342208867670926
+  },
+  {
+    "pair": [
+      100.0,
+      1.32
+    ],
+    "index": 466,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0466_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009346953286275356
+  },
+  {
+    "pair": [
+      100.0,
+      1.325
+    ],
+    "index": 467,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0467_00",
+      "calibration_0467_01",
+      "calibration_0467_02",
+      "calibration_0467_03",
+      "calibration_0467_04",
+      "calibration_0467_05",
+      "calibration_0467_06",
+      "calibration_0467_07",
+      "calibration_0467_08",
+      "calibration_0467_09",
+      "calibration_0467_10",
+      "calibration_0467_11",
+      "calibration_0467_12",
+      "calibration_0467_13",
+      "calibration_0467_14",
+      "calibration_0467_15",
+      "calibration_0467_16",
+      "calibration_0467_17",
+      "calibration_0467_18",
+      "calibration_0467_19",
+      "calibration_0467_20",
+      "calibration_0467_21",
+      "calibration_0467_22",
+      "calibration_0467_23",
+      "calibration_0467_24",
+      "calibration_0467_25",
+      "calibration_0467_26",
+      "calibration_0467_27",
+      "calibration_0467_28",
+      "calibration_0467_29",
+      "calibration_0467_30",
+      "calibration_0467_31",
+      "calibration_0467_32",
+      "calibration_0467_33",
+      "calibration_0467_34",
+      "calibration_0467_35",
+      "calibration_0467_36",
+      "calibration_0467_37",
+      "calibration_0467_38",
+      "calibration_0467_39",
+      "calibration_0467_40",
+      "calibration_0467_41",
+      "calibration_0467_42",
+      "calibration_0467_43",
+      "calibration_0467_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": true,
+    "observed_lower_bound_rad": 0.00935170298676036
+  },
+  {
+    "pair": [
+      100.0,
+      1.33
+    ],
+    "index": 468,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0468_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009356457585180009
+  },
+  {
+    "pair": [
+      100.0,
+      1.335
+    ],
+    "index": 469,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0469_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009361215934222705
+  },
+  {
+    "pair": [
+      100.0,
+      1.34
+    ],
+    "index": 470,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0470_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.009365976952999362
+  },
+  {
+    "pair": [
+      100.0,
+      1.345
+    ],
+    "index": 471,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0471_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.00937074271161357
+  },
+  {
+    "pair": [
+      100.0,
+      1.35
+    ],
+    "index": 472,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0472_00",
+      "calibration_0472_01",
+      "calibration_0472_02",
+      "calibration_0472_03",
+      "calibration_0472_04",
+      "calibration_0472_05",
+      "calibration_0472_06",
+      "calibration_0472_07",
+      "calibration_0472_08",
+      "calibration_0472_09",
+      "calibration_0472_10",
+      "calibration_0472_11",
+      "calibration_0472_12",
+      "calibration_0472_13",
+      "calibration_0472_14",
+      "calibration_0472_15",
+      "calibration_0472_16",
+      "calibration_0472_17",
+      "calibration_0472_18",
+      "calibration_0472_19",
+      "calibration_0472_20",
+      "calibration_0472_21",
+      "calibration_0472_22",
+      "calibration_0472_23",
+      "calibration_0472_24",
+      "calibration_0472_25",
+      "calibration_0472_26",
+      "calibration_0472_27",
+      "calibration_0472_28",
+      "calibration_0472_29",
+      "calibration_0472_30",
+      "calibration_0472_31",
+      "calibration_0472_32",
+      "calibration_0472_33",
+      "calibration_0472_34",
+      "calibration_0472_35",
+      "calibration_0472_36",
+      "calibration_0472_37",
+      "calibration_0472_38",
+      "calibration_0472_39",
+      "calibration_0472_40",
+      "calibration_0472_41",
+      "calibration_0472_42",
+      "calibration_0472_43",
+      "calibration_0472_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": true,
+    "observed_lower_bound_rad": 0.00937551384892793
+  },
+  {
+    "pair": [
+      100.0,
+      1.4
+    ],
+    "index": 473,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0473_00",
+      "calibration_0473_01",
+      "calibration_0473_02",
+      "calibration_0473_03",
+      "calibration_0473_04",
+      "calibration_0473_05",
+      "calibration_0473_06",
+      "calibration_0473_07",
+      "calibration_0473_08",
+      "calibration_0473_09",
+      "calibration_0473_10",
+      "calibration_0473_11",
+      "calibration_0473_12",
+      "calibration_0473_13",
+      "calibration_0473_14",
+      "calibration_0473_15",
+      "calibration_0473_16",
+      "calibration_0473_17",
+      "calibration_0473_18",
+      "calibration_0473_19",
+      "calibration_0473_20",
+      "calibration_0473_21",
+      "calibration_0473_22",
+      "calibration_0473_23",
+      "calibration_0473_24",
+      "calibration_0473_25",
+      "calibration_0473_26",
+      "calibration_0473_27",
+      "calibration_0473_28",
+      "calibration_0473_29",
+      "calibration_0473_30",
+      "calibration_0473_31",
+      "calibration_0473_32",
+      "calibration_0473_33",
+      "calibration_0473_34",
+      "calibration_0473_35",
+      "calibration_0473_36",
+      "calibration_0473_37",
+      "calibration_0473_38",
+      "calibration_0473_39",
+      "calibration_0473_40",
+      "calibration_0473_41",
+      "calibration_0473_42",
+      "calibration_0473_43",
+      "calibration_0473_44"
+    ],
+    "incumbent": null,
+    "force_full": true,
+    "observed_lower_bound_rad": 0.009423483996599449
+  },
+  {
+    "pair": [
+      100,
+      1.5
+    ],
+    "index": 474,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0474_00",
+      "calibration_0474_01",
+      "calibration_0474_02",
+      "calibration_0474_03",
+      "calibration_0474_04",
+      "calibration_0474_05",
+      "calibration_0474_06",
+      "calibration_0474_07",
+      "calibration_0474_08",
+      "calibration_0474_09",
+      "calibration_0474_10",
+      "calibration_0474_11",
+      "calibration_0474_12",
+      "calibration_0474_13",
+      "calibration_0474_14",
+      "calibration_0474_15",
+      "calibration_0474_16",
+      "calibration_0474_17",
+      "calibration_0474_18",
+      "calibration_0474_19",
+      "calibration_0474_20",
+      "calibration_0474_21",
+      "calibration_0474_22",
+      "calibration_0474_23",
+      "calibration_0474_24",
+      "calibration_0474_25",
+      "calibration_0474_26",
+      "calibration_0474_27",
+      "calibration_0474_28",
+      "calibration_0474_29",
+      "calibration_0474_30",
+      "calibration_0474_31",
+      "calibration_0474_32",
+      "calibration_0474_33",
+      "calibration_0474_34",
+      "calibration_0474_35",
+      "calibration_0474_36",
+      "calibration_0474_37",
+      "calibration_0474_38",
+      "calibration_0474_39",
+      "calibration_0474_40",
+      "calibration_0474_41",
+      "calibration_0474_42",
+      "calibration_0474_43",
+      "calibration_0474_44"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.3
+      ],
+      "score": 0.009328007651823863
+    },
+    "force_full": true,
+    "observed_lower_bound_rad": 0.009520751646238584
+  },
+  {
+    "pair": [
+      100.0,
+      2.0
+    ],
+    "index": 475,
+    "status": "fully_evaluated",
+    "case_ids": [
+      "calibration_0475_00",
+      "calibration_0475_01",
+      "calibration_0475_02",
+      "calibration_0475_03",
+      "calibration_0475_04",
+      "calibration_0475_05",
+      "calibration_0475_06",
+      "calibration_0475_07",
+      "calibration_0475_08",
+      "calibration_0475_09",
+      "calibration_0475_10",
+      "calibration_0475_11",
+      "calibration_0475_12",
+      "calibration_0475_13",
+      "calibration_0475_14",
+      "calibration_0475_15",
+      "calibration_0475_16",
+      "calibration_0475_17",
+      "calibration_0475_18",
+      "calibration_0475_19",
+      "calibration_0475_20",
+      "calibration_0475_21",
+      "calibration_0475_22",
+      "calibration_0475_23",
+      "calibration_0475_24",
+      "calibration_0475_25",
+      "calibration_0475_26",
+      "calibration_0475_27",
+      "calibration_0475_28",
+      "calibration_0475_29",
+      "calibration_0475_30",
+      "calibration_0475_31",
+      "calibration_0475_32",
+      "calibration_0475_33",
+      "calibration_0475_34",
+      "calibration_0475_35",
+      "calibration_0475_36",
+      "calibration_0475_37",
+      "calibration_0475_38",
+      "calibration_0475_39",
+      "calibration_0475_40",
+      "calibration_0475_41",
+      "calibration_0475_42",
+      "calibration_0475_43",
+      "calibration_0475_44"
+    ],
+    "incumbent": null,
+    "force_full": true,
+    "observed_lower_bound_rad": 0.010031248917777055
+  },
+  {
+    "pair": [
+      100,
+      3.0
+    ],
+    "index": 476,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0476_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01114859094817806
+  },
+  {
+    "pair": [
+      100,
+      5.0
+    ],
+    "index": 477,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0477_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.01362042905309703
+  },
+  {
+    "pair": [
+      100,
+      7.0
+    ],
+    "index": 478,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0478_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.016233557309988447
+  },
+  {
+    "pair": [
+      100,
+      10.0
+    ],
+    "index": 479,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0479_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.020169618859407972
+  },
+  {
+    "pair": [
+      100,
+      15.0
+    ],
+    "index": 480,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0480_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.02644731651864841
+  },
+  {
+    "pair": [
+      100,
+      20.0
+    ],
+    "index": 481,
+    "status": "bound_pruned",
+    "case_ids": [
+      "calibration_0481_00"
+    ],
+    "incumbent": {
+      "pair": [
+        100.0,
+        1.275
+      ],
+      "score": 0.00930442651158736
+    },
+    "force_full": false,
+    "observed_lower_bound_rad": 0.03227095413238903
+  }
+]

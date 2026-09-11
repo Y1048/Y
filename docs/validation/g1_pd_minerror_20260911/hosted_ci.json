@@ -1,0 +1,20 @@
+{
+  "tested_commit": "1d768b7cefe44adc4027346aa17f9af1a10e385a",
+  "run_id": 34602915247,
+  "job_id": 103274322288,
+  "conclusion": "success",
+  "discovered": 159,
+  "passed": 159,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "cpp_parity_passed": true,
+  "runtime_s": 290.751,
+  "platform": "Ubuntu 24.04.5",
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "decoded_job_log_inspected": true,
+  "log_excerpt": "Ran 159 tests in 290.751s; OK",
+  "scope": "regressions and six-case smoke; not full optimization"
+}

@@ -1,0 +1,40 @@
+{
+  "base": "1d7b1f76111034a468774e5748eae8d30da5b42d",
+  "tested_code": "1d768b7cefe44adc4027346aa17f9af1a10e385a",
+  "protected_paths": [
+    "MuJoCo_G1_Controller",
+    "hardware/g1_arm_bridge",
+    "references",
+    "tools/START_TWIST2_MINK_CYCLE_CANDIDATE.ps1",
+    "experiments/twist2_right_arm_manual/mujoco_pd_sweep.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_accuracy_stability.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_robust_refine.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_contract.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_expand.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_motor_stress.py",
+    "experiments/twist2_right_arm_manual/mujoco_pd_fixture.py",
+    "experiments/twist2_right_arm_manual/joint_limit_guard.py",
+    "experiments/twist2_right_arm_manual/pd_small_signal_trial.hpp",
+    "experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp",
+    "experiments/twist2_right_arm_manual/mink_live_cycle_target.hpp",
+    "experiments/twist2_right_arm_manual/mink_udp_target.hpp"
+  ],
+  "diff_empty": true,
+  "exact_old_seed_trajectory_matches": 135,
+  "all29_array_fields_compared": [
+    "q",
+    "dq",
+    "ref",
+    "cmd",
+    "time_s",
+    "trial_time_s",
+    "cycle",
+    "segment"
+  ],
+  "source_bytes_checked": true,
+  "retained_copy_hashes_checked": true,
+  "retained_files": 3971,
+  "retained_results": "C:\\Users\\user\\Documents\\G1_PD_MinError_20260911",
+  "original_live_status_unchanged": true,
+  "hardware_config_modified": false
+}

@@ -197,3 +197,67 @@ Each entry must record: base commit and scope; files/behavior changed; exact
 checks performed and pass/fail counts; checks not performed and remaining
 risks; the next permitted action and physical launch-block status. Do not write
 "fixed", "verified", "safe", or "complete" for a check that was only planned.
+
+## 2026-09-11 — preserve VR-to-G1 operation; round-trip PD tuning is the objective
+
+Base: `ded85fff529e6d143721683950056bbf016a190d`.
+Scope: documentation only, recording the user's clarified priority. No runtime,
+launcher, gain, trajectory, transport, build or deployed-binary change in this entry.
+
+### User requirement and mode separation
+
+The user reports that START_TWIST2_MINK_CYCLE_CANDIDATE already enabled a usable
+VR-to-G1 workflow, although it was not perfect. Preserve that working capability.
+The engineering objective is to find suitable PD gains using repeated round-trip
+trajectories and measured responses, not to replace teleoperation or PD testing
+with a handoff-only project. Regular handoff is supporting exit/ownership work.
+
+- Preserve normal VR/Mink -> relay/UDP -> G1 operation via the existing launcher
+  and `--udp-right-arm`. Do not silently default to PD sweep or handoff-only.
+- `-PdSweep` / `--pd-sweep-trial` is the explicit repeatable PD experiment.
+  `-HandoffOnly` / `--handoff-only-trial` is a separate ownership diagnostic,
+  not a source of PD identification data or a replacement for normal operation.
+- Preserve the deployed working baseline before deploying a modified candidate.
+  Do not overwrite it merely because offline tests pass. Compare the actual
+  PC launcher, input/relay dependencies, robot source, binary and command when
+  access is permitted; the reported working local version has not been matched
+  to an immutable Git commit in this review.
+
+### What ded85fff did and did not change
+
+The commit hardened lifecycle/exception handling, writer-stop synchronization,
+fresh-owner fallback, verification continuity and artifact recording, and isolated
+legacy build targets. It did NOT change the existing round-trip reference,
+Kp/Kd candidate values, UDP packet adapter or target-generation files. The
+launcher change was limited to Check-mode messages; trial selection and the
+robot command were retained. However, lifecycle protection and the writer mutex
+are shared by UDP and PD modes. Full VR-to-G1 timing/behavior after rebuilding
+has NOT been revalidated; source-path preservation is not an end-to-end pass.
+
+The inherited PD sweep excites joint 22 with ready -> +8 deg -> -8 deg -> ready,
+three cycles per candidate. It changes Kp together on joints 22..25 to 40, 48,
+and 56, with Kd fixed at 5; this is not an independent Kp/Kd search for every
+arm joint. The small-signal reference already existed in 05d4ebf. Do not claim
+that ded85fff found new PD values or introduced that amplitude change. Keep the
+full-forward-reach physical restriction; restoring VR does not authorize that trial.
+
+### Checks and next permitted action
+
+Reviewed the ded85fff changed-file list/diff, both launcher versions, the current
+PD reference, gain setter and UDP/PD dispatch. No new execution tests, hardware
+checks or gain-selection experiments were performed for this documentation-only
+entry; earlier pass counts above belong to their earlier change set.
+
+The checked-in Robot/All block already existed in 05d4ebf and is still present:
+this GitHub version cannot currently launch straight into the robot. It is an
+operational restriction, NOT removal of the VR feature, and it was not lifted
+while the G1 is charging. The charging/no-DDS constraint remains unchanged.
+The handoff-only-first instruction above applies to validating the modified
+handoff candidate; it does not redefine the normal VR operating mode.
+
+Next offline work should support the round-trip comparison: audit repeatability,
+logged commanded versus measured positions/velocities, actual gains and trial
+completion, while preserving the existing VR mode. Before any later approved
+physical use, reconcile the working baseline and candidate separately and review
+the actual executable/hash and launch conditions. Do not auto-apply a selected
+gain to normal VR operation or change the trajectory without recording its scope.

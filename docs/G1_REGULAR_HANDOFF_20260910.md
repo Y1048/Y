@@ -994,3 +994,36 @@ Full matrix ranWindows; CItests/componentdynamics only.
 Report:G1_PD_PERJOINT_20260912.md; evidence:docs/validation/g1_pd_perjoint_20260912/.
 Raw:C:\Users\user\Documents\G1_PD_PerJoint_20260912. Dirtyliveworktree,VR/UDP/LowCmd/IK,actualgains,XML andRobot/Allblocks
 preserved. NoG1,DDS,SDK,actuation,ARMdeployment. Continueoffline; noauto-adoption.
+
+
+## 2026-09-12 — final PD optimization/review entry point started
+
+Base0634844115368a5e910e07891ec2fcacb221f857 (includes completed per-joint evidence).
+Add mujoco_pd_final.py,25tests,RUN_MUJOCO_PD_FINAL.bat,manual and isolated CI.
+Modes optimize/finalize/verify connect the existing bounded per-joint search to
+strict source audit, frozen extra conditions, full-state reread and review JSON.
+Do not rerun or replace the accepted per-joint source merely to obtain new counts.
+
+Require144operating+48prior-fresh passes before selecting up to2 vectors in the
+original operating minimax order. Freeze6new combinations x4separately excited
+axes per vector (48planned integrations). Additional endpoint gate checks ALL4
+proximal joints, including inactive ones, under unchanged0.02rad/0.1rad/s limits.
+Every original rejection remains; entire last1s post-hold checked. All29 reserve,
+stopping and model constraints unchanged. No PD/IK/feedforward/VR modifications.
+Export only a simulation-review candidate, never a robot config or actuation command.
+
+25new tests passed, including actual MuJoCo2-case bundle with mocked source
+fixture, source/trace/decision/policy/hardware-field tampering and failed-gate
+handling. Initial fixture expected a tuple from JSON and a full500samples from
+exactly1s post-hold; corrected those TEST expectations/profile (2s fixture), not
+controller or formal conditions. Initial3assertion failures retained as test
+history; final25/25 passed. Full282-test allowlist and48formal additional cases
+are running; completion and hosted counts are not claimed in this entry.
+
+Original1020-case study gets fully reaudited, archived input bytes stay immutable.
+Joint23 research cap300 does NOT widen live100cap; export flags all cap hits and
+keeps hardware_approved=false/recommended_hardware_gains=null. Source/model byte
+identity required for verify; do not substitute an untested checkout. No G1,DDS,
+SDK,publisher/subscriber,motor output,ARM deployment or Robot/All unblocking.
+Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_FINAL.md. Append results after
+actual completion; no global/continuous optimum or physical finalization claim.

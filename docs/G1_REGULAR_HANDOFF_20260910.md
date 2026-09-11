@@ -961,3 +961,36 @@ under the raw result folder. Corrected audit uses that original input archive,
 not a rewritten provenance manifest. CaseJSON/trace and frozen selection remain
 unchanged. Complete the saved-data audit before final outcome promotion. No
 additional dynamics or physical/G1/DDS operation is part of this correction.
+
+
+## 2026-09-12 — independent PD search completed and audited
+
+Base2ae59402367def9d28e823c59e81bc09a5a8040e; dynamics4eed0c5b763f03b121a1929eacd53c3ae750c97b; processing768a2355ea5b716137858851eb2f721ce023e783.
+1020formal runs=240roll+108coordinate+576operating+96fresh;978completed,886eligible.
+12pilot runs and unit tests are separate.57distinct gain vectors observed.
+Selected SIMULATION vector22..25:Kp=[100.0, 300.0, 100.0, 100.0],Kd=[1.4, 4.0, 1.4, 1.4].
+It passed144/144old operating+48/48new prespecified cases, including all4axes,
+changed amplitude/speed/start,12cycles and30s holds. Worst activeRMSE
+0.011962761307211rad; worst endpoint error0.0178481020382143rad.
+Nominal roll RMSE0.0230798161033409 ->0.0084943385038965rad(63.195814% lower),
+with peak torque3.04551853307257 ->3.4126274894744Nm. No feedforward/integral.
+Lower-Dcoordinate failed4/144and was excluded; common100/1.4passed108/144.
+Higher-Dcomparison passed192but had higherworstRMSE. No global optimum claimed.
+
+IMPORTANT:rollKp300is research-only, outside unchanged hardware100cap. Never
+copy it to VR/G1 or widen livevalidation. Physical gains, reference/innerreserve,
+torque/velocity/joint limits, stopping assumptions, IK damp/cost were not changed.
+42post-stepvelocity refusals+92completed endpoint failures;6overlap posthold.
+No joint-limit guard events; minsoft/modelhard0.211798601205472/0.261798601205472rad.
+Not an absolute physical stability or limit-contact guarantee.
+
+Full audit reloaded1020full29traces,11,159,730 rows sampled at 500 Hz and 29,580 witnesses.
+Ordering-only initial audit failure preserved/corrected; every number, ranking,
+selection and raw trace unchanged. Original48input files hash-verified separately.
+All144baseline trajectories exactly match prior operating study. Final local
+256pass/1C++skip; inspected hosted257pass/0skip,run34626120122,job103351536341.
+Full matrix ranWindows; CItests/componentdynamics only.
+
+Report:G1_PD_PERJOINT_20260912.md; evidence:docs/validation/g1_pd_perjoint_20260912/.
+Raw:C:\Users\user\Documents\G1_PD_PerJoint_20260912. Dirtyliveworktree,VR/UDP/LowCmd/IK,actualgains,XML andRobot/Allblocks
+preserved. NoG1,DDS,SDK,actuation,ARMdeployment. Continueoffline; noauto-adoption.

@@ -1,0 +1,242 @@
+[
+  {
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "case_id": "operating_00174",
+    "eligible": true,
+    "metrics": {
+      "active_rmse_rad": 0.0084943385038965,
+      "active_peak_error_rad": 0.01780808031575043,
+      "right7_rmse_rad": [
+        0.0009043746721971655,
+        0.008494338503896507,
+        0.004639655899069934,
+        0.005810644234862126,
+        2.138118837252466e-05,
+        0.007320768274907382,
+        0.0032319570156874545
+      ],
+      "active_peak_torque_nm": 3.4126274894743998,
+      "active_rms_torque_nm": 2.3466219257369607,
+      "active_peak_speed_rad_s": 0.352715101810426,
+      "torque_limited_ratio": 0.0,
+      "hard_clipped_ratio": 0.0,
+      "max_active_tail_error_rad": 0.009997109632661427,
+      "max_active_tail_speed_rad_s": 0.0003015531474055408,
+      "max_right7_tail_p2p_rad": 5.837195210481403e-05,
+      "max_right7_tail_rms_speed_rad_s": 0.0005969385973124058
+    }
+  },
+  {
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_soak30",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "case_id": "operating_00272",
+    "eligible": true,
+    "metrics": {
+      "active_rmse_rad": 0.007964247586119846,
+      "active_peak_error_rad": 0.01780808031575043,
+      "right7_rmse_rad": [
+        0.0008843862648492948,
+        0.007964247586119843,
+        0.004592019593483056,
+        0.005828421675362819,
+        1.8175605581865054e-05,
+        0.007339409384255849,
+        0.003219939155882974
+      ],
+      "active_peak_torque_nm": 3.4126274894743998,
+      "active_rms_torque_nm": 2.318558454296455,
+      "active_peak_speed_rad_s": 0.352715101810426,
+      "torque_limited_ratio": 0.0,
+      "hard_clipped_ratio": 0.0,
+      "max_active_tail_error_rad": 0.009997109632661427,
+      "max_active_tail_speed_rad_s": 0.0003015531474055408,
+      "max_right7_tail_p2p_rad": 5.837195210481403e-05,
+      "max_right7_tail_rms_speed_rad_s": 0.0005969385973124058,
+      "post_hold_last_second_error_rad": 0.007684260279152144,
+      "post_hold_last_second_speed_rad_s": 2.4021359570950505e-08
+    }
+  },
+  {
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "case_id": "operating_00462",
+    "eligible": false,
+    "metrics": {
+      "active_rmse_rad": 0.023079816103340884,
+      "active_peak_error_rad": 0.03483803295282084,
+      "right7_rmse_rad": [
+        0.0008822382221410893,
+        0.023079816103340877,
+        0.0044802811573438975,
+        0.005860433770364594,
+        2.325935854785957e-05,
+        0.0073786924862739,
+        0.003120772748437267
+      ],
+      "active_peak_torque_nm": 3.0455185330725656,
+      "active_rms_torque_nm": 2.2702659429923724,
+      "active_peak_speed_rad_s": 0.33961757998884434,
+      "torque_limited_ratio": 0.0,
+      "hard_clipped_ratio": 0.0,
+      "max_active_tail_error_rad": 0.02959552139555016,
+      "max_active_tail_speed_rad_s": 0.001350305267725213,
+      "max_right7_tail_p2p_rad": 0.00011989300294068528,
+      "max_right7_tail_rms_speed_rad_s": 0.0012268133865088176
+    }
+  },
+  {
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_soak30",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "case_id": "operating_00560",
+    "eligible": false,
+    "metrics": {
+      "active_rmse_rad": 0.022563896247721753,
+      "active_peak_error_rad": 0.03483803295282084,
+      "right7_rmse_rad": [
+        0.0008653474243126833,
+        0.02256389624772178,
+        0.004432233162643155,
+        0.005878025001389149,
+        2.049944823454539e-05,
+        0.007397017033701479,
+        0.0031080740603486863
+      ],
+      "active_peak_torque_nm": 3.0455185330725656,
+      "active_rms_torque_nm": 2.243460593682661,
+      "active_peak_speed_rad_s": 0.33961757998884434,
+      "torque_limited_ratio": 0.0,
+      "hard_clipped_ratio": 0.0,
+      "max_active_tail_error_rad": 0.02959552139555016,
+      "max_active_tail_speed_rad_s": 0.001350305267725213,
+      "max_right7_tail_p2p_rad": 0.00011989300294068528,
+      "max_right7_tail_rms_speed_rad_s": 0.0012268133865088176,
+      "post_hold_last_second_error_rad": 0.022313211056580184,
+      "post_hold_last_second_speed_rad_s": 7.204843868484447e-08
+    }
+  }
+]

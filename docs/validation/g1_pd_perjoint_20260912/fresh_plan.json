@@ -1,0 +1,3554 @@
+[
+  {
+    "case_id": "fresh_00000",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00001",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00002",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00003",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00004",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00005",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00006",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00007",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00008",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00009",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00010",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00011",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00012",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00013",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00014",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00015",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00016",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00017",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00018",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00019",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00020",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00021",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00022",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00023",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00024",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00025",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00026",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00027",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00028",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00029",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00030",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00031",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00032",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00033",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00034",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00035",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00036",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00037",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00038",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00039",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00040",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00041",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00042",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00043",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00044",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00045",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00046",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00047",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00048",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00049",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00050",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00051",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new00_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_00",
+      "mass_scale": 0.8,
+      "damping_scale": 0.5,
+      "friction_scale": 0.25,
+      "delay_s": 0.001,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00052",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00053",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00054",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00055",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new01_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_01",
+      "mass_scale": 1.45,
+      "damping_scale": 0.5,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00056",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00057",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00058",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00059",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new02_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_02",
+      "mass_scale": 1.45,
+      "damping_scale": 0.85,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00060",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00061",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00062",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00063",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new03_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_03",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00064",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00065",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00066",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00067",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new04_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_04",
+      "mass_scale": 0.8,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00068",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00069",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00070",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00071",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new05_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_05",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00072",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00073",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00074",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00075",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new06_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_06",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.75,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00076",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00077",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00078",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00079",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new07_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_07",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 1.25,
+      "delay_s": 0.002,
+      "lag_s": 0.007,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00080",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00081",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00082",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00083",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new08_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_08",
+      "mass_scale": 1.15,
+      "damping_scale": 1.75,
+      "friction_scale": 0.75,
+      "delay_s": 0.001,
+      "lag_s": 0.003,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00084",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j22",
+      "joint": 22,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00085",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j24",
+      "joint": 24,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00086",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j25",
+      "joint": 25,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00087",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new09_j23",
+      "joint": 23,
+      "amplitude_deg": 6.0,
+      "speed_deg_s": 15.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_09",
+      "mass_scale": 1.15,
+      "damping_scale": 0.85,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00088",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j22",
+      "joint": 22,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00089",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j24",
+      "joint": 24,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00090",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j25",
+      "joint": 25,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00091",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new10_j23",
+      "joint": 23,
+      "amplitude_deg": 10.0,
+      "speed_deg_s": 25.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 5.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_10",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.05,
+      "delay_s": 0.002,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00092",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j22",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00093",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j24",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00094",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j25",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  },
+  {
+    "case_id": "fresh_00095",
+    "candidate": {
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "new11_j23",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "new_11",
+      "mass_scale": 0.8,
+      "damping_scale": 1.75,
+      "friction_scale": 0.25,
+      "delay_s": 0.003,
+      "lag_s": 0.003,
+      "dt": 0.001
+    },
+    "phase": "fresh"
+  }
+]

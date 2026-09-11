@@ -1,0 +1,10 @@
+{
+  "base_commit": "2ae59402367def9d28e823c59e81bc09a5a8040e",
+  "simulation_commit": "4eed0c5b763f03b121a1929eacd53c3ae750c97b",
+  "processing_commit": "768a2355ea5b716137858851eb2f721ce023e783",
+  "original_live_status_unchanged": true,
+  "old_live_worktree_not_written": true,
+  "original_vr_model_controller_contract_diff": "",
+  "raw_stored_directly": "C:\\Users\\user\\Documents\\G1_PD_PerJoint_20260912",
+  "no_robot_dds_sdk_actuation_or_deployment": true
+}

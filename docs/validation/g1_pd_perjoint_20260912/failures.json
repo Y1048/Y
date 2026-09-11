@@ -1,0 +1,5368 @@
+[
+  {
+    "case_id": "axis22_00002",
+    "candidate": {
+      "kp": [
+        72.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_standard",
+      "joint": 22,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00004",
+    "candidate": {
+      "kp": [
+        72.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_large",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "axis22_00005",
+    "candidate": {
+      "kp": [
+        72.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_large",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00008",
+    "candidate": {
+      "kp": [
+        88.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_standard",
+      "joint": 22,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00011",
+    "candidate": {
+      "kp": [
+        88.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_large",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00026",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        2.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_standard",
+      "joint": 22,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00029",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        2.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_large",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00032",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_standard",
+      "joint": 22,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis22_00035",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j22_large",
+      "joint": 22,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis24_00014",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.0,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j24_standard",
+      "joint": 24,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis24_00017",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.0,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j24_large",
+      "joint": 24,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00002",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00005",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00008",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00011",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00026",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00029",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00032",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "axis25_00035",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "operating_00125",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ]
+    },
+    "profile": {
+      "name": "j22_elbow_minus10_repeat6",
+      "joint": 22,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 6,
+      "elbow_offset_deg": -10.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "operating_00131",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_minus10_repeat6",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 6,
+      "elbow_offset_deg": -10.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "operating_00137",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ]
+    },
+    "profile": {
+      "name": "j24_elbow_minus10_repeat6",
+      "joint": 24,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 6,
+      "elbow_offset_deg": -10.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "operating_00143",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ]
+    },
+    "profile": {
+      "name": "j25_elbow_minus10_repeat6",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 6,
+      "elbow_offset_deg": -10.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "operating_00462",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00463",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00464",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "light",
+      "mass_scale": 0.75,
+      "damping_scale": 0.5,
+      "friction_scale": 0.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00465",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00466",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00467",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "high_friction",
+      "mass_scale": 1.25,
+      "damping_scale": 1.5,
+      "friction_scale": 1.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00468",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_small",
+      "joint": 23,
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00469",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_small",
+      "joint": 23,
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00470",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_small",
+      "joint": 23,
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "light",
+      "mass_scale": 0.75,
+      "damping_scale": 0.5,
+      "friction_scale": 0.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00471",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_small",
+      "joint": 23,
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00472",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_small",
+      "joint": 23,
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00473",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_small",
+      "joint": 23,
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "high_friction",
+      "mass_scale": 1.25,
+      "damping_scale": 1.5,
+      "friction_scale": 1.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00474",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00475",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00476",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "light",
+      "mass_scale": 0.75,
+      "damping_scale": 0.5,
+      "friction_scale": 0.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00477",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00478",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00479",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "high_friction",
+      "mass_scale": 1.25,
+      "damping_scale": 1.5,
+      "friction_scale": 1.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00480",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_fast",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00481",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_fast",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00482",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_fast",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "light",
+      "mass_scale": 0.75,
+      "damping_scale": 0.5,
+      "friction_scale": 0.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00483",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_fast",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00484",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_fast",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00485",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_fast",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 30.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "high_friction",
+      "mass_scale": 1.25,
+      "damping_scale": 1.5,
+      "friction_scale": 1.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00486",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_plus10",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 10.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00487",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_plus10",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 10.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00488",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_plus10",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 10.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "light",
+      "mass_scale": 0.75,
+      "damping_scale": 0.5,
+      "friction_scale": 0.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00489",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_plus10",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 10.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00490",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_plus10",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 10.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00491",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_plus10",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 10.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "high_friction",
+      "mass_scale": 1.25,
+      "damping_scale": 1.5,
+      "friction_scale": 1.5,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "operating_00558",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_repeat12",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad",
+      "post_hold_last_second_not_settled"
+    ]
+  },
+  {
+    "case_id": "operating_00559",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_repeat12",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad",
+      "post_hold_last_second_not_settled"
+    ]
+  },
+  {
+    "case_id": "operating_00560",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_soak30",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad",
+      "post_hold_last_second_not_settled"
+    ]
+  },
+  {
+    "case_id": "operating_00561",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_soak30",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad",
+      "post_hold_last_second_not_settled"
+    ]
+  },
+  {
+    "case_id": "operating_00562",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_minus10_repeat6",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 6,
+      "elbow_offset_deg": -10.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad",
+      "post_hold_last_second_not_settled"
+    ]
+  },
+  {
+    "case_id": "operating_00563",
+    "candidate": {
+      "kp": [
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        1.4,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_elbow_minus10_repeat6",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 6,
+      "elbow_offset_deg": -10.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad",
+      "post_hold_last_second_not_settled"
+    ]
+  },
+  {
+    "case_id": "roll_00001",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00002",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00003",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00004",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00005",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00007",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00008",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00009",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00010",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00011",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00013",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00014",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00015",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00016",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00017",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00019",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00020",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00021",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00022",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00023",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00025",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00026",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00027",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00028",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00029",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00031",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00032",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00033",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00034",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00035",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00037",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00038",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00039",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00040",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00041",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00043",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00044",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00045",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00046",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00047",
+    "candidate": {
+      "kp": [
+        100.0,
+        160.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00050",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00052",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00053",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00058",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00059",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00064",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00065",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00070",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00071",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00076",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00077",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00082",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00083",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        5.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00088",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00089",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        6.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00094",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00095",
+    "candidate": {
+      "kp": [
+        100.0,
+        200.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        8.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "",
+    "exclusions": [
+      "active_tail_error_rad"
+    ]
+  },
+  {
+    "case_id": "roll_00098",
+    "candidate": {
+      "kp": [
+        100.0,
+        240.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00101",
+    "candidate": {
+      "kp": [
+        100.0,
+        240.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00104",
+    "candidate": {
+      "kp": [
+        100.0,
+        240.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00107",
+    "candidate": {
+      "kp": [
+        100.0,
+        240.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00146",
+    "candidate": {
+      "kp": [
+        100.0,
+        280.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00149",
+    "candidate": {
+      "kp": [
+        100.0,
+        280.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00152",
+    "candidate": {
+      "kp": [
+        100.0,
+        280.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00155",
+    "candidate": {
+      "kp": [
+        100.0,
+        280.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00158",
+    "candidate": {
+      "kp": [
+        100.0,
+        280.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00161",
+    "candidate": {
+      "kp": [
+        100.0,
+        280.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00194",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00197",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00200",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00203",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        2.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00206",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00209",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.0,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00212",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_standard",
+      "joint": 23,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  },
+  {
+    "case_id": "roll_00215",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        3.5,
+        1.4,
+        1.4
+      ]
+    },
+    "profile": {
+      "name": "j23_large",
+      "joint": 23,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "post_step_measured_velocity_limit"
+    ]
+  }
+]

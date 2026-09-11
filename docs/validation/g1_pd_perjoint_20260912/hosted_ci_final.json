@@ -1,0 +1,16 @@
+{
+  "schema": "g1.hosted.test.evidence.v1",
+  "head_sha": "768a2355ea5b716137858851eb2f721ce023e783",
+  "run_id": 34626120122,
+  "job_id": 103351536341,
+  "conclusion": "success",
+  "passed": 257,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "decoded_log_inspected": true,
+  "observed_summary": "Ran 257 tests in 527.380s; OK",
+  "cpp_reference_parity": "passed",
+  "reverse_completion_order_regression": "passed",
+  "scope": "offline regression and component dynamics; not the full1020formalrun study"
+}

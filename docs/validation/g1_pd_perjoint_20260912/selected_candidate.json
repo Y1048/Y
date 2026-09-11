@@ -1,0 +1,55 @@
+{
+  "candidate": {
+    "kp": [
+      100.0,
+      300.0,
+      100.0,
+      100.0
+    ],
+    "kd": [
+      1.4,
+      4.0,
+      1.4,
+      1.4
+    ]
+  },
+  "cases": 192,
+  "passed": 192,
+  "per_axis": [
+    {
+      "joint": 22,
+      "cases": 48,
+      "passed": 48,
+      "worst_original_reference_rmse_rad": 0.011502976007828836,
+      "worst_endpoint_error_rad": 0.017848102038214297
+    },
+    {
+      "joint": 23,
+      "cases": 48,
+      "passed": 48,
+      "worst_original_reference_rmse_rad": 0.011567285389494242,
+      "worst_endpoint_error_rad": 0.015237590785226574
+    },
+    {
+      "joint": 24,
+      "cases": 48,
+      "passed": 48,
+      "worst_original_reference_rmse_rad": 0.008097907682420108,
+      "worst_endpoint_error_rad": 0.007494474684117541
+    },
+    {
+      "joint": 25,
+      "cases": 48,
+      "passed": 48,
+      "worst_original_reference_rmse_rad": 0.011962761307210974,
+      "worst_endpoint_error_rad": 0.01418533322113058
+    }
+  ],
+  "worst_rmse_rad": 0.011962761307210974,
+  "worst_tail_rms_speed_rad_s": 0.0027063444996911837,
+  "worst_tail_p2p_rad": 0.00026483789750549915,
+  "max_active_torque_nm": 4.733372171781378,
+  "nominal_roll_rmse_reduction_percent": 63.195813754049304,
+  "hardware_compatible": false,
+  "global_optimum_proven": false
+}

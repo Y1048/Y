@@ -1,0 +1,2577 @@
+{
+  "schema": "g1.pd.perjoint.summary.v1",
+  "complete": true,
+  "simulation_only": true,
+  "actual_runs": 1020,
+  "completed": 978,
+  "eligible": 886,
+  "phase_counts": {
+    "axis22": 36,
+    "axis24": 36,
+    "axis25": 36,
+    "fresh": 96,
+    "operating": 576,
+    "roll": 240
+  },
+  "base_rejections": {
+    "post_step_measured_velocity_limit": 42
+  },
+  "exclusions": {
+    "active_tail_error_rad": 92,
+    "post_hold_last_second_not_settled": 6,
+    "post_step_measured_velocity_limit": 42
+  },
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.2117986012054719,
+  "minimum_model_hard_margin_rad": 0.2617986012054719,
+  "ranking": {
+    "axis22": [
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.010738199323025943,
+        "partial_worst_rmse_rad": 0.010738199323025943,
+        "worst_tail_error_rad": 0.016342475919189667,
+        "worst_tail_speed_rad_s": 0.0013763701553668119,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.010964665592809425,
+        "partial_worst_rmse_rad": 0.010964665592809425,
+        "worst_tail_error_rad": 0.016325036713450994,
+        "worst_tail_speed_rad_s": 0.0013992004270320531,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            72.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 3,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.014714518297223929,
+        "worst_tail_error_rad": 0.022082377404251414,
+        "worst_tail_speed_rad_s": 0.0014964029450993488,
+        "failures": [
+          {
+            "case_id": "axis22_00005",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis22_00002",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis22_00004",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            88.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012297226306025347,
+        "worst_tail_error_rad": 0.018373612237277598,
+        "worst_tail_speed_rad_s": 0.0014086926748141729,
+        "failures": [
+          {
+            "case_id": "axis22_00008",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis22_00011",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            2.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.011383593902564422,
+        "worst_tail_error_rad": 0.01631995230897872,
+        "worst_tail_speed_rad_s": 0.001422515699633313,
+        "failures": [
+          {
+            "case_id": "axis22_00026",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis22_00029",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            3.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01225596489400284,
+        "worst_tail_error_rad": 0.01632530708823451,
+        "worst_tail_speed_rad_s": 0.0014545135322329027,
+        "failures": [
+          {
+            "case_id": "axis22_00032",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis22_00035",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      }
+    ],
+    "axis24": [
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.0070336117470442775,
+        "partial_worst_rmse_rad": 0.0070336117470442775,
+        "worst_tail_error_rad": 0.006397432352913207,
+        "worst_tail_speed_rad_s": 0.00132658983369449,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            2.0,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.007715613132465001,
+        "partial_worst_rmse_rad": 0.007715613132465001,
+        "worst_tail_error_rad": 0.006409366769081437,
+        "worst_tail_speed_rad_s": 0.0014143036358700018,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            88.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.00791527668793781,
+        "partial_worst_rmse_rad": 0.00791527668793781,
+        "worst_tail_error_rad": 0.007307476026161025,
+        "worst_tail_speed_rad_s": 0.001646186371784467,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            3.0,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.009096958535296604,
+        "partial_worst_rmse_rad": 0.009096958535296604,
+        "worst_tail_error_rad": 0.006432838140942004,
+        "worst_tail_speed_rad_s": 0.0016028995717164098,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.009551656956007591,
+        "partial_worst_rmse_rad": 0.009551656956007591,
+        "worst_tail_error_rad": 0.00900613107317838,
+        "worst_tail_speed_rad_s": 0.0021915757609912417,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.0,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.006644472216537805,
+        "worst_tail_error_rad": 0.006390426255775988,
+        "worst_tail_speed_rad_s": 0.0012756141708082235,
+        "failures": [
+          {
+            "case_id": "axis24_00014",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis24_00017",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      }
+    ],
+    "axis25": [
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.0
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.009031859305107031,
+        "partial_worst_rmse_rad": 0.009031859305107031,
+        "worst_tail_error_rad": 0.012306248137639919,
+        "worst_tail_speed_rad_s": 0.001455504838517722,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.009315695269979418,
+        "partial_worst_rmse_rad": 0.009315695269979418,
+        "worst_tail_error_rad": 0.012311963073272425,
+        "worst_tail_speed_rad_s": 0.0014631628465141323,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            72.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012694830000311866,
+        "worst_tail_error_rad": 0.017082941298565135,
+        "worst_tail_speed_rad_s": 0.0020122235041031976,
+        "failures": [
+          {
+            "case_id": "axis25_00002",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis25_00005",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            88.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.010504845194252708,
+        "worst_tail_error_rad": 0.013988496022505625,
+        "worst_tail_speed_rad_s": 0.0014956823426117614,
+        "failures": [
+          {
+            "case_id": "axis25_00008",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis25_00011",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            2.0
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.009828634165735456,
+        "worst_tail_error_rad": 0.012322318963582823,
+        "worst_tail_speed_rad_s": 0.001474750767244803,
+        "failures": [
+          {
+            "case_id": "axis25_00026",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis25_00029",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            3.0
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.010875087840141255,
+        "worst_tail_error_rad": 0.012343295815232191,
+        "worst_tail_speed_rad_s": 0.0014943907719371387,
+        "failures": [
+          {
+            "case_id": "axis25_00032",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "axis25_00035",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      }
+    ],
+    "fresh": [
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 48,
+        "passed": 48,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011567285389494242,
+        "partial_worst_rmse_rad": 0.011567285389494242,
+        "worst_tail_error_rad": 0.017848102038214297,
+        "worst_tail_speed_rad_s": 0.0027063444996911837,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            3.0,
+            5.0,
+            3.0,
+            3.0
+          ]
+        },
+        "cases": 48,
+        "passed": 48,
+        "all_pass": true,
+        "worst_rmse_rad": 0.012668250750006152,
+        "partial_worst_rmse_rad": 0.012668250750006152,
+        "worst_tail_error_rad": 0.017932745103489463,
+        "worst_tail_speed_rad_s": 0.002775004989107544,
+        "failures": []
+      }
+    ],
+    "operating": [
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 144,
+        "passed": 144,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011962761307210974,
+        "partial_worst_rmse_rad": 0.011962761307210974,
+        "worst_tail_error_rad": 0.016417382141940395,
+        "worst_tail_speed_rad_s": 0.0021418617140466652,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            3.0,
+            5.0,
+            3.0,
+            3.0
+          ]
+        },
+        "cases": 144,
+        "passed": 144,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013068196443463197,
+        "partial_worst_rmse_rad": 0.013068196443463197,
+        "worst_tail_error_rad": 0.016470641160311054,
+        "worst_tail_speed_rad_s": 0.0024853309941218144,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            1.4,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 144,
+        "passed": 108,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.029735613702665264,
+        "worst_tail_error_rad": 0.04139007083854751,
+        "worst_tail_speed_rad_s": 0.0021453889375370734,
+        "failures": [
+          {
+            "case_id": "operating_00462",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00465",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00464",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00467",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00468",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00463",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00470",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00471",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00466",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00469",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00473",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00474",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00472",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00476",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00477",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00479",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00480",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00482",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00475",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00483",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00478",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00485",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00481",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00486",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00488",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00489",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00484",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00491",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00487",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00490",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "operating_00558",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad",
+              "post_hold_last_second_not_settled"
+            ]
+          },
+          {
+            "case_id": "operating_00560",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad",
+              "post_hold_last_second_not_settled"
+            ]
+          },
+          {
+            "case_id": "operating_00562",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad",
+              "post_hold_last_second_not_settled"
+            ]
+          },
+          {
+            "case_id": "operating_00561",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad",
+              "post_hold_last_second_not_settled"
+            ]
+          },
+          {
+            "case_id": "operating_00559",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad",
+              "post_hold_last_second_not_settled"
+            ]
+          },
+          {
+            "case_id": "operating_00563",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad",
+              "post_hold_last_second_not_settled"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.0,
+            4.0,
+            1.4,
+            1.0
+          ]
+        },
+        "cases": 144,
+        "passed": 140,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.011191261258194488,
+        "worst_tail_error_rad": 0.01641134404103347,
+        "worst_tail_speed_rad_s": 0.002141828273698837,
+        "failures": [
+          {
+            "case_id": "operating_00125",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "operating_00131",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "operating_00137",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "operating_00143",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      }
+    ],
+    "roll": [
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.010831153008646661,
+        "partial_worst_rmse_rad": 0.010831153008646661,
+        "worst_tail_error_rad": 0.014294280615472554,
+        "worst_tail_speed_rad_s": 0.0008599883010161876,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            5.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011038704143169525,
+        "partial_worst_rmse_rad": 0.011038704143169525,
+        "worst_tail_error_rad": 0.01429626663482586,
+        "worst_tail_speed_rad_s": 0.0008649986315080897,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            6.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011275226424348436,
+        "partial_worst_rmse_rad": 0.011275226424348436,
+        "worst_tail_error_rad": 0.014298105670995653,
+        "worst_tail_speed_rad_s": 0.0008700694124172151,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011467845478575812,
+        "partial_worst_rmse_rad": 0.011467845478575812,
+        "worst_tail_error_rad": 0.015295410148719046,
+        "worst_tail_speed_rad_s": 0.0008574011217163916,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011565421954140613,
+        "partial_worst_rmse_rad": 0.011565421954140613,
+        "worst_tail_error_rad": 0.015296936225302593,
+        "worst_tail_speed_rad_s": 0.0008600570592609716,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            5.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011785142722692715,
+        "partial_worst_rmse_rad": 0.011785142722692715,
+        "worst_tail_error_rad": 0.01529951894336179,
+        "worst_tail_speed_rad_s": 0.0008654273052387066,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            8.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011827626674592664,
+        "partial_worst_rmse_rad": 0.011827626674592664,
+        "worst_tail_error_rad": 0.014302648231542703,
+        "worst_tail_speed_rad_s": 0.0008803730094171725,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            6.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.012035944089814335,
+        "partial_worst_rmse_rad": 0.012035944089814335,
+        "worst_tail_error_rad": 0.015301901264927364,
+        "worst_tail_speed_rad_s": 0.0008708650326542969,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            8.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.012622583400936199,
+        "partial_worst_rmse_rad": 0.012622583400936199,
+        "worst_tail_error_rad": 0.01530767545563605,
+        "worst_tail_speed_rad_s": 0.0008819189096760973,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013182578226348295,
+        "partial_worst_rmse_rad": 0.013182578226348295,
+        "worst_tail_error_rad": 0.017790139406117067,
+        "worst_tail_speed_rad_s": 0.0008540496517838407,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013283602529245363,
+        "partial_worst_rmse_rad": 0.013283602529245363,
+        "worst_tail_error_rad": 0.01779192057625467,
+        "worst_tail_speed_rad_s": 0.0008571399957095739,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013394257130619541,
+        "partial_worst_rmse_rad": 0.013394257130619541,
+        "worst_tail_error_rad": 0.017793749983524565,
+        "worst_tail_speed_rad_s": 0.0008602480683481648,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            5.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013644015315307222,
+        "partial_worst_rmse_rad": 0.013644015315307222,
+        "worst_tail_error_rad": 0.01779737568658113,
+        "worst_tail_speed_rad_s": 0.0008665244217109087,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            6.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.01393001077320595,
+        "partial_worst_rmse_rad": 0.01393001077320595,
+        "worst_tail_error_rad": 0.01780117656132918,
+        "worst_tail_speed_rad_s": 0.0008728786845492337,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            8.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 6,
+        "all_pass": true,
+        "worst_rmse_rad": 0.014601033812512649,
+        "partial_worst_rmse_rad": 0.014601033812512649,
+        "worst_tail_error_rad": 0.017810641554627304,
+        "worst_tail_speed_rad_s": 0.0008858069403415255,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.019175782909064812,
+        "worst_tail_error_rad": 0.026400029577761996,
+        "worst_tail_speed_rad_s": 0.0008427685120651035,
+        "failures": [
+          {
+            "case_id": "roll_00004",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00001",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00003",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00002",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00005",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.019287384904448687,
+        "worst_tail_error_rad": 0.026401969799577096,
+        "worst_tail_speed_rad_s": 0.0008473465297457259,
+        "failures": [
+          {
+            "case_id": "roll_00007",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00009",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00010",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00008",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00011",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.019412204140341723,
+        "worst_tail_error_rad": 0.02640408382085424,
+        "worst_tail_speed_rad_s": 0.0008519266297909223,
+        "failures": [
+          {
+            "case_id": "roll_00013",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00015",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00016",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00014",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00017",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.019551623312577603,
+        "worst_tail_error_rad": 0.026406798389155384,
+        "worst_tail_speed_rad_s": 0.0008565320801826881,
+        "failures": [
+          {
+            "case_id": "roll_00019",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00021",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00022",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00020",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00023",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.019705626211805327,
+        "worst_tail_error_rad": 0.026410087787995695,
+        "worst_tail_speed_rad_s": 0.0008611705428042114,
+        "failures": [
+          {
+            "case_id": "roll_00025",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00027",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00026",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00028",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00029",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            5.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02005600282854955,
+        "worst_tail_error_rad": 0.026418589356514977,
+        "worst_tail_speed_rad_s": 0.000873373916347471,
+        "failures": [
+          {
+            "case_id": "roll_00031",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00032",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00033",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00034",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00035",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            6.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.020459967021673516,
+        "worst_tail_error_rad": 0.026429878759661296,
+        "worst_tail_speed_rad_s": 0.0009178231453534425,
+        "failures": [
+          {
+            "case_id": "roll_00037",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00038",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00039",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00040",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00041",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            160.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            8.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.021413238685030325,
+        "worst_tail_error_rad": 0.026460603167046015,
+        "worst_tail_speed_rad_s": 0.0010883664354910771,
+        "failures": [
+          {
+            "case_id": "roll_00043",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00044",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00045",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00046",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00047",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 3,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.015502439114111831,
+        "worst_tail_error_rad": 0.02125840858059569,
+        "worst_tail_speed_rad_s": 0.0008460180024683545,
+        "failures": [
+          {
+            "case_id": "roll_00050",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00053",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00052",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.015589660369210596,
+        "worst_tail_error_rad": 0.02125867779236157,
+        "worst_tail_speed_rad_s": 0.0008495434433247038,
+        "failures": [
+          {
+            "case_id": "roll_00058",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00059",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.015692516846927514,
+        "worst_tail_error_rad": 0.021259884924643813,
+        "worst_tail_speed_rad_s": 0.0008531790930851621,
+        "failures": [
+          {
+            "case_id": "roll_00064",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00065",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01580843814740224,
+        "worst_tail_error_rad": 0.021261680677717387,
+        "worst_tail_speed_rad_s": 0.0008568661225192086,
+        "failures": [
+          {
+            "case_id": "roll_00070",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00071",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01593651011573913,
+        "worst_tail_error_rad": 0.021263840970973336,
+        "worst_tail_speed_rad_s": 0.0008605863884411733,
+        "failures": [
+          {
+            "case_id": "roll_00076",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00077",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            5.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01622717977874188,
+        "worst_tail_error_rad": 0.021268930361640237,
+        "worst_tail_speed_rad_s": 0.0008681133722270552,
+        "failures": [
+          {
+            "case_id": "roll_00082",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00083",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            6.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01656128014712931,
+        "worst_tail_error_rad": 0.021275115583814452,
+        "worst_tail_speed_rad_s": 0.0008757413759005815,
+        "failures": [
+          {
+            "case_id": "roll_00088",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00089",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            200.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            8.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01734758897064393,
+        "worst_tail_error_rad": 0.021291381286864364,
+        "worst_tail_speed_rad_s": 0.000891278995160673,
+        "failures": [
+          {
+            "case_id": "roll_00094",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          },
+          {
+            "case_id": "roll_00095",
+            "reason": "",
+            "exclusions": [
+              "active_tail_error_rad"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.013005779845293674,
+        "worst_tail_error_rad": 0.01778688483031765,
+        "worst_tail_speed_rad_s": 0.0008479233815118463,
+        "failures": [
+          {
+            "case_id": "roll_00098",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00101",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            240.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.013090801389195718,
+        "worst_tail_error_rad": 0.01778847216830648,
+        "worst_tail_speed_rad_s": 0.0008509781012999154,
+        "failures": [
+          {
+            "case_id": "roll_00104",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00107",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.011233450492492324,
+        "worst_tail_error_rad": 0.015285796146168984,
+        "worst_tail_speed_rad_s": 0.0008497371814700109,
+        "failures": [
+          {
+            "case_id": "roll_00146",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00149",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01129970320128933,
+        "worst_tail_error_rad": 0.015290876586500968,
+        "worst_tail_speed_rad_s": 0.000852184999197495,
+        "failures": [
+          {
+            "case_id": "roll_00152",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00155",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            280.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.011378958811208519,
+        "worst_tail_error_rad": 0.015293512507852602,
+        "worst_tail_speed_rad_s": 0.0008547703036659286,
+        "failures": [
+          {
+            "case_id": "roll_00158",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00161",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01051603454342013,
+        "worst_tail_error_rad": 0.01428756065711334,
+        "worst_tail_speed_rad_s": 0.0008501802754389877,
+        "failures": [
+          {
+            "case_id": "roll_00194",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00197",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            2.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.010578380575173484,
+        "worst_tail_error_rad": 0.014289243935503793,
+        "worst_tail_speed_rad_s": 0.0008525918734680293,
+        "failures": [
+          {
+            "case_id": "roll_00200",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00203",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.0,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.01065426835936721,
+        "worst_tail_error_rad": 0.014291448542048113,
+        "worst_tail_speed_rad_s": 0.0008550417101007417,
+        "failures": [
+          {
+            "case_id": "roll_00206",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00209",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kp": [
+            100.0,
+            300.0,
+            100.0,
+            100.0
+          ],
+          "kd": [
+            1.4,
+            3.5,
+            1.4,
+            1.4
+          ]
+        },
+        "cases": 6,
+        "passed": 4,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.010738762041629163,
+        "worst_tail_error_rad": 0.014293064485822904,
+        "worst_tail_speed_rad_s": 0.000857507294947095,
+        "failures": [
+          {
+            "case_id": "roll_00212",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "roll_00215",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "selected_simulation_vector": {
+    "kp": [
+      100.0,
+      300.0,
+      100.0,
+      100.0
+    ],
+    "kd": [
+      1.4,
+      4.0,
+      1.4,
+      1.4
+    ]
+  },
+  "manifest_sha256": "e101c0353356cb14a71002a7b79a9a4add3c543b8d32bdbd632f78a59c8973ee",
+  "selection_sha256": "6c9b466df67eebc69c0541709453733045c1f2d433a1f279f176a207b2769fdf",
+  "continuous_or_global_optimum_proven": false,
+  "physical_stability_proven": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false
+}

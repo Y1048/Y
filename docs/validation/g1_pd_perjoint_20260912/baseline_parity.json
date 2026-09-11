@@ -1,0 +1,730 @@
+{
+  "schema": "g1.pd.perjoint.baseline-parity.v1",
+  "passed": true,
+  "matched_runs": 144,
+  "all_stored_29_joint_arrays_exact": true,
+  "all_guards_and_metrics_exact": true,
+  "previous_run": "C:\\Users\\user\\Documents\\G1_PD_Operating_20260912\\results",
+  "matches": [
+    {
+      "new_case": "operating_00432",
+      "previous_case": "case_00864",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00433",
+      "previous_case": "case_00865",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00434",
+      "previous_case": "case_00866",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00435",
+      "previous_case": "case_00867",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00436",
+      "previous_case": "case_00868",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00437",
+      "previous_case": "case_00869",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00438",
+      "previous_case": "case_00870",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00439",
+      "previous_case": "case_00871",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00440",
+      "previous_case": "case_00872",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00441",
+      "previous_case": "case_00873",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00442",
+      "previous_case": "case_00874",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00443",
+      "previous_case": "case_00875",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00444",
+      "previous_case": "case_00876",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00445",
+      "previous_case": "case_00877",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00446",
+      "previous_case": "case_00878",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00447",
+      "previous_case": "case_00879",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00448",
+      "previous_case": "case_00880",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00449",
+      "previous_case": "case_00881",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00450",
+      "previous_case": "case_00882",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00451",
+      "previous_case": "case_00883",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00452",
+      "previous_case": "case_00884",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00453",
+      "previous_case": "case_00885",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00454",
+      "previous_case": "case_00886",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00455",
+      "previous_case": "case_00887",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00456",
+      "previous_case": "case_00888",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00457",
+      "previous_case": "case_00889",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00458",
+      "previous_case": "case_00890",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00459",
+      "previous_case": "case_00891",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00460",
+      "previous_case": "case_00892",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00461",
+      "previous_case": "case_00893",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00462",
+      "previous_case": "case_00894",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00463",
+      "previous_case": "case_00895",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00464",
+      "previous_case": "case_00896",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00465",
+      "previous_case": "case_00897",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00466",
+      "previous_case": "case_00898",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00467",
+      "previous_case": "case_00899",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00468",
+      "previous_case": "case_00900",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00469",
+      "previous_case": "case_00901",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00470",
+      "previous_case": "case_00902",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00471",
+      "previous_case": "case_00903",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00472",
+      "previous_case": "case_00904",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00473",
+      "previous_case": "case_00905",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00474",
+      "previous_case": "case_00906",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00475",
+      "previous_case": "case_00907",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00476",
+      "previous_case": "case_00908",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00477",
+      "previous_case": "case_00909",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00478",
+      "previous_case": "case_00910",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00479",
+      "previous_case": "case_00911",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00480",
+      "previous_case": "case_00912",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00481",
+      "previous_case": "case_00913",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00482",
+      "previous_case": "case_00914",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00483",
+      "previous_case": "case_00915",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00484",
+      "previous_case": "case_00916",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00485",
+      "previous_case": "case_00917",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00486",
+      "previous_case": "case_00918",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00487",
+      "previous_case": "case_00919",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00488",
+      "previous_case": "case_00920",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00489",
+      "previous_case": "case_00921",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00490",
+      "previous_case": "case_00922",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00491",
+      "previous_case": "case_00923",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00492",
+      "previous_case": "case_00924",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00493",
+      "previous_case": "case_00925",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00494",
+      "previous_case": "case_00926",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00495",
+      "previous_case": "case_00927",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00496",
+      "previous_case": "case_00928",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00497",
+      "previous_case": "case_00929",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00498",
+      "previous_case": "case_00930",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00499",
+      "previous_case": "case_00931",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00500",
+      "previous_case": "case_00932",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00501",
+      "previous_case": "case_00933",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00502",
+      "previous_case": "case_00934",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00503",
+      "previous_case": "case_00935",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00504",
+      "previous_case": "case_00936",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00505",
+      "previous_case": "case_00937",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00506",
+      "previous_case": "case_00938",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00507",
+      "previous_case": "case_00939",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00508",
+      "previous_case": "case_00940",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00509",
+      "previous_case": "case_00941",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00510",
+      "previous_case": "case_00942",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00511",
+      "previous_case": "case_00943",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00512",
+      "previous_case": "case_00944",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00513",
+      "previous_case": "case_00945",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00514",
+      "previous_case": "case_00946",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00515",
+      "previous_case": "case_00947",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00516",
+      "previous_case": "case_00948",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00517",
+      "previous_case": "case_00949",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00518",
+      "previous_case": "case_00950",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00519",
+      "previous_case": "case_00951",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00520",
+      "previous_case": "case_00952",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00521",
+      "previous_case": "case_00953",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00522",
+      "previous_case": "case_00954",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00523",
+      "previous_case": "case_00955",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00524",
+      "previous_case": "case_00956",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00525",
+      "previous_case": "case_00957",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00526",
+      "previous_case": "case_00958",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00527",
+      "previous_case": "case_00959",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00528",
+      "previous_case": "case_00960",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00529",
+      "previous_case": "case_00961",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00530",
+      "previous_case": "case_00962",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00531",
+      "previous_case": "case_00963",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00532",
+      "previous_case": "case_00964",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00533",
+      "previous_case": "case_00965",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00534",
+      "previous_case": "case_00966",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00535",
+      "previous_case": "case_00967",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00536",
+      "previous_case": "case_00968",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00537",
+      "previous_case": "case_00969",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00538",
+      "previous_case": "case_00970",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00539",
+      "previous_case": "case_00971",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00540",
+      "previous_case": "case_00972",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00541",
+      "previous_case": "case_00973",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00542",
+      "previous_case": "case_00974",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00543",
+      "previous_case": "case_00975",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00544",
+      "previous_case": "case_00976",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00545",
+      "previous_case": "case_00977",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00546",
+      "previous_case": "case_00978",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00547",
+      "previous_case": "case_00979",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00548",
+      "previous_case": "case_00980",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00549",
+      "previous_case": "case_00981",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00550",
+      "previous_case": "case_00982",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00551",
+      "previous_case": "case_00983",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00552",
+      "previous_case": "case_00984",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00553",
+      "previous_case": "case_00985",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00554",
+      "previous_case": "case_00986",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00555",
+      "previous_case": "case_00987",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00556",
+      "previous_case": "case_00988",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00557",
+      "previous_case": "case_00989",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00558",
+      "previous_case": "case_00990",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00559",
+      "previous_case": "case_00991",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00560",
+      "previous_case": "case_00992",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00561",
+      "previous_case": "case_00993",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00562",
+      "previous_case": "case_00994",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00563",
+      "previous_case": "case_00995",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00564",
+      "previous_case": "case_00996",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00565",
+      "previous_case": "case_00997",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00566",
+      "previous_case": "case_00998",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00567",
+      "previous_case": "case_00999",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00568",
+      "previous_case": "case_01000",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00569",
+      "previous_case": "case_01001",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00570",
+      "previous_case": "case_01002",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00571",
+      "previous_case": "case_01003",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00572",
+      "previous_case": "case_01004",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00573",
+      "previous_case": "case_01005",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00574",
+      "previous_case": "case_01006",
+      "array_equal": true
+    },
+    {
+      "new_case": "operating_00575",
+      "previous_case": "case_01007",
+      "array_equal": true
+    }
+  ]
+}

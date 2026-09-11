@@ -1,0 +1,11 @@
+{
+  "schema": "g1.pd.processing.fix.v1",
+  "simulation_commit": "4eed0c5b763f03b121a1929eacd53c3ae750c97b",
+  "original_summary_sha256": "e7bdedbd7791380da16e066db76eea50c42d71d78ba691387f27818005492c5a",
+  "corrected_summary_sha256": "64ce575ab0c39e5b03894201755ff499468b19f664802b1d507484e2a168245e",
+  "processing_source_sha256": "e9c7960968c0027428f8cb28c9126b6eb1917be94a7ce9d189e2a8341f0b7709",
+  "change": "sort input cases by case_id; only failure list ordering changed",
+  "numerical_values_unchanged": true,
+  "winner_unchanged": true,
+  "extra_simulations": 0
+}

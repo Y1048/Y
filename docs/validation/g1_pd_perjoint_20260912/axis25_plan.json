@@ -1,0 +1,1334 @@
+[
+  {
+    "case_id": "axis25_00000",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00001",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00002",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00003",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00004",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00005",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        72.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00006",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00007",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00008",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00009",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00010",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00011",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        88.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00012",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00013",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00014",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00015",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00016",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00017",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00018",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00019",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00020",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00021",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00022",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00023",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00024",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00025",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00026",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00027",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00028",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00029",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        2.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00030",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00031",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00032",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_standard",
+      "joint": 25,
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00033",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00034",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    },
+    "phase": "axis25"
+  },
+  {
+    "case_id": "axis25_00035",
+    "candidate": {
+      "kd": [
+        1.0,
+        4.0,
+        1.4,
+        3.0
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "profile": {
+      "name": "j25_large",
+      "joint": 25,
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "previous_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "phase": "axis25"
+  }
+]

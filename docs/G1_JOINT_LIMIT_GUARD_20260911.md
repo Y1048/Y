@@ -113,3 +113,22 @@ Independent audit reloaded all718 compressed q22 traces, recomputed7458 metric v
 Compact evidence: `docs/validation/g1_pd_limits_20260911/`. Raw cases/traces/manifest and test output: `C:\Users\user\Documents\G1_PD_JointLimits_20260911`.
 
 The new test workflow is additive. The original robot/VR files and launch blocks are unchanged. Next work remains offline; actual braking, full-body balance, real hard-stop locations, and live guard integration are NOT validated.
+
+
+## 2026-09-11 — hosted all-joint verification completed
+
+Tested code `8dbe3bc4304882b9bae3775c2bcc359a56193dd0`. Inspected Actions run **34584881165**,
+job **103216672502** (`all-joint-limits`): **success**. The full decoded job
+log reports **90/90 tests passed, no skips**, including the original C++
+reference compilation/parity check skipped on the Windows host. Hosted
+Ubuntu24.04.5, Python3.11.16, MuJoCo3.3.7, NumPy2.4.6. The tests ran in79.105s.
+
+The earlier hosted-pending entry is historical. This append and hosted_ci.json
+record the observed outcome; they do not change code, model parameters,
+thresholds, the718-case result, VR/G1 configuration or deployment state.
+The full718 replay was on the isolated Windows host, not rerun by this90-test
+workflow. No physical guarantee, robot connection, DDS or motor output.
+
+Evidence: `docs/validation/g1_pd_limits_20260911/hosted_ci.json`.
+Next permitted work remains offline; actual braking/latency and hardware
+owner integration must be validated before a physical guard is deployed.

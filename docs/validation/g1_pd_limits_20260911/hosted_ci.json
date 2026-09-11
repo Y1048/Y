@@ -1,0 +1,20 @@
+{
+  "tested_commit": "8dbe3bc4304882b9bae3775c2bcc359a56193dd0",
+  "run_id": 34584881165,
+  "job_id": 103216672502,
+  "workflow": "MuJoCo all-joint inner limits",
+  "conclusion": "success",
+  "tests": 90,
+  "passed": 90,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "cpp_reference_parity": "passed",
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "runner": "GitHub-hosted Ubuntu 24.04.5",
+  "log_observed_test_seconds": 79.105,
+  "status_and_full_decoded_log_inspected": true,
+  "hardware_validated": false
+}

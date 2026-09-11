@@ -481,3 +481,40 @@ Raw traces retained at`C:\Users\user\Documents\G1_PD_Expanded_20260911`.
 No G1, DDS, SDK, motor output, GUI/BAT, ARM build or deployment.
 Fixed pelvis and hypothetical torque-path uncertainty do not validate standing
 balance or real motor behavior. Robot/All blocks remain. Next work:offline only.
+
+
+## 2026-09-11 — strict all29 inner-limit PD acceptance
+
+Base `78f50f5d5232bbb67418e0557ae8992e686ceb69`. Implemented the user requirement as a mandatory offline
+limit envelope, NOT a deployed physical stopping controller.
+
+Added joint_limit_guard.py and its tests; integrated default preflight/command/
+pre-step/post-step/final-state checks in mujoco_pd_sweep.py. Added exact718-plan
+replay and evidence tests; added guard dependency hashes to expanded/motor
+manifests, manual documentation and an isolated hosted all-joint test workflow.
+
+All29 joints use the existing soft/XML-onset intersection plus0.05rad inner
+reserve. Equality, command modification, exhausted directional stopping budget
+or active joint-limit constraint refuses the trial. No qpos projection,
+reference substitution or relaxed XML/real limit. Stopping assumptions are20ms
+reaction,2rad/s² outward acceleration and1rad/s² braking, not measured G1 values.
+
+Actual Windows replay:718 conditions,678 eligible,40 rejected.
+Rejections:28 warmup,6 measured velocity,6 earlier stopping-envelope refusals.
+No observed soft/hard touch. Accepted minimum soft margin=0.211798601708536rad,
+XML-hard margin=0.261798601708536rad.89 tests passed,1 legacy C++
+compiler-dependent check skipped,0 failures/errors. Hosted CI not yet claimed.
+
+All718 q22 traces reloaded and metric/hash checked;20,822 all-joint minima
+witnesses and pre/post/final coverage checked. Full all29 trajectories are not
+saved or independently reconstructed; raw per-step observations are reduced
+to minima/witnesses/events. This is not an absolute physical no-contact proof.
+
+Details: [G1_JOINT_LIMIT_GUARD_20260911.md](G1_JOINT_LIMIT_GUARD_20260911.md).
+Evidence: `docs/validation/g1_pd_limits_20260911/`. Raw retained at`C:\Users\user\Documents\G1_PD_JointLimits_20260911`.
+
+Preserved live VR/UDP/controller/C++reference, source model/meshes and gains.
+No G1 connection,DDS,motor output,ARM build or deployment. Original dirty
+worktree untouched; Robot/All block remains. Next permitted work:offline only;
+calibrate braking/latency and review actual-owner integration before any later
+physical adoption. Do not describe simulation refusal as a physical hold.

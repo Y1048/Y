@@ -24,6 +24,7 @@ from mujoco_pd_contract import (ROOT, REFERENCE, REFERENCE_DT, WRITER_DT,
                                 RoundTrip, candidate_gains, load_contract, writer_target)
 
 from mujoco_pd_fixture import ROOT_PARENT_PAIRS, preserve_root_parent_filter
+from joint_limit_guard import JointLimitEnvelope, JointLimitMonitor, LimitViolation
 
 MODEL = ROOT / "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/g1_29dof.xml"
 # This shared module contains only the canonical tuple and typing imports.
@@ -178,6 +179,7 @@ def run_candidate(model, qadr, vadr, motors, contract, kp_value: float, kd_value
     data.qvel[:] = 0
     mujoco.mj_forward(model, data)
     path = RoundTrip()
+    monitor = JointLimitMonitor(JointLimitEnvelope.from_model(model, qadr, contract))
     dt = float(model.opt.timestep)
     writer_stride = round(WRITER_DT / dt)
     reference_stride = round(REFERENCE_DT / dt)
@@ -193,6 +195,11 @@ def run_candidate(model, qadr, vadr, motors, contract, kp_value: float, kd_value
     handle = None
     wall_start = time.monotonic()
     try:
+        # Analytic extrema certify the entire inherited reference, not just samples.
+        reference_lower, reference_upper = contract.baseline.copy(), contract.baseline.copy()
+        reference_lower[22] -= path.offset
+        reference_upper[22] += path.offset
+        monitor.reference(reference_lower, reference_upper, stage="preflight")
         if viewer:
             import mujoco.viewer
             handle = mujoco.viewer.launch_passive(model, data)
@@ -204,6 +211,7 @@ def run_candidate(model, qadr, vadr, motors, contract, kp_value: float, kd_value
             sim_time = step * dt
             trial_time = (step - warmup_steps) * dt
             q, dq = data.qpos[qadr].copy(), data.qvel[vadr].copy()
+            monitor.state(q, dq, sim_time, "pre_step")
             if not np.isfinite(q).all() or not np.isfinite(dq).all():
                 reason = "nonfinite_state"
                 break
@@ -226,7 +234,10 @@ def run_candidate(model, qadr, vadr, motors, contract, kp_value: float, kd_value
                 reason = "upper_reference_error_over_0.25_rad"
                 break
             if step % writer_stride == 0:
-                command, limited, slew = writer_target(reference, command, q, dq, kp, kd, contract)
+                monitor.reference(reference, reference, sim_time)
+                previous_command = command.copy()
+                proposed, limited, slew = writer_target(reference, command, q, dq, kp, kd, contract)
+                command = monitor.command(proposed, previous_command, WRITER_DT, sim_time)
             # Ideal PD motor at physics rate; command held at 500 Hz, reference at 50 Hz.
             # dq_cmd=0 and tau_ff=0: no analytic desired velocity/gravity compensation.
             requested = kp * (command - q) - kd * dq
@@ -239,6 +250,12 @@ def run_candidate(model, qadr, vadr, motors, contract, kp_value: float, kd_value
             if not np.isfinite(data.qpos).all() or not np.isfinite(data.qvel).all():
                 reason = "nonfinite_integrated_state"
                 break
+            # Includes final integrated state; do not silently omit the last step.
+            monitor.state(data.qpos[qadr], data.qvel[vadr], float(data.time), "post_step")
+            active_limits = np.flatnonzero(data.efc_type[:data.nefc] == mujoco.mjtConstraint.mjCNSTR_LIMIT_JOINT)
+            if len(active_limits):
+                monitor.fail("joint_model_limit_constraint_active", "post_step", float(data.time),
+                             data.qpos[qadr], data.qvel[vadr])
             if WARMUP-1 <= sim_time < WARMUP:
                 warmup_tail.append(bool(np.max(np.abs(q[15:]-reference[15:])) <= .1 and np.max(np.abs(dq[15:])) <= .1))
             if step % writer_stride == 0:
@@ -264,10 +281,14 @@ def run_candidate(model, qadr, vadr, motors, contract, kp_value: float, kd_value
                 time.sleep(max(0., wall_start + sim_time - time.monotonic()))
         else:
             completed = True
+    except LimitViolation as error:
+        reason = error.event["reason"]
+        completed = False
     finally:
         if handle is not None:
             handle.close()
     result = summarize(rows, completed, reason, max_limit_ratio)
+    result["joint_limit_guard"] = monitor.summary()
     result.update({"kp_proximal": kp_value, "kd_proximal": kd_value,
                    "gains_kp": kp.tolist(), "gains_kd": kd.tolist()})
     return result, rows
@@ -296,12 +317,13 @@ def main(argv=None) -> int:
         out = args.output or ROOT / "logs/test_results/mujoco_pd" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S_%fZ")
         out = out.resolve()
         out.mkdir(parents=True, exist_ok=False)
-        source_paths = [Path(__file__), Path(__file__).with_name("mujoco_pd_contract.py"), REFERENCE,
+        source_paths = [Path(__file__), Path(__file__).with_name("joint_limit_guard.py"), Path(__file__).with_name("mujoco_pd_contract.py"), REFERENCE,
                         Path(__file__).with_name("mujoco_pd_fixture.py"),
                         Path(__file__).with_name("pd_small_signal_trial.hpp"),
                         ROOT / "hardware/g1_arm_bridge/g1_joint_contract.py"]
         manifest = {"schema": "g1.mujoco.pd.run.v1", "simulation_only": True, "status": "running",
                     "model": "g1_29dof, fixed pelvis; all 29 hinges torque-driven",
+                    "joint_limit_envelope": JointLimitEnvelope.from_model(model, qadr, contract).manifest(),
                     "balance_validated": False, "hardware_validated": False,
                     "restored_source_parent_filter": list(ROOT_PARENT_PAIRS),
                     "mujoco": mujoco.__version__, "numpy": np.__version__, "python": platform.python_version(),

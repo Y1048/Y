@@ -106,7 +106,7 @@ def main(argv=None):
     folder=args.output.resolve();folder.mkdir(parents=True,exist_ok=False)
     import mujoco
     _,_,_,_,assets=engine.load_model(engine.MODEL,.001)
-    sources=engine.source_hashes([Path(__file__),Path(expanded.__file__),Path(engine.__file__),
+    sources=engine.source_hashes([Path(__file__),Path(__file__).with_name("joint_limit_guard.py"),Path(expanded.__file__),Path(engine.__file__),
        Path(__file__).with_name('mujoco_pd_contract.py'),Path(__file__).with_name('mujoco_pd_fixture.py'),
        Path(__file__).with_name('pd_small_signal_trial.hpp'),engine.REFERENCE])
     expanded.save_json(folder/'manifest.json',{'schema':'g1.pd.motor-stress.v1','simulation_only':True,

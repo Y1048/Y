@@ -131,3 +131,35 @@ GitHub workflow `MuJoCo round-trip PD offline`은 전체 dynamics 테스트와 3
 실행하고 CSV/JSON을 artifact로 보존한다. sweep 실행 중 Python socket 생성/연결
 감사 이벤트를 거부한다. 원본 VR/PD 파일의 blob 해시 보존도 검사한다.
 정확한 실행 결과와 남은 미검증 항목은 `docs/G1_REGULAR_HANDOFF_20260910.md`에 누적한다.
+
+
+## 2026-09-11: 29개 관절의 내부 여유 구간
+
+기본 시험기는 이제 `joint_limit_guard.py`를 항상 사용한다. 모델의 joint range와
+limit 활성화 margin, C++에서 읽은 기존 soft limit의 교집합을 사용한다. 여기서
+양쪽으로 **추가 0.05 rad**를 남긴 구간만 허용한다. XML이나 실기 제한값을 넓히지 않는다.
+`hard`로 기록된 값은 XML range이지 실측한 G1 기계적 스토퍼 위치가 아니다.
+
+왕복 경로의 해석적 최소/최대값을 시작 전에 검사하고, writer 제한을 거친 실제 명령도
+검사한다. 명령 감속기가 목표를 바꿔야 할 정도로 접근하면 그 PD 시험은 즉시 제외한다.
+변형한 목표로 작은 RMSE를 얻었다고 주장하지 않는다. 매 물리 계산 전후에 29개 관절의
+q/dq를 확인하며, 준비 구간과 마지막 적분 상태도 검사한다. 측정 qpos를 clamp하지 않는다.
+MuJoCo의 joint-limit constraint가 활성화된 경우도 제외한다.
+
+정지거리 검사는 20 ms 반응 지연, 2 rad/s²의 지연 중 바깥 방향 가속도,
+1 rad/s²의 제동 가능 감속도를 가정한다. 이 값들은 **보수적으로 선택한 오프라인 가정**이며
+실측 감속도나 지연 보증이 아니다. 여유 부족은 해당 시뮬레이션을 종료하고 원인을 기록한다.
+시뮬레이션 종료를 실물의 제동이나 안전한 hold로 해석하면 안 된다. 실기 VR/LowCmd에는
+이 보호기를 배포하지 않았으며 기존 경로는 수정하지 않는다.
+
+`joint_limit_guard` 결과에는 관절별 최소 soft/hard 여유, 최소 정지거리 여유,
+최소 soft 여유가 나온 시각/q/dq, 최초 거부 사건이 들어 있다. 한 번 거부된 monitor는
+계속 거부하며, 다음 별도 후보 시험에서만 새로 생성한다.
+
+이전 718개 조건을 새 기준으로 다시 실행하는 명령은 다음과 같다. 기존 결과를 덮어쓰지 않는다.
+
+```powershell
+.\.venv-mujoco-pd\Scripts\python.exe -B experiments/twist2_right_arm_manual/mujoco_pd_limit_replay.py --workers 6 --output logs/test_results/mujoco_pd/limit_replay_new
+```
+
+정확한 결과와 한계는 `docs/G1_JOINT_LIMIT_GUARD_20260911.md` 및 기존 handoff에 기록한다.

@@ -1209,3 +1209,33 @@ Raw:C:\Users\user\Documents\G1_PD_YawRegression_20260912. RawNPZretained onPC,no
 320protectedsourcehashes anddirtylivestatusunchanged. NoG1,DDS,SDK,
 actuation,deployment orRobot/Allunblocking. Continueoffline; nothardwareapproval.
 Descriptive combined384minimum is {"kp": [100.0, 300.0, 64.0, 100.0], "kd": [1.4, 4.0, 1.0, 1.4]}, RMSE0.011938015614587846, 0.064767%below frozen72/1survivor. Do not claim72/1is the combined minimum or retune from this audit.
+
+
+## 2026-09-12 — independent-clock simultaneous verification started
+
+Base402e1ed9e20fcac98caca2c696158409f1fc83fa. Next stage validates timing beyond
+synchronized signs or isolated axes. Add a separate timing core/study,35tests
+and manual; extend the existing CI allowlist. Both yaw64/1 and72/1 vectors are
+frozen with otherKp[100,300,*,100],Kd[1.4,4,1,1.4]. No gain retuning.
+
+Plan96actual attempts: two vectors x8synthetic timing/start/period/soak profiles
+x6model/motor conditions, including the known coupled delay-boundary. Each axis
+uses its own continuous rest-to-rest path and start clock. Original control
+loop, model/torque mutations, bounds, all29guard and0.05reserve are unchanged.
+Own-axis holds use the same numeric thresholds; all4and right7rest checks apply
+at the shared final hold. Intentionally moving other axes are not treated as
+residual motion. New acceptance mapping does not reclassify earlier results.
+
+Observed before formal run:35/35new tests passed, including exact synchronized
+full29state parity, staggered dynamics, own-window bias, wrist/common-rest motion,
+missing/tampered source/trace/plan/metrics, frozen vectors and socket refusal.
+Two initial TEST assumptions failed (nonoverlapping hold/cross window and wrong
+text spelling of existing gain bound); assertions corrected, not controller or
+formal conditions. Earlier failure record retained. Full393suite and96study
+are running; do not claim their final counts or candidate yet.
+
+No live tree reset/overwrite, G1,DDS,SDK,publisher,motor output,IK changes or
+Robot/All unblock. Research rollKp300still outside unchanged live100validator.
+Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_INDEPENDENT_TIMING.md.
+Append audited outcome; neither synthetic clocks nor finite passed matrices
+prove arbitraryVR stability, full-body balance or physical deployment safety.

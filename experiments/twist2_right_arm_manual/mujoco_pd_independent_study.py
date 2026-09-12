@@ -78,7 +78,7 @@ def summarize(records,plan,manifest_hash,smoke=False):
       base_rejections=dict(sorted(Counter(r['reason'] for r in records if not r['completed']).items())),
       guard_events=dict(sorted(Counter(r['joint_limit_guard']['event']['reason'] for r in records if r['joint_limit_guard']['event']).items())),
       minimum_soft_margin_rad=minimum('minimum_soft_margin_rad'),minimum_model_hard_margin_rad=minimum('minimum_hard_margin_rad'),
-      minimum_stopping_slack_rad=minimum('minimum_stopping_slack_rad'),simulated_seconds=sum(r['final_time_s'] for r in records),
+      minimum_stopping_slack_rad=minimum('minimum_stopping_slack_rad'),simulated_seconds=math.fsum(r['final_time_s'] for r in records),
       manifest_sha256=manifest_hash,hardware_approved=False,recommended_hardware_gains=None,hardware_config_modified=False,
       global_optimum_proven=False,scope='fixed pelvis; four independent synthetic clocks; two frozen vectors; no recorded VR or physical validation')
 
@@ -147,9 +147,29 @@ def audit_case(folder,job):
 def dependencies():
     return base.dependencies()+[Path(__file__),Path(core.__file__)]
 
+
+# This exact archived driver predates deterministic elapsed-time aggregation.
+# Its simulator/model/plan inputs remain byte-checked; archived code is never run.
+LEGACY_ORDER_DRIVER_SHA = "411ebc009c79c01b58497db472132ae7ced2b4cb7c4b28ac7d27ea031ba089b6"
+
+def check_source_versions(current, frozen):
+    base.require(set(current)==set(frozen), 'Source dependency set changed')
+    changed=[p for p in current if current[p]!=frozen[p]]
+    if changed:
+        base.require(len(changed)==1 and changed[0].replace("\\", "/").endswith("/mujoco_pd_independent_study.py")
+                     and frozen[changed[0]]==LEGACY_ORDER_DRIVER_SHA, 'Computation source changed')
+
+def check_summary_values(expected, recorded):
+    base.require(set(expected)==set(recorded), 'Summary field set differs')
+    for k in expected:
+        if k=='simulated_seconds':
+            base.require(math.isfinite(recorded[k]) and math.isclose(expected[k],recorded[k],rel_tol=0.,abs_tol=1e-9), 'Elapsed-time aggregate differs')
+        else:
+            base.require(expected[k]==recorded[k], 'Summary/ranking differs: '+k)
+
 def audit(folder):
     folder=Path(folder);manifest=base.read(folder/'manifest.json');plan=base.read(folder/'plan.json')
-    base.require(engine.source_hashes(dependencies())==manifest['source_sha256'],'Computation source changed')
+    check_source_versions(engine.source_hashes(dependencies()),manifest['source_sha256'])
     base.require(manifest['policy']==core.POLICY and manifest['vectors']==base.norm([asdict(g) for g in VECTORS]),'Frozen settings changed')
     base.require(plan==jobs(manifest['smoke']) and engine.sha256(folder/'plan.json')==manifest['plan_sha256'],'Plan/coverage changed')
     for name,h in {**manifest['source_sha256'],**manifest['asset_archive_sha256']}.items():
@@ -165,7 +185,7 @@ def audit(folder):
         rows.append(row)
         for j in range(29):margins.append(dict(case_id=r['case_id'],joint=j,**{k:r['joint_limit_guard'][k][j] for k in ('minimum_soft_margin_rad','minimum_hard_margin_rad','minimum_stopping_slack_rad')}))
     expected_summary=summarize(records,plan,engine.sha256(folder/'manifest.json'),manifest['smoke'])
-    base.require(expected_summary==base.read(folder/'summary.json'),'Summary/ranking differs')
+    check_summary_values(expected_summary,base.read(folder/'summary.json'))
     for name,values in (('all_cases.csv',rows),('all_joint_margins.csv',margins)):
         with (folder/name).open('w',newline='',encoding='utf-8') as f:
             writer=csv.DictWriter(f,fieldnames=list(values[0]));writer.writeheader();writer.writerows(values)

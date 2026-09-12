@@ -66,7 +66,10 @@ are saved per run. The independent reader rebuilds each held50Hz scalar target
 from its own clock, checks gains/torque equations, model evidence, joint minima,
 coverage, metrics and rankings. Physics-rate traces are not reconstructed, so
 this is not continuous-time safety proof. Archived source/model bytes and the
-current computational revision must match; archived Python is never executed.
+current physics/model revision must match; archived Python is never executed.
+The one recognized pre-fix runner revision is supported for the documented
+elapsed-time aggregation fix. Its raw summary is retained; only the total time
+comparison has1e-9second absolute tolerance. Accuracy scores remain exact.
 
 Working VR/Mink/UDP/LowCmd, source models and hardware gains remain untouched.
 No G1 access, DDS, motor output, deployment or Robot/All unblocking is performed.

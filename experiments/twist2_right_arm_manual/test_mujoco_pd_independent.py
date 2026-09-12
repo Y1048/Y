@@ -147,4 +147,27 @@ class ArtifactTest(unittest.TestCase):
         for item in r:item.update(eligible=False,reason='failure',exclusions=['failure'])
         self.assertIsNone(study.summarize(r,plan,'hash')['selected_simulation_vector'])
 
+
+class AggregateRegressionTest(unittest.TestCase):
+    def test_legacy_time_roundoff_only_is_allowed(self):
+        a={'simulated_seconds':3067.4730000001064,'score':.01}
+        b={'simulated_seconds':3067.473000000107,'score':.01}
+        study.check_summary_values(a,b)
+    def test_score_has_no_new_tolerance(self):
+        with self.assertRaises(ValueError):study.check_summary_values({'simulated_seconds':1.,'score':.01},{'simulated_seconds':1.,'score':.010000000000001})
+    def test_wrong_time_or_nonfinite_is_rejected(self):
+        for time in (2.,math.nan,math.inf):
+            with self.assertRaises(ValueError):study.check_summary_values({'simulated_seconds':1.},{'simulated_seconds':time})
+    def test_only_exact_legacy_driver_can_differ(self):
+        p='experiments/twist2_right_arm_manual/mujoco_pd_independent_study.py'
+        study.check_source_versions({p:'current','core.py':'same'},{p:study.LEGACY_ORDER_DRIVER_SHA,'core.py':'same'})
+        with self.assertRaises(ValueError):study.check_source_versions({p:'current','core.py':'changed'},{p:study.LEGACY_ORDER_DRIVER_SHA,'core.py':'same'})
+        with self.assertRaises(ValueError):study.check_source_versions({p:'current'},{p:'unrecognized'})
+    def test_elapsed_sum_is_order_independent(self):
+        p=study.jobs(True);rs=[];plan=[]
+        for i,value in enumerate((1e16,1.,1.,1.,1.,1.,1.)):
+            job=copy.deepcopy(p[i%2]);job['case_id']=str(i);plan.append(job)
+            rs.append(dict(**job,completed=True,eligible=True,reason='',exclusions=[],metrics={'max_proximal_rmse_rad':.01},simulation_only=True,hardware_approved=False,hardware_config_modified=False,recommended_hardware_gains=None,final_time_s=value,joint_limit_guard={'event':None,'minimum_soft_margin_rad':[.2]*29,'minimum_hard_margin_rad':[.25]*29,'minimum_stopping_slack_rad':[.15]*29}))
+        self.assertEqual(study.summarize(rs,plan,'h'),study.summarize(rs[::-1],plan,'h'))
+
 if __name__=='__main__':unittest.main()

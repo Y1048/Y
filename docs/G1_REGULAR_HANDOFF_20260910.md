@@ -1239,3 +1239,25 @@ Robot/All unblock. Research rollKp300still outside unchanged live100validator.
 Usage:experiments/twist2_right_arm_manual/MUJOCO_PD_INDEPENDENT_TIMING.md.
 Append audited outcome; neither synthetic clocks nor finite passed matrices
 prove arbitraryVR stability, full-body balance or physical deployment safety.
+
+
+## 2026-09-12 — independent-study elapsed-time aggregation correction
+
+All96formal integrations on bbc4b55 finished and passed their run criteria.
+The first full readback rejected only simulated_seconds: parallel completion
+sum3067.4730000001064 versus case-order sum3067.473000000107seconds. No score,
+gain, pass flag, condition or trajectory differed. Do not label the first
+failed post-processing command successful.
+
+Use math.fsum for future totals. Readback permits1e-9second absolute tolerance
+ONLY on total simulated time; all scores/rankings/other fields remain exact.
+Only the known archived pre-fix runner hash is recognized as compatible;
+every original physics/model/other source byte stays strict. Raw manifest,
+summary, caseJSON and NPZ are retained unchanged; archived code is not executed.
+
+Observed correction validation:40/40dedicated tests passed (five new rounding/
+source-compatibility regressions), standalone96case audit exit0,1,533,780all29
+500Hzrows and2,784margin records reread. Earlier local393suite passed392with
+oneC++compiler skip; current398suite/hosted result are not yet claimed.
+No new dynamics were needed for this processing-only correction. Same frozen
+96case plan, gain vectors, guards and live paths. Append final inspected result.

@@ -1543,3 +1543,37 @@ Do not claim the entire raw/evidence archive was pushed. All260protectedhashes
 anddirtyliveGitstatusunchanged. NoG1,DDS/SDK,actuation,ARM,VR/IK/real gain/model
 edit orlaunchunblock. Nextallowedofflinework: separate yaw/elbow delay study
 then fulldeclared regression. Preserve this no-candidate result unchanged.
+
+
+## 2026-09-13 — next milestone changed to real-response identification
+
+After the pitch/wrist no-candidate result, stop treating additional idealized
+MuJoCo sweeps as sufficient evidence for real-G1 gains. The next milestone is
+**read-only measurement -> offline model identification -> unused-log validation
+-> PD re-optimization**. Detailed contract: `docs/G1_REAL_SYSTEM_ID_NEXT_20260913.md`.
+
+Current research numbers remain simulation-only. In the fixed causal20ms pipeline,
+pitch22 120/1 plus wrist27 30/1 lowered the matched known-input error, while
+roll23 300/3, yaw24 64/1.2 and elbow25 100/1.4 were held. All frozen finalists
+still failed one expanded delay/model condition; therefore there is no final PD
+vector and no hardware recommendation. Do not copy Kp120 or Kp300 into the robot.
+
+Next Codex work should implement a logger that cannot publish motor commands and
+records target-generation time, actual shaped/sent command, Kp/Kd/dq/tau_ff,
+LowState q/dq and available torque/IMU/temperature/status with monotonic clocks.
+The logger must be buffered and versioned, with gap detection and joint names.
+Development/testing remains offline; generated LowState fixtures are sufficient
+until the user explicitly authorizes a physical measurement session.
+Offline fitter must estimate actual timing/latency and justified low-order motor
+response plus identifiable damping/friction/load terms from saved data, then be
+validated on different episodes. Freeze validation criteria before reading those
+outcomes; do not tune and validate on the same capture. If no real logs exist,
+finish the logger/parser/fitter skeleton and report identification as data-blocked.
+Never invent measured motor parameters.
+
+Preserve the dirty live worktree, VR/Mink/UDP/LowCmd path, XML/meshes, IK costs,
+all29 guards, live Kp100 validation and Robot/All block. No G1 SSH, DDS/SDK,
+publisher, motor output or ARM deployment during this offline implementation.
+No force-push. Distinguish generated/replay tests, simulation and actual measured
+G1 evidence. The first physical data capture requires separate explicit approval,
+support/E-stop/control-ownership checks and reviewed small-signal procedure.

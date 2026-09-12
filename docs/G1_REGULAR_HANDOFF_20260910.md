@@ -1487,3 +1487,14 @@ Export provenance is recorded; this is not new data or delivery/robot measuremen
 An export-check script initially referenced a nonexistent attribute; querying the
 existing metadata API fixed that check, and the full equivalence check passed.
 Append final actual simulation, audit and hosted CI outcomes after inspection.
+
+
+## 2026-09-13 — standalone compute dependency correction
+
+The portable source archive initially omitted the canonical joint-name tuple
+module hardware/g1_arm_bridge/g1_joint_contract.py. Standalone import refused
+before simulation. Added that exact existing module to packaging and the new
+study source-hash dependency set. Its blob b8b8e2f793c9b295e8048ab0efec62a085385b53
+was checked after transfer. No gains, dynamics, grids, input, guards or thresholds
+changed. Preserve the failed import log separately; rerun dedicated tests before
+formal execution in the isolated Linux runtime. PC space remains insufficient.

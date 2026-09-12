@@ -229,7 +229,8 @@ def summary(records, plans, manifest_hash, smoke=False):
 
 
 def dependencies():
-    return list(dict.fromkeys(previous.dependencies() + [Path(previous.__file__), Path(__file__)]))
+    return list(dict.fromkeys(previous.dependencies() + [Path(previous.__file__), Path(__file__),
+        engine.ROOT / 'hardware/g1_arm_bridge/g1_joint_contract.py']))
 
 
 def audit(folder):

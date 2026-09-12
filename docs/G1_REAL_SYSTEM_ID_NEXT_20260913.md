@@ -1,7 +1,9 @@
 # G1 real-response identification next step — 2026-09-13
 
-Current base: `70e7fe86b3f1e858b35843629467c80a691fe069` on
-`codex/g1-regular-handoff-20260910`.
+Canonical branch: `main`.
+Integration point before this documentation update: `67e9c4090b61df20fd383e409a664b080d14e7cf`.
+The former `codex/g1-regular-handoff-20260910` branch was fast-forward integrated into `main`;
+new Codex work should start from current `origin/main`.
 
 ## Decision
 

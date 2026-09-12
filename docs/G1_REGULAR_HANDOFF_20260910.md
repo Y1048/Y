@@ -1577,3 +1577,21 @@ publisher, motor output or ARM deployment during this offline implementation.
 No force-push. Distinguish generated/replay tests, simulation and actual measured
 G1 evidence. The first physical data capture requires separate explicit approval,
 support/E-stop/control-ownership checks and reviewed small-signal procedure.
+
+
+## 2026-09-13 — canonical branch moved to main
+
+`origin/main` was fast-forwarded from `846ce1e588182d4b56e1247c4c0f1a3a95d307d3`
+to `67e9c4090b61df20fd383e409a664b080d14e7cf`. At integration time `main` had
+zero unique commits and the former `codex/g1-regular-handoff-20260910` line was
+48 commits ahead, so no merge conflict or history rewrite was required.
+
+From this point, treat `main` as the canonical baseline. New Codex work should
+fetch `origin/main`, reconcile local/other-worktree state, and create an isolated
+worktree from current `main` if modifications are needed. Do not assume the old
+codex branch is newer. Do not force-push, reset or clean the user's dirty live tree.
+
+The next milestone remains the read-only real-response logger and offline system
+identification pipeline described in `docs/G1_REAL_SYSTEM_ID_NEXT_20260913.md`.
+No G1 connection, gain deployment, VR/IK change, DDS/SDK actuation or safety-limit
+relaxation was performed as part of this branch integration.

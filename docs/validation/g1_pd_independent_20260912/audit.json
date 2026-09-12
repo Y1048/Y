@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "cases": 96,
+  "all29_500hz_rows": 1533780,
+  "margin_records": 2784,
+  "source_model_checked": true,
+  "all_cases_sha256": "1b7c0a5f999f28402c0dc767ac75de559b0cbb2cd78cda1543aa3dd3d8082c96",
+  "physical_validation": false
+}

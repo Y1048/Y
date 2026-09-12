@@ -1,0 +1,5858 @@
+[
+  {
+    "case_id": "case_0000",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0001",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0002",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0003",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0004",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0005",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0006",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0007",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0008",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0009",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0010",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0011",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0012",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0013",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0014",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0015",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0016",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0017",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0018",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0019",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0020",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0021",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0022",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0023",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0024",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0025",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0026",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0027",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0028",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0029",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0030",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0031",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0032",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0033",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0034",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0035",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0036",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0037",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0038",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0039",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0040",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0041",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0042",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0043",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0044",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0045",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0046",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0047",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0048",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0049",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0050",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0051",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0052",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0053",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0054",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0055",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0056",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0057",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0058",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0059",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "forward_stagger",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0060",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0061",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0062",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0063",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0064",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0065",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.9,
+        0.6,
+        0.3,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0066",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0067",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0068",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0069",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0070",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0071",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0072",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0073",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0074",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0075",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0076",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0077",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        6.0,
+        10.0,
+        4.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.8,
+        0.0,
+        0.8
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "paired_release",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        17.0,
+        27.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0078",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0079",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0080",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0081",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0082",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0083",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        10.0,
+        6.0,
+        8.0,
+        4.0
+      ],
+      "cycles": [
+        4,
+        3,
+        5,
+        3
+      ],
+      "delays_s": [
+        0.76,
+        0.24,
+        1.12,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "reverse_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        27.0,
+        15.0,
+        23.0,
+        10.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0084",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0085",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0086",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0087",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0088",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0089",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "delays_s": [
+        0.0,
+        0.3,
+        0.6,
+        0.9
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "long_stagger",
+      "post_hold_s": 30.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0090",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0091",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0092",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "case_0093",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0094",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "case_0095",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  }
+]

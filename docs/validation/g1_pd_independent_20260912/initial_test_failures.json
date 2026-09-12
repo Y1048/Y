@@ -1,0 +1,9 @@
+{
+  "tests": 35,
+  "failed": 2,
+  "cause": [
+    "wrong textual spelling assumption for existing gain validator",
+    "specified hold/cross combination has no overlapping samples; use actual hold/out overlap"
+  ],
+  "changed": "test assertions only; no dynamics, thresholds or formal conditions changed"
+}

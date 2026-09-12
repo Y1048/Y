@@ -1261,3 +1261,31 @@ source-compatibility regressions), standalone96case audit exit0,1,533,780all29
 oneC++compiler skip; current398suite/hosted result are not yet claimed.
 No new dynamics were needed for this processing-only correction. Same frozen
 96case plan, gain vectors, guards and live paths. Append final inspected result.
+
+
+## 2026-09-12 — independent-clock study completed and audited
+
+Base402e1ed, dynamicsbbc4b55, aggregation615b96a. Executed96formal integrations:
+two frozen vectors x8profiles x6scenarios, all96completed/eligible. Twelve
+synchronous controls plus84independent-clock runs. Yaw72/1 is the new48case
+minimax choice, with otherKp[100,300,*,100],Kd[1.4,4,1,1.4]; both pass48/48.
+The new-condition error reduction is3.494076% versus64/1. Prior384descriptive
+maxima still slightly favor64; do not claim universal72dominance. No retuning.
+
+All29limits/reserve and numeric criteria remain. Own-axis rest windows and
+common final right7rest are explicit; no intentionally moving-axis false failure.
+No earlier pass retroactively assigned this mapping. No guard events; minimum
+soft/hard/slack=0.211798601205472/0.261798601205472/0.160598601205472 rad.
+Read back all96traces, 1,533,780 full29sample rows, 2,784 minima records.
+First postprocessing failed only from total-time sum roundoff; raw manifest,
+summary, cases and NPZ unchanged. Recognized original runner and1e-9s total-time
+comparison fix passed standalone audit(no dynamics). Scores remain exact.
+
+Final local397pass/1C++skip; hosted398pass/0skip, run34692035188, job103548879462.
+CItests/component dynamics only; formal96study onWindows. Dedicated40tests pass.
+Report:G1_PD_INDEPENDENT_TIMING_20260912.md.
+Evidence:docs/validation/g1_pd_independent_20260912/.
+Raw:C:\Users\user\Documents\G1_PD_IndependentTiming_20260912; NPZonPC,notGitHub. 359 protected hashes andliveGitstatus unchanged.
+NoG1,DDS,SDK,actuation,IK/livegain edit,ARMdeployment orlaunchunblock. RollKp300
+stillresearch-only above live100cap. Synthetic clocks are NOT recordedVR or
+full-body/physical proof. Continue offline, no automatic gain adoption.

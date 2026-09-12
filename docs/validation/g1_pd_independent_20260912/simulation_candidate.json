@@ -1,0 +1,25 @@
+{
+  "schema": "g1.pd.independent.candidate.v1",
+  "selected_simulation_vector": {
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      72.0,
+      100.0
+    ]
+  },
+  "new_cases": 48,
+  "new_passes": 48,
+  "selection_scope": "minimum worst RMSE among two frozen candidates on new48conditions",
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "legacy_hardware_gain_compatible": false,
+  "global_optimum_proven": false
+}

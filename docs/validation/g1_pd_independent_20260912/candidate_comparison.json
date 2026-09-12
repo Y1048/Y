@@ -1,0 +1,70 @@
+{
+  "candidates": [
+    {
+      "candidate": {
+        "kp": [
+          100.0,
+          300.0,
+          64.0,
+          100.0
+        ],
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ]
+      },
+      "cases": 48,
+      "passed": 48,
+      "worst_rmse_rad": 0.011416456541642894,
+      "worst_motion": "shifted_start",
+      "worst_scenario": "mixed_delayed",
+      "metrics": {
+        "max_axis_hold_error_rad": 0.015561046976072967,
+        "max_axis_hold_speed_rad_s": 0.03184295568767381,
+        "torque_limited_ratio": 0.0,
+        "hard_clipped_ratio": 0.0,
+        "common_error_rad": 0.010474192766477082,
+        "common_speed_rad_s": 1.339272398074347e-05,
+        "common_right7_p2p_rad": 1.0354035225312863e-06,
+        "common_right7_rms_speed_rad_s": 1.0566846875544096e-05
+      },
+      "historical_plus_new_max_rmse_rad": 0.011938015614587846
+    },
+    {
+      "candidate": {
+        "kp": [
+          100.0,
+          300.0,
+          72.0,
+          100.0
+        ],
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ]
+      },
+      "cases": 48,
+      "passed": 48,
+      "worst_rmse_rad": 0.011017556822466213,
+      "worst_motion": "shifted_start",
+      "worst_scenario": "mixed_delayed",
+      "metrics": {
+        "max_axis_hold_error_rad": 0.015565884568544353,
+        "max_axis_hold_speed_rad_s": 0.03175568243911184,
+        "torque_limited_ratio": 0.0,
+        "hard_clipped_ratio": 0.0,
+        "common_error_rad": 0.01039921521302134,
+        "common_speed_rad_s": 1.3389024266109343e-05,
+        "common_right7_p2p_rad": 1.0351344639225601e-06,
+        "common_right7_rms_speed_rad_s": 1.0564100901517321e-05
+      },
+      "historical_plus_new_max_rmse_rad": 0.01194575257535132
+    }
+  ],
+  "scope": "New48 scores separate from descriptive earlier384+new48attempt maxima; not all unique or same endpoint mapping",
+  "hardware_approved": false
+}

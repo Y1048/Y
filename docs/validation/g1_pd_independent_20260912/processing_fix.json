@@ -1,0 +1,13 @@
+{
+  "kind": "processing_only_roundoff_correction",
+  "source_driver_sha256": "411ebc009c79c01b58497db472132ae7ced2b4cb7c4b28ac7d27ea031ba089b6",
+  "audit_driver_sha256": "e38d06a3536a8a34522cc263d100bbc495a5c4f376db50b2f0cf94a90c64e0ba",
+  "only_observed_difference": "simulated_seconds",
+  "original_sum": 3067.4730000001064,
+  "case_order_sum": 3067.473000000107,
+  "tolerance_seconds": 1e-09,
+  "physics_traces_changed": false,
+  "manifest_changed": false,
+  "summary_changed": false,
+  "note": "New runs use math.fsum. Raw original sum is retained. All scores, conditions, gains, pass flags and other summary fields remain exact."
+}

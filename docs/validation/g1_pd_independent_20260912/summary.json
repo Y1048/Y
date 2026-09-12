@@ -1,0 +1,81 @@
+{
+  "schema": "g1.pd.independent.v1",
+  "complete": true,
+  "simulation_only": true,
+  "smoke": false,
+  "actual_runs": 96,
+  "completed": 96,
+  "eligible": 96,
+  "ranking": [
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          72.0,
+          100.0
+        ]
+      },
+      "cases": 48,
+      "passed": 48,
+      "all_pass": true,
+      "worst_rmse_rad": 0.011017556822466213,
+      "partial_worst_rmse_rad": 0.011017556822466213,
+      "failures": []
+    },
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          64.0,
+          100.0
+        ]
+      },
+      "cases": 48,
+      "passed": 48,
+      "all_pass": true,
+      "worst_rmse_rad": 0.011416456541642894,
+      "partial_worst_rmse_rad": 0.011416456541642894,
+      "failures": []
+    }
+  ],
+  "selected_simulation_vector": {
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      72.0,
+      100.0
+    ]
+  },
+  "base_rejections": {},
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.2117986012054719,
+  "minimum_model_hard_margin_rad": 0.2617986012054719,
+  "minimum_stopping_slack_rad": 0.1605986012054719,
+  "simulated_seconds": 3067.4730000001064,
+  "manifest_sha256": "210535bcec426ec3b385cde06eec18f01f45441de16dcdbd04792ed1615e839a",
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "global_optimum_proven": false,
+  "scope": "fixed pelvis; four independent synthetic clocks; two frozen vectors; no recorded VR or physical validation"
+}

@@ -1082,3 +1082,29 @@ Final hardware tuning remains blocked by actual drive limits/rates/delay,
 simultaneous VR/free-base behavior,payload/braking/noise/thermal/SDK review.
 Never copy researchKp300 into liveG1 or call a bounded coordinate search a
 universal optimum. Continue offline or separately approved hardware review.
+
+
+## 2026-09-12 — simultaneous-axis PD verification started
+
+Base bb642d11f0ea91c9aa97862996319027ced6602c. Continue offline on an isolated
+worktree; the working VR tree has uncommitted changes and is not reset/edited.
+Add a separate multiaxis core/study,32tests,manual and hosted workflow.
+The original simulation cores, live gains, model files, IK and launch blocks stay.
+
+Both accepted research vectors are frozen: Kp[100,300,100,100], with
+Kd[1.4,4,1.4,1.4] versus[3,5,3,3]. Kp300 remains outside the unchanged live100
+validator. This stage validates simultaneous motion; it does not retune gains.
+Plan256main+32long=288attempts: all16 sign combinations on4axes, two basic
+profiles and4known model/motor scenarios; additional large/long signed profiles.
+All29 guard and unchanged endpoint/velocity/contact/torque checks remain.
+Each of4axes is scored; no low partial error can hide a failing joint/condition.
+No independent phase-shifted, recorded VR, free-base or physical claim.
+
+Observed before formal execution:32/32new tests passed, including exact full29
+single-axis parity on22..25, simultaneous motion, vector torque equations,
+all4endpoint scoring, command-at-limit refusal, socket denial, frozen-source/
+trace/plan/policy tampering, missing-cell refusal and two-case smoke audit.
+Full288study and314-test allowlist are not yet claimed; append inspected results.
+Raw outputs will retain full29traces, extrema, frozen sources/models and exact plan.
+No G1 connection,DDS/SDK,publisher,motor output,ARM deployment or live config edit.
+Usage: experiments/twist2_right_arm_manual/MUJOCO_PD_MULTIAXIS.md.

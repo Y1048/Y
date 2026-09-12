@@ -1,0 +1,36 @@
+name: MuJoCo simultaneous PD offline
+on:
+  push:
+    paths:
+      - 'experiments/twist2_right_arm_manual/mujoco_pd_multiaxis*.py'
+      - 'experiments/twist2_right_arm_manual/test_mujoco_pd_multiaxis.py'
+      - '.github/workflows/mujoco-pd-multiaxis.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  multiaxis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      G1_REQUIRE_MUJOCO: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated simulation dependencies
+        run: python -m pip install -r experiments/twist2_right_arm_manual/mujoco_pd_requirements.txt
+      - name: Offline regression and simultaneous-axis verification
+        working-directory: experiments/twist2_right_arm_manual
+        run: >-
+          python -B -m unittest -v
+          test_mujoco_pd_sweep test_mujoco_pd_fixture test_mujoco_pd_artifacts
+          test_mujoco_pd_expand test_mujoco_pd_motor_stress test_mujoco_pd_expand_audit
+          test_joint_limit_guard test_mujoco_pd_limit_replay test_mujoco_pd_robust_refine
+          test_mujoco_pd_accuracy_stability test_mujoco_pd_minerror test_mujoco_pd_coupled_stress
+          test_mujoco_pd_coupled_matrix test_mujoco_pd_operating test_mujoco_pd_perjoint
+          test_mujoco_pd_final test_mujoco_pd_multiaxis

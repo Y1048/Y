@@ -1,0 +1,12 @@
+{
+  "original_sha256": "2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871",
+  "original_lines_inclusive": [
+    950,
+    3940
+  ],
+  "export_sha256": "4d5b4c3477c45cd25160dfd80dc08b3c318f7e37c4cb4df62277b1482464453f",
+  "export_bytes": 1085109,
+  "transformation": "exact consecutive lines; no JSON or numeric rewriting",
+  "purpose": "offline compute transfer to private Y1048/Y; one already observed episode",
+  "secret_field_names_found": []
+}

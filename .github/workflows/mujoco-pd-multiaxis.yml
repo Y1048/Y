@@ -48,3 +48,4 @@ jobs:
           test_mujoco_pd_recorded
           test_mujoco_pd_recorded_ramp
           test_mujoco_pd_recorded_roll_yaw
+          test_mujoco_pd_recorded_pitch_wrist

@@ -1,0 +1,32 @@
+name: MuJoCo PD compute bundle
+on:
+  push:
+    paths:
+      - '.github/workflows/mujoco-pd-compute-bundle.yml'
+      - 'experiments/twist2_right_arm_manual/mujoco_pd_recorded_pitch_wrist.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Package only simulation code, approved episode and model
+        run: |
+          tar -cf compute_source.tar experiments/twist2_right_arm_manual references/lower_body/twist2_deploy/cpp_g1_twist2/twist2_common.hpp MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1
+          python -m pip download 'mujoco==3.3.7' 'numpy==2.4.6' -d wheelhouse
+          git rev-parse HEAD > compute_commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: g1-pd-pitch-wrist-compute
+          retention-days: 1
+          compression-level: 1
+          path: |
+            compute_source.tar
+            compute_commit.txt
+            wheelhouse/

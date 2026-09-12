@@ -1457,3 +1457,33 @@ All446protectedhashes anddirtyliveGitstatusunchanged. NoG1SSH,DDS/SDK,
 publisher,realoutput,ARMdeployment,VR/IK/livegain/model edits orlaunchunblock.
 Continue offline with wider/newrecorded inputs and pitch22/wrist27 errors;
 do not overwrite prior unfiltered failure or promote research gains tohardware.
+
+
+## 2026-09-13 — pitch22 and wrist27 research started; compute relocation
+
+Base43fd4ea11a2d057853688a943a16a6d0505e21fb. Keep causal20ms command mapping,
+original-goal scores and all safety/quality thresholds unchanged. Add a separate
+pitch/wrist runner,28tests and manual. Pitch15pairs x3conditions, wrist12pairs
+x3conditions at the best pitch, up to4 finalists x16recorded conditions, then
+14known synthetic regressions per survivor. Only this process-local adapter
+permits pitchKp160 and wrist27Kp40; oldcap files/live100validator remain unchanged.
+No G1,DDS,SDK,VR/IK,model limits or actual gain edits.
+
+Observed before formal execution:28/28dedicated tests pass, including exact
+old-baseline arrays, extended pitch/wrist dynamics+audit, wrist-specific torque
+fields, scope restoration, unchanged guards and artifact tampering refusal.
+Formal local startup refused insufficient disk BEFORE creating an output or
+integrating a case. PC free space was falling during this task. Do not delete
+prior logs or weaken the2GB disk reserve. A lossless LZMA storage probe gave
+insufficient savings; it changed no simulation or prior data. No formal result
+is yet claimed. Relocate compute using an approved simulation-only GitHub bundle.
+
+The private repo receives only exact original lines950..3940 of the existing
+recording:2991lines,1085109bytes, exportedSHA4d5b4c3477c45cd25160dfd80dc08b3c318f7e37c4cb4df62277b1482464453f.
+OriginalSHA2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871.
+All1618target arrays, both clocks, sequences/events and1373ACKcount match exactly.
+No token/secret/password/credential key was found. Full original log stays onPC.
+Export provenance is recorded; this is not new data or delivery/robot measurement.
+An export-check script initially referenced a nonexistent attribute; querying the
+existing metadata API fixed that check, and the full equivalence check passed.
+Append final actual simulation, audit and hosted CI outcomes after inspection.

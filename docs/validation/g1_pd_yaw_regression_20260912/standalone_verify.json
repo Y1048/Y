@@ -1,0 +1,23 @@
+{
+  "exit_code": 0,
+  "new_dynamics": 0,
+  "argv": [
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_expanded_20260911_mayl5xj8\\venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_multiaxis_20260912_8m1mgd9q\\source\\experiments\\twist2_right_arm_manual\\mujoco_pd_yaw_regression.py",
+    "--source-yaw",
+    "C:\\Users\\user\\Documents\\G1_PD_MultiaxisYaw_20260912",
+    "--output",
+    "C:\\Users\\user\\Documents\\G1_PD_YawRegression_20260912",
+    "--audit-only"
+  ],
+  "metadata_unchanged": true,
+  "metadata_sha256": {
+    "manifest.json": "b39703efbf79d2b864a264943d193af15a593952546498068b0919f2ad2a7d56",
+    "plan.json": "5a8c8a1c53530326514cbc84469fccff40a577716c1fd2af4abb2ec82315bb73",
+    "summary.json": "14f66e0f3555a6282f42a9cdbb33ab460071d78458b40648aecc9e6fc5a1d30b",
+    "source_receipt.json": "0f145859579d9b5668a0e1f228040016d590145b4e48bf6b8a9f0f7524738a6f"
+  },
+  "stdout": "{\"schema\": \"g1.pd.yaw-regression.audit.v1\", \"passed\": true, \"source_cases_reaudited\": 462, \"cases\": 432, \"all29_500hz_rows\": 5786288, \"all29_margin_records\": 12528, \"all_cases_sha256\": \"b2aec1409312e6d1e5da4f4239ea1c711785748fa75dcbe22fba2b1f57d111ac\", \"source_model_bytes_checked\": true, \"physical_validation\": false}\n",
+  "stderr": ""
+}

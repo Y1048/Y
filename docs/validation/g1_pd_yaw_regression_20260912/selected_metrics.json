@@ -1,0 +1,8 @@
+{
+  "max_proximal_tail_error_rad": 0.017848524753076512,
+  "max_proximal_tail_speed_rad_s": 0.0040700646910882725,
+  "max_right7_tail_rms_speed_rad_s": 0.0032728292942516704,
+  "max_right7_tail_p2p_rad": 0.00031950198604640406,
+  "torque_limited_ratio": 0.0,
+  "hard_clipped_ratio": 0.0
+}

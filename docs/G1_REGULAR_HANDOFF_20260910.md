@@ -1185,3 +1185,27 @@ All original simulation/VR/UDP/LowCmd/model files and real gains are unchanged.
 Kp23=300 remains research-only, outside the unchanged live100 bound. No G1,
 DDS/SDK, publishers, physical output, deployment or launch-block removal.
 Append measured outcomes and verification after completing the new readback.
+
+
+## 2026-09-12 — yaw regression completed and audited
+
+Implementation25095da; recovered prior750attempts are historical, not new.
+Actually executed432new individual-axis regressions, completed432,eligible432.
+Both source yaw finalists see identical216knownprofiles; all4endpoint rules
+apply to inactive axes as well. No old gain-vector passes were inherited.
+Selected research vector:{"kd": [1.4, 4.0, 1.0, 1.4], "kp": [100.0, 300.0, 72.0, 100.0]}.
+A passing vector now has168source simultaneous +216own individual conditions,
+not a global optimum or new384condition holdout. Kp23=300still exceeds live100.
+Reaudited source462 and new432traces,5786288new29-joint rows,
+12528extrema; standaloneaudit-onlyexit0.
+Guardevents{}; minsoft/hard/stopslack
+0.2117986012054719/0.2617986012054719/0.1605986012054719rad.
+No changed reference, feedforward, limits, quality, IK or actual hardware gains.
+Local357pass/1C++skip; inspected hosted358pass/0skip,run34689112317,job103541156241.
+CItests only; formal432matrix onWindows.27new tests include mocked-source
+two-case bundle; no fixture counted as a formal full study.
+Report:G1_PD_YAW_REGRESSION_20260912.md; evidence:docs/validation/g1_pd_yaw_regression_20260912/.
+Raw:C:\Users\user\Documents\G1_PD_YawRegression_20260912. RawNPZretained onPC,not uploaded; inventory hashes preserved.
+320protectedsourcehashes anddirtylivestatusunchanged. NoG1,DDS,SDK,
+actuation,deployment orRobot/Allunblocking. Continueoffline; nothardwareapproval.
+Descriptive combined384minimum is {"kp": [100.0, 300.0, 64.0, 100.0], "kd": [1.4, 4.0, 1.0, 1.4]}, RMSE0.011938015614587846, 0.064767%below frozen72/1survivor. Do not claim72/1is the combined minimum or retune from this audit.

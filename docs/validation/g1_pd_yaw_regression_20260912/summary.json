@@ -1,0 +1,90 @@
+{
+  "schema": "g1.pd.yaw-regression.v1",
+  "complete": true,
+  "simulation_only": true,
+  "actual_runs": 432,
+  "completed": 432,
+  "eligible": 432,
+  "phase_counts": {
+    "prior_final": 48,
+    "prior_fresh": 96,
+    "prior_operating": 288
+  },
+  "ranking": [
+    {
+      "candidate": {
+        "kp": [
+          100.0,
+          300.0,
+          64.0,
+          100.0
+        ],
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ]
+      },
+      "cases": 216,
+      "passed": 216,
+      "all_pass": true,
+      "selectable_worst_rmse_rad": 0.011938015614587846,
+      "partial_worst_rmse_rad": 0.011938015614587846,
+      "failures": [],
+      "source_simultaneous_passes": 168,
+      "combined_384_worst_rmse_rad": 0.011938015614587846
+    },
+    {
+      "candidate": {
+        "kp": [
+          100.0,
+          300.0,
+          72.0,
+          100.0
+        ],
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ]
+      },
+      "cases": 216,
+      "passed": 216,
+      "all_pass": true,
+      "selectable_worst_rmse_rad": 0.01194575257535132,
+      "partial_worst_rmse_rad": 0.01194575257535132,
+      "failures": [],
+      "source_simultaneous_passes": 168,
+      "combined_384_worst_rmse_rad": 0.01194575257535132
+    }
+  ],
+  "selected_simulation_vector": {
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      72.0,
+      100.0
+    ]
+  },
+  "selection_rule": "retain frozen simultaneous operating order after regression passes",
+  "base_rejections": {},
+  "exclusions": {},
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.2117986012054719,
+  "minimum_model_hard_margin_rad": 0.2617986012054719,
+  "minimum_stopping_slack_rad": 0.1605986012054719,
+  "manifest_sha256": "b39703efbf79d2b864a264943d193af15a593952546498068b0919f2ad2a7d56",
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "global_optimum_proven": false,
+  "scope": "216 known individual-axis conditions per frozen yaw vector; all4 endpoint tests; not a new holdout or hardware proof"
+}

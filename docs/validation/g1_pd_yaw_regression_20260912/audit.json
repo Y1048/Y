@@ -1,0 +1,11 @@
+{
+  "schema": "g1.pd.yaw-regression.audit.v1",
+  "passed": true,
+  "source_cases_reaudited": 462,
+  "cases": 432,
+  "all29_500hz_rows": 5786288,
+  "all29_margin_records": 12528,
+  "all_cases_sha256": "b2aec1409312e6d1e5da4f4239ea1c711785748fa75dcbe22fba2b1f57d111ac",
+  "source_model_bytes_checked": true,
+  "physical_validation": false
+}

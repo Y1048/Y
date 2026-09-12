@@ -1,0 +1,54 @@
+{
+  "candidate": {
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      72.0,
+      100.0
+    ]
+  },
+  "individual_regression_cases": 216,
+  "individual_regression_passes": 216,
+  "source_simultaneous_cases": 168,
+  "combined_finite_conditions": 384,
+  "per_axis": [
+    {
+      "joint": 22,
+      "cases": 54,
+      "passed": 54,
+      "worst_excited_rmse_rad": 0.011503154451328497,
+      "worst_all4_rmse_rad": 0.011503154451328497
+    },
+    {
+      "joint": 23,
+      "cases": 54,
+      "passed": 54,
+      "worst_excited_rmse_rad": 0.011557116595520318,
+      "worst_all4_rmse_rad": 0.011557116595520318
+    },
+    {
+      "joint": 24,
+      "cases": 54,
+      "passed": 54,
+      "worst_excited_rmse_rad": 0.010215177000732314,
+      "worst_all4_rmse_rad": 0.011461915148622825
+    },
+    {
+      "joint": 25,
+      "cases": 54,
+      "passed": 54,
+      "worst_excited_rmse_rad": 0.01194575257535132,
+      "worst_all4_rmse_rad": 0.01194575257535132
+    }
+  ],
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "legacy_hardware_gain_compatible": false,
+  "limitation": "research-only roll Kp300; known single-axis regressions plus synchronous signed motion; no arbitrary VR or global optimum"
+}

@@ -1,0 +1,13 @@
+{
+  "run_id": 34689112317,
+  "job_id": 103541156241,
+  "commit": "25095da9d3995dd37e569a3b03cb722fee061bae",
+  "conclusion": "success",
+  "passed": 358,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "decoded_log_inspected": true,
+  "suite_seconds": 661.972,
+  "scope": "regressions and component simulations, not the full432 matrix"
+}

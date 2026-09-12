@@ -1,0 +1,36 @@
+{
+  "descriptive_lowest_combined_error_candidate": {
+    "kp": [
+      100.0,
+      300.0,
+      64.0,
+      100.0
+    ],
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ]
+  },
+  "descriptive_worst_rmse_rad": 0.011938015614587846,
+  "frozen_source_order_survivor": {
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      72.0,
+      100.0
+    ]
+  },
+  "relative_error_difference_percent": 0.06476746203030818,
+  "selection_not_rewritten": true,
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "scope": "same384observed conditions; comparison of two frozen finalists only, not a global optimum or held-out ranking"
+}

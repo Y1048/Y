@@ -1134,3 +1134,54 @@ new outcomes. All conditional phase plans and selection hashes are audited.
 17/17new tests passed, including real-vector torque/full-state audit, complete
 matrix decisions, field corruption and failure refusal. Full study is not yet
 claimed. All caps unchanged; no G1,DDS,SDK,physical output or live/IK edits.
+
+
+## 2026-09-12 — simultaneous validation and yaw refinement closed
+
+Implementations dd96aeb (initialmatrix),649a052 (focusedsearch); basebb642d1.
+Initial288attempts:208pass,80post-stepvelocity aborts,all80withjoint24fastest
+in thedelay-boundary condition. Neitheroriginalvectorpassed144/144.
+Separate yaw study:462attempts,427completed,409eligible;
+phasecounts{"operating": 288, "screen": 126, "validation": 48}. Selectedsimultaneousvector
+{"kd": [1.4, 4.0, 1.0, 1.4], "kp": [100.0, 300.0, 72.0, 100.0]}. Allothergains,limits,model andcriteriafixed.
+Newgainvector does NOT inherit old216single-axis passes. No globaloptimality
+or hardwareapproval,especiallyunchangedlive100boundversusresearchroll300.
+Allstagesaudited fromfull29traces,sourcearchives,plansandfrozenselections.
+Initial2455975sampledrows; yaw4978359rows.
+Guardevents initial{},yaw{}.
+Local313pass/1C++skip plus17newpasses; inspectedCI331pass/0skip,
+run34687197494,job103536139776. FullmatricesonWindows,CIregressionsonly.
+Report:G1_PD_MULTIAXIS_20260912.md; compactevidence:docs/validation/g1_pd_multiaxis_20260912/.
+Raw:Documents/G1_PD_Multiaxis_20260912 andG1_PD_MultiaxisYaw_20260912.
+320protectedfilehashes anddirtylivetree statusunchanged. NoG1,DDS,SDK,
+physicaloutput,ARMdeployment,VR/IKedits orlaunchunblocking. Continueoffline
+validation ofnewgains; neither genericVR nor realstability is certified.
+
+
+## 2026-09-12 — yaw candidates: individual-axis regression started
+
+Base 649a052124b195b7c039124144759af0fb234757. Recovered and packaged the
+completed 288-case simultaneous study and 462-case yaw refinement, rather than
+repeating them or counting them as new runs. The recorded 72/1 and 64/1 yaw
+candidates pass their own 144+24 simultaneous cases. They do not inherit the
+previous 216 single-axis passes from the different 100/1.4 yaw vector.
+
+Add mujoco_pd_yaw_regression.py, 27 tests and its usage manual; extend the existing
+multiaxis CI allowlist. Freeze both accepted yaw vectors in source operating order
+and run 216 known individual-axis conditions per vector (432 integrations).
+Use exactly one nonzero scale in the unchanged multiaxis core. This preserves
+individual-axis dynamics but applies endpoint criteria to all four proximal
+axes, including stationary axes, on every new run. Old condition names "fresh"
+and "final" are history labels here, not claims of unseen validation data.
+
+Observed before this commit: all 27 new tests passed, including real two-case
+bundle audit (mocked source receipt), exact original-engine full-state parity,
+wrong/missing/tampered evidence, frozen-source refusal and failure exclusion.
+The first 22-test pass is a subset, not 22 additional tests. Prior 331-test hosted
+run 34687197494/job 103536139776 on 649a052 passed with no skips; decoded logs checked.
+The new full 358-test suite and 432-run regression are in progress, not yet claimed.
+
+All original simulation/VR/UDP/LowCmd/model files and real gains are unchanged.
+Kp23=300 remains research-only, outside the unchanged live100 bound. No G1,
+DDS/SDK, publishers, physical output, deployment or launch-block removal.
+Append measured outcomes and verification after completing the new readback.

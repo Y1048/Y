@@ -1,0 +1,5294 @@
+[
+  {
+    "case_id": "screen_00000",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00001",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00002",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00003",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00004",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00005",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00006",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00007",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00008",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00009",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00010",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00011",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00012",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00013",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00014",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00015",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00016",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00017",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        32.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00018",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00019",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00020",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00021",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00022",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00023",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00024",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00025",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00026",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00027",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00028",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00029",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00030",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00031",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00032",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00033",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00034",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00035",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00036",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00037",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00038",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00039",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00040",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00041",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00042",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00043",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00044",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00045",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00046",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00047",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00048",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00049",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00050",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00051",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00052",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00053",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00054",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00055",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00056",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00057",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00058",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00059",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00060",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00061",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00062",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00063",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00064",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00065",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00066",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00067",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00068",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00069",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00070",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00071",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00072",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00073",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00074",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00075",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00076",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00077",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00078",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00079",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00080",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00081",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00082",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00083",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00084",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00085",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00086",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00087",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00088",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00089",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00090",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00091",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00092",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00093",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00094",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00095",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00096",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00097",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00098",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00099",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00100",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00101",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00102",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00103",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00104",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00105",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00106",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00107",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        88.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00108",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00109",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00110",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00111",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00112",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00113",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.7,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00114",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00115",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00116",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00117",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00118",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00119",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00120",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00121",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00122",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        2.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00123",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_nominal",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "screen_00124",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 30.0,
+      "amplitude_deg": 4.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_negative",
+      "post_hold_s": 0.0,
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "speed_deg_s": 10.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "screen_00125",
+    "phase": "screen",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        3.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 12.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "screen_mixed",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  }
+]

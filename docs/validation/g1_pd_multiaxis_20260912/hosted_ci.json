@@ -1,0 +1,11 @@
+{
+  "run_id": 34687197494,
+  "job_id": 103536139776,
+  "commit": "649a052124b195b7c039124144759af0fb234757",
+  "conclusion": "success",
+  "passed": 331,
+  "skipped": 0,
+  "decoded_log_inspected": true,
+  "runtime_s": 636.827,
+  "scope": "regressions and component dynamics, not full matrix"
+}

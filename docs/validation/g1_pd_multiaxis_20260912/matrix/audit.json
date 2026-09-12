@@ -1,0 +1,11 @@
+{
+  "schema": "g1.pd.multiaxis.audit.v1",
+  "passed": true,
+  "cases": 288,
+  "all29_500hz_rows": 2455975,
+  "all29_margin_records": 8352,
+  "all_cases_sha256": "4a7f7162ad2359c6ca9eed8c8a49d076d2f60a265c8d7affa51f1b2b70f9e9ce",
+  "source_archive_bytes_checked": true,
+  "scope": "full29 sampled state/reference/PD equation, per-axis quality, all29 extrema and plans; not independent physics-rate reconstruction",
+  "physical_validation": false
+}

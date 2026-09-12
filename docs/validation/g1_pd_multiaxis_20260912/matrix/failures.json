@@ -1,0 +1,6876 @@
+[
+  {
+    "case_id": "case_00003",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir00_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.831999999998933,
+    "final_dq": [
+      -9.249153754253674e-06,
+      1.2300409614546679e-05,
+      6.34501860049262e-07,
+      2.9947734605238543e-07,
+      5.099447115758673e-08,
+      -3.22398957916843e-08,
+      -9.249157472909269e-06,
+      -1.2322473187373563e-05,
+      -6.355991517318027e-07,
+      2.9947756265814976e-07,
+      5.099445427315544e-08,
+      3.2292743117196436e-08,
+      -0.017350443468401613,
+      -0.009759865487836947,
+      -0.005703175573704458,
+      0.0031753739788349103,
+      0.0007159614677545875,
+      0.00038691303054061915,
+      0.0014401068668273595,
+      1.289581268729133e-07,
+      0.000781342938505708,
+      0.0002246187129676742,
+      -0.03386770999478127,
+      -0.3712706725131289,
+      1.527720905921749,
+      0.02062486248869804,
+      0.06614147063756798,
+      -0.0013274463520299901,
+      -0.2324591799546157
+    ]
+  },
+  {
+    "case_id": "case_00007",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir00_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.549999999999089,
+    "final_dq": [
+      -1.0255176985759865e-05,
+      1.3911173454926764e-05,
+      7.177023385230341e-07,
+      3.3205308449892864e-07,
+      5.655330344550068e-08,
+      -3.646176946977391e-08,
+      -1.0255180921247917e-05,
+      -1.3934570726809219e-05,
+      -7.18862466915518e-07,
+      3.3205330908655173e-07,
+      5.655328542716522e-08,
+      3.65174613976419e-08,
+      -0.03048300971933506,
+      -0.023683837016727348,
+      -0.022143553312298527,
+      0.011446020119338027,
+      0.0013629177005543538,
+      0.0007588546545784326,
+      0.0022803939572240326,
+      -1.1810441604823143e-05,
+      0.0011008233542046937,
+      0.000416055466561349,
+      0.11201479695052567,
+      -0.13232257810921152,
+      1.5320760076440456,
+      0.2091285738662409,
+      0.08116994930202512,
+      -0.020282320156125546,
+      -0.22365620357828794
+    ]
+  },
+  {
+    "case_id": "case_00011",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir01_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.925999999998881,
+    "final_dq": [
+      -8.936243590701816e-06,
+      1.1806055275397515e-05,
+      6.089693553082691e-07,
+      2.8934534347879594e-07,
+      4.926720170959449e-08,
+      -3.094417602832867e-08,
+      -8.936247234304248e-06,
+      -1.1827672209798123e-05,
+      -6.100454222907329e-07,
+      2.893455573746001e-07,
+      4.9267185085709785e-08,
+      3.099605254513999e-08,
+      0.02685594993462188,
+      -0.0006613045208759634,
+      -0.000413440693834536,
+      -0.004072186422561177,
+      0.00010476392861730099,
+      -9.055998303264572e-05,
+      -0.001423313761025812,
+      7.929823031359351e-06,
+      -0.0008073180534186006,
+      -0.00012667533607159243,
+      0.03818711636641694,
+      0.46135661588125504,
+      -1.5100328631079771,
+      -0.003326765385937555,
+      -0.05080155999345346,
+      -0.00010029395289174424,
+      0.2810307317591505
+    ]
+  },
+  {
+    "case_id": "case_00015",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir01_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.12299999999988,
+    "final_dq": [
+      -1.7292427719390843e-05,
+      2.5930120107809414e-05,
+      1.338775291832964e-06,
+      5.603273587298509e-07,
+      9.714510555709721e-08,
+      -6.796426667207638e-08,
+      -1.729243218782936e-05,
+      -2.5959065604390372e-05,
+      -1.3401754036082422e-06,
+      5.603275956129164e-07,
+      9.714508377343419e-08,
+      6.802964634885339e-08,
+      -0.00554534917854272,
+      0.0005255240472035849,
+      0.00013332375252340337,
+      9.63993795268594e-05,
+      -0.0005367488673840982,
+      -0.00011010907724190283,
+      0.0001340866297031228,
+      -2.396473810389162e-06,
+      9.480066857863846e-05,
+      -6.625909668349821e-06,
+      0.00022140155961128405,
+      -0.3282469163391848,
+      1.5137529409263129,
+      0.09896094989449895,
+      0.062147598451866244,
+      -0.005589894709888729,
+      -0.18445906419082614
+    ]
+  },
+  {
+    "case_id": "case_00019",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir02_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.773999999998965,
+    "final_dq": [
+      -9.447668134092485e-06,
+      1.2615708724171979e-05,
+      6.507870695013236e-07,
+      3.059052712199649e-07,
+      5.209062380819211e-08,
+      -3.3066306076501764e-08,
+      -9.447671898530738e-06,
+      -1.263804769554117e-05,
+      -6.518974062013701e-07,
+      3.0590548937552397e-07,
+      5.20906071491708e-08,
+      3.31197477758033e-08,
+      -0.01969982881902381,
+      -0.009374065654251034,
+      -0.004234877858025843,
+      0.0035323167760034652,
+      0.0005980232613530957,
+      0.0003889549861859316,
+      0.0015943777528355878,
+      -5.0792236571787936e-06,
+      0.0008222345461838451,
+      0.00024391056524176376,
+      0.003830834190557683,
+      -0.3678422118042793,
+      1.53774469096551,
+      0.08482700578024381,
+      0.08030006616349283,
+      -0.00252558964570877,
+      -0.2563062519925857
+    ]
+  },
+  {
+    "case_id": "case_00023",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir02_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_error_rad",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.153499999999863,
+    "final_dq": [
+      -1.7100388607869587e-05,
+      2.5587290061910035e-05,
+      1.3210548534430022e-06,
+      5.540673313948472e-07,
+      9.592425651556314e-08,
+      -6.706567382458466e-08,
+      -1.7100393083235702e-05,
+      -2.5616162088433265e-05,
+      -1.3224525271284425e-06,
+      5.540675692766647e-07,
+      9.592423474911356e-08,
+      6.713099932769225e-08,
+      -0.01575826818119519,
+      0.0002966475556443155,
+      0.00025601297833037506,
+      0.001051953433744478,
+      -0.0002204647155930491,
+      2.7856489468339177e-05,
+      0.0010598709561572758,
+      -1.0979571179119433e-05,
+      0.0006263094566625535,
+      6.793116627110967e-05,
+      -0.08651674887227803,
+      -0.49716588132027584,
+      1.5153968949445236,
+      0.0080187602598555,
+      0.05630954151959268,
+      -0.0002560094740334561,
+      -0.3443153641303506
+    ]
+  },
+  {
+    "case_id": "case_00027",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir03_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.8919999999989,
+    "final_dq": [
+      -9.048182620423658e-06,
+      1.1982527967646563e-05,
+      6.180837191693655e-07,
+      2.929699095679985e-07,
+      4.988503652377511e-08,
+      -3.140671694087638e-08,
+      -9.048186291293571e-06,
+      -1.2004306458011404e-05,
+      -6.191674728889847e-07,
+      2.929701244260929e-07,
+      4.988501977319792e-08,
+      3.145894556146447e-08,
+      -0.020273334417152945,
+      -0.01024571071334818,
+      -0.003919161267342857,
+      0.004205960183284576,
+      0.0006329303432748275,
+      0.00036488326734873233,
+      0.0015087413732979365,
+      -1.953221132698325e-06,
+      0.0008243955204929722,
+      0.0002271266490899913,
+      -0.010047538014960652,
+      -0.4688731003048452,
+      1.5214460014298006,
+      0.07315292717640401,
+      0.05517000010204014,
+      -0.00030800757215092067,
+      -0.293776798378528
+    ]
+  },
+  {
+    "case_id": "case_00031",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir03_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.946499999999978,
+    "final_dq": [
+      -1.844685552113448e-05,
+      2.800619221887656e-05,
+      1.4460895550254882e-06,
+      5.980590799246947e-07,
+      1.0481211988412241e-07,
+      -7.34058844233257e-08,
+      -1.8446859924110458e-05,
+      -2.8035496676824108e-05,
+      -1.447499963321646e-06,
+      5.980593122477498e-07,
+      1.0481209722239857e-07,
+      7.347136694154589e-08,
+      -0.014906167840958688,
+      0.001271781919939019,
+      0.00015537138847070495,
+      0.0005334216805713441,
+      -0.00043662870916626883,
+      -8.758635619192025e-05,
+      0.000517653908472104,
+      -6.24246319833713e-06,
+      0.0003173464939626314,
+      -3.949666248452504e-06,
+      -0.04148788732162338,
+      -0.3225611662140057,
+      1.5082660631324338,
+      0.009407926731473198,
+      0.0627390889992075,
+      -0.00021493675915047105,
+      -0.1852778828866266
+    ]
+  },
+  {
+    "case_id": "case_00035",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir04_small",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.777499999998963,
+    "final_dq": [
+      -9.435568920016666e-06,
+      1.2596454965830017e-05,
+      6.497925995545657e-07,
+      3.0551349570244597e-07,
+      5.2023805920274514e-08,
+      -3.3015841271230116e-08,
+      -9.435572681704518e-06,
+      -1.2618777326870921e-05,
+      -6.509021504094404e-07,
+      3.0551371372318536e-07,
+      5.202378923790236e-08,
+      3.306924722192431e-08,
+      0.0177841310322879,
+      0.005103346617719593,
+      -0.0008191434131993175,
+      -0.0009782811302625873,
+      -0.000481060968474361,
+      -0.00023030432922130454,
+      -0.0008469359266812764,
+      2.4415824629001806e-06,
+      -0.0005547097478465219,
+      -0.00013812868725678913,
+      0.05568620085506724,
+      0.36308757816964704,
+      -1.5051847432186816,
+      0.002063868043266539,
+      -0.05041844358677315,
+      -0.0007500793444009531,
+      0.20659804970505996
+    ]
+  },
+  {
+    "case_id": "case_00039",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir04_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:active_tail_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.155499999999862,
+    "final_dq": [
+      -1.7087870650570175e-05,
+      2.5564968413639005e-05,
+      1.3199010845963728e-06,
+      5.536594102161186e-07,
+      9.584513200415144e-08,
+      -6.700716651506336e-08,
+      -1.7087875126350886e-05,
+      -2.559383551266023e-05,
+      -1.3212985920630257e-06,
+      5.536596481646095e-07,
+      9.584511021668513e-08,
+      6.707248811467459e-08,
+      0.012476258929991714,
+      0.00603629854382479,
+      0.0002937282534570418,
+      -0.001217736603458875,
+      2.604346335518066e-05,
+      -8.789459929679482e-05,
+      -0.0006573175801536059,
+      -9.94573413198582e-07,
+      -0.0003587808541313628,
+      -0.0001077531130709433,
+      -0.020644714781162664,
+      0.5104095624550069,
+      -1.515501180119132,
+      -0.11597065239796096,
+      -0.04633147868316037,
+      0.007154198765165187,
+      0.3190153506984567
+    ]
+  },
+  {
+    "case_id": "case_00043",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir05_small",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.887999999998902,
+    "final_dq": [
+      -9.06144377086443e-06,
+      1.2003462122677617e-05,
+      6.191649245160874e-07,
+      2.9339930393431935e-07,
+      4.995823500411149e-08,
+      -3.14615860793997e-08,
+      -9.06144744492942e-06,
+      -1.2025259620476002e-05,
+      -6.202495819063768e-07,
+      2.933995189177741e-07,
+      4.995821811079426e-08,
+      3.15138560562277e-08,
+      0.04080305183026381,
+      0.006097951378418726,
+      -0.0005392222769384864,
+      -0.012572045408906255,
+      -0.0006486791034223384,
+      -0.00044449404272924286,
+      -0.002485238716549102,
+      2.550219438450201e-05,
+      -0.0012663624249076404,
+      -0.00029893906618101604,
+      0.07233148301880264,
+      0.45574539271069137,
+      -1.5018266419397894,
+      -0.037688971163253385,
+      -0.0735317842543895,
+      -0.0006499622609326841,
+      0.33244412370190357
+    ]
+  },
+  {
+    "case_id": "case_00047",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir05_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.947499999999978,
+    "final_dq": [
+      -1.844010245912438e-05,
+      2.7993973656275184e-05,
+      1.4454579418898587e-06,
+      5.978377611965043e-07,
+      1.0476535537672606e-07,
+      -7.337385810118516e-08,
+      -1.844010686259925e-05,
+      -2.8023276420464208e-05,
+      -1.4468683113631916e-06,
+      5.978379935368709e-07,
+      1.0476533271160293e-07,
+      7.34393411081817e-08,
+      0.0003437019843953771,
+      -0.00029082838525043873,
+      0.00017876728271743714,
+      -0.0004067352997433603,
+      0.00023642542238987122,
+      7.47030865699337e-05,
+      -0.0002032865596231281,
+      -8.933669304214545e-07,
+      -0.00010221208729569573,
+      5.201033085682747e-06,
+      -0.015153790014800944,
+      0.3279633799340935,
+      -1.5081262293324404,
+      -0.052014006344577805,
+      -0.052228377101413904,
+      0.002979187643481176,
+      0.16956961613132743
+    ]
+  },
+  {
+    "case_id": "case_00051",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir06_small",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.830999999998934,
+    "final_dq": [
+      -9.252540821168897e-06,
+      1.2305778473541868e-05,
+      6.347791580519208e-07,
+      2.9958701943318264e-07,
+      5.101317135196402e-08,
+      -3.2253967762274574e-08,
+      -9.252544540618789e-06,
+      -1.2327846796677442e-05,
+      -6.358766750274054e-07,
+      2.99587236079874e-07,
+      5.1013154467586874e-08,
+      3.230682536747261e-08,
+      0.022711868174806745,
+      0.007223193919469348,
+      -0.0006898457532841149,
+      -0.0022723911233205763,
+      -0.0007574034459383371,
+      -0.00039844129120689223,
+      -0.0014508367409373612,
+      1.0936023768178889e-05,
+      -0.0008036045569125626,
+      -0.00023430612632382238,
+      0.027863525333387984,
+      0.37207521282078326,
+      -1.5311879591549253,
+      -0.07536488314653758,
+      -0.07680888564817842,
+      4.444666006051968e-05,
+      0.2500479718381752
+    ]
+  },
+  {
+    "case_id": "case_00055",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir06_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.4469999999991465,
+    "final_dq": [
+      -1.0649307681086724e-05,
+      1.4550708069144975e-05,
+      7.507390198639425e-07,
+      3.448158395269109e-07,
+      5.873444563870579e-08,
+      -3.813801693422234e-08,
+      -1.0649311691395141e-05,
+      -1.4574586743318424e-05,
+      -7.519215952504044e-07,
+      3.448160680849143e-07,
+      5.87344273958367e-08,
+      3.8194712178768725e-08,
+      0.011897719696357037,
+      0.0152217429226012,
+      -0.017948402408536814,
+      -0.0013740758938801442,
+      -0.001265416661277572,
+      -0.0006182750426528261,
+      -0.0013659733367597361,
+      9.560652156802888e-06,
+      -0.0008082594236949388,
+      -0.00032065479807892686,
+      0.27997080617149467,
+      0.057069592360950674,
+      -1.523478675854768,
+      0.11285658204246818,
+      -0.06239175373714721,
+      0.02517838242190368,
+      0.21107518866103678
+    ]
+  },
+  {
+    "case_id": "case_00059",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir07_small",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_error_rad",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:active_tail_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 6.98199999999885,
+    "final_dq": [
+      -8.75488438056249e-06,
+      1.1521041873498697e-05,
+      5.942494547020136e-07,
+      2.834729829834638e-07,
+      4.8266358876071406e-08,
+      -3.0197146453711394e-08,
+      -8.7548879789278e-06,
+      -1.154239281324395e-05,
+      -5.953128435058086e-07,
+      2.834731945528143e-07,
+      4.8266342625171665e-08,
+      3.0248441017322716e-08,
+      -0.0352782675940496,
+      0.0008570509288099934,
+      -0.006621032301571786,
+      0.013518009571390164,
+      -7.971198236165895e-06,
+      0.00022347690304273807,
+      0.0025593765898993194,
+      -2.1362817724857343e-05,
+      0.001306854891597791,
+      0.00021284062580411236,
+      -0.04676822362342967,
+      -0.46656081566510527,
+      1.5197128914169231,
+      0.12293726928387345,
+      0.07794674361015352,
+      -0.007121759012410709,
+      -0.3427955932316318
+    ]
+  },
+  {
+    "case_id": "case_00063",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir07_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.149499999999866,
+    "final_dq": [
+      -1.712545204109604e-05,
+      2.5631991843843163e-05,
+      1.3233654171242857e-06,
+      5.548841190187898e-07,
+      9.60828437129365e-08,
+      -6.718284174911882e-08,
+      -1.7125456515617426e-05,
+      -2.5660873685192398e-05,
+      -1.3247634209311616e-06,
+      5.548843567246252e-07,
+      9.608282199493966e-08,
+      6.724817493158779e-08,
+      -0.008451487811318,
+      -0.006908682718527718,
+      8.569347793741998e-05,
+      0.0004261896964934484,
+      0.0007717720229689485,
+      0.0003525189310960124,
+      0.00037123307730992897,
+      2.1474727263337417e-07,
+      0.0002057874449893601,
+      0.00018913563934837592,
+      -0.03517765609160187,
+      -0.3250923003286077,
+      1.5444272104666694,
+      -0.002692528467673696,
+      0.08583227243989182,
+      -0.0008793831801510622,
+      -0.2177967428195661
+    ]
+  },
+  {
+    "case_id": "case_00067",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir08_small",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.859999999998918,
+    "final_dq": [
+      -9.15481765085739e-06,
+      1.215102881973662e-05,
+      6.267864937292252e-07,
+      2.9642274252073955e-07,
+      5.0473668084082346e-08,
+      -3.184836349297933e-08,
+      -9.154821347263005e-06,
+      -1.2172959365675294e-05,
+      -6.278774724715077e-07,
+      2.964229584695721e-07,
+      5.0473651125550655e-08,
+      3.19009225381316e-08,
+      0.012395305117330807,
+      -0.0010895936384222185,
+      0.004048460660175276,
+      -0.0014391990376865084,
+      0.00010247505290213365,
+      -7.201606264206913e-05,
+      -0.0010832496356687905,
+      4.792741957232075e-06,
+      -0.000580547923816239,
+      -9.970402681363643e-05,
+      0.028521073684679318,
+      0.36822310415683945,
+      -1.5075217790731863,
+      0.0008235366013098313,
+      -0.0845012810356958,
+      -0.00012300779766163725,
+      0.25962728395935447
+    ]
+  },
+  {
+    "case_id": "case_00071",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir08_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.447499999999146,
+    "final_dq": [
+      -1.0647358298462256e-05,
+      1.4547533587073023e-05,
+      7.505750305859637e-07,
+      3.4475271353351054e-07,
+      5.872365152950351e-08,
+      -3.812969647371236e-08,
+      -1.0647362308415028e-05,
+      -1.4571409935642464e-05,
+      -7.517574978808236e-07,
+      3.44752942072074e-07,
+      5.872363328262345e-08,
+      3.818638690525509e-08,
+      -0.002537689708198156,
+      -0.022171497502468964,
+      0.008698237868322408,
+      0.00015599596355190672,
+      0.000960673266886542,
+      0.00044082223613240947,
+      0.00020698890080864013,
+      5.040272059646093e-06,
+      0.00018149729480028702,
+      0.00021096849434292783,
+      -0.26904413026326074,
+      -0.0495368610093415,
+      1.508077646085745,
+      0.2631526614175382,
+      0.04945228137061274,
+      -0.006010664642729579,
+      -0.1917954982492618
+    ]
+  },
+  {
+    "case_id": "case_00075",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir09_small",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.9539999999988655,
+    "final_dq": [
+      -8.845099152384925e-06,
+      1.1662677978581021e-05,
+      6.015643929749e-07,
+      2.8639410961137074e-07,
+      4.8764193380828975e-08,
+      -3.056837934472648e-08,
+      -8.845102773412525e-06,
+      -1.168416189346956e-05,
+      -6.026341232223527e-07,
+      2.8639432201890357e-07,
+      4.876417671927903e-08,
+      3.0619965182691174e-08,
+      -0.01998297220907797,
+      -0.009088081063993224,
+      0.0003663909232641084,
+      0.0010093408631111286,
+      0.000759436656406822,
+      0.000383194933078266,
+      0.0008523287476654245,
+      -3.7374423479745232e-06,
+      0.000497982122985123,
+      0.00022233178272557664,
+      -0.03111086147086647,
+      -0.4616973363391958,
+      1.5197921298632109,
+      0.006627343605279087,
+      0.058798270540534416,
+      0.0014628136810207503,
+      -0.3045082364154124
+    ]
+  },
+  {
+    "case_id": "case_00079",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir09_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.181999999999848,
+    "final_dq": [
+      -1.6922870267368977e-05,
+      2.5271038363393817e-05,
+      1.3047084224392775e-06,
+      5.482840273897861e-07,
+      9.480716490856249e-08,
+      -6.623674629670249e-08,
+      -1.6922874748145567e-05,
+      -2.529983892243964e-05,
+      -1.3061036550919856e-06,
+      5.482842660883287e-07,
+      9.480714299336172e-08,
+      6.630201214522914e-08,
+      -0.021860695245525464,
+      0.00024183738454519417,
+      -0.005193302553433976,
+      0.004512194481576685,
+      -0.0004933319865888638,
+      -5.330213900583776e-05,
+      0.0014922100713404714,
+      -3.3015058678059737e-06,
+      0.0008216232031295578,
+      3.0850913435433565e-05,
+      -0.009113619010611272,
+      -0.342401310358861,
+      1.5153422653370932,
+      0.09932238039877823,
+      0.055214510164783126,
+      -0.003768245523951453,
+      -0.179704651132549
+    ]
+  },
+  {
+    "case_id": "case_00083",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir10_small",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.744999999998981,
+    "final_dq": [
+      -9.548517503541853e-06,
+      1.2776376187232955e-05,
+      6.590857186754819e-07,
+      3.0917080526131333e-07,
+      5.264761153227442e-08,
+      -3.348742140193064e-08,
+      -9.548521290663975e-06,
+      -1.2798852731263265e-05,
+      -6.602025591362531e-07,
+      3.091710243368266e-07,
+      5.2647594769164506e-08,
+      3.3541158733234256e-08,
+      0.009299650587862309,
+      -0.0005330931183150238,
+      0.0028271596267459504,
+      -0.000686205965210218,
+      4.031904185133916e-05,
+      -2.0469484393894767e-05,
+      -0.0004941747073160717,
+      -1.4061079291391006e-07,
+      -0.0002804236057055983,
+      -4.607192558949749e-05,
+      -0.026779587487302223,
+      0.38823010264628255,
+      -1.5072459176437505,
+      -0.014568987189978663,
+      -0.058513067125267354,
+      0.00023873153271049892,
+      0.21935290209882322
+    ]
+  },
+  {
+    "case_id": "case_00087",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir10_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:active_tail_speed_rad_s",
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_error_rad",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:active_tail_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.1839999999998465,
+    "final_dq": [
+      -1.6910482264574923e-05,
+      2.52489925996665e-05,
+      1.303568927574672e-06,
+      5.478805579893785e-07,
+      9.472960070723655e-08,
+      -6.617896215591645e-08,
+      -1.691048674568467e-05,
+      -2.527778804341559e-05,
+      -1.3049639831276183e-06,
+      5.478807966782601e-07,
+      9.47295787741354e-08,
+      6.624422349949671e-08,
+      0.050427960719537854,
+      0.004857200466989719,
+      0.0031832528059696765,
+      -0.019029750095484257,
+      -0.0007113079738593526,
+      -0.00039292791429592516,
+      -0.002954659113079295,
+      1.983154594469444e-05,
+      -0.0015637651931566855,
+      -0.0002657428364627825,
+      0.12475666335927725,
+      0.5051815430993002,
+      -1.517754777416115,
+      -0.0195833151025571,
+      -0.053914208078520376,
+      -0.0007510671781713943,
+      0.3277062371884023
+    ]
+  },
+  {
+    "case_id": "case_00091",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir11_small",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.892999999998899,
+    "final_dq": [
+      -9.044870366467834e-06,
+      1.1977300135843193e-05,
+      6.178137129007706e-07,
+      2.928626592420853e-07,
+      4.986675382285466e-08,
+      -3.139301461845218e-08,
+      -9.044874036539e-06,
+      -1.1999073874353283e-05,
+      -6.188972406806263e-07,
+      2.928628740650518e-07,
+      4.986673709701672e-08,
+      3.144523289351833e-08,
+      -0.015443389290002997,
+      -0.008902174796014324,
+      0.00035122951375887257,
+      0.0007041325502835634,
+      0.0005772193592094811,
+      0.00031072236994547636,
+      0.0005917478087459891,
+      -2.671735634932306e-06,
+      0.00035277047763739657,
+      0.0001885881953361165,
+      0.0012287869400321753,
+      -0.46237516023836905,
+      1.511247230790865,
+      0.07454576669339738,
+      0.05283443949314551,
+      0.00014781510949188098,
+      -0.2897264677721682
+    ]
+  },
+  {
+    "case_id": "case_00095",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir11_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.972499999999964,
+    "final_dq": [
+      -1.8272077046961012e-05,
+      2.769023601616823e-05,
+      1.4297569439860917e-06,
+      5.923336276421925e-07,
+      1.0360988941458174e-07,
+      -7.257772555765556e-08,
+      -1.8272081462424582e-05,
+      -2.7719495115653012e-05,
+      -1.431166267204306e-06,
+      5.92333860453016e-07,
+      1.0360986672741235e-07,
+      7.264321671813603e-08,
+      0.05225109651955054,
+      0.005418693760580843,
+      -0.0006999663153771484,
+      -0.0071657756277751766,
+      -0.0008376874492378072,
+      -0.00045475806065634885,
+      -0.0021604258131529327,
+      2.21985081192912e-05,
+      -0.001142302642424442,
+      -0.0002785213707030172,
+      0.05979433209798357,
+      0.32523595822527146,
+      -1.507075484137628,
+      -0.021911416212385796,
+      -0.07941485285002838,
+      -0.012723810713429132,
+      0.20720917564847646
+    ]
+  },
+  {
+    "case_id": "case_00099",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir12_small",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.774999999998965,
+    "final_dq": [
+      -9.444209633429364e-06,
+      1.2610204649380365e-05,
+      6.505027800573982e-07,
+      3.057932841061694e-07,
+      5.20715241206519e-08,
+      -3.3051879692729215e-08,
+      -9.444213397082872e-06,
+      -1.2632538875077085e-05,
+      -6.516128922526056e-07,
+      3.0579350222574824e-07,
+      5.207150746097196e-08,
+      3.31053111794204e-08,
+      0.014778917828153153,
+      0.003840776814987087,
+      0.006717325963201017,
+      -0.00141596707186297,
+      -0.0004288134630305125,
+      -0.00021401432569796887,
+      -0.0011837778632350162,
+      1.4630935532350515e-06,
+      -0.0006735340853620388,
+      -0.0001238500523886213,
+      0.022143616029840406,
+      0.3568328210410993,
+      -1.5083870510275346,
+      0.003136529560559639,
+      -0.06894331817263145,
+      -0.0003386442117153909,
+      0.2389781067048138
+    ]
+  },
+  {
+    "case_id": "case_00103",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir12_standard",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:active_tail_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.1569999999998615,
+    "final_dq": [
+      -1.707848819678528e-05,
+      2.554823995716486e-05,
+      1.3190364191695983e-06,
+      5.533536758139984e-07,
+      9.578586225527315e-08,
+      -6.696331953090667e-08,
+      -1.707849267287542e-05,
+      -2.55771033517918e-05,
+      -1.320433801465507e-06,
+      5.533539138081782e-07,
+      9.578584045504923e-08,
+      6.702863817269289e-08,
+      0.023673043617743972,
+      0.006747536630719517,
+      -0.00020388044366014178,
+      -0.003001391894253062,
+      -7.307304776984661e-05,
+      -0.000133690361443282,
+      -0.0009335486353604244,
+      1.4755197859510073e-06,
+      -0.0005708055241370675,
+      -0.00014963713778572827,
+      -0.0021126782552152203,
+      0.5153220863378756,
+      -1.5031063714057766,
+      -0.11774234576359519,
+      -0.03779708984435174,
+      0.007308416515759881,
+      0.28007667458500735
+    ]
+  },
+  {
+    "case_id": "case_00107",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir13_small",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.888999999998902,
+    "final_dq": [
+      -9.058126662172521e-06,
+      1.1998225157753808e-05,
+      6.188944460339134e-07,
+      2.932918963639143e-07,
+      4.99399252282718e-08,
+      -3.144785981666168e-08,
+      -9.0581303354393e-06,
+      -1.2020017903694615e-05,
+      -6.199788775237246e-07,
+      2.932921113068019e-07,
+      4.993990837430731e-08,
+      3.1500119450625795e-08,
+      0.02009484915351215,
+      0.0042795205133819,
+      0.006793503467217214,
+      -0.005430507046762458,
+      -0.0004244185634075608,
+      -0.00025710494293733197,
+      -0.0019350625948105359,
+      7.08040430264505e-06,
+      -0.0010340227333272452,
+      -0.00016384068109885888,
+      0.06302600574139292,
+      0.46253230965795855,
+      -1.533892515264902,
+      -0.01925721632311907,
+      -0.07464261721724903,
+      0.0007627920914213366,
+      0.3393796187874875
+    ]
+  },
+  {
+    "case_id": "case_00111",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir13_standard",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.944499999999979,
+    "final_dq": [
+      -1.8460369065571506e-05,
+      2.8030645345291926e-05,
+      1.447353609243549e-06,
+      5.985019852553517e-07,
+      1.0490577745463662e-07,
+      -7.346997901492367e-08,
+      -1.846037346754328e-05,
+      -2.805995317845759e-05,
+      -1.4487640944907942e-06,
+      5.985022175356133e-07,
+      1.04905754803711e-07,
+      7.353546051145179e-08,
+      0.03574242494512121,
+      0.0008748435256610392,
+      -0.00045307290253509543,
+      -0.0014160937568721808,
+      6.106406167890536e-05,
+      -0.00010801612034510624,
+      -0.001175871116459895,
+      1.6773610385398956e-05,
+      -0.000648594270172329,
+      -0.00013351592493537177,
+      -0.031476710204192876,
+      0.3355498479266938,
+      -1.5139563011150021,
+      -0.08375338599546207,
+      -0.06782773037920073,
+      -0.010310497132788945,
+      0.194717090615828
+    ]
+  },
+  {
+    "case_id": "case_00115",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir14_small",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.831999999998933,
+    "final_dq": [
+      -9.249153754253979e-06,
+      1.2300409614546608e-05,
+      6.345018600426929e-07,
+      2.994773460523896e-07,
+      5.0994471156653305e-08,
+      -3.223989579549419e-08,
+      -9.249157472909447e-06,
+      -1.2322473187372818e-05,
+      -6.355991517290424e-07,
+      2.994775626577464e-07,
+      5.099445435529229e-08,
+      3.2292743117547815e-08,
+      0.010490775235202452,
+      0.0060083250260538875,
+      0.005000867978182927,
+      -0.0011617608300717329,
+      -0.0006108761054755946,
+      -0.000271983567848825,
+      -0.0009456937097633122,
+      3.4123184291492074e-07,
+      -0.0005240844525972113,
+      -0.00014356759067869632,
+      0.007922244536056465,
+      0.3647971874964021,
+      -1.515223149303872,
+      -0.06907073100611455,
+      -0.07508203481677794,
+      0.003167091675133311,
+      0.24787312478024542
+    ]
+  },
+  {
+    "case_id": "case_00119",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir14_standard",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.5029999999991155,
+    "final_dq": [
+      -1.0433180242370213e-05,
+      1.4199436751179165e-05,
+      7.325930696182139e-07,
+      3.3781714398903416e-07,
+      5.753808941176172e-08,
+      -3.721731964660091e-08,
+      -1.0433184212375192e-05,
+      -1.4223054241554867e-05,
+      -7.337634837255958e-07,
+      3.378173702147875e-07,
+      5.753807130193778e-08,
+      3.7273472276081096e-08,
+      0.01720578379113753,
+      0.013615274955443034,
+      0.014247000649132329,
+      -0.001969655454379155,
+      -0.0011163137050400774,
+      -0.0005079736601261543,
+      -0.0016715036741335972,
+      1.4967930629052777e-06,
+      -0.000883636471105068,
+      -0.0002412027975853456,
+      -0.17657484869185602,
+      0.09045105047849569,
+      -1.5496288605427173,
+      0.09023242422851797,
+      -0.07996806662176187,
+      0.04525558735800146,
+      0.22997900194839124
+    ]
+  },
+  {
+    "case_id": "case_00123",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir15_small",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.957499999998864,
+    "final_dq": [
+      -8.833771660184962e-06,
+      1.1644878680145187e-05,
+      6.006451250639996e-07,
+      2.8602732864227234e-07,
+      4.870168225177607e-08,
+      -3.0521726795964575e-08,
+      -8.833775278380492e-06,
+      -1.1666345970328601e-05,
+      -6.017140628782208e-07,
+      2.860275408666385e-07,
+      4.870166566686764e-08,
+      3.057327625309047e-08,
+      0.01083771423324937,
+      0.00647982828197665,
+      0.004761171331749996,
+      -0.00135179568266213,
+      -0.0005344278450211768,
+      -0.00021847930727338368,
+      -0.0008926856655125683,
+      -2.902707266599512e-06,
+      -0.0005261656861338304,
+      -0.00011585412627738894,
+      0.017255032268306384,
+      0.4623489538156126,
+      -1.512856987470201,
+      -0.08136538564486699,
+      -0.047872771145261735,
+      0.008501187643212943,
+      0.2793308919516422
+    ]
+  },
+  {
+    "case_id": "case_00127",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "dir15_standard",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.1479999999998665,
+    "final_dq": [
+      -1.7134860296745716e-05,
+      2.5648775138363976e-05,
+      1.3242329198275375e-06,
+      5.551907397340802e-07,
+      9.614243069561803e-08,
+      -6.722683247932943e-08,
+      -1.7134864770946037e-05,
+      -2.5677660646426682e-05,
+      -1.3256310466267504e-06,
+      5.55190977374766e-07,
+      9.614240899556826e-08,
+      6.729216849702378e-08,
+      -0.02913853311847408,
+      -0.0077834504158459435,
+      -0.004073650976894509,
+      0.009208921111404271,
+      0.0009941929388402409,
+      0.0005649591229712088,
+      0.0020857072125055626,
+      -1.2794913271124698e-05,
+      0.0010310713647522307,
+      0.000332801305044358,
+      -0.04343608578899535,
+      -0.32787184052666907,
+      1.5197110710014554,
+      0.0027264894082276794,
+      0.09000011802277846,
+      0.00022199687033971994,
+      -0.22223522384808234
+    ]
+  },
+  {
+    "case_id": "case_00129",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir0_large",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:active_tail_error_rad",
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_error_rad",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_error_rad",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:active_tail_error_rad",
+      "joint25:active_tail_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.314499999999774,
+    "final_dq": [
+      -1.612146264558263e-05,
+      2.3851308221613575e-05,
+      1.2313278799428927e-06,
+      5.222094715698209e-07,
+      8.988254710719495e-08,
+      -6.251549894984055e-08,
+      -1.61214671382675e-05,
+      -2.3879743049548285e-05,
+      -1.2327098204731339e-06,
+      5.222097110654313e-07,
+      8.988252515805082e-08,
+      6.258037938612798e-08,
+      0.010152835124370528,
+      0.011408924972495522,
+      0.004970509927943012,
+      -0.0037231939961155317,
+      -0.0007937399457307123,
+      -0.00024801078003094696,
+      -0.0018355267095619228,
+      6.194024251887286e-06,
+      -0.000981025108995011,
+      -9.249481305953181e-05,
+      -0.003052862518091097,
+      0.5549585893522456,
+      -1.5039412691913803,
+      -0.2483541754608976,
+      -0.05748936809233495,
+      0.07671140821772819,
+      0.3999334822231703
+    ]
+  },
+  {
+    "case_id": "case_00131",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir0_long",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 1.5609999999998836,
+    "final_dq": [
+      -6.302743628420037e-05,
+      0.00012270741172658675,
+      5.910460441132701e-06,
+      8.662064467886432e-05,
+      9.900363111971796e-05,
+      -3.263500927383871e-07,
+      -6.302741215109321e-05,
+      -0.0001226713416571495,
+      -5.907867216668174e-06,
+      8.662067681230078e-05,
+      9.900363707480639e-05,
+      3.262138366926901e-07,
+      -0.015254815478791376,
+      -0.0001329994261400926,
+      -0.0019929475692848243,
+      0.0014954352191118773,
+      -0.0012866265451837579,
+      -0.0009577487464634268,
+      0.0020223095658690403,
+      -5.38333401067418e-06,
+      0.0011596686564643828,
+      -0.00026874175025404224,
+      -0.017235044419102098,
+      -0.4771141996267865,
+      1.5072828167066201,
+      0.029930020069166292,
+      0.04353758977304105,
+      -1.7077643604611706e-05,
+      -0.2615050873126839
+    ]
+  },
+  {
+    "case_id": "case_00133",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir1_large",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.887000000000011,
+    "final_dq": [
+      -1.8853146059362373e-05,
+      2.8742877566618586e-05,
+      1.4841714591965263e-06,
+      6.113904060424129e-07,
+      1.0767513660811491e-07,
+      -7.53368279013452e-08,
+      -1.8853150429719883e-05,
+      -2.8772275287908464e-05,
+      -1.4855837479987415e-06,
+      6.113906363981941e-07,
+      1.076751143054345e-07,
+      7.540225753291456e-08,
+      0.0072977119280628515,
+      -0.009408526506290132,
+      0.00767667365887745,
+      -0.0010509075455862106,
+      7.297809065170442e-05,
+      -0.00010865269688934575,
+      -0.0004595012436712302,
+      3.695840975238298e-08,
+      -0.0001848317143981105,
+      -0.00013889635742307769,
+      -0.18243009966035548,
+      0.43634650857534135,
+      -1.516223023025459,
+      0.08464879094595391,
+      -0.08151711995985038,
+      0.02686795007345782,
+      0.17430549065249856
+    ]
+  },
+  {
+    "case_id": "case_00135",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir1_long",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 1.5609999999998836,
+    "final_dq": [
+      -6.302743628420037e-05,
+      0.00012270741172658675,
+      5.910460441132701e-06,
+      8.662064467886432e-05,
+      9.900363111971796e-05,
+      -3.263500927383871e-07,
+      -6.302741215109321e-05,
+      -0.0001226713416571495,
+      -5.907867216668174e-06,
+      8.662067681230078e-05,
+      9.900363707480639e-05,
+      3.262138366926901e-07,
+      -0.015254815478791376,
+      -0.0001329994261400926,
+      -0.0019929475692848243,
+      0.0014954352191118773,
+      -0.0012866265451837579,
+      -0.0009577487464634268,
+      0.0020223095658690403,
+      -5.38333401067418e-06,
+      0.0011596686564643828,
+      -0.00026874175025404224,
+      -0.017235044419102098,
+      -0.4771141996267865,
+      1.5072828167066201,
+      0.029930020069166292,
+      0.04353758977304105,
+      -1.7077643604611706e-05,
+      -0.2615050873126839
+    ]
+  },
+  {
+    "case_id": "case_00137",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir2_large",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 5.094499999999896,
+    "final_dq": [
+      -1.7473822845074e-05,
+      2.625461966936889e-05,
+      1.3555484636127558e-06,
+      5.662441947696243e-07,
+      9.831093317744444e-08,
+      -6.881481421128109e-08,
+      -1.7473827305862417e-05,
+      -2.6283630919253394e-05,
+      -1.3569506861755073e-06,
+      5.662444308970028e-07,
+      9.831091106883433e-08,
+      6.888023523559726e-08,
+      -0.07253420195915744,
+      0.0006686417733709738,
+      -0.019142033326707025,
+      0.037861520204211525,
+      -5.431550673173383e-05,
+      0.0002442784597276813,
+      0.004521851540694056,
+      -2.1736726341018567e-05,
+      0.0023573646165511667,
+      0.00025238584835903145,
+      -0.18458058226303198,
+      -0.5488139465231808,
+      1.5081212525124312,
+      0.01130771313333192,
+      0.04710819647305724,
+      -0.001014831670405554,
+      -0.3435135785032894
+    ]
+  },
+  {
+    "case_id": "case_00139",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir2_long",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 1.5609999999998836,
+    "final_dq": [
+      -6.302743628420037e-05,
+      0.00012270741172658675,
+      5.910460441132701e-06,
+      8.662064467886432e-05,
+      9.900363111971796e-05,
+      -3.263500927383871e-07,
+      -6.302741215109321e-05,
+      -0.0001226713416571495,
+      -5.907867216668174e-06,
+      8.662067681230078e-05,
+      9.900363707480639e-05,
+      3.262138366926901e-07,
+      -0.015254815478791376,
+      -0.0001329994261400926,
+      -0.0019929475692848243,
+      0.0014954352191118773,
+      -0.0012866265451837579,
+      -0.0009577487464634268,
+      0.0020223095658690403,
+      -5.38333401067418e-06,
+      0.0011596686564643828,
+      -0.00026874175025404224,
+      -0.017235044419102098,
+      -0.4771141996267865,
+      1.5072828167066201,
+      0.029930020069166292,
+      0.04353758977304105,
+      -1.7077643604611706e-05,
+      -0.2615050873126839
+    ]
+  },
+  {
+    "case_id": "case_00141",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir3_large",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 5.028499999999933,
+    "final_dq": [
+      -1.7901235260547494e-05,
+      2.7021768932093956e-05,
+      1.3952027151391842e-06,
+      5.802020058339388e-07,
+      1.0111148043635935e-07,
+      -7.082559639029894e-08,
+      -1.7901239699434577e-05,
+      -2.70509212431756e-05,
+      -1.3966091800428672e-06,
+      5.802022405032964e-07,
+      1.011114579907554e-07,
+      7.089107747358693e-08,
+      -0.021221824343800596,
+      -0.012488800976114997,
+      -0.009835032936199561,
+      0.007650437529728674,
+      0.001403818655414099,
+      0.00071212430075032,
+      0.0019341299713644979,
+      -4.180672272688406e-06,
+      0.0009377720708654737,
+      0.0003795361069581267,
+      -0.005199727995824662,
+      -0.24215533471671744,
+      1.5300451388307825,
+      0.02840163588491591,
+      0.09557424299723488,
+      -0.0038226560609360546,
+      -0.19049949332780297
+    ]
+  },
+  {
+    "case_id": "case_00143",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ]
+    },
+    "motion": {
+      "name": "longdir3_long",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 1.5609999999998836,
+    "final_dq": [
+      -6.302743628420037e-05,
+      0.00012270741172658675,
+      5.910460441132701e-06,
+      8.662064467886432e-05,
+      9.900363111971796e-05,
+      -3.263500927383871e-07,
+      -6.302741215109321e-05,
+      -0.0001226713416571495,
+      -5.907867216668174e-06,
+      8.662067681230078e-05,
+      9.900363707480639e-05,
+      3.262138366926901e-07,
+      -0.015254815478791376,
+      -0.0001329994261400926,
+      -0.0019929475692848243,
+      0.0014954352191118773,
+      -0.0012866265451837579,
+      -0.0009577487464634268,
+      0.0020223095658690403,
+      -5.38333401067418e-06,
+      0.0011596686564643828,
+      -0.00026874175025404224,
+      -0.017235044419102098,
+      -0.4771141996267865,
+      1.5072828167066201,
+      0.029930020069166292,
+      0.04353758977304105,
+      -1.7077643604611706e-05,
+      -0.2615050873126839
+    ]
+  },
+  {
+    "case_id": "case_00147",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir00_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.65699999999903,
+    "final_dq": [
+      -9.861181043477521e-06,
+      1.3276552350510924e-05,
+      6.849210726511729e-07,
+      3.192950334537427e-07,
+      5.4375028415510184e-08,
+      -3.47984021100478e-08,
+      -9.86118489850549e-06,
+      -1.3299445534140206e-05,
+      -6.860575550733076e-07,
+      3.192952551432329e-07,
+      5.437501142618476e-08,
+      3.485302929946117e-08,
+      0.02814563117053572,
+      -0.0017061330931707462,
+      -0.003443868452826834,
+      -0.009336828133352603,
+      -0.0002073714718818515,
+      -0.00033625271500486244,
+      -0.0017132442521859367,
+      2.821161012885565e-05,
+      -0.0008377056958585619,
+      -0.00028924075728156234,
+      0.1123408027348272,
+      0.42288432588401437,
+      -1.53592695780262,
+      0.012106577012916378,
+      -0.08582535097536947,
+      -0.0011968428829391515,
+      0.2324897755156712
+    ]
+  },
+  {
+    "case_id": "case_00151",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir00_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.400999999999172,
+    "final_dq": [
+      -1.0830186318181776e-05,
+      1.4845743516874919e-05,
+      7.659802995679131e-07,
+      3.5067320349140243e-07,
+      5.973630164069972e-08,
+      -3.891131796443417e-08,
+      -1.083019036089848e-05,
+      -1.4869835606325223e-05,
+      -7.67172779778345e-07,
+      3.506734334346682e-07,
+      5.973628388415199e-08,
+      3.896845334701254e-08,
+      -0.02733662964995188,
+      -0.02825137559699079,
+      -0.028517707935513163,
+      0.008562246128854187,
+      0.0011046244598381656,
+      0.0006373435144965161,
+      0.0019491223038826553,
+      -4.66386232754705e-07,
+      0.000982561362483905,
+      0.000353344019055194,
+      0.21488212803106027,
+      0.0010001916228409083,
+      1.5032549237257906,
+      0.3495368142091138,
+      0.05136305917092953,
+      -0.0302000435932315,
+      -0.17266377615535566
+    ]
+  },
+  {
+    "case_id": "case_00155",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir01_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.716499999998997,
+    "final_dq": [
+      -9.648676919572914e-06,
+      1.2936266900542875e-05,
+      6.673443592598771e-07,
+      3.1241401072245464e-07,
+      5.320087566547034e-08,
+      -3.3906500927783046e-08,
+      -9.648680728853914e-06,
+      -1.2958878531359072e-05,
+      -6.68467577411266e-07,
+      3.124142307347719e-07,
+      5.320085869307081e-08,
+      3.39605277026045e-08,
+      -0.032995376119702984,
+      -0.01604551921933768,
+      -0.008819449933645132,
+      0.0147878411874402,
+      0.0010899676629070902,
+      0.0006661421264870594,
+      0.0020615456206894635,
+      -1.5051147854779254e-05,
+      0.0010084358726141188,
+      0.0004152812796338625,
+      -0.026867181723582656,
+      -0.38852304084792555,
+      1.5144238093058742,
+      0.009434298953801582,
+      0.06729994039002657,
+      -0.0007532381118560355,
+      -0.2760396713980602
+    ]
+  },
+  {
+    "case_id": "case_00159",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir01_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.845500000000034,
+    "final_dq": [
+      -1.91418109897979e-05,
+      2.9268141133174356e-05,
+      1.5113247931185434e-06,
+      6.208830617588382e-07,
+      1.0977334917835321e-07,
+      -7.671361176749976e-08,
+      -1.9141815333940498e-05,
+      -2.929759486771675e-05,
+      -1.5127378777524024e-06,
+      6.208832909399048e-07,
+      1.0977332724912378e-07,
+      7.677897622374988e-08,
+      0.016591672244482613,
+      0.005445459032267742,
+      0.0027230449633362896,
+      -0.0026300563251007193,
+      -0.0009403800989081471,
+      -0.0004061987971137229,
+      -0.0012418361571632432,
+      5.0760529381284345e-06,
+      -0.0006220822236563141,
+      -0.000210249622350578,
+      -0.015274078323884891,
+      0.29492546602515635,
+      -1.5369603958810658,
+      -0.0574833695892573,
+      -0.07812013678331035,
+      0.013628280174064094,
+      0.18913716453426088
+    ]
+  },
+  {
+    "case_id": "case_00163",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir02_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.606499999999058,
+    "final_dq": [
+      -1.004520969808731e-05,
+      1.3572379255671157e-05,
+      7.002017675662833e-07,
+      3.252540612700376e-07,
+      5.539223057475857e-08,
+      -3.55737760950237e-08,
+      -1.0045213591370171e-05,
+      -1.3595510766670215e-05,
+      -7.013494465224966e-07,
+      3.252542844776352e-07,
+      5.539221319496166e-08,
+      3.5628908382980664e-08,
+      0.019257384362080982,
+      -0.002745427312615456,
+      -0.006128280675533017,
+      -0.005133055913331915,
+      -0.0004051616936494515,
+      -0.0003741550402820969,
+      -0.0014011991941397137,
+      1.9788530949569434e-05,
+      -0.0006931956950618404,
+      -0.0002845686919912455,
+      0.09146454997270746,
+      0.4132069404149546,
+      -1.5352059983810238,
+      0.0026859120448021654,
+      -0.07666854344464569,
+      0.005616032281112323,
+      0.21752153694559231
+    ]
+  },
+  {
+    "case_id": "case_00167",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir02_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.454999999999696,
+    "final_dq": [
+      -1.531308838430135e-05,
+      2.243288683227206e-05,
+      1.158019319313601e-06,
+      4.959518838479275e-07,
+      8.507193254588027e-08,
+      -5.879769451697357e-08,
+      -1.5313092868371678e-05,
+      -2.2460879669267074e-05,
+      -1.1593839984948956e-06,
+      4.959521255259829e-07,
+      8.507191107548852e-08,
+      5.886198918857335e-08,
+      0.05452936705540106,
+      0.007078597310301972,
+      0.0106564146034457,
+      -0.03119217596970102,
+      -0.0008467603038742735,
+      -0.0005758128034700894,
+      -0.0030718233551039888,
+      4.81915258047238e-05,
+      -0.0014260090866495,
+      -0.00039444266025352736,
+      0.1638564263775408,
+      0.4447318568851536,
+      -1.5270255182432373,
+      -0.1319546622614571,
+      -0.0722553867353975,
+      0.01908458553047078,
+      0.32101095663345386
+    ]
+  },
+  {
+    "case_id": "case_00171",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir03_small",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.684999999999015,
+    "final_dq": [
+      -9.760602278523354e-06,
+      1.3115317173193987e-05,
+      6.765927552492984e-07,
+      3.1603821836249814e-07,
+      5.3819242780366926e-08,
+      -3.4375798488503976e-08,
+      -9.760606112118308e-06,
+      -1.313807795000334e-05,
+      -6.777230047014507e-07,
+      3.160384392665297e-07,
+      5.381922612143163e-08,
+      3.443014380621894e-08,
+      0.03681907937291241,
+      0.0003115187331153803,
+      -0.0013771175173754203,
+      -0.015632353348485,
+      -0.0005241193488229848,
+      -0.0005498158245531343,
+      -0.001897435859836085,
+      4.012664628098106e-05,
+      -0.0008289407575863129,
+      -0.0004246426809032198,
+      0.08535291254634216,
+      0.45769979421303203,
+      -1.5171944272837758,
+      -0.15778525190491685,
+      -0.07738352749534375,
+      0.015502553937593186,
+      0.2838460366470904
+    ]
+  },
+  {
+    "case_id": "case_00175",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir03_standard",
+      "scales": [
+        -1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.801000000000059,
+    "final_dq": [
+      -1.9456255829151057e-05,
+      2.9842044953545027e-05,
+      1.5409931070577876e-06,
+      6.312459848695868e-07,
+      1.1212670981297358e-07,
+      -7.821789112657569e-08,
+      -1.9456260141938628e-05,
+      -2.98715501195735e-05,
+      -1.5424065534343625e-06,
+      6.312462131605889e-07,
+      1.1212668791434714e-07,
+      7.828315877031646e-08,
+      0.029063263612993315,
+      0.005187558695342984,
+      0.010617913391588399,
+      -0.010216668427663727,
+      -0.0008581274161066504,
+      -0.00045193894882615955,
+      -0.002029178654338978,
+      1.862298000511118e-05,
+      -0.000994378906785706,
+      -0.00026166638152424115,
+      0.023338705030504097,
+      0.2612733793566363,
+      -1.5095494999446066,
+      0.0013475397785169339,
+      -0.08540847359155758,
+      0.003728121762632996,
+      0.19533371826457413
+    ]
+  },
+  {
+    "case_id": "case_00179",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir04_small",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.628999999999046,
+    "final_dq": [
+      -9.962796283579332e-06,
+      1.343976965498739e-05,
+      6.93351883507186e-07,
+      3.225854269886181e-07,
+      5.4936650453772284e-08,
+      -3.522620106388992e-08,
+      -9.962800159828001e-06,
+      -1.3462795063002188e-05,
+      -6.944945814379074e-07,
+      3.2258564949118824e-07,
+      5.493663333896442e-08,
+      3.5281108847712974e-08,
+      0.032203600469096975,
+      0.011235923428850554,
+      -0.003125698577558881,
+      -0.011947539243908262,
+      -0.000892377189469367,
+      -0.0005951361226178932,
+      -0.0019114938783469702,
+      2.8285312129154345e-05,
+      -0.0009401460995140203,
+      -0.0003869355546314393,
+      0.14182731661055453,
+      0.30700248437822714,
+      -1.5166477234769176,
+      -0.0061335452968018025,
+      -0.08267945103052837,
+      0.00020943058398016658,
+      0.22922700742280797
+    ]
+  },
+  {
+    "case_id": "case_00183",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir04_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.549999999999644,
+    "final_dq": [
+      -1.478959797641199e-05,
+      2.1521924368772677e-05,
+      1.1109402897423974e-06,
+      4.789645850283084e-07,
+      8.20196601793189e-08,
+      -5.640998970539265e-08,
+      -1.4789602443798148e-05,
+      -2.1549590739267338e-05,
+      -1.1122916685334535e-06,
+      4.789648273189967e-07,
+      8.20196392758536e-08,
+      5.64737965425935e-08,
+      -0.016958911053199008,
+      -0.008810953919566204,
+      0.000233812911443203,
+      0.0044599923188363465,
+      0.0009552355470770142,
+      0.0006057421644049335,
+      0.001178273631592742,
+      -1.5022748635341483e-05,
+      0.0005444005633475002,
+      0.0003941477084397852,
+      0.028164164443452443,
+      -0.4954751212248468,
+      1.5168212761362319,
+      0.1472695589681103,
+      0.07419935624829002,
+      -0.035111817554895994,
+      -0.32646109158795794
+    ]
+  },
+  {
+    "case_id": "case_00187",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir05_small",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.640499999999039,
+    "final_dq": [
+      -9.920935342472804e-06,
+      1.3372492555785438e-05,
+      6.898767454028829e-07,
+      3.2122992958060385e-07,
+      5.470527343478114e-08,
+      -3.504986513213501e-08,
+      -9.920939210029753e-06,
+      -1.3395463680988956e-05,
+      -6.910168927388008e-07,
+      3.212301517575251e-07,
+      5.470525648504108e-08,
+      3.5104657835804906e-08,
+      -0.05319051472267383,
+      0.000765096221774163,
+      -0.013095073356486108,
+      0.031609415228945774,
+      0.0005741899030453581,
+      0.0006961193734404626,
+      0.0024791513894185505,
+      -7.192507656899069e-05,
+      0.0010231469640951043,
+      0.0005269454720294494,
+      -0.046827381293407945,
+      -0.4644450465777644,
+      1.5310468824485055,
+      0.04644582559739763,
+      0.07997316728550105,
+      -0.014000602488634346,
+      -0.2793290499770513
+    ]
+  },
+  {
+    "case_id": "case_00191",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir05_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.8015000000000585,
+    "final_dq": [
+      -1.9452694204772723e-05,
+      2.9835534495275454e-05,
+      1.540656541778264e-06,
+      6.311284653389823e-07,
+      1.1209963160555246e-07,
+      -7.820082631872005e-08,
+      -1.9452698517932938e-05,
+      -2.9865039134354638e-05,
+      -1.5420699869921955e-06,
+      6.311286936461892e-07,
+      1.1209960969973403e-07,
+      7.826609520998911e-08,
+      -0.0018263050319233432,
+      -0.017151943124521916,
+      0.003920420140568315,
+      0.0006572567641905441,
+      0.00066055318307485,
+      0.0004023423276715557,
+      0.0004888913781816916,
+      -2.2439838680165336e-07,
+      0.00027668228316719053,
+      0.0002355748988380782,
+      -0.04003953065098778,
+      -0.27439281713729796,
+      1.5212782443955029,
+      0.133354226561874,
+      0.0855779474018636,
+      -0.014010926807383748,
+      -0.19760651504769008
+    ]
+  },
+  {
+    "case_id": "case_00195",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir06_small",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.635499999999042,
+    "final_dq": [
+      -9.939114095002356e-06,
+      1.3401701989041372e-05,
+      6.913855301419484e-07,
+      3.2181857466591604e-07,
+      5.4805749997050136e-08,
+      -3.512642421069883e-08,
+      -9.939117966344197e-06,
+      -1.3424696719644628e-05,
+      -6.925267868153193e-07,
+      3.2181879698492253e-07,
+      5.480573302908918e-08,
+      3.518126697137299e-08,
+      0.025060698308923657,
+      0.011669754910430652,
+      -0.0034744428773982026,
+      -0.008166167025062534,
+      -0.001040804640649997,
+      -0.0006371242342176708,
+      -0.0017213656292413696,
+      2.3761129592050854e-05,
+      -0.0008489571211070903,
+      -0.0003915456293758349,
+      0.1017614113094948,
+      0.27737616325454295,
+      -1.5020315842305367,
+      -0.030379462006157664,
+      -0.07457784404673244,
+      0.006575445585703285,
+      0.21280978141024376
+    ]
+  },
+  {
+    "case_id": "case_00199",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir06_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.402999999999171,
+    "final_dq": [
+      -1.0822258516663503e-05,
+      1.4832792365070088e-05,
+      7.653112473555112e-07,
+      3.5041647659829543e-07,
+      5.969237818355561e-08,
+      -3.88773724117445e-08,
+      -1.082226255798486e-05,
+      -1.4856875198693682e-05,
+      -7.665032986211184e-07,
+      3.504167064749327e-07,
+      5.969236043788281e-08,
+      3.893448876831019e-08,
+      0.009339073712420756,
+      0.019151593721239812,
+      -0.019309082544140453,
+      -0.0016819547809653805,
+      -0.0012726909286630628,
+      -0.0006140394680358636,
+      -0.0008430455032726661,
+      5.936449075554989e-06,
+      -0.000514229052714634,
+      -0.00031738377887778217,
+      0.3064038634799851,
+      0.003557496548769033,
+      -1.5048577963671728,
+      0.16550421019848865,
+      -0.046332393671548046,
+      0.010825977364584639,
+      0.16786325773091695
+    ]
+  },
+  {
+    "case_id": "case_00203",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir07_small",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.756999999998975,
+    "final_dq": [
+      -9.506656811123505e-06,
+      1.2709646412964705e-05,
+      6.556390395597137e-07,
+      3.078153415135526e-07,
+      5.2416406008922455e-08,
+      -3.331252020006523e-08,
+      -9.506660588870494e-06,
+      -1.273206604315337e-05,
+      -6.567531904682341e-07,
+      3.078155601587704e-07,
+      5.2416389218562266e-08,
+      3.336613533271012e-08,
+      0.04475216190315461,
+      0.014772612859139845,
+      -0.0013864561258941528,
+      -0.01959326752756457,
+      -0.0012168337363150127,
+      -0.0008041583911318355,
+      -0.0021802517466724207,
+      4.265241959995542e-05,
+      -0.0009712855741210733,
+      -0.0005197474590531125,
+      0.0915789388906535,
+      0.4025976271650459,
+      -1.513179984818873,
+      -0.1722592435873002,
+      -0.075380314682682,
+      0.026549879409278356,
+      0.28559983991954924
+    ]
+  },
+  {
+    "case_id": "case_00207",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir07_standard",
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.867000000000022,
+    "final_dq": [
+      -1.8991714151131516e-05,
+      2.899482930682093e-05,
+      1.4971959653699473e-06,
+      6.159448514178875e-07,
+      1.0867528908007883e-07,
+      -7.599722572883217e-08,
+      -1.899171850919946e-05,
+      -2.902425497255272e-05,
+      -1.4986086918752383e-06,
+      6.159450811820483e-07,
+      1.0867526687831755e-07,
+      7.606262692235749e-08,
+      0.010847872071916372,
+      -0.0012964477924086336,
+      0.003182041155896069,
+      -0.001318734915196158,
+      0.00024169005258250172,
+      6.806008254163621e-06,
+      -0.0006965635661565406,
+      3.966041782987035e-07,
+      -0.00037824943783658447,
+      -6.618927362656813e-05,
+      0.03150593317715881,
+      0.3080335197389399,
+      -1.504456670784383,
+      0.013976197023916942,
+      -0.07240274489230004,
+      6.173174429175802e-05,
+      0.17461595809782746
+    ]
+  },
+  {
+    "case_id": "case_00211",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir08_small",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.676999999999019,
+    "final_dq": [
+      -9.789233924256793e-06,
+      1.3161183517894262e-05,
+      6.789618889130083e-07,
+      3.1696533063386584e-07,
+      5.3977447174363824e-08,
+      -3.4496015934889575e-08,
+      -9.789237763989572e-06,
+      -1.3183982142432988e-05,
+      -6.800939209235226e-07,
+      3.169655517258192e-07,
+      5.3977430408241563e-08,
+      3.455044191543304e-08,
+      -0.02767920077081739,
+      -0.01334636896834232,
+      0.0019112490296976756,
+      0.011586915258148372,
+      0.0011029005229757723,
+      0.000769740034120877,
+      0.0017142656084312966,
+      -3.3073975565370315e-05,
+      0.0007552758733049399,
+      0.0004820506959947271,
+      -0.10616658073496145,
+      -0.3001707633812634,
+      1.5622805382462546,
+      0.10496108863047422,
+      0.0909061639588433,
+      -0.007257552607751086,
+      -0.2318743873089829
+    ]
+  },
+  {
+    "case_id": "case_00215",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir08_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.442499999999149,
+    "final_dq": [
+      -1.0666868194116748e-05,
+      1.4579309597605769e-05,
+      7.52216536266519e-07,
+      3.453844943566802e-07,
+      5.883168455941741e-08,
+      -3.821298279768211e-08,
+      -1.0666872207626975e-05,
+      -1.4603209196740077e-05,
+      -7.534000841168795e-07,
+      3.453847230271848e-07,
+      5.883166640165769e-08,
+      3.826972132552324e-08,
+      -0.013937637061337925,
+      -0.02445736220318998,
+      0.007707592156078593,
+      0.003870902478266584,
+      0.0012113727470706769,
+      0.0006939728387215401,
+      0.0013436872002579915,
+      -9.222263352891468e-06,
+      0.0007048161239665116,
+      0.000382362312819264,
+      -0.31044545141144225,
+      -0.02716272667445687,
+      1.5467445739864973,
+      0.3329413221701649,
+      0.066225055967214,
+      -0.021303212877570525,
+      -0.18314499798716619
+    ]
+  },
+  {
+    "case_id": "case_00219",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir09_small",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.736499999998986,
+    "final_dq": [
+      -9.5782803086872e-06,
+      1.282385497384151e-05,
+      6.615380711767016e-07,
+      3.101345366460056e-07,
+      5.281200707889897e-08,
+      -3.3611865061649947e-08,
+      -9.578284102439989e-06,
+      -1.2846371819821594e-05,
+      -6.626568152697397e-07,
+      3.1013475603135253e-07,
+      5.281199020663501e-08,
+      3.366568884135726e-08,
+      0.03383393346617929,
+      -0.0014018435330813866,
+      0.008838309571601978,
+      -0.016996371477325512,
+      -0.00016323073801070373,
+      -0.00035174169000626375,
+      -0.002218656971143831,
+      3.0026718710683415e-05,
+      -0.0010265536363631084,
+      -0.0003100434205566913,
+      0.04204636048878116,
+      0.4538509719851946,
+      -1.5039003072922863,
+      -0.09275023534964523,
+      -0.0807310283589235,
+      0.004412997579099725,
+      0.2953385970903037
+    ]
+  },
+  {
+    "case_id": "case_00223",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir09_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.864500000000024,
+    "final_dq": [
+      -1.9009106622036782e-05,
+      2.902647816407935e-05,
+      1.4988320433377699e-06,
+      6.165168035546982e-07,
+      1.0880173032648354e-07,
+      -7.608018148870159e-08,
+      -1.9009110978522593e-05,
+      -2.9055907199313595e-05,
+      -1.5002448175102837e-06,
+      6.165170332370105e-07,
+      1.0880170817360006e-07,
+      7.614557874134627e-08,
+      -0.023790350320759053,
+      0.0010241940492430933,
+      -0.00799266007929637,
+      0.011996927926080519,
+      -0.00034029140615557434,
+      0.00014093397578314744,
+      0.0019052071041166987,
+      -2.6052797528464893e-05,
+      0.0008656992691675758,
+      0.00017406328986905299,
+      -0.017807451665495157,
+      -0.32619291766419367,
+      1.5483651505438538,
+      0.12326125493554228,
+      0.08910036817082764,
+      -0.030034894912039343,
+      -0.19064371547859874
+    ]
+  },
+  {
+    "case_id": "case_00227",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir10_small",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.605499999999059,
+    "final_dq": [
+      -1.0048888298763168e-05,
+      1.3578303289107864e-05,
+      7.005077722942675e-07,
+      3.253731785614064e-07,
+      5.5412567680950796e-08,
+      -3.55893032235244e-08,
+      -1.0048892192802178e-05,
+      -1.3601439512489655e-05,
+      -7.016556723282344e-07,
+      3.253734017928165e-07,
+      5.541255030905428e-08,
+      3.564444546862254e-08,
+      0.022266055683440446,
+      -0.002618705725641944,
+      0.004716051265148828,
+      -0.0065933567139759746,
+      -0.00033976752535043144,
+      -0.0003357158342603744,
+      -0.0016437850085442,
+      1.6974755960272493e-05,
+      -0.0007816369065147998,
+      -0.000256484565200088,
+      -0.05195046734966225,
+      0.4103875409964668,
+      -1.5399903479346788,
+      0.003318199825559095,
+      -0.07975760417212056,
+      0.013459260688142334,
+      0.22045149289473315
+    ]
+  },
+  {
+    "case_id": "case_00231",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir10_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 6.182999999999293,
+    "final_dq": [
+      -1.1730070968378653e-05,
+      1.6327391913400226e-05,
+      8.425256831623604e-07,
+      3.798159799742674e-07,
+      6.473143935838653e-08,
+      -4.2794789802792194e-08,
+      -1.1730075155117245e-05,
+      -1.635247733640717e-05,
+      -8.437638283488444e-07,
+      3.7981621432462183e-07,
+      6.473141968490646e-08,
+      4.285393006867669e-08,
+      0.02566263941280991,
+      -0.009544899131762862,
+      0.024396613936315606,
+      -0.008098740610275375,
+      -0.0005303010564741039,
+      -0.0004034403763008126,
+      -0.0019007021231602212,
+      1.9124070525476442e-05,
+      -0.0009270077338523393,
+      -0.0002889093268593183,
+      -0.2858258434589989,
+      0.6412630217009192,
+      -1.5126938512290455,
+      0.2567205715750237,
+      -0.053714908158767075,
+      0.026005498044476116,
+      0.1894966907351275
+    ]
+  },
+  {
+    "case_id": "case_00235",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir11_small",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.662499999999027,
+    "final_dq": [
+      -9.84134303378153e-06,
+      1.324472548294609e-05,
+      6.832771035816998e-07,
+      3.1865266266205454e-07,
+      5.4265397864355546e-08,
+      -3.471498265236242e-08,
+      -9.8413468846137e-06,
+      -1.3267592671730178e-05,
+      -6.844123630092149e-07,
+      3.186528841834035e-07,
+      5.426538087566844e-08,
+      3.476955457735254e-08,
+      -0.024266111354576406,
+      -0.014673796761894018,
+      0.004297600782805106,
+      0.006657078569178119,
+      0.0008111027301955218,
+      0.000509077286366317,
+      0.0012210890336889172,
+      -9.76770747726069e-06,
+      0.0006453044478968301,
+      0.00032645956942747346,
+      -0.0720700538038791,
+      -0.3929923745002045,
+      1.5129684229439357,
+      0.03602219484236638,
+      0.07256621800396837,
+      -0.0065593737919737785,
+      -0.2912172384078195
+    ]
+  },
+  {
+    "case_id": "case_00239",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir11_standard",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.78100000000007,
+    "final_dq": [
+      -1.959925681592879e-05,
+      3.01036315156586e-05,
+      1.554516169513638e-06,
+      6.359672948048742e-07,
+      1.1322231512682901e-07,
+      -7.890354591928407e-08,
+      -1.9599261113441195e-05,
+      -3.0133156791555258e-05,
+      -1.5559296075412108e-06,
+      6.359675225117445e-07,
+      1.1322229363347127e-07,
+      7.896876071307958e-08,
+      -0.03571045281258073,
+      0.00020652456505430475,
+      -0.0150136419269158,
+      0.012138330951448334,
+      -0.0002866292443051016,
+      7.054988003068227e-05,
+      0.002051632716660382,
+      -1.0005845275618305e-05,
+      0.0010395827445486682,
+      0.00011631316281533342,
+      -0.004198616266139441,
+      -0.358088189968061,
+      1.5036927346850617,
+      0.1495093946001572,
+      0.06382202747392862,
+      -0.0212333373947935,
+      -0.1645427513969083
+    ]
+  },
+  {
+    "case_id": "case_00243",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir12_small",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.629999999999045,
+    "final_dq": [
+      -9.959149200283502e-06,
+      1.3433906060671091e-05,
+      6.930490040735521e-07,
+      3.2246733082620806e-07,
+      5.4916491228606306e-08,
+      -3.521083234988323e-08,
+      -9.959153075776092e-06,
+      -1.3456926749801325e-05,
+      -6.941914803382052e-07,
+      3.2246755329885654e-07,
+      5.491647413739308e-08,
+      3.526573013275701e-08,
+      0.026432058090015052,
+      0.009219144468048416,
+      0.009768706254781316,
+      -0.009729930169353489,
+      -0.0006942446612802308,
+      -0.0004280560477676835,
+      -0.0018762335015432134,
+      1.26214079301143e-05,
+      -0.0009530873928562949,
+      -0.0002712313076976495,
+      -0.00015897295349287917,
+      0.3021018656156127,
+      -1.512957122623367,
+      0.0012171824194855154,
+      -0.07937180561008145,
+      0.0034472089879599606,
+      0.22722267313662453
+    ]
+  },
+  {
+    "case_id": "case_00247",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir12_standard",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.48399999999968,
+    "final_dq": [
+      -1.5151350766378696e-05,
+      2.215078844421872e-05,
+      1.1434401142562505e-06,
+      4.907022977302529e-07,
+      8.412430110308994e-08,
+      -5.8058291792182514e-08,
+      -1.5151355246220213e-05,
+      -2.217868383619593e-05,
+      -1.1448008645312284e-06,
+      4.907025388974615e-07,
+      8.412427983845365e-08,
+      5.812244496076968e-08,
+      0.0341169176693954,
+      0.009825447949263473,
+      -0.00021689306080409663,
+      -0.0122415217888347,
+      -0.0005985656067607637,
+      -0.000566168775738617,
+      -0.001633024174360268,
+      2.5671429169508327e-05,
+      -0.0007326985390511743,
+      -0.0004321089686250966,
+      -0.003874890190820369,
+      0.4693959522854565,
+      -1.507428982994105,
+      -0.10550683456064723,
+      -0.06941148063453906,
+      0.019208877115738158,
+      0.32582474169334075
+    ]
+  },
+  {
+    "case_id": "case_00251",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir13_small",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.63949999999904,
+    "final_dq": [
+      -9.924568430961103e-06,
+      1.3378329345068085e-05,
+      6.90178238769053e-07,
+      3.213475723616206e-07,
+      5.472535373017149e-08,
+      -3.5065163589203615e-08,
+      -9.924572299273776e-06,
+      -1.3401305191857466e-05,
+      -6.913186080222735e-07,
+      3.213477945669386e-07,
+      5.472533678869197e-08,
+      3.5119966309037174e-08,
+      -0.03348769877385188,
+      0.0011426439310682106,
+      0.002661604436793469,
+      0.011823912992413591,
+      0.00018832175320231804,
+      0.00028186500453774893,
+      0.0018113694664571387,
+      -2.4614026310776374e-05,
+      0.0009260211961402388,
+      0.00023731112344525627,
+      -0.14302928499782114,
+      -0.4599077424906611,
+      1.5166484708175152,
+      0.017988133496735222,
+      0.06641479236845592,
+      -0.005310834140872162,
+      -0.26702551076286635
+    ]
+  },
+  {
+    "case_id": "case_00255",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir13_standard",
+      "scales": [
+        1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.779500000000071,
+    "final_dq": [
+      -1.9610024165159355e-05,
+      3.0123342693718363e-05,
+      1.5555351694601072e-06,
+      6.363230178134278e-07,
+      1.1330548455791175e-07,
+      -7.895521169428996e-08,
+      -1.9610028461497584e-05,
+      -3.015286940119919e-05,
+      -1.5569486025026327e-06,
+      6.363232454827969e-07,
+      1.1330546308980014e-07,
+      7.902042227992183e-08,
+      0.0012499541456705446,
+      -0.009161004831058743,
+      -0.007702466975385914,
+      -0.0006848286988743097,
+      -0.0004239964370886804,
+      -0.00038118347824282566,
+      -0.0006605250453141536,
+      1.0322509517274787e-05,
+      -0.0003483877187053422,
+      -0.0002976668678056035,
+      0.0682599371192015,
+      0.3633234626622124,
+      -1.5134361642292224,
+      0.020691115324834534,
+      -0.07520675710882604,
+      0.0063586407708824755,
+      0.17498574836561245
+    ]
+  },
+  {
+    "case_id": "case_00259",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir14_small",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.637499999999041,
+    "final_dq": [
+      -9.931838599987e-06,
+      1.3390010567459695e-05,
+      6.907816207597225e-07,
+      3.215829872338001e-07,
+      5.47655368415499e-08,
+      -3.509578053194993e-08,
+      -9.931842469815281e-06,
+      -1.341299585666644e-05,
+      -6.919224337681902e-07,
+      3.2158320949687015e-07,
+      5.4765519898632836e-08,
+      3.5150603274881015e-08,
+      0.021461706393660775,
+      0.009734588428548465,
+      0.006798277513537883,
+      -0.00648508702668425,
+      -0.0008571118060022731,
+      -0.00047972086056516844,
+      -0.0016551750390502893,
+      9.361313819639702e-06,
+      -0.0008340686388713986,
+      -0.00028324235843862775,
+      -0.03437337385728438,
+      0.2790805549830233,
+      -1.522095952060173,
+      -0.016377477555086117,
+      -0.07256934575001141,
+      0.0082067227363027,
+      0.2135679653169006
+    ]
+  },
+  {
+    "case_id": "case_00263",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir14_standard",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.40499999999917,
+    "final_dq": [
+      -1.0814336518682036e-05,
+      1.481985251137915e-05,
+      7.646427794189607e-07,
+      3.5015993785046247e-07,
+      5.964848808008564e-08,
+      -3.8843456470598554e-08,
+      -1.0814340558608461e-05,
+      -1.4843926087001481e-05,
+      -7.658344015699464e-07,
+      3.501601676540525e-07,
+      5.964847033915548e-08,
+      3.8900553794818116e-08,
+      0.018256008339907558,
+      0.01837763344794842,
+      0.015260350209451237,
+      -0.00367026940505095,
+      -0.0011413131931918424,
+      -0.0005450372971614638,
+      -0.0015653170280337087,
+      3.734357263233655e-07,
+      -0.0008239322021225184,
+      -0.00027099386346995767,
+      -0.24331995262228565,
+      0.004368579513923557,
+      -1.5151874184621865,
+      0.1764067023360382,
+      -0.049795783139096696,
+      0.0237913439618108,
+      0.1703171554628053
+    ]
+  },
+  {
+    "case_id": "case_00267",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir15_small",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 4.0,
+      "speed_deg_s": 10.0,
+      "acceleration_deg_s2": 30.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.757999999998974,
+    "final_dq": [
+      -9.503176715401466e-06,
+      1.2704101355223086e-05,
+      6.553526310321836e-07,
+      3.0770265491214964e-07,
+      5.239718537120952e-08,
+      -3.3297986394353943e-08,
+      -9.503180492367578e-06,
+      -1.2726516241741815e-05,
+      -6.564665577027741e-07,
+      3.0770287352960965e-07,
+      5.239716857645378e-08,
+      3.335159134006033e-08,
+      0.03313886547581651,
+      0.01251876890317252,
+      0.00898727704922441,
+      -0.016658331407295817,
+      -0.0010033684295724268,
+      -0.000632629125397683,
+      -0.0022799720626814667,
+      2.5511855676516523e-05,
+      -0.001073295076078333,
+      -0.0003999605175281631,
+      0.02989134026044818,
+      0.3947666515638783,
+      -1.5082670159172835,
+      -0.16109568719986672,
+      -0.07568541533210883,
+      0.029243940632841966,
+      0.287660868067609
+    ]
+  },
+  {
+    "case_id": "case_00271",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "dir15_standard",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 0.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.8430000000000355,
+    "final_dq": [
+      -1.915934092222461e-05,
+      2.930008831481231e-05,
+      1.512976307841817e-06,
+      6.214601407438667e-07,
+      1.0990262361624578e-07,
+      -7.679734955889634e-08,
+      -1.9159345264693267e-05,
+      -2.9329545178779616e-05,
+      -1.5143894264641252e-06,
+      6.21460369867845e-07,
+      1.0990260167097975e-07,
+      7.686270932209743e-08,
+      -0.025695007080662816,
+      -0.016216718393588722,
+      -0.008607458791364632,
+      0.01073822534712191,
+      0.0011255121333388028,
+      0.0006868836049879959,
+      0.0018324962996094651,
+      -1.2626033368548529e-05,
+      0.0008491869668262379,
+      0.0003969581147427434,
+      -0.0450181699572572,
+      -0.29832727620306226,
+      1.547884916645754,
+      0.05572711468018547,
+      0.08501843894247689,
+      -0.014832645009448553,
+      -0.19392820774053007
+    ]
+  },
+  {
+    "case_id": "case_00273",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir0_large",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_error_rad",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:active_tail_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.51999999999966,
+    "final_dq": [
+      -1.4952947698570544e-05,
+      2.1805527461196264e-05,
+      1.1255968393025406e-06,
+      4.842641365195738e-07,
+      8.296759057025696e-08,
+      -5.715333538922267e-08,
+      -1.4952952172136637e-05,
+      -2.1833299150093612e-05,
+      -1.1269525501886645e-06,
+      4.842643782808387e-07,
+      8.29675697093223e-08,
+      5.7217303754532327e-08,
+      0.042261505308508536,
+      0.005183477946320844,
+      0.007891904538760522,
+      -0.020141832892838905,
+      -0.0010632180578154808,
+      -0.0004296751125677118,
+      -0.002524492422734235,
+      1.139300708923994e-05,
+      -0.0012748699175978366,
+      -0.00024387986830257807,
+      0.048530314920831145,
+      0.5048701839584896,
+      -1.501942415678931,
+      -0.2912998270925185,
+      -0.06166870358444328,
+      0.09145912950450608,
+      0.3620974327199834
+    ]
+  },
+  {
+    "case_id": "case_00275",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir0_long",
+      "scales": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.597499999999063,
+    "final_dq": [
+      -1.0078365644509004e-05,
+      1.3625788734891443e-05,
+      7.029606283012438e-07,
+      3.2632768966069514e-07,
+      5.557553873476579e-08,
+      -3.571376448935114e-08,
+      -1.007836954457628e-05,
+      -1.364896264678308e-05,
+      -7.041102960932795e-07,
+      3.263279130690532e-07,
+      5.55755214080834e-08,
+      3.5768986320930404e-08,
+      -0.0308974663223137,
+      -0.024575388769819566,
+      -0.021084726654416137,
+      0.014437706405477759,
+      0.00148874216694544,
+      0.000806960344745463,
+      0.0022250457267837444,
+      -4.96351796999897e-06,
+      0.0010745500247315322,
+      0.00044688925971851916,
+      0.07404384192198878,
+      -0.1862750935007673,
+      1.5165990000636356,
+      0.21948677042412662,
+      0.06165302714189733,
+      -0.023742779674233435,
+      -0.21043028692943125
+    ]
+  },
+  {
+    "case_id": "case_00277",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir1_large",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.743000000000091,
+    "final_dq": [
+      -1.9873860744221074e-05,
+      3.0606979677831824e-05,
+      1.5805377334337632e-06,
+      6.450500002870686e-07,
+      1.1537432572803877e-07,
+      -8.022289359428726e-08,
+      -1.9873865010754612e-05,
+      -3.0636537865036306e-05,
+      -1.5819508547127076e-06,
+      6.450502270275534e-07,
+      1.1537430352009394e-07,
+      8.02879915180269e-08,
+      0.010058156800227341,
+      -0.019192106581536687,
+      0.020595058841457913,
+      -0.0010552960633377984,
+      -0.000139659386657106,
+      -0.00017165208836054507,
+      -0.0005322723664438371,
+      3.0342739089202997e-06,
+      -0.00022355817486493162,
+      -0.00015221449662829355,
+      -0.31639685913949256,
+      0.5378752459585661,
+      -1.5109645434948582,
+      0.26372554557414274,
+      -0.05722132072896086,
+      0.00935217580389994,
+      0.136957201595707
+    ]
+  },
+  {
+    "case_id": "case_00279",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir1_long",
+      "scales": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.966499999999967,
+    "final_dq": [
+      -1.831226298117736e-05,
+      2.7762831141204586e-05,
+      1.4335095618562683e-06,
+      5.93649585179618e-07,
+      1.0388484243465777e-07,
+      -7.276800595702568e-08,
+      -1.8312267393846194e-05,
+      -2.77921009503849e-05,
+      -1.4349191493615947e-06,
+      5.936498178304739e-07,
+      1.0388481971784109e-07,
+      7.283349588979383e-08,
+      0.007191223329834307,
+      0.0009639295309749389,
+      0.00017929077436866806,
+      -0.0019538942471351312,
+      -0.00017340937200887826,
+      -0.00024160065389775443,
+      -0.0010443821865760243,
+      7.2835496999035205e-06,
+      -0.00048809862553768,
+      -0.0002036783211469725,
+      -0.008230517930045436,
+      0.3525392443964817,
+      -1.5010291679297052,
+      -0.0675148856566485,
+      -0.08589527750556879,
+      0.013590949828185643,
+      0.2319123296553713
+    ]
+  },
+  {
+    "case_id": "case_00281",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir2_large",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 5.14099999999987,
+    "final_dq": [
+      -1.717883387978328e-05,
+      2.57272425969352e-05,
+      1.328288789583787e-06,
+      5.566239883025276e-07,
+      9.642135212933695e-08,
+      -6.743250372659244e-08,
+      -1.7178838352445276e-05,
+      -2.5756145116047727e-05,
+      -1.3296874845626688e-06,
+      5.566242256028491e-07,
+      9.642133042157061e-08,
+      6.749785265341487e-08,
+      0.10963291774635177,
+      0.01703713913157032,
+      0.005498122581134485,
+      -0.06378774600798763,
+      -0.0020170896698270186,
+      -0.0014824910664343826,
+      -0.003358924646881238,
+      0.000131085073559495,
+      -0.0013072780699248789,
+      -0.001010984313571784,
+      0.273962540884626,
+      0.4913711109319445,
+      -1.5234339037750813,
+      -0.19263571467107116,
+      -0.07130266595447128,
+      0.027989328888477515,
+      0.3347822047001652
+    ]
+  },
+  {
+    "case_id": "case_00283",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir2_long",
+      "scales": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 6.6094999999990565,
+    "final_dq": [
+      -1.0034181974270212e-05,
+      1.3554622657989389e-05,
+      6.992845550465386e-07,
+      3.248969711028775e-07,
+      5.5331264887664845e-08,
+      -3.552723534268902e-08,
+      -1.0034185865282892e-05,
+      -1.3577740030105013e-05,
+      -7.004315705930871e-07,
+      3.248971942247378e-07,
+      5.533124750160413e-08,
+      3.558233775081036e-08,
+      0.021537350002011752,
+      -0.0030847195977929754,
+      0.009914035480278862,
+      -0.0063080700229171975,
+      -4.2159138647450604e-05,
+      -0.00023779659190361347,
+      -0.0014808926831264624,
+      1.5590481472101776e-05,
+      -0.0006650918365716971,
+      -0.00022430851724231015,
+      -0.14187750497037485,
+      0.46935548474629263,
+      -1.530577138745443,
+      0.06559921282096498,
+      -0.07704816400184604,
+      0.02731658500870219,
+      0.2228039086207989
+    ]
+  },
+  {
+    "case_id": "case_00285",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir3_large",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 12.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "post_hold_s": 5.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit"
+    ],
+    "final_time_s": 4.8070000000000555,
+    "final_dq": [
+      -1.941355934230166e-05,
+      2.976401312757828e-05,
+      1.5369591708942448e-06,
+      6.29837390783796e-07,
+      1.1180275472356361e-07,
+      -7.801335898199244e-08,
+      -1.94135636595255e-05,
+      -2.9793511892924286e-05,
+      -1.538372598875214e-06,
+      6.298376192006477e-07,
+      1.1180273273412586e-07,
+      7.807864134546928e-08,
+      -0.035099633925096,
+      -0.034190770817259644,
+      -0.02552369164357361,
+      0.012457892465421836,
+      0.0012110810557410443,
+      0.0007355462056280471,
+      0.0019099457700215675,
+      -1.7865499615359408e-05,
+      0.000859617584837798,
+      0.0004170905368050012,
+      0.19604603702104223,
+      0.011762218531010662,
+      1.5125152591816895,
+      0.2889528505023133,
+      0.0640964345921613,
+      -0.019069356842630603,
+      -0.142952854248306
+    ]
+  },
+  {
+    "case_id": "case_00287",
+    "candidate": {
+      "kp": [
+        100.0,
+        300.0,
+        100.0,
+        100.0
+      ],
+      "kd": [
+        3.0,
+        5.0,
+        3.0,
+        3.0
+      ]
+    },
+    "motion": {
+      "name": "longdir3_long",
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "amplitude_deg": 8.0,
+      "speed_deg_s": 20.0,
+      "acceleration_deg_s2": 60.0,
+      "cycles": 12,
+      "elbow_offset_deg": -5.0,
+      "post_hold_s": 30.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    },
+    "reason": "post_step_measured_velocity_limit",
+    "exclusions": [
+      "joint22:incomplete_hold_tails",
+      "joint22:post_step_measured_velocity_limit",
+      "joint22:right7_tail_p2p_rad",
+      "joint22:right7_tail_rms_speed_rad_s",
+      "joint23:active_tail_speed_rad_s",
+      "joint23:incomplete_hold_tails",
+      "joint23:post_step_measured_velocity_limit",
+      "joint23:right7_tail_p2p_rad",
+      "joint23:right7_tail_rms_speed_rad_s",
+      "joint24:active_tail_speed_rad_s",
+      "joint24:incomplete_hold_tails",
+      "joint24:post_step_measured_velocity_limit",
+      "joint24:right7_tail_p2p_rad",
+      "joint24:right7_tail_rms_speed_rad_s",
+      "joint25:incomplete_hold_tails",
+      "joint25:post_step_measured_velocity_limit",
+      "joint25:right7_tail_p2p_rad",
+      "joint25:right7_tail_rms_speed_rad_s"
+    ],
+    "final_time_s": 5.012999999999941,
+    "final_dq": [
+      -1.8003119052180956e-05,
+      2.720515911812875e-05,
+      1.4046823913636595e-06,
+      5.835328978225249e-07,
+      1.0179114045241844e-07,
+      -7.130628281549925e-08,
+      -1.800312348505636e-05,
+      -2.7234342203478608e-05,
+      -1.4060897172261017e-06,
+      5.835331320148695e-07,
+      1.0179111801459149e-07,
+      7.137177053654651e-08,
+      0.04150594773930869,
+      0.003939283210896832,
+      -0.0009959728402358342,
+      -0.0071005594604705395,
+      -0.00011033873353629145,
+      -0.0003236859187641049,
+      -0.001379891161424848,
+      2.55116974015265e-05,
+      -0.0006541898196490371,
+      -0.0002974360247016825,
+      0.055414783433976475,
+      0.3662426226392594,
+      -1.5065187289605704,
+      -0.009494344661889857,
+      -0.07715592629145453,
+      -0.00924646291515577,
+      0.2276648273807835
+    ]
+  }
+]

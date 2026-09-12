@@ -4,6 +4,9 @@ on:
     paths:
       - 'experiments/twist2_right_arm_manual/mujoco_pd_multiaxis*.py'
       - 'experiments/twist2_right_arm_manual/test_mujoco_pd_multiaxis.py'
+      - 'experiments/twist2_right_arm_manual/test_mujoco_pd_multiaxis_yaw.py'
+      - 'experiments/twist2_right_arm_manual/mujoco_pd_yaw_regression.py'
+      - 'experiments/twist2_right_arm_manual/test_mujoco_pd_yaw_regression.py'
       - '.github/workflows/mujoco-pd-multiaxis.yml'
   workflow_dispatch:
 permissions:
@@ -34,3 +37,4 @@ jobs:
           test_mujoco_pd_accuracy_stability test_mujoco_pd_minerror test_mujoco_pd_coupled_stress
           test_mujoco_pd_coupled_matrix test_mujoco_pd_operating test_mujoco_pd_perjoint
           test_mujoco_pd_final test_mujoco_pd_multiaxis test_mujoco_pd_multiaxis_yaw
+          test_mujoco_pd_yaw_regression

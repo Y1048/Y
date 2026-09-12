@@ -1,0 +1,10 @@
+{
+  "schema": "g1.pd.multiaxis-yaw.audit.v1",
+  "passed": true,
+  "cases": 462,
+  "all29_500hz_rows": 4978359,
+  "all29_margin_records": 13398,
+  "all_cases_sha256": "f535e597c9971fdcb6a597b16dffe811bda00dcf6f8992b32afd9e304a5f33fb",
+  "source_model_bytes_checked": true,
+  "physical_validation": false
+}

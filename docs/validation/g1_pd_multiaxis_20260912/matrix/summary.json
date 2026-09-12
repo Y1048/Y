@@ -1,0 +1,1379 @@
+{
+  "schema": "g1.pd.multiaxis.summary.v1",
+  "complete": true,
+  "full_study": true,
+  "simulation_only": true,
+  "actual_runs": 288,
+  "completed": 208,
+  "eligible": 208,
+  "phase_counts": {
+    "long": 32,
+    "main": 256
+  },
+  "base_rejections": {
+    "post_step_measured_velocity_limit": 80
+  },
+  "exclusions": {
+    "joint22:active_tail_error_rad": 1,
+    "joint22:active_tail_speed_rad_s": 1,
+    "joint22:incomplete_hold_tails": 76,
+    "joint22:post_step_measured_velocity_limit": 80,
+    "joint22:right7_tail_p2p_rad": 15,
+    "joint22:right7_tail_rms_speed_rad_s": 16,
+    "joint23:active_tail_error_rad": 1,
+    "joint23:active_tail_speed_rad_s": 15,
+    "joint23:incomplete_hold_tails": 76,
+    "joint23:post_step_measured_velocity_limit": 80,
+    "joint23:right7_tail_p2p_rad": 15,
+    "joint23:right7_tail_rms_speed_rad_s": 16,
+    "joint24:active_tail_error_rad": 5,
+    "joint24:active_tail_speed_rad_s": 16,
+    "joint24:incomplete_hold_tails": 76,
+    "joint24:post_step_measured_velocity_limit": 80,
+    "joint24:right7_tail_p2p_rad": 15,
+    "joint24:right7_tail_rms_speed_rad_s": 16,
+    "joint25:active_tail_error_rad": 1,
+    "joint25:active_tail_speed_rad_s": 6,
+    "joint25:incomplete_hold_tails": 76,
+    "joint25:post_step_measured_velocity_limit": 80,
+    "joint25:right7_tail_p2p_rad": 15,
+    "joint25:right7_tail_rms_speed_rad_s": 16
+  },
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.2117986012054719,
+  "minimum_model_hard_margin_rad": 0.2617986012054719,
+  "minimum_stopping_slack_rad": 0.1605986012054719,
+  "simulated_seconds": 4911.685000000705,
+  "ranking": [
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.4,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          100.0,
+          100.0
+        ]
+      },
+      "cases": 144,
+      "passed": 104,
+      "all_pass": false,
+      "worst_proximal_rmse_rad": null,
+      "partial_worst_proximal_rmse_rad": 0.013569643820804708,
+      "max_tail_error_rad": 0.02568845346825044,
+      "max_tail_rms_speed_rad_s": 0.9367712674498943,
+      "failures": [
+        {
+          "case_id": "case_00003",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00007",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00011",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00015",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00019",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00023",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_error_rad",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00027",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00031",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00035",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00039",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:active_tail_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00043",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00047",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00051",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00055",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00059",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_error_rad",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:active_tail_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00063",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00067",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00071",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00075",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00079",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00083",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00087",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:active_tail_speed_rad_s",
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_error_rad",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:active_tail_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00091",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00095",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00099",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00103",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:active_tail_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00107",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00111",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00115",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00119",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00123",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00127",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00129",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:active_tail_error_rad",
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_error_rad",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_error_rad",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:active_tail_error_rad",
+            "joint25:active_tail_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00131",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00133",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00135",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00137",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00139",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00141",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00143",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate": {
+        "kd": [
+          3.0,
+          5.0,
+          3.0,
+          3.0
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          100.0,
+          100.0
+        ]
+      },
+      "cases": 144,
+      "passed": 104,
+      "all_pass": false,
+      "worst_proximal_rmse_rad": null,
+      "partial_worst_proximal_rmse_rad": 0.015149618769343325,
+      "max_tail_error_rad": 0.021071806097731682,
+      "max_tail_rms_speed_rad_s": 0.9021460190750774,
+      "failures": [
+        {
+          "case_id": "case_00147",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00151",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00155",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00159",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00163",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00167",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00171",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00175",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00179",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00183",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00187",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00191",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00195",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00199",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00203",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00207",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00211",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00215",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00219",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00223",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00227",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00231",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00235",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00239",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00243",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00247",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00251",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00255",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00259",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00263",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00267",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00271",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00273",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_error_rad",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:active_tail_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        },
+        {
+          "case_id": "case_00275",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00277",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00279",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00281",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00283",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00285",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit"
+          ]
+        },
+        {
+          "case_id": "case_00287",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "joint22:incomplete_hold_tails",
+            "joint22:post_step_measured_velocity_limit",
+            "joint22:right7_tail_p2p_rad",
+            "joint22:right7_tail_rms_speed_rad_s",
+            "joint23:active_tail_speed_rad_s",
+            "joint23:incomplete_hold_tails",
+            "joint23:post_step_measured_velocity_limit",
+            "joint23:right7_tail_p2p_rad",
+            "joint23:right7_tail_rms_speed_rad_s",
+            "joint24:active_tail_speed_rad_s",
+            "joint24:incomplete_hold_tails",
+            "joint24:post_step_measured_velocity_limit",
+            "joint24:right7_tail_p2p_rad",
+            "joint24:right7_tail_rms_speed_rad_s",
+            "joint25:incomplete_hold_tails",
+            "joint25:post_step_measured_velocity_limit",
+            "joint25:right7_tail_p2p_rad",
+            "joint25:right7_tail_rms_speed_rad_s"
+          ]
+        }
+      ]
+    }
+  ],
+  "selected_simulation_vector": null,
+  "manifest_sha256": "842d3778a7d24cf65d2940d5bf1eacfbd30079d76aca4c2c8d6ec33da06bab6d",
+  "global_optimum_proven": false,
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "scope": "fixed pelvis; synchronous signed four-axis reference; no arbitrary VR, noise, thermal, wrist tuning or physical validation"
+}

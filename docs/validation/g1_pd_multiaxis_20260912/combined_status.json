@@ -1,0 +1,34 @@
+{
+  "complete": true,
+  "formal_counts": {
+    "matrix": {
+      "runs": 288,
+      "completed": 208,
+      "eligible": 208,
+      "rows": 2455975,
+      "margins": 8352
+    },
+    "yaw": {
+      "runs": 462,
+      "completed": 427,
+      "eligible": 409,
+      "rows": 4978359,
+      "margins": 13398
+    }
+  },
+  "selected_simulation_candidate": {
+    "kp": [
+      100.0,
+      300.0,
+      72.0,
+      100.0
+    ],
+    "kd": [
+      1.4,
+      4.0,
+      1.0,
+      1.4
+    ]
+  },
+  "hardware_approved": false
+}

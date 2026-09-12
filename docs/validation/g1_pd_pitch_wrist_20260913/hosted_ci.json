@@ -1,0 +1,17 @@
+{
+  "run_id": 34704567847,
+  "job_id": 103582176999,
+  "commit": "b9c14d2e9f1033eb2f8d40c2ea164bc3db1eb010",
+  "conclusion": "success",
+  "tests": 505,
+  "passed": 505,
+  "skipped": 0,
+  "failed": 0,
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "os": "Ubuntu24.04.5",
+  "test_duration_s": 842.073,
+  "decoded_log_inspected": true,
+  "scope": "regression/component dynamics; formal145cases ran in isolated ChatGPT Linux container"
+}

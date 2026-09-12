@@ -1,0 +1,206 @@
+{
+  "schema": "g1.pd.pitch-wrist.compact-result.v1",
+  "base_commit": "43fd4ea11a2d057853688a943a16a6d0505e21fb",
+  "tested_commit": "b9c14d2e9f1033eb2f8d40c2ea164bc3db1eb010",
+  "simulation_only": true,
+  "hardware_approved": false,
+  "hardware_config_modified": false,
+  "recommended_hardware_gains": null,
+  "actual_runs": 145,
+  "unique_gain_specs": 26,
+  "completed": 133,
+  "eligible": 133,
+  "stage_counts": {
+    "pitch": 45,
+    "wrist": 36,
+    "validation": 64,
+    "regression": 0
+  },
+  "selected_filtered_pipeline_spec": null,
+  "no_selection_reason": "all four finalists pass15of16; no eligible regression entrants",
+  "base_rejections": {
+    "joint_stopping_envelope_exhausted": 7,
+    "post_step_measured_velocity_limit": 5
+  },
+  "minimum_soft_margin_rad": 0.21179860120574887,
+  "minimum_model_hard_margin_rad": 0.2617986012057489,
+  "minimum_stopping_slack_rad": -0.019975967903626435,
+  "negative_slack_belongs_to_rejected_runs": true,
+  "all29_500hz_rows": 2392319,
+  "all29_margin_records": 4205,
+  "automatic_audit_passed": true,
+  "standalone_audit_passed": true,
+  "all_cases_csv_sha256": "87f00b26602d6fc217554a2df8e085b8688f7e129f9bd3b461e0fb3d0e1eecc6",
+  "manifest_sha256": "db5f53b89555ba3cf5538cec36bed63660039e086609ef7da4a42438049bf820",
+  "simulated_seconds": 4784.481999999368,
+  "compute_location": "isolated ChatGPT Linux container, not user PC or GitHubCI",
+  "python": "3.13.5",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "workers": 4,
+  "windows_formal_runs": 0,
+  "source_script_sha256": "f0a088befec023ba5c10f4f16ddd3771b0e1dbc16ceeabf9fe8387be05e9649d",
+  "fixed_other_proximal_gains": {
+    "roll23": [
+      300,
+      3
+    ],
+    "yaw24": [
+      64,
+      1.2
+    ],
+    "elbow25": [
+      100,
+      1.4
+    ]
+  },
+  "requires_command_prefilter": true,
+  "command_prefilter_interval_s": 0.02,
+  "pd_only_optimum_proven": false,
+  "global_optimum_proven": false,
+  "same_known12_comparison": [
+    {
+      "pitch": [
+        100,
+        1.4
+      ],
+      "wrist": [
+        20,
+        1
+      ],
+      "known_passes": 12,
+      "expanded_passes": 15,
+      "expanded_total": 16,
+      "worst_rmse_rad": 0.014014588331269116,
+      "wrist_worst_rmse_rad": 0.013735342449834119
+    },
+    {
+      "pitch": [
+        120,
+        1
+      ],
+      "wrist": [
+        20,
+        1
+      ],
+      "known_passes": 12,
+      "expanded_passes": 15,
+      "expanded_total": 16,
+      "worst_rmse_rad": 0.013758132191587157,
+      "wrist_worst_rmse_rad": 0.013758132191587157
+    },
+    {
+      "pitch": [
+        120,
+        1
+      ],
+      "wrist": [
+        30,
+        1
+      ],
+      "known_passes": 12,
+      "expanded_passes": 15,
+      "expanded_total": 16,
+      "worst_rmse_rad": 0.0118017425371684,
+      "wrist_worst_rmse_rad": 0.009424094299826978
+    },
+    {
+      "pitch": [
+        120,
+        1
+      ],
+      "wrist": [
+        30,
+        1.4
+      ],
+      "known_passes": 12,
+      "expanded_passes": 15,
+      "expanded_total": 16,
+      "worst_rmse_rad": 0.011802825299733366,
+      "wrist_worst_rmse_rad": 0.010079523762354815
+    }
+  ],
+  "known12_all7_improvement_percent": 15.789588261850337,
+  "known12_wrist_improvement_percent": 31.38799171373559,
+  "new_failed_scenario": {
+    "name": "pitch_wrist_mix_a",
+    "clock": "send",
+    "mass_scale": 1.1,
+    "damping_scale": 0.7,
+    "friction_scale": 0.2,
+    "torque_delay_s": 0.006,
+    "torque_lag_s": 0.006,
+    "dt_s": 0.001,
+    "measured_hardware_parameters": false
+  },
+  "finalist_failures": [
+    {
+      "pitch": [
+        100,
+        1.4
+      ],
+      "wrist": [
+        20,
+        1
+      ],
+      "joint": 24,
+      "signed_speed_rad_s": -1.5158214487348374,
+      "time_s": 8.429
+    },
+    {
+      "pitch": [
+        120,
+        1
+      ],
+      "wrist": [
+        20,
+        1
+      ],
+      "joint": 25,
+      "signed_speed_rad_s": -1.5183046717155966,
+      "time_s": 4.118
+    },
+    {
+      "pitch": [
+        120,
+        1
+      ],
+      "wrist": [
+        30,
+        1
+      ],
+      "joint": 24,
+      "signed_speed_rad_s": -1.5035593181104545,
+      "time_s": 8.428
+    },
+    {
+      "pitch": [
+        120,
+        1
+      ],
+      "wrist": [
+        30,
+        1.4
+      ],
+      "joint": 24,
+      "signed_speed_rad_s": -1.5211562713688025,
+      "time_s": 8.428
+    }
+  ],
+  "raw_archive": {
+    "file": "G1_PD_PitchWrist_20260913_full.zip",
+    "bytes": 1898970936,
+    "files": 364,
+    "sha256": "7de22496e7c970f3488d62bd467f67cc5329b6407fe24be40faa6160b890f3f3",
+    "CRC_test_passed": true,
+    "location": "current conversation sandbox; not copied to PC or uploaded to GitHub"
+  },
+  "compact_evidence_archive": {
+    "file": "G1_PD_PitchWrist_evidence_20260913.zip",
+    "bytes": 204141,
+    "files": 29,
+    "sha256": "ebdaf4a1b366cafafb0687f5c161b271a1400a51f0e6ba5b5d213699db68e851",
+    "contents": "all145CSV, plans, failures, metrics, audits, hashes, detailed report",
+    "location": "current conversation sandbox; not fully uploaded to GitHub"
+  }
+}

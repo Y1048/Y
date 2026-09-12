@@ -1498,3 +1498,48 @@ study source-hash dependency set. Its blob b8b8e2f793c9b295e8048ab0efec62a085385
 was checked after transfer. No gains, dynamics, grids, input, guards or thresholds
 changed. Preserve the failed import log separately; rerun dedicated tests before
 formal execution in the isolated Linux runtime. PC space remains insufficient.
+
+
+## 2026-09-13 — pitch/wrist investigation completed; no all-condition candidate
+
+Base43fd4ea; implementation1db575f, provenance fixb9c14d2e9f1033eb2f8d40c2ea164bc3db1eb010.
+Executed145NEWformal integrations in isolated ChatGPT Linux, not onPC/hostedCI.
+26distinct full gain specs; phases45pitch+36wrist+64recordedvalidation+0regression.
+133completed/eligible;12refused (7stopping-envelope,5post-step speed). All four
+finalists15/16; regression entry condition not met, plan empty, no inherited
+synthetic passes. selected_filtered_pipeline_spec is null. Do not claim a winner.
+
+Under the SAME12known conditions,pitch120/1+wrist27 30/1 gives worstall7RMSE
+0.0118017425371684rad versus baseline0.014014588331269116 (15.7895883%lower);
+wristerror0.009424094299826978 versus0.013735342449834119 (31.3879917%lower).
+Otherroll/yaw/elbow fixed300/3,64/1.2,100/1.4. Fixedcausal20mscommand filter,
+original unsmoothed outgoing-goal score. Same known1618target episode, not new
+operator data or motor acceptance evidence. No gains/model/threshold retuning
+after validation. The research adapter extends only pitchcap160/wrist27cap40;
+real100validator unchanged. No bare-PD or realG1approval.
+
+All4fail sendclock newmix_a (mass1.1,damping0.7,friction0.2,torquedelay6ms,lag6ms,
+dt1ms). Baseline failsyaw24;120/1+wrist20/1failselbow25; bothwrist30finalists
+failyaw24. Correct reading: offline1.5rad/s criterion exceeded, not proof of
+physical instability or positional contact. Newmix_b andother15cells pass.
+Globalsoft/modelhardmin0.21179860120574887/0.2617986012057489rad. Stopping slack
+-0.019975967903626435rad is fromREJECTEDruns; do not report safe positive margins.
+All29reserve0.05,pre/post/final,torque/speed/settlingchecks unchanged.
+
+Automatic and separateaudits passed:145full29traces,2392319sample rows,4205minima;
+CSVsha87f00b26602d6fc217554a2df8e085b8688f7e129f9bd3b461e0fb3d0e1eecc6.
+Dedicated28passWindows/28passLinux. Inspectedhosted505/505pass,0skips/failures,
+run34704567847/job103582176999 onb9c14d2,includingC++parity (842.073s).
+FormalenvPython3.13.5/MuJoCo3.3.7/NumPy2.4.6; hostedtestsPython3.11.16.
+Windowsformalstart refused disk beforecreatingoutput; no oldlogsdeleted.
+Portablemissingtupledependency fixed beforeformalruns; no changed dynamics.
+
+Report:docs/G1_PD_PITCH_WRIST_20260913.md; compactreceipts in
+docs/validation/g1_pd_pitch_wrist_20260913/. FullCSV/plans/metrics/failures/audits
+are in attached204141byte evidenceZIP; fullraw1,898,970,936byte/364fileZIP in
+conversation sandbox,NOT PC Documents orGitHub. RawZIPCRCpassed;sha
+7de22496e7c970f3488d62bd467f67cc5329b6407fe24be40faa6160b890f3f3.
+Do not claim the entire raw/evidence archive was pushed. All260protectedhashes
+anddirtyliveGitstatusunchanged. NoG1,DDS/SDK,actuation,ARM,VR/IK/real gain/model
+edit orlaunchunblock. Nextallowedofflinework: separate yaw/elbow delay study
+then fulldeclared regression. Preserve this no-candidate result unchanged.

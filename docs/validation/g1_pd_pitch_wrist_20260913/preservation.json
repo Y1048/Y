@@ -1,0 +1,13 @@
+{
+  "protected_preexisting_files": 260,
+  "all_protected_sha256_unchanged": true,
+  "live_status_unchanged": true,
+  "live_status_sha256": "e79fe8106adea2d074e69457730370225ab9b0fe7ca647825e46298cc297b9de",
+  "live_status_bytes": 22922,
+  "G1_connected": false,
+  "DDS_SDK_initialized": false,
+  "actuation_or_ARM_deployment": false,
+  "IK_or_VR_or_real_gain_changes": false,
+  "PC_raw_formal_output_created": false,
+  "free_disk_bytes_at_check": 71714021376
+}

@@ -1,0 +1,9 @@
+{
+  "cohort": "ONLY22completed_causal_cases; not a fully passing vector",
+  "cases": 22,
+  "max_final_error_rad": 0.01022950668285045,
+  "max_final_speed_rad_s": 2.651118543884836e-07,
+  "max_final_p2p_rad": 2.114443026224322e-08,
+  "all24_max_torque_limiting_ratio": 0.0,
+  "all24_max_clipping_ratio": 0.0
+}

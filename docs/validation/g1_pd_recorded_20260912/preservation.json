@@ -1,0 +1,13 @@
+{
+  "base": "f5672cdd28ddc93cc0e89a98f1af6169b7763f09",
+  "implementation": "5398312463bcd29864b20bb7859d406e1c020a91",
+  "protected_hash_count": 438,
+  "protected_hashes_unchanged": true,
+  "original_dirty_live_status_unchanged": true,
+  "live_status_sha256": "e79fe8106adea2d074e69457730370225ab9b0fe7ca647825e46298cc297b9de",
+  "g1_accessed": false,
+  "dds_sdk_created": false,
+  "hardware_gains_changed": false,
+  "ik_changed": false,
+  "robot_launch_blocks_removed": false
+}

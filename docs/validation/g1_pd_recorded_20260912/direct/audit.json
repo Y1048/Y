@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "cases": 24,
+  "all29_500hz_rows": 43080,
+  "all29_margin_records": 696,
+  "all_cases_sha256": "710b9435f3daf472ed57be6835dc80712fe6710d5e34ed1b01fd25beb3c85024",
+  "recorded_input_reparsed": true,
+  "source_model_bytes_checked": true,
+  "scope": "all29sampled traces, source-target timing, gains/PD/limiter, endpoint quality and guard extrema; not independent continuous physics or robot response",
+  "physical_validation": false
+}

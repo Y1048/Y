@@ -1,0 +1,471 @@
+{
+  "raw_path": "C:\\Users\\user\\Documents\\G1_PD_RecordedRamp_20260912",
+  "files": 116,
+  "bytes": 342550319,
+  "inventory": {
+    "all_cases.csv": {
+      "bytes": 5531,
+      "sha256": "c47312ce4fdc8aab8e9e0494772732bd642481dae1530ec3ef81732db3a61772"
+    },
+    "all_joint_margins.csv": {
+      "bytes": 47425,
+      "sha256": "4e9575f42de9c932d5c35bdf9f2d876d31a90d7aa1817f7ae63c0214cf85e011"
+    },
+    "audit.json": {
+      "bytes": 467,
+      "sha256": "752831805af6a8e5f364feae4c72ff3dc3fcc18b65b906513ae468dd53ef47b4"
+    },
+    "cases/case_0000.json": {
+      "bytes": 28029,
+      "sha256": "d9d4b683118052572a49694e5e333a73b0fcd91092d2fa1160c66c47c5b41060"
+    },
+    "cases/case_0001.json": {
+      "bytes": 28037,
+      "sha256": "89f9faec25a0ab7e53986bb160abc66ce5e8a52c65e8298895756dd89615f652"
+    },
+    "cases/case_0002.json": {
+      "bytes": 28296,
+      "sha256": "528a8143cd0a64392271b319fd1984b1bd3248d5a482e47937954a149a8e1e08"
+    },
+    "cases/case_0003.json": {
+      "bytes": 28079,
+      "sha256": "c5efff0fa0c05b652489f8bfaa99fce645ef5226e7ef0205de544dbf7517ebbc"
+    },
+    "cases/case_0004.json": {
+      "bytes": 28254,
+      "sha256": "efc981935a7531b8e518d414cd376b538dcbfc2333348c2a16b45cfacf513176"
+    },
+    "cases/case_0005.json": {
+      "bytes": 28436,
+      "sha256": "7326765daf0e921b6597b49c196801edd12bb49ce73786afb3538c52c03d4f4b"
+    },
+    "cases/case_0006.json": {
+      "bytes": 28040,
+      "sha256": "da2752fd17da99e60217f7a249bac29645fb1c11a3ee2c8f586adb031b6f1646"
+    },
+    "cases/case_0007.json": {
+      "bytes": 28043,
+      "sha256": "b7bc7b3cdd53cc4401d9a836706696e09ae2cc32533a6dd8f117f7c039160675"
+    },
+    "cases/case_0008.json": {
+      "bytes": 28292,
+      "sha256": "86e5f60d5b61bb7acd91a1b6b25a6907aa686f1c435140d4db3cdd1fc0d20b12"
+    },
+    "cases/case_0009.json": {
+      "bytes": 28203,
+      "sha256": "0bd9d8dcc8c64b721db0de9141f8f6c0a91ec360c0dd8142078709518e93dbfc"
+    },
+    "cases/case_0010.json": {
+      "bytes": 28270,
+      "sha256": "237b7eba9aa16b2c69f8ece5d81b138f403bbb84c9ce9b814be5a052e4cfad1c"
+    },
+    "cases/case_0011.json": {
+      "bytes": 28453,
+      "sha256": "296a9df5bfa87552f0dada0629e584950453cd5d3498cf29b37a4930089cd9dc"
+    },
+    "cases/case_0012.json": {
+      "bytes": 28031,
+      "sha256": "0b041ba4e28efc562d71d8ee0f49ed25898af80ab15c99dad573cb3d32577aea"
+    },
+    "cases/case_0013.json": {
+      "bytes": 28038,
+      "sha256": "7fbcb59241a854450df75c370f796062c30cfd61573589f84c1ea58a7df0a2eb"
+    },
+    "cases/case_0014.json": {
+      "bytes": 28298,
+      "sha256": "f49b5aa524610dca5d87d8a5ba9f7de2b9f55a917eb7ec0f9e27e564de603d93"
+    },
+    "cases/case_0015.json": {
+      "bytes": 28066,
+      "sha256": "fe274d4d2db6056e11e8dfdcc0c35959900fb2e7085ccdeca8bc10f9bf94d5c0"
+    },
+    "cases/case_0016.json": {
+      "bytes": 28248,
+      "sha256": "55ca5d4b36c72c2d1871055e989d98aa487fbbe0cd30feb6de6ce7bfa21e113d"
+    },
+    "cases/case_0017.json": {
+      "bytes": 28424,
+      "sha256": "fb0fb762d0db8a9ea1cf8c58a617b9aa20aac8da72ec9d80d09b9203e1971f77"
+    },
+    "cases/case_0018.json": {
+      "bytes": 28027,
+      "sha256": "bfb1c7ddb22cdcd4a75758c085a741aa2e7118dd05fbe538f625e93eafb7ccbf"
+    },
+    "cases/case_0019.json": {
+      "bytes": 28040,
+      "sha256": "967d47a08200fa38e317919371956f6ab9d9107f5691f99f5ecc1100bb55a27e"
+    },
+    "cases/case_0020.json": {
+      "bytes": 28286,
+      "sha256": "ceac203ccd58206d663531540dad538191d23f2aa45ceb3d77ae16f7d1c2569f"
+    },
+    "cases/case_0021.json": {
+      "bytes": 28197,
+      "sha256": "0f15d0bcba069de3a2467358dbb81585059f221d93a0c1113e63f7774c68783a"
+    },
+    "cases/case_0022.json": {
+      "bytes": 28263,
+      "sha256": "82ec8ae88211f90895ecb58df821f86a4581460ae865b121ef8a43ef33c70a77"
+    },
+    "cases/case_0023.json": {
+      "bytes": 28434,
+      "sha256": "61a7e178db923acda7d01741e20d4ee579b138d6cb1ec86c27fa781be7a5f399"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/joint_limit_guard.py": {
+      "bytes": 9524,
+      "sha256": "79fedc75b0d338c4c32d7bf25d539ecf47f3b786cffeb3a1eeced43c62602ca2"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_contract.py": {
+      "bytes": 6416,
+      "sha256": "c16f65cc16abc7be6e54486826fe5de75512d57f877be04fccd4534e40e7db13"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_coupled_stress.py": {
+      "bytes": 19731,
+      "sha256": "a85ccaf5cce54ae3769a907c8fef46544ffe7935393b5c930fffecbec6ebcfd6"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_expand.py": {
+      "bytes": 11834,
+      "sha256": "7baa8d173a027e8d9244ffd48ea74fb3273229388c4c3171f8b3875ca95047e4"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_expand_audit.py": {
+      "bytes": 11476,
+      "sha256": "261c2105590eb833eab9ae19b531744b229755c99ce38da1346af1483f069910"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_fixture.py": {
+      "bytes": 1789,
+      "sha256": "7f9eec1c2be83c434b97282acaae62af1f3a8d79d7f7c9b40e90dc4941be850f"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_independent_study.py": {
+      "bytes": 17468,
+      "sha256": "69722cd68780a20b0eaa663a24a08f6a697b23fa8308321fe9bc7fffcfc51daf"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_independent_timing.py": {
+      "bytes": 14637,
+      "sha256": "9769340a87b3a1ae7c0299ddde326e188979cf53abf0a42fe24343d2d935821d"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_motor_stress.py": {
+      "bytes": 7699,
+      "sha256": "7203e5989f72acf48c17da47866fb537b345a80d7b3693b5f6dfb35f1d3ba920"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_multiaxis.py": {
+      "bytes": 10363,
+      "sha256": "3a90257b1864d3bebd7e5285c2b5ae26ac8afa2e3eeadb576ce955a82a31d4cb"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_multiaxis_study.py": {
+      "bytes": 15421,
+      "sha256": "9d662f064380af4079782064e33e667c24d57870697c384e506dc6286e003f0d"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_operating_core.py": {
+      "bytes": 14220,
+      "sha256": "240522131ae6297f837c32c8c9e086fba132ba4bb17b6b52b2d59ccfa8e58e8d"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_operating_study.py": {
+      "bytes": 16280,
+      "sha256": "0cc084897cb0c6b5aaeade0173515154634bac22195766e7e0c4b6e0d7bb76fc"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_perjoint.py": {
+      "bytes": 7319,
+      "sha256": "ddb99defd26578a9de7dcf9b45c13c68c1982ecba3fc58811861df7337c1f0ee"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_recorded_core.py": {
+      "bytes": 12409,
+      "sha256": "70c1c601dd5083023328fce7eed98d95f904a567aef81c8da3a6e5ff30c82c70"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_recorded_ramp_core.py": {
+      "bytes": 9569,
+      "sha256": "266be9c344efb372979ce81c731f0f48982c559e3ca530ccaed78d856de5f9a7"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_recorded_ramp_study.py": {
+      "bytes": 19670,
+      "sha256": "0f7e799de7d44bf9aa70baee55f6dc9fb3e79efb37971d886a3034f777a0c6e9"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_recorded_study.py": {
+      "bytes": 18587,
+      "sha256": "186a373273597317c2da7e1f48874528724494e820c04f445779d4a7f81889fe"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_recording.py": {
+      "bytes": 9653,
+      "sha256": "785a865c5404c890a7d266f737db59f6c3739753e2c010f8c069fa45cdab8301"
+    },
+    "frozen_source/experiments/twist2_right_arm_manual/mujoco_pd_sweep.py": {
+      "bytes": 21728,
+      "sha256": "347f25a3fe9e019b7f9afcc4811d7cf1b26ae40b13dc78d2fc9579c633a0fe97"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/g1_29dof.xml": {
+      "bytes": 36695,
+      "sha256": "5a7f31b62a02dc86546046fb8f23dd70663f8fadc3fc49f68758bbe54ebf921a"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/head_link.STL": {
+      "bytes": 337584,
+      "sha256": "d297328b3569fc85074355e76cba6c889d19de5361224bcd3c5b8ce82e13b9b6"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_ankle_pitch_link.STL": {
+      "bytes": 71184,
+      "sha256": "d49e3abc6f5b12e532062cd575b87b5ef40cd2a3fc18f54a1ca5bba4f773d51d"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_ankle_roll_link.STL": {
+      "bytes": 653384,
+      "sha256": "c4092af943141d4d9f74232f3cfa345afc6565f46a077793b8ae0e68b39dc33f"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_elbow_link.STL": {
+      "bytes": 88784,
+      "sha256": "fa752198accd104d5c4c3a01382e45165b944fbbc5acce085059223324e5bed3"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_hip_pitch_link.STL": {
+      "bytes": 181684,
+      "sha256": "4725168105ee768ee31638ef22b53f6be2d7641bfd7cfefe803488d884776fa4"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_hip_roll_link.STL": {
+      "bytes": 192184,
+      "sha256": "91f25922ee8a7c3152790051bebad17b4d9cd243569c38fe340285ff93a97acf"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_hip_yaw_link.STL": {
+      "bytes": 296284,
+      "sha256": "a16d88aa6ddac8083aa7ad55ed317bea44b1fa003d314fba88965b7ed0f3b55b"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_knee_link.STL": {
+      "bytes": 854884,
+      "sha256": "8d92b9e3d3a636761150bb8025e32514c4602b91c7028d523ee42b3e632de477"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_rubber_hand.STL": {
+      "bytes": 2287484,
+      "sha256": "cff2221a690fa69303f61fce68f2d155c1517b52efb6ca9262dd56e0bc6e70fe"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_shoulder_pitch_link.STL": {
+      "bytes": 176784,
+      "sha256": "f0d1cfd02fcf0d42f95e678eeca33da3afbcc366ffba5c052847773ec4f31d52"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_shoulder_roll_link.STL": {
+      "bytes": 400284,
+      "sha256": "fb9df21687773522598dc384f1a2945c7519f11cbc8bd372a49170316d6eee88"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_shoulder_yaw_link.STL": {
+      "bytes": 249184,
+      "sha256": "1aa97e9748e924336567992181f78c7cd0652fd52a4afcca3df6b2ef6f9e712e"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_wrist_pitch_link.STL": {
+      "bytes": 85984,
+      "sha256": "b251d8e05047f695d0f536cd78c11973cfa4e78d08cfe82759336cc3471de3a9"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_wrist_roll_link.STL": {
+      "bytes": 356184,
+      "sha256": "edc387c9a0ba8c2237e9b296d32531426fabeb6f53e58df45c76106bca74148c"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_wrist_yaw_link.STL": {
+      "bytes": 318684,
+      "sha256": "83f8fb3a726bf9613d65dd14f0f447cb918c3c95b3938042a0c9c09749267d3b"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/logo_link.STL": {
+      "bytes": 243384,
+      "sha256": "8571a0a19bc4916fa55f91449f51d5fdefd751000054865a842449429d5f155b"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/pelvis.STL": {
+      "bytes": 1060884,
+      "sha256": "5ba6bbc888e630550140d3c26763f10206da8c8bd30ed886b8ede41c61f57a31"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/pelvis_contour_link.STL": {
+      "bytes": 1805184,
+      "sha256": "5cc5c2c7a312329e3feeb2b03d3fc09fc29705bd01864f6767e51be959662420"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_ankle_pitch_link.STL": {
+      "bytes": 71184,
+      "sha256": "15be426539ec1be70246d4d82a168806db64a41301af8b35c197a33348c787a9"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_ankle_roll_link.STL": {
+      "bytes": 653784,
+      "sha256": "4b66222ea56653e627711b56d0a8949b4920da5df091da0ceb343f54e884e3a5"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_elbow_link.STL": {
+      "bytes": 88784,
+      "sha256": "1be925d7aa268bb8fddf5362b9173066890c7d32092c05638608126e59d1e2ab"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_hip_pitch_link.STL": {
+      "bytes": 181284,
+      "sha256": "e4f3c99d7f4a7d34eadbef9461fc66e3486cb5442db1ec50c86317d459f1a9c6"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_hip_roll_link.STL": {
+      "bytes": 192684,
+      "sha256": "4c254ef66a356f492947f360dd931965477b631e3fcc841f91ccc46d945d54f6"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_hip_yaw_link.STL": {
+      "bytes": 296284,
+      "sha256": "e479c2936ca2057e9eb2f7dff6c189b7419d7b8484dea0b298cbb36a2a6aa668"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_knee_link.STL": {
+      "bytes": 852284,
+      "sha256": "63c4008449c9bbe701a6e2b557b7a252e90cf3a5abcf54cee46862b9a69f8ec8"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_rubber_hand.STL": {
+      "bytes": 2192684,
+      "sha256": "99533b778bca6246144fa511bb9d4e555e075c641f2a0251e04372869cd99d67"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_shoulder_pitch_link.STL": {
+      "bytes": 176784,
+      "sha256": "24cdb387e0128dfe602770a81c56cdce3a0181d34d039a11d1aaf8819b7b8c02"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_shoulder_roll_link.STL": {
+      "bytes": 401884,
+      "sha256": "962b97c48f9ce9e8399f45dd9522e0865d19aa9fd299406b2d475a8fc4a53e81"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_shoulder_yaw_link.STL": {
+      "bytes": 249984,
+      "sha256": "a0b76489271da0c72461a344c9ffb0f0c6e64f019ea5014c1624886c442a2fe5"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_wrist_pitch_link.STL": {
+      "bytes": 79584,
+      "sha256": "d22f8f3b3127f15a63e5be1ee273cd5075786c3142f1c3d9f76cbf43d2a26477"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_wrist_roll_link.STL": {
+      "bytes": 356084,
+      "sha256": "a7ee9212ff5b94d6cb7f52bb1bbf3f352194d5b598acff74f4c77d340c5b344f"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_wrist_yaw_link.STL": {
+      "bytes": 341484,
+      "sha256": "bc9dece2d12509707e0057ba2e48df8f3d56db0c79410212963a25e8a50f61a6"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/torso_link.STL": {
+      "bytes": 2232984,
+      "sha256": "e96d023f0368a4e3450b86ca5d4f10227d8141156a373e7da8cb3c93266523e0"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/waist_roll_link.STL": {
+      "bytes": 24184,
+      "sha256": "34f0aa73f41131230be4d25876c944fdf6c24d62553f199ff8b980c15e8913df"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/waist_support_link.STL": {
+      "bytes": 150484,
+      "sha256": "1fae9e1bb609848a1667d32eed8d6083ae443538a306843056a2a660f1b2926a"
+    },
+    "frozen_source/MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/waist_yaw_link.STL": {
+      "bytes": 336284,
+      "sha256": "2883f20e03f09b669b5b4ce10677ee6b5191c0934b584d7cbaef2d0662856ffb"
+    },
+    "frozen_source/references/lower_body/twist2_deploy/cpp_g1_twist2/twist2_common.hpp": {
+      "bytes": 12232,
+      "sha256": "2db4dea94bf469429010563bee36f1cab8005d688c87a2eb8772aca1f51dbba6"
+    },
+    "full_state/case_0000.npz": {
+      "bytes": 13881500,
+      "sha256": "02a8c6fd8002a0393e41b3c1e15fe66ead653694d5651a46ae147211be8c9a1b"
+    },
+    "full_state/case_0001.npz": {
+      "bytes": 13880787,
+      "sha256": "a128934f31227d8d3f3d59c0242d2e251af5135738265d20946db468f2a024b6"
+    },
+    "full_state/case_0002.npz": {
+      "bytes": 13882521,
+      "sha256": "0c8f8970997d71a5f944a3a3d1768a33a0e6525bab481df71f6d0f50001eb1a5"
+    },
+    "full_state/case_0003.npz": {
+      "bytes": 4122458,
+      "sha256": "8cae0d2b306c9d43fb4ec3f7c9e0dc563ce3ad93acb9a4d639ed56eb1fb66393"
+    },
+    "full_state/case_0004.npz": {
+      "bytes": 13853580,
+      "sha256": "7700de1bf066b601d8bb08792fa058b020c2205b4d3d22883a991c6d6eed7173"
+    },
+    "full_state/case_0005.npz": {
+      "bytes": 13831799,
+      "sha256": "059b69fb36a67680aec1db09226259802a1e36f65337515ae1bd9b6d8844191b"
+    },
+    "full_state/case_0006.npz": {
+      "bytes": 13721207,
+      "sha256": "3b16771dcc830b4f890abcf300d5d1e09b8bcfd67817282bbabd6acf0920c394"
+    },
+    "full_state/case_0007.npz": {
+      "bytes": 13718166,
+      "sha256": "b599b5f372d98e7fcd71f67d2c9e362cb8227d1a342467c94207f10a28346ae1"
+    },
+    "full_state/case_0008.npz": {
+      "bytes": 13719998,
+      "sha256": "84ef3085c93e15ec2b61225702e3f4bef0074a01f90d7817f47f4d4aa22db153"
+    },
+    "full_state/case_0009.npz": {
+      "bytes": 13716186,
+      "sha256": "e43fefe27345c3c16db0513ba00e596d1f7cfb718763016dc52e9a6058ba63c6"
+    },
+    "full_state/case_0010.npz": {
+      "bytes": 13691270,
+      "sha256": "b05284c3e25813b09010bf528153ae5edc74d9372e80a8a51331fa2687ce4fb2"
+    },
+    "full_state/case_0011.npz": {
+      "bytes": 13720021,
+      "sha256": "cceda1fbcac868205e24cb24e3cf3e4b714e8c39f47d9a2e60fcb744e3ab879d"
+    },
+    "full_state/case_0012.npz": {
+      "bytes": 13880668,
+      "sha256": "e7d42b2f923282212e58cd734174ea2c2e07eb0ade4edac944f29e344e2ccc8e"
+    },
+    "full_state/case_0013.npz": {
+      "bytes": 13880343,
+      "sha256": "aac4a6001acbee63a6ce4386bdded4a1d28e11a9c55e64a531d7a80f71d04035"
+    },
+    "full_state/case_0014.npz": {
+      "bytes": 13878115,
+      "sha256": "423c5b3b93940ec117864c55201bf443fb836599c54a99054151f6028f9d442c"
+    },
+    "full_state/case_0015.npz": {
+      "bytes": 3958158,
+      "sha256": "77c827196ff525caf293cec87a9a68b03351ad0a2c968899cf528fe9cf7416cc"
+    },
+    "full_state/case_0016.npz": {
+      "bytes": 13851269,
+      "sha256": "37091435b231f815dc1905c130ea47e509e26182e4e0930af81f6e5704a40cbd"
+    },
+    "full_state/case_0017.npz": {
+      "bytes": 13814279,
+      "sha256": "4e0c7dddcb31c9ff31695d936fbd64e1c78668769ed7988797c88fbe4dd1f77a"
+    },
+    "full_state/case_0018.npz": {
+      "bytes": 13717948,
+      "sha256": "8f48f4e5a63538510886645b6f2358a5e549f40760d68162cda8a006f065832c"
+    },
+    "full_state/case_0019.npz": {
+      "bytes": 13717296,
+      "sha256": "7f6460792a3f3e061b848b079db8f6bbd8212a0e14d6fd6dda923f66a87760a0"
+    },
+    "full_state/case_0020.npz": {
+      "bytes": 13717229,
+      "sha256": "0563a6cd846e1cce835d608f40d6dc110e6471615f04dd85497f75fb8566aded"
+    },
+    "full_state/case_0021.npz": {
+      "bytes": 13711865,
+      "sha256": "2abac86f0089cf3dc236e3e1e21299f54f0988b6fe707b6866a4d4b8e40887e0"
+    },
+    "full_state/case_0022.npz": {
+      "bytes": 13690394,
+      "sha256": "4b19c2a3cbd29455bfe68ccc16ff92516a07c6924432dd498624800bb1ce9820"
+    },
+    "full_state/case_0023.npz": {
+      "bytes": 13717266,
+      "sha256": "856a23e6dc66974093edc9a04c70382aa51bcefd9b418bd17ff3d5d2bbadc232"
+    },
+    "inputs/episode_00.json": {
+      "bytes": 1153,
+      "sha256": "19f5a45144e7ddcc674de5945b421aa5427121bc998d2c54173a303e8cff3848"
+    },
+    "inputs/episode_00.npz": {
+      "bytes": 34963,
+      "sha256": "2a45fabffd3036638876c545cd68c650d06794a416146378a7d8295097b8bc9d"
+    },
+    "inputs/recording.jsonl": {
+      "bytes": 11640237,
+      "sha256": "2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871"
+    },
+    "manifest.json": {
+      "bytes": 11631,
+      "sha256": "98db85b7c443bc6b2a1fa517378edaf537877d7c88653695670c41dd005d4594"
+    },
+    "plan.json": {
+      "bytes": 11589,
+      "sha256": "2dab0eec25449648939f64dd653f3b72fc143bbf941fbb1f50bd3255e82b1200"
+    },
+    "progress.json": {
+      "bytes": 61,
+      "sha256": "9c9afdbb00b9fb95c962b0bd07ef52663a71b603a9805b07577768ae1195d263"
+    },
+    "summary.json": {
+      "bytes": 2711,
+      "sha256": "c4d92d59378fce5c1221b59a8b9ba98063493bfada87226d35a7063273a936fa"
+    }
+  }
+}

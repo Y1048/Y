@@ -1,0 +1,57 @@
+{
+  "datasets": [
+    {
+      "label": "direct",
+      "actual_runs": 24,
+      "completed": 0,
+      "eligible": 0,
+      "rows": 43080,
+      "minima": 696,
+      "raw_bytes": 67517838,
+      "minimum_soft_margin_rad": 0.21179890388331965,
+      "minimum_model_hard_margin_rad": 0.2617989038833196,
+      "minimum_stopping_slack_rad": 0.1605988959570806,
+      "manifest_sha256": "ec5345b0744e27842e4e95c4a8f025a09aafb4f7628d41698b38bef9d056c490"
+    },
+    {
+      "label": "causal_ramp",
+      "actual_runs": 24,
+      "completed": 22,
+      "eligible": 22,
+      "rows": 395920,
+      "minima": 696,
+      "raw_bytes": 342550319,
+      "minimum_soft_margin_rad": 0.21179860120574887,
+      "minimum_model_hard_margin_rad": 0.2617986012057489,
+      "minimum_stopping_slack_rad": 0.16059860120574163,
+      "manifest_sha256": "98db85b7c443bc6b2a1fa517378edaf537877d7c88653695670c41dd005d4594"
+    }
+  ],
+  "all29_rows": 439000,
+  "all29_minima": 1392,
+  "raw_npz_uploaded": false,
+  "raw_recording_uploaded": false,
+  "source_hashes": {
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_multiaxis.py": "3a90257b1864d3bebd7e5285c2b5ae26ac8afa2e3eeadb576ce955a82a31d4cb",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_multiaxis_study.py": "9d662f064380af4079782064e33e667c24d57870697c384e506dc6286e003f0d",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_perjoint.py": "ddb99defd26578a9de7dcf9b45c13c68c1982ecba3fc58811861df7337c1f0ee",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_operating_core.py": "240522131ae6297f837c32c8c9e086fba132ba4bb17b6b52b2d59ccfa8e58e8d",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_operating_study.py": "0cc084897cb0c6b5aaeade0173515154634bac22195766e7e0c4b6e0d7bb76fc",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_sweep.py": "347f25a3fe9e019b7f9afcc4811d7cf1b26ae40b13dc78d2fc9579c633a0fe97",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_contract.py": "c16f65cc16abc7be6e54486826fe5de75512d57f877be04fccd4534e40e7db13",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_fixture.py": "7f9eec1c2be83c434b97282acaae62af1f3a8d79d7f7c9b40e90dc4941be850f",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_coupled_stress.py": "a85ccaf5cce54ae3769a907c8fef46544ffe7935393b5c930fffecbec6ebcfd6",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_motor_stress.py": "7203e5989f72acf48c17da47866fb537b345a80d7b3693b5f6dfb35f1d3ba920",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand.py": "7baa8d173a027e8d9244ffd48ea74fb3273229388c4c3171f8b3875ca95047e4",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand_audit.py": "261c2105590eb833eab9ae19b531744b229755c99ce38da1346af1483f069910",
+    "experiments\\twist2_right_arm_manual\\joint_limit_guard.py": "79fedc75b0d338c4c32d7bf25d539ecf47f3b786cffeb3a1eeced43c62602ca2",
+    "references\\lower_body\\twist2_deploy\\cpp_g1_twist2\\twist2_common.hpp": "2db4dea94bf469429010563bee36f1cab8005d688c87a2eb8772aca1f51dbba6",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recording.py": "785a865c5404c890a7d266f737db59f6c3739753e2c010f8c069fa45cdab8301",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_core.py": "70c1c601dd5083023328fce7eed98d95f904a567aef81c8da3a6e5ff30c82c70",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_study.py": "186a373273597317c2da7e1f48874528724494e820c04f445779d4a7f81889fe",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_independent_study.py": "69722cd68780a20b0eaa663a24a08f6a697b23fa8308321fe9bc7fffcfc51daf",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_independent_timing.py": "9769340a87b3a1ae7c0299ddde326e188979cf53abf0a42fe24343d2d935821d",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_ramp_core.py": "266be9c344efb372979ce81c731f0f48982c559e3ca530ccaed78d856de5f9a7",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_ramp_study.py": "0f7e799de7d44bf9aa70baee55f6dc9fb3e79efb37971d886a3034f777a0c6e9"
+  }
+}

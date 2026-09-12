@@ -1,0 +1,102 @@
+{
+  "schema": "g1.pd.recorded-ramp-study.v1",
+  "complete": true,
+  "simulation_only": true,
+  "smoke": false,
+  "actual_runs": 24,
+  "completed": 22,
+  "eligible": 22,
+  "ranking": [
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          64.0,
+          100.0
+        ]
+      },
+      "cases": 12,
+      "passed": 11,
+      "all_pass": false,
+      "worst_right7_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.02865512837784023,
+      "failures": [
+        {
+          "case_id": "case_0003",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "final_hold_incomplete",
+            "post_step_measured_velocity_limit"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          72.0,
+          100.0
+        ]
+      },
+      "cases": 12,
+      "passed": 11,
+      "all_pass": false,
+      "worst_right7_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.02948675499419383,
+      "failures": [
+        {
+          "case_id": "case_0015",
+          "reason": "post_step_measured_velocity_limit",
+          "exclusions": [
+            "final_hold_incomplete",
+            "post_step_measured_velocity_limit"
+          ]
+        }
+      ]
+    }
+  ],
+  "selected_filtered_pipeline_vector": null,
+  "base_rejections": {
+    "post_step_measured_velocity_limit": 2
+  },
+  "exclusions": {
+    "final_hold_incomplete": 2,
+    "post_step_measured_velocity_limit": 2
+  },
+  "guard_events": {},
+  "minimum_soft_margin_rad": 0.21179860120574887,
+  "minimum_model_hard_margin_rad": 0.2617986012057489,
+  "minimum_stopping_slack_rad": 0.16059860120574163,
+  "simulated_seconds": 791.814499999961,
+  "manifest_sha256": "98db85b7c443bc6b2a1fa517378edaf537877d7c88653695670c41dd005d4594",
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "global_optimum_proven": false,
+  "pd_only_optimum_proven": false,
+  "requires_command_prefilter": true,
+  "command_filter": {
+    "kind": "causal_previous_to_current_target",
+    "interval_s": 0.02,
+    "input": "original50Hzheld_recorded_goals",
+    "lookahead": false,
+    "applied_at": "500Hzwriter",
+    "scope": "adds up to one reference period of command delay; not deployed"
+  },
+  "scope": "exploratory causal20mscommand pipeline; original recorded-goal scores; not the unmodified controller or PD alone"
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "label": "direct",
+    "argv": [
+      "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_expanded_20260911_mayl5xj8\\venv\\Scripts\\python.exe",
+      "-B",
+      "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_recorded_20260912_9mlejvc5\\source\\experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_study.py",
+      "--output",
+      "C:\\Users\\user\\Documents\\G1_PD_RecordedTargets_20260912",
+      "--audit-only"
+    ],
+    "exit_code": 0,
+    "new_dynamics": 0,
+    "original_metadata_unchanged": true,
+    "metadata_sha256": {
+      "manifest.json": "ec5345b0744e27842e4e95c4a8f025a09aafb4f7628d41698b38bef9d056c490",
+      "plan.json": "2dab0eec25449648939f64dd653f3b72fc143bbf941fbb1f50bd3255e82b1200",
+      "summary.json": "2d71e6e4a91359efa8344c97e6b207e9e13fada0d968bfee771955792d72f061",
+      "inputs/recording.jsonl": "2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871"
+    },
+    "stdout": "{\"passed\": true, \"cases\": 24, \"all29_500hz_rows\": 43080, \"all29_margin_records\": 696, \"all_cases_sha256\": \"710b9435f3daf472ed57be6835dc80712fe6710d5e34ed1b01fd25beb3c85024\", \"recorded_input_reparsed\": true, \"source_model_bytes_checked\": true, \"scope\": \"all29sampled traces, source-target timing, gains/PD/limiter, endpoint quality and guard extrema; not independent continuous physics or robot response\", \"physical_validation\": false}\n",
+    "stderr": ""
+  },
+  {
+    "label": "causal_ramp",
+    "argv": [
+      "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_expanded_20260911_mayl5xj8\\venv\\Scripts\\python.exe",
+      "-B",
+      "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_recorded_20260912_9mlejvc5\\source\\experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_ramp_study.py",
+      "--output",
+      "C:\\Users\\user\\Documents\\G1_PD_RecordedRamp_20260912",
+      "--audit-only"
+    ],
+    "exit_code": 0,
+    "new_dynamics": 0,
+    "original_metadata_unchanged": true,
+    "metadata_sha256": {
+      "manifest.json": "98db85b7c443bc6b2a1fa517378edaf537877d7c88653695670c41dd005d4594",
+      "plan.json": "2dab0eec25449648939f64dd653f3b72fc143bbf941fbb1f50bd3255e82b1200",
+      "summary.json": "c4d92d59378fce5c1221b59a8b9ba98063493bfada87226d35a7063273a936fa",
+      "inputs/recording.jsonl": "2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871"
+    },
+    "stdout": "{\"passed\": true, \"cases\": 24, \"all29_500hz_rows\": 395920, \"all29_margin_records\": 696, \"all_cases_sha256\": \"c47312ce4fdc8aab8e9e0494772732bd642481dae1530ec3ef81732db3a61772\", \"recorded_input_reparsed\": true, \"source_model_bytes_checked\": true, \"scope\": \"all29sampled traces, source-target timing, gains/PD/limiter, endpoint quality and guard extrema; not independent continuous physics or robot response\", \"physical_validation\": false}\n",
+    "stderr": ""
+  }
+]

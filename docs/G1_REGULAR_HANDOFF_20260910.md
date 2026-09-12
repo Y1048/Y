@@ -1339,3 +1339,47 @@ Dedicated42+13tests passed. Full Windows/hosted counts still pending inspection.
 An attempted documentation append had a REPL block-termination error; source
 and raw simulation data were unaffected. Existing VR,SDK/DDS,G1launch/gain/model
 settings remain untouched. Append inspected CI and packaged evidence next.
+
+
+## 2026-09-12 — recorded-target pipeline verification closed
+
+Base f5672cd; implementation5398312463bcd29864b20bb7859d406e1c020a91.
+Executed48NEWintegrations using ONE complete recorded seven-joint PC-send target
+session, two clock interpretations, six model conditions, and two frozen yaw
+candidates. Direct24:0trajectorycomplete/eligible, alljoint27command-governor
+refusals. Separate causal20mscommand interpolation24:22complete/eligible, two
+joint24post-step measured-speed failures in the PC-send delay-boundary condition.
+Both yaw64/1 and72/1 pass11/12only in the filtered pipeline. No all-condition
+candidate and no retuning. Do not rank partial lowerrors or relabel the original
+rejected pipeline. RollKp300 still research-only above unchanged live100cap.
+
+Raw record1618targets,27.453sPCsend/26.95ssource clock, provenance send_attempt,
+NOT measured robot response or verified motor acceptance. Three repeated send
+timestamps retained. No scaling or altered original score target. Warmup3s and
+finalhold5s are explicitly synthetic additions; only original recorded segment
+enters trackingRMSE. Bothrawinputs and24cell plans are byte-identical across the
+two experiments. All original numeric guard/quality bounds remain unchanged.
+
+Direct nominal joint27command slope2.26021rad/s exceeded governor1.66967rad/s,
+while modeled actualspeed0.07107rad/s andsoftclearance1.54610rad were benign.
+This is NOT observed soft/hardcontact or physical instability. Causal cases
+failed yaw24 at1.505838/1.515689rad/s versus conservative1.5bound; nojoint-envelope
+events in that phase. Live-today speed rules are not equated with this stricter
+offline gate. The prefilter is additive offline research, not deployedVR code.
+
+Readback passed for43080direct+395920causal full29rows and696+696guardminima.
+Standalone audit-only commands both exited0,with no newdynamics and unchanged
+rawmanifest/plan/summary/inputSHA. All55newtests passed. FinalWindows453discovered,
+452pass/oneexistingCPPskip,0failures. InspectedLinux453/453pass,0skips,
+run34696117419/job103559778760 on5398312. CIcomponent tests are not additional
+formal cases. Initialtwo unit-test errors and documentation REPL input error
+were corrected without changing conditions,limits,originalsource or rawdata.
+
+Report:docs/G1_PD_RECORDED_TARGETS_20260912.md.
+Evidence:docs/validation/g1_pd_recorded_20260912/.
+Raw:Documents/G1_PD_RecordedTargets_20260912 andG1_PD_RecordedRamp_20260912.
+RawJSONL/NPZ remain onPC; compactCSV/JSONreports andhashinventories onGitHub.
+All438protectedsourcehashes anddirtyliveGitstatusunchanged. NoG1SSH,DDS/SDK,
+actuation,ARMdeployment,IK/livegain/model edits orRobot/Allunblock. Nextoffline
+work must separate command-generation timing from yawtuning and regress new
+vectors across priorconditions; no automatic adoption or hardwareapproval.

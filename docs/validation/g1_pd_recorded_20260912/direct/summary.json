@@ -1,0 +1,270 @@
+{
+  "schema": "g1.pd.recorded-study.v1",
+  "complete": true,
+  "simulation_only": true,
+  "smoke": false,
+  "actual_runs": 24,
+  "completed": 0,
+  "eligible": 0,
+  "ranking": [
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          64.0,
+          100.0
+        ]
+      },
+      "cases": 12,
+      "passed": 0,
+      "all_pass": false,
+      "worst_right7_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.00993636082420193,
+      "failures": [
+        {
+          "case_id": "case_0000",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0001",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0002",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0003",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0004",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0005",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0006",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0007",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0008",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0009",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0010",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0011",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate": {
+        "kd": [
+          1.4,
+          4.0,
+          1.0,
+          1.4
+        ],
+        "kp": [
+          100.0,
+          300.0,
+          72.0,
+          100.0
+        ]
+      },
+      "cases": 12,
+      "passed": 0,
+      "all_pass": false,
+      "worst_right7_rmse_rad": null,
+      "partial_worst_rmse_rad": 0.00994199045008138,
+      "failures": [
+        {
+          "case_id": "case_0012",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0013",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0014",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0015",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0016",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0017",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0018",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0019",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0020",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0021",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0022",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        },
+        {
+          "case_id": "case_0023",
+          "reason": "joint_limit_command_intervention",
+          "exclusions": [
+            "final_hold_incomplete",
+            "joint_limit_command_intervention"
+          ]
+        }
+      ]
+    }
+  ],
+  "selected_simulation_vector": null,
+  "base_rejections": {
+    "joint_limit_command_intervention": 24
+  },
+  "exclusions": {
+    "final_hold_incomplete": 24,
+    "joint_limit_command_intervention": 24
+  },
+  "guard_events": {
+    "joint_limit_command_intervention": 24
+  },
+  "minimum_soft_margin_rad": 0.21179890388331965,
+  "minimum_model_hard_margin_rad": 0.2617989038833196,
+  "minimum_stopping_slack_rad": 0.1605988959570806,
+  "simulated_seconds": 86.16000000000098,
+  "manifest_sha256": "ec5345b0744e27842e4e95c4a8f025a09aafb4f7628d41698b38bef9d056c490",
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "global_optimum_proven": false,
+  "scope": "recorded outgoing7joint targets; fixed pelvis; both clocks; appended5s hold; not robot acceptance or measured response"
+}

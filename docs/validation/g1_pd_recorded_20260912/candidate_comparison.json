@@ -1,0 +1,116 @@
+{
+  "schema": "g1.pd.recorded.comparison.v1",
+  "simulation_only": true,
+  "candidates": [
+    {
+      "yaw_kp": 64.0,
+      "kd": 1.0,
+      "other_kp": [
+        100.0,
+        300.0,
+        100.0
+      ],
+      "other_kd": [
+        1.4,
+        4.0,
+        1.4
+      ],
+      "direct": {
+        "attempted": 12,
+        "completed": 0,
+        "passed": 0,
+        "all_pass": false,
+        "selectable_score": null,
+        "per_clock": {
+          "send": {
+            "attempted": 6,
+            "passed": 0
+          },
+          "sample": {
+            "attempted": 6,
+            "passed": 0
+          }
+        }
+      },
+      "causal_ramp": {
+        "attempted": 12,
+        "completed": 11,
+        "passed": 11,
+        "all_pass": false,
+        "selectable_score": null,
+        "per_clock": {
+          "send": {
+            "attempted": 6,
+            "passed": 5
+          },
+          "sample": {
+            "attempted": 6,
+            "passed": 6
+          }
+        }
+      }
+    },
+    {
+      "yaw_kp": 72.0,
+      "kd": 1.0,
+      "other_kp": [
+        100.0,
+        300.0,
+        100.0
+      ],
+      "other_kd": [
+        1.4,
+        4.0,
+        1.4
+      ],
+      "direct": {
+        "attempted": 12,
+        "completed": 0,
+        "passed": 0,
+        "all_pass": false,
+        "selectable_score": null,
+        "per_clock": {
+          "send": {
+            "attempted": 6,
+            "passed": 0
+          },
+          "sample": {
+            "attempted": 6,
+            "passed": 0
+          }
+        }
+      },
+      "causal_ramp": {
+        "attempted": 12,
+        "completed": 11,
+        "passed": 11,
+        "all_pass": false,
+        "selectable_score": null,
+        "per_clock": {
+          "send": {
+            "attempted": 6,
+            "passed": 5
+          },
+          "sample": {
+            "attempted": 6,
+            "passed": 6
+          }
+        }
+      }
+    }
+  ],
+  "selected_pd_vector": null,
+  "selected_filtered_pipeline_vector": null,
+  "gain_retuning_performed": false,
+  "thresholds_relaxed": false,
+  "recordings_tested": 1,
+  "total_actual_runs": 48,
+  "total_completed": 22,
+  "total_eligible": 22,
+  "total_refused": 26,
+  "original_recorded_target_modified": false,
+  "filtered_command_pipeline_separate": true,
+  "prior_synthetic_results_not_reclassified": true,
+  "hardware_approved": false,
+  "recommended_hardware_gains": null
+}

@@ -1,0 +1,11 @@
+{
+  "discovered": 42,
+  "errors": 2,
+  "failures": 0,
+  "formal_runs_started": false,
+  "errors_detail": [
+    "test used global27 instead of local5 in seven-column capture",
+    "numpy scalar replay time refused; at now accepts finite Real excluding bool; JSON number validation remains strict"
+  ],
+  "numeric_quality_or_limit_changes": false
+}

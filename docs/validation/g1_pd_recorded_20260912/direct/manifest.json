@@ -1,0 +1,140 @@
+{
+  "schema": "g1.pd.recorded.manifest.v1",
+  "simulation_only": true,
+  "smoke": false,
+  "source_sha256": {
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_multiaxis.py": "3a90257b1864d3bebd7e5285c2b5ae26ac8afa2e3eeadb576ce955a82a31d4cb",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_multiaxis_study.py": "9d662f064380af4079782064e33e667c24d57870697c384e506dc6286e003f0d",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_perjoint.py": "ddb99defd26578a9de7dcf9b45c13c68c1982ecba3fc58811861df7337c1f0ee",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_operating_core.py": "240522131ae6297f837c32c8c9e086fba132ba4bb17b6b52b2d59ccfa8e58e8d",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_operating_study.py": "0cc084897cb0c6b5aaeade0173515154634bac22195766e7e0c4b6e0d7bb76fc",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_sweep.py": "347f25a3fe9e019b7f9afcc4811d7cf1b26ae40b13dc78d2fc9579c633a0fe97",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_contract.py": "c16f65cc16abc7be6e54486826fe5de75512d57f877be04fccd4534e40e7db13",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_fixture.py": "7f9eec1c2be83c434b97282acaae62af1f3a8d79d7f7c9b40e90dc4941be850f",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_coupled_stress.py": "a85ccaf5cce54ae3769a907c8fef46544ffe7935393b5c930fffecbec6ebcfd6",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_motor_stress.py": "7203e5989f72acf48c17da47866fb537b345a80d7b3693b5f6dfb35f1d3ba920",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand.py": "7baa8d173a027e8d9244ffd48ea74fb3273229388c4c3171f8b3875ca95047e4",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_expand_audit.py": "261c2105590eb833eab9ae19b531744b229755c99ce38da1346af1483f069910",
+    "experiments\\twist2_right_arm_manual\\joint_limit_guard.py": "79fedc75b0d338c4c32d7bf25d539ecf47f3b786cffeb3a1eeced43c62602ca2",
+    "references\\lower_body\\twist2_deploy\\cpp_g1_twist2\\twist2_common.hpp": "2db4dea94bf469429010563bee36f1cab8005d688c87a2eb8772aca1f51dbba6",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recording.py": "785a865c5404c890a7d266f737db59f6c3739753e2c010f8c069fa45cdab8301",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_core.py": "70c1c601dd5083023328fce7eed98d95f904a567aef81c8da3a6e5ff30c82c70",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_recorded_study.py": "186a373273597317c2da7e1f48874528724494e820c04f445779d4a7f81889fe",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_independent_study.py": "69722cd68780a20b0eaa663a24a08f6a697b23fa8308321fe9bc7fffcfc51daf",
+    "experiments\\twist2_right_arm_manual\\mujoco_pd_independent_timing.py": "9769340a87b3a1ae7c0299ddde326e188979cf53abf0a42fe24343d2d935821d"
+  },
+  "asset_archive_sha256": {
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/g1_29dof.xml": "5a7f31b62a02dc86546046fb8f23dd70663f8fadc3fc49f68758bbe54ebf921a",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/pelvis.STL": "5ba6bbc888e630550140d3c26763f10206da8c8bd30ed886b8ede41c61f57a31",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/pelvis_contour_link.STL": "5cc5c2c7a312329e3feeb2b03d3fc09fc29705bd01864f6767e51be959662420",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_hip_pitch_link.STL": "4725168105ee768ee31638ef22b53f6be2d7641bfd7cfefe803488d884776fa4",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_hip_roll_link.STL": "91f25922ee8a7c3152790051bebad17b4d9cd243569c38fe340285ff93a97acf",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_hip_yaw_link.STL": "a16d88aa6ddac8083aa7ad55ed317bea44b1fa003d314fba88965b7ed0f3b55b",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_knee_link.STL": "8d92b9e3d3a636761150bb8025e32514c4602b91c7028d523ee42b3e632de477",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_ankle_pitch_link.STL": "d49e3abc6f5b12e532062cd575b87b5ef40cd2a3fc18f54a1ca5bba4f773d51d",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_ankle_roll_link.STL": "c4092af943141d4d9f74232f3cfa345afc6565f46a077793b8ae0e68b39dc33f",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_hip_pitch_link.STL": "e4f3c99d7f4a7d34eadbef9461fc66e3486cb5442db1ec50c86317d459f1a9c6",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_hip_roll_link.STL": "4c254ef66a356f492947f360dd931965477b631e3fcc841f91ccc46d945d54f6",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_hip_yaw_link.STL": "e479c2936ca2057e9eb2f7dff6c189b7419d7b8484dea0b298cbb36a2a6aa668",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_knee_link.STL": "63c4008449c9bbe701a6e2b557b7a252e90cf3a5abcf54cee46862b9a69f8ec8",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_ankle_pitch_link.STL": "15be426539ec1be70246d4d82a168806db64a41301af8b35c197a33348c787a9",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_ankle_roll_link.STL": "4b66222ea56653e627711b56d0a8949b4920da5df091da0ceb343f54e884e3a5",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/waist_yaw_link.STL": "2883f20e03f09b669b5b4ce10677ee6b5191c0934b584d7cbaef2d0662856ffb",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/waist_roll_link.STL": "34f0aa73f41131230be4d25876c944fdf6c24d62553f199ff8b980c15e8913df",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/torso_link.STL": "e96d023f0368a4e3450b86ca5d4f10227d8141156a373e7da8cb3c93266523e0",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/logo_link.STL": "8571a0a19bc4916fa55f91449f51d5fdefd751000054865a842449429d5f155b",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/head_link.STL": "d297328b3569fc85074355e76cba6c889d19de5361224bcd3c5b8ce82e13b9b6",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/waist_support_link.STL": "1fae9e1bb609848a1667d32eed8d6083ae443538a306843056a2a660f1b2926a",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_shoulder_pitch_link.STL": "f0d1cfd02fcf0d42f95e678eeca33da3afbcc366ffba5c052847773ec4f31d52",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_shoulder_roll_link.STL": "fb9df21687773522598dc384f1a2945c7519f11cbc8bd372a49170316d6eee88",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_shoulder_yaw_link.STL": "1aa97e9748e924336567992181f78c7cd0652fd52a4afcca3df6b2ef6f9e712e",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_elbow_link.STL": "fa752198accd104d5c4c3a01382e45165b944fbbc5acce085059223324e5bed3",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_wrist_roll_link.STL": "edc387c9a0ba8c2237e9b296d32531426fabeb6f53e58df45c76106bca74148c",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_wrist_pitch_link.STL": "b251d8e05047f695d0f536cd78c11973cfa4e78d08cfe82759336cc3471de3a9",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_wrist_yaw_link.STL": "83f8fb3a726bf9613d65dd14f0f447cb918c3c95b3938042a0c9c09749267d3b",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/left_rubber_hand.STL": "cff2221a690fa69303f61fce68f2d155c1517b52efb6ca9262dd56e0bc6e70fe",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_shoulder_pitch_link.STL": "24cdb387e0128dfe602770a81c56cdce3a0181d34d039a11d1aaf8819b7b8c02",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_shoulder_roll_link.STL": "962b97c48f9ce9e8399f45dd9522e0865d19aa9fd299406b2d475a8fc4a53e81",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_shoulder_yaw_link.STL": "a0b76489271da0c72461a344c9ffb0f0c6e64f019ea5014c1624886c442a2fe5",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_elbow_link.STL": "1be925d7aa268bb8fddf5362b9173066890c7d32092c05638608126e59d1e2ab",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_wrist_roll_link.STL": "a7ee9212ff5b94d6cb7f52bb1bbf3f352194d5b598acff74f4c77d340c5b344f",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_wrist_pitch_link.STL": "d22f8f3b3127f15a63e5be1ee273cd5075786c3142f1c3d9f76cbf43d2a26477",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_wrist_yaw_link.STL": "bc9dece2d12509707e0057ba2e48df8f3d56db0c79410212963a25e8a50f61a6",
+    "MuJoCo_G1_Controller/external/unitree_mujoco/unitree_robots/g1/meshes/right_rubber_hand.STL": "99533b778bca6246144fa511bb9d4e555e075c641f2a0251e04372869cd99d67"
+  },
+  "input_name": "cycle_packets_20260910_150530_0603774.jsonl",
+  "input_inventory": {
+    "file": "cycle_packets_20260910_150530_0603774.jsonl",
+    "source_sha256": "2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871",
+    "bytes": 11640237,
+    "send_records": 17338,
+    "ack_records": 14781,
+    "complete_episodes": 1,
+    "exclusions": []
+  },
+  "recording_sha256": "2710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871",
+  "episodes": 1,
+  "vectors": [
+    {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    }
+  ],
+  "plan_sha256": "2dab0eec25449648939f64dd653f3b72fc143bbf941fbb1f50bd3255e82b1200",
+  "quality_policy": {
+    "tail_window_s": 0.1,
+    "active_tail_error_rad": 0.02,
+    "active_tail_speed_rad_s": 0.1,
+    "right7_tail_p2p_rad": 0.005,
+    "right7_tail_rms_speed_rad_s": 0.05,
+    "max_torque_limit_ratio": 0.05,
+    "no_contact": true,
+    "unchanged_joint_guard": true,
+    "all_seven_endpoint_error": true,
+    "common_rest_last_second": true,
+    "recorded_input_no_scaling": true,
+    "measured_upper_velocity_rad_s": 1.5,
+    "synthetic_post_hold_s": 5.0
+  },
+  "clocks": [
+    "send",
+    "sample"
+  ],
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "workers": 4,
+  "hardware_approved": false,
+  "limitations": [
+    "sent targets are not received/accepted/measured robot states",
+    "fixed pelvis and idealized motor with hypothetical delays",
+    "no IK or state-machine replay",
+    "recorded speed profile; inherited conservative1.5rad/s measured-speed gate",
+    "research rollKp300outside unchanged live100bound"
+  ]
+}

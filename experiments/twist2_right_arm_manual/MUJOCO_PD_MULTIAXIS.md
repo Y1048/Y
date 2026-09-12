@@ -61,3 +61,27 @@ noise/backlash/heating, calibrated actuator bandwidth or physical braking.
 A model limit is not a measured mechanical stop. A simulation refusal is not
 an implemented physical emergency stop. No DDS, SDK, robot command or launch
 unblocking is part of this entry point. All exports remain simulation-only.
+
+
+## Focused yaw refinement after the matrix failure
+
+`mujoco_pd_multiaxis_yaw.py` changes ONLY joint24 gains after all80 failed
+original matrix runs exceeded the integrated yaw speed bound. These are now
+known calibration failures, not independent validation. No other gain changes.
+
+42pairs: Kp24=32,48,64,72,80,88,100; Kd24=0.4,0.7,1,1.4,2,3.
+Each sees the same3screening conditions (126actual attempts). Freeze the two
+lowest worst-error all-pass vectors before applying all144operating conditions
+to each. Freeze operating survivors before24new prescribed simultaneous cases.
+Final outcomes can reject but cannot retune or reorder the operating selection.
+An empty selection is a valid result; no failed low-error candidate is promoted.
+
+```powershell
+$out = "$env:USERPROFILE\Documents\G1_PD_MultiaxisYaw_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+.\.venv-mujoco-pd\Scripts\python.exe -B .\experiments\twist2_right_arm_manual\mujoco_pd_multiaxis_yaw.py --output $out --workers 6
+.\.venv-mujoco-pd\Scripts\python.exe -B .\experiments\twist2_right_arm_manual\mujoco_pd_multiaxis_yaw.py --output $out --audit-only
+```
+
+The initial matrix remains a separate immutable result. This search has its own
+manifest, phase plans, frozen selections, full29traces and source/model archive.
+Kp23=300 remains research-only; hardware limits and live settings stay unchanged.

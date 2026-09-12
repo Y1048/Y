@@ -33,4 +33,4 @@ jobs:
           test_joint_limit_guard test_mujoco_pd_limit_replay test_mujoco_pd_robust_refine
           test_mujoco_pd_accuracy_stability test_mujoco_pd_minerror test_mujoco_pd_coupled_stress
           test_mujoco_pd_coupled_matrix test_mujoco_pd_operating test_mujoco_pd_perjoint
-          test_mujoco_pd_final test_mujoco_pd_multiaxis
+          test_mujoco_pd_final test_mujoco_pd_multiaxis test_mujoco_pd_multiaxis_yaw

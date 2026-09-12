@@ -1108,3 +1108,29 @@ Full288study and314-test allowlist are not yet claimed; append inspected results
 Raw outputs will retain full29traces, extrema, frozen sources/models and exact plan.
 No G1 connection,DDS/SDK,publisher,motor output,ARM deployment or live config edit.
 Usage: experiments/twist2_right_arm_manual/MUJOCO_PD_MULTIAXIS.md.
+
+
+## 2026-09-12 — simultaneous matrix audited; yaw-specific refinement started
+
+Tested multiaxis implementation dd96aebd0a55360fac93ea099b480cb69e108a39.
+All288planned cells executed:208completed/eligible,80stopped for post-step
+measured velocity. Both original vectors pass104/144,not all144. All80failures
+are delay_boundary (mass1.35,damping0.85,friction0.15,delay4ms,lag8ms,dt0.5ms);
+maximum final upper-joint speed is joint24 in every failed run. Nominal80/80,
+half64/64,heavy64/64 passed; delay_boundary0/80. No final multiaxis candidate.
+This does not erase the earlier independent-axis passes or validate arbitraryVR.
+Raw:Documents/G1_PD_Multiaxis_20260912. Full288trace audit passed,2,455,975
+full29sample rows and8,352guard extrema. No limit events; minima soft/hard
+0.2117986012054719/0.2617986012054719rad. Local314suite:313pass,1C++skip.
+The ambiguous compound REPL commit request was blocked by the terminal tool;
+explicit,reviewable git staging/commit/push later succeeded without force.
+
+Next separate study changes ONLY joint24 Kp/Kd; all other gains and every
+controller/model/quality/limit rule remain fixed. Add yaw refinement runner
+and17tests. Grid42pairs x3known simultaneous conditions=126screen attempts.
+Freeze best2all-pass vectors for each144operating cells, then freeze survivors
+for24new prespecified conditions each. No subsequent retuning or ranking from
+new outcomes. All conditional phase plans and selection hashes are audited.
+17/17new tests passed, including real-vector torque/full-state audit, complete
+matrix decisions, field corruption and failure refusal. Full study is not yet
+claimed. All caps unchanged; no G1,DDS,SDK,physical output or live/IK edits.

@@ -1289,3 +1289,53 @@ Raw:C:\Users\user\Documents\G1_PD_IndependentTiming_20260912; NPZonPC,notGitHub.
 NoG1,DDS,SDK,actuation,IK/livegain edit,ARMdeployment orlaunchunblock. RollKp300
 stillresearch-only above live100cap. Synthetic clocks are NOT recordedVR or
 full-body/physical proof. Continue offline, no automatic gain adoption.
+
+
+## 2026-09-12 — recorded seven-joint target comparison started
+
+Base f5672cdd28ddc93cc0e89a98f1af6169b7763f09. Add isolated recorded-input
+parser, replay core/study and42tests. Preserve previous dynamics/VR/IK/model
+files and all hardware settings. Both yaw64/1 and72/1 candidates remain frozen;
+rollKp300 is still simulation research above the unchanged live100cap.
+
+Read the explicit cycle_packets_20260910_150530_0603774.jsonl PC-send recording.
+One complete target episode:1618samples,27.453s PCsend /26.95s source clock;
+all7right-arm targets move. Source SHA2562710d76445c3e004f811567b38f289e8451a47fb2960d43576b021a9e87f7871.
+This is not measured robot response or proof of target acceptance. Bulk log
+analysis was not completed; do not claim coverage of all recordings. Replay
+uses original unscaled goals, captured today speed caps, two clock assumptions,
+3s ready warmup and explicitly appended5s final hold. Score recorded segment
+only, and require all7final errors/speeds. Original29guards and conservative
+1.5rad/s measured upper speed remain. No protocol or full-body simulation claim.
+
+Observed before formal execution:42/42new tests passed. Initial tests found a
+local/global wrist-index mistake in a fixture and numpy-scalar time rejection;
+fix local index and allow finiteReal replay time without weakening JSON numeric
+validation. No formal condition or threshold changed. New suite/24formal runs
+are not yet claimed; append inspected outcomes after full original-input audit.
+No G1,DDS,SDK,publisher/subscriber,live environment edit,actuation,ARM deployment
+or Robot/All unblock. Manual:MUJOCO_PD_RECORDED_TARGETS.md.
+
+
+## 2026-09-12 — raw target and causal command-pipeline outcomes
+
+Direct24case experiment: processing/audit completed, but all24trajectories
+stopped at wrist27 command-governor intervention after0.58/0.60s of input.
+Nominal send case command slope2.26021rad/s exceeds1.66967rad/s governor bound,
+while modeled joint speed is0.07107rad/s and soft clearance1.54610rad. This is
+NOT measured hard/soft contact or proof of physical PD instability. All original
+raw input, frozen sources, partial traces and failures are retained.
+
+Add a SEPARATE fixed20ms causal command-ramp comparison, with13passing tests.
+No lookahead, input rescaling, original-score change or guard/limit relaxation.
+It is explicitly a PD+prefilter pipeline, not an unchanged-controller/PD-only pass.
+Ran24additional cases on identical source bytes, two frozen vectors, two clocks
+and six models.22completed/eligible; both candidates fail one delay-boundary
+PC-send case each at post-step yaw24velocity1.505838/1.515689rad/s. No selected
+filtered-pipeline vector. Do not rescue partial low errors or alter thresholds.
+
+Source-target audit passed on both sets:43080+395920all29rows;1392joint extrema.
+Dedicated42+13tests passed. Full Windows/hosted counts still pending inspection.
+An attempted documentation append had a REPL block-termination error; source
+and raw simulation data were unaffected. Existing VR,SDK/DDS,G1launch/gain/model
+settings remain untouched. Append inspected CI and packaged evidence next.

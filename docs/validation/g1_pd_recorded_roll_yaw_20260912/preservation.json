@@ -1,0 +1,13 @@
+{
+  "protected_files": 446,
+  "all_initial_hashes_unchanged": true,
+  "live_dirty_status_unchanged": true,
+  "live_status_sha256": "e79fe8106adea2d074e69457730370225ab9b0fe7ca647825e46298cc297b9de",
+  "source_base": "450f4241c61143236f0530e89138e8152885c0c3",
+  "implementation": "a7602dd91c0c6c003f9bb473edfe718fe49877f0",
+  "g1_connected": false,
+  "dds_created": false,
+  "live_gains_modified": false,
+  "ik_modified": false,
+  "model_limits_modified": false
+}

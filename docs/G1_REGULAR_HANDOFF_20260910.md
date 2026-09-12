@@ -1404,3 +1404,56 @@ running; its counts and selected candidate are not yet known. Smoke is not
 formal data. Append actual results and final regression/CI outcomes after audit.
 No G1 SSH, DDS/SDK, live publisher, VR/IK edit, deployment or launch unblock.
 Usage: experiments/twist2_right_arm_manual/MUJOCO_PD_RECORDED_ROLL_YAW.md.
+
+
+## 2026-09-12 — recorded roll/yaw refinement completed and audited
+
+Base450f424; implementationa7602dd91c0c6c003f9bb473edfe718fe49877f0.
+Actually ran272new integrations across55distinct vectors:108yaw,60roll,
+48recorded validation and56synthetic regression.227completed/eligible;
+45excluded:24stopping-envelope and21post-step speed failures. Do not hide the
+failed cohort or describe all272as completed trajectories. Every declared
+cell in each conditional phase was attempted; unit tests are not formal cases.
+
+Fixed causal20ms pipeline and original recorded7joint score reference.
+No new recording/holdout: same previously observed1618target episode and
+hypothetical model conditions. Bounded coordinate search, not global optimization.
+Separate process-local roll cap350restores old300on exit. Original hardware100
+validator, guards, model ranges, torque/speed limits and real gains unchanged.
+
+Selected filtered-pipeline candidate: Kp22..25=[100,300,64,100],
+Kd=[1.4,3,1.2,1.4]. All12recorded cells and14declared synthetic regressions pass.
+Three other finalists also26/26pass; no old hundreds of passes are inherited.
+Roll275/3with sameyaw64/1.2 is a useful lower-Kp comparison: recorded worst
+0.014015164998115616rad versus selected0.014014588331269116rad, only0.004114761225%
+difference. The275candidate has slightly lower synthetic worst error.
+All recorded minimax scores are dominated byjoint22; do not claim300uniquely
+optimal or higherrollalwaysbetter.350/5and325/4passed3/3screen conditions but
+were not top-two-roll finalists and did not receive full12+14validation.
+
+Selected26cases have no guard events and minimumstopslack0.10584676943408566rad;
+peakupperspeed1.2322443701578378rad/s, recordedfinalerror0.010221682262337994rad.
+Global soft/modelhard minima0.21179860120574887/0.2617986012057489rad.
+Global stopping slack -0.010142237703702373belongs to rejected trials; it is
+NOT a safe margin. All29reserve0.05,pre/post/finalchecks and numeric quality
+thresholds remain unchanged. No observed positional limit contact; no absolute
+physical braking/no-contact or balance guarantee. Kp300/350stillresearch-only.
+
+Re-read272full29traces:3,802,512sample rows at500Hz and7,888joint extrema.
+Both automatic and standaloneaudit-only passed. Six original recording cases
+match prior causal-run arrays,metrics,eligibility and refusal reasons exactly.
+Dedicated24tests pass; inspected Linux477/477pass,zero skips,
+run34699671159/job103569085281 on a7602dd. FinalWindows477discovered,
+476pass/oneexistingC++skip,zero failures/errors. Earlier temporary local test
+harness lacked a multiprocessing main guard; its owned process tree was stopped,
+harness corrected and full suite rerun. Retain failure receipt; formal data and
+repository simulation code were unaffected. CI is not the272case formal study.
+
+Report:docs/G1_PD_RECORDED_ROLL_YAW_20260912.md.
+Evidence:docs/validation/g1_pd_recorded_roll_yaw_20260912/.
+Raw:C:\Users\user\Documents\G1_PD_RecordedRollYaw_20260912;616files,3046738352bytes.
+RawJSONL/fullNPZonPC,notGitHub; compact plans, metrics, failures and hashes saved.
+All446protectedhashes anddirtyliveGitstatusunchanged. NoG1SSH,DDS/SDK,
+publisher,realoutput,ARMdeployment,VR/IK/livegain/model edits orlaunchunblock.
+Continue offline with wider/newrecorded inputs and pitch22/wrist27 errors;
+do not overwrite prior unfiltered failure or promote research gains tohardware.

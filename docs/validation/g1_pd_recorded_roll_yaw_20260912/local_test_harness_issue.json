@@ -1,0 +1,9 @@
+{
+  "scope": "temporary local Windows full-test harness only",
+  "reason": "missing __main__ guard reran tests in multiprocessing children",
+  "action": "stopped only owned test tree PID40664; retained old harness/log; added guarded entry in new runner",
+  "simulation_changed": false,
+  "formal_data_changed": false,
+  "old_runner_sha256": "9eea15f7a2ff92802f8b945b908352d8b0a13e5e783243f75d303d12bb0ce712",
+  "fixed_runner_sha256": "a21666ae73adddce1de99fc9930055d1b28f96ba5d617ec8122c571d4b2851ef"
+}

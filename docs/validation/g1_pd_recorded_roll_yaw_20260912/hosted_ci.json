@@ -1,0 +1,17 @@
+{
+  "run_id": 34699671159,
+  "job_id": 103569085281,
+  "commit": "a7602dd91c0c6c003f9bb473edfe718fe49877f0",
+  "conclusion": "success",
+  "tests": 477,
+  "passed": 477,
+  "skipped": 0,
+  "failed": 0,
+  "python": "3.11.16",
+  "mujoco": "3.3.7",
+  "numpy": "2.4.6",
+  "os": "Ubuntu24.04.5",
+  "test_duration_s": 750.356,
+  "decoded_log_inspected": true,
+  "scope": "regression/component dynamics only; formal272study ran isolated Windows"
+}

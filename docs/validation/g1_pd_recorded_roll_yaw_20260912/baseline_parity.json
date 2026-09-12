@@ -1,0 +1,38 @@
+[
+  {
+    "new_case": "yaw_0060",
+    "old_case": "case_0000",
+    "all_arrays_equal": true,
+    "metrics_and_eligibility_equal": true
+  },
+  {
+    "new_case": "yaw_0061",
+    "old_case": "case_0003",
+    "all_arrays_equal": true,
+    "metrics_and_eligibility_equal": true
+  },
+  {
+    "new_case": "yaw_0062",
+    "old_case": "case_0009",
+    "all_arrays_equal": true,
+    "metrics_and_eligibility_equal": true
+  },
+  {
+    "new_case": "yaw_0078",
+    "old_case": "case_0012",
+    "all_arrays_equal": true,
+    "metrics_and_eligibility_equal": true
+  },
+  {
+    "new_case": "yaw_0079",
+    "old_case": "case_0015",
+    "all_arrays_equal": true,
+    "metrics_and_eligibility_equal": true
+  },
+  {
+    "new_case": "yaw_0080",
+    "old_case": "case_0021",
+    "all_arrays_equal": true,
+    "metrics_and_eligibility_equal": true
+  }
+]

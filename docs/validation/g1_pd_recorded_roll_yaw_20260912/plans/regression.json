@@ -1,0 +1,2922 @@
+[
+  {
+    "case_id": "regression_0000",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0001",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0002",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0003",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0004",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0005",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0006",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0007",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0008",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0009",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0010",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0011",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0012",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0013",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0014",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0015",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0016",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0017",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0018",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0019",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0020",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0021",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0022",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0023",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0024",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0025",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0026",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0027",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0028",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0029",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0030",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0031",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0032",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0033",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0034",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0035",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0036",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0037",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0038",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0039",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0040",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0041",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0042",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0043",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        8.0,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "synchronous_control",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0044",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0045",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        4.0,
+        8.0,
+        6.0,
+        10.0
+      ],
+      "cycles": [
+        3,
+        4,
+        3,
+        5
+      ],
+      "delays_s": [
+        0.0,
+        0.18,
+        0.54,
+        0.82
+      ],
+      "elbow_offset_deg": 0.0,
+      "name": "different_periods",
+      "post_hold_s": 5.0,
+      "scales": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "speeds_deg_s": [
+        10.0,
+        23.0,
+        17.0,
+        27.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0046",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0047",
+    "stage": "regression",
+    "kind": "independent",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "amplitudes_deg": [
+        6.0,
+        9.0,
+        11.0,
+        7.0
+      ],
+      "cycles": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "delays_s": [
+        0.4,
+        0.0,
+        0.8,
+        0.2
+      ],
+      "elbow_offset_deg": -6.0,
+      "name": "shifted_start",
+      "post_hold_s": 10.0,
+      "scales": [
+        -1.0,
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "speeds_deg_s": [
+        17.0,
+        23.0,
+        27.0,
+        19.0
+      ]
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0048",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0049",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0050",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0051",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0052",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0053",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "regression_0054",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "regression_0055",
+    "stage": "regression",
+    "phase": "regression",
+    "kind": "single",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "motion": {
+      "acceleration_deg_s2": 60.0,
+      "amplitude_deg": 8.0,
+      "cycles": 3,
+      "elbow_offset_deg": 0.0,
+      "name": "simultaneous",
+      "post_hold_s": 0.0,
+      "scales": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "speed_deg_s": 20.0
+    },
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  }
+]

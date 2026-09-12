@@ -1,0 +1,1442 @@
+[
+  {
+    "case_id": "validation_0000",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0001",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0002",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0003",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0004",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0005",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0006",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0007",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0008",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0009",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0010",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0011",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0012",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0013",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0014",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0015",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0016",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0017",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0018",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0019",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0020",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0021",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0022",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0023",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0024",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0025",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0026",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0027",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0028",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0029",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0030",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0031",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0032",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0033",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0034",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0035",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0036",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0037",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0038",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0039",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0040",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0041",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0042",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0043",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "half",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0044",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "heavy",
+      "mass_scale": 1.35,
+      "damping_scale": 1.25,
+      "friction_scale": 0.35,
+      "delay_s": 0.002,
+      "lag_s": 0.006,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "validation_0045",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0046",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "light_delayed",
+      "mass_scale": 0.9,
+      "damping_scale": 0.65,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.005,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "validation_0047",
+    "stage": "validation",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "mixed_delayed",
+      "mass_scale": 1.4,
+      "damping_scale": 0.9,
+      "friction_scale": 0.2,
+      "delay_s": 0.003,
+      "lag_s": 0.007,
+      "dt": 0.001
+    }
+  }
+]

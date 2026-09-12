@@ -1,0 +1,32 @@
+{
+  "candidate": {
+    "kd": [
+      1.4,
+      3.0,
+      1.2,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      64.0,
+      100.0
+    ]
+  },
+  "simulation_only": true,
+  "requires_command_prefilter": true,
+  "command_filter": {
+    "kind": "causal_previous_to_current_target",
+    "interval_s": 0.02,
+    "input": "original50Hzheld_recorded_goals",
+    "lookahead": false,
+    "applied_at": "500Hzwriter",
+    "scope": "adds up to one reference period of command delay; not deployed"
+  },
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "global_optimum_proven": false,
+  "recorded_conditions_passed": 12,
+  "synthetic_regression_conditions_passed": 14,
+  "scope": "one already observed outgoing target episode; two clocks x six models plus14known synthetic regressions; not prior full coverage"
+}

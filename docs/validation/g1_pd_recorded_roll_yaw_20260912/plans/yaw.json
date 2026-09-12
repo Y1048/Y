@@ -1,0 +1,3242 @@
+[
+  {
+    "case_id": "yaw_0000",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0001",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0002",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0003",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0004",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0005",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0006",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0007",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0008",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0009",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0010",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0011",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0012",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0013",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0014",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0015",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0016",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0017",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        40.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0018",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0019",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0020",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0021",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0022",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0023",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0024",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0025",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0026",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0027",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0028",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0029",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0030",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0031",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0032",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0033",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0034",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0035",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        48.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0036",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0037",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0038",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0039",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0040",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0041",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0042",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0043",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0044",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0045",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0046",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0047",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0048",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0049",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0050",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0051",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0052",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0053",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        56.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0054",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0055",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0056",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0057",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0058",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0059",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0060",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0061",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0062",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0063",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0064",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0065",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0066",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0067",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0068",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0069",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0070",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0071",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0072",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0073",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0074",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0075",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0076",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0077",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0078",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0079",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0080",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0081",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0082",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0083",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0084",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0085",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0086",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0087",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0088",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0089",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        72.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0090",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0091",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0092",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0093",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0094",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0095",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        0.8,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0096",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0097",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0098",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.0,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0099",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0100",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0101",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0102",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0103",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0104",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.4,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0105",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "yaw_0106",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "yaw_0107",
+    "stage": "yaw",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.6,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        80.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  }
+]

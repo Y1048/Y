@@ -1,0 +1,1867 @@
+{
+  "schema": "g1.pd.recorded-roll-yaw.v1",
+  "complete": true,
+  "smoke": false,
+  "simulation_only": true,
+  "hardware_approved": false,
+  "recommended_hardware_gains": null,
+  "hardware_config_modified": false,
+  "requires_command_prefilter": true,
+  "pd_only_optimum_proven": false,
+  "global_optimum_proven": false,
+  "command_filter": {
+    "kind": "causal_previous_to_current_target",
+    "interval_s": 0.02,
+    "input": "original50Hzheld_recorded_goals",
+    "lookahead": false,
+    "applied_at": "500Hzwriter",
+    "scope": "adds up to one reference period of command delay; not deployed"
+  },
+  "objective": "minimize worst original-goal all7 RMSE, subject to ALL recorded and regression gates",
+  "search_method": "bounded coordinate search; validation reuses observed recording and models",
+  "research_kp_cap": [
+    100.0,
+    350.0,
+    100.0,
+    100.0
+  ],
+  "live_kp_cap_unchanged": 100.0,
+  "actual_runs": 272,
+  "completed": 227,
+  "eligible": 227,
+  "stage_counts": {
+    "yaw": 108,
+    "roll": 60,
+    "validation": 48,
+    "regression": 56
+  },
+  "ranking": {
+    "yaw": [
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580228008742921,
+        "partial_worst_rmse_rad": 0.013580228008742921,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580319367319023,
+        "partial_worst_rmse_rad": 0.013580319367319023,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580461871591318,
+        "partial_worst_rmse_rad": 0.013580461871591318,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580895614827828,
+        "partial_worst_rmse_rad": 0.013580895614827828,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581028979807504,
+        "partial_worst_rmse_rad": 0.013581028979807504,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            80.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581184031074972,
+        "partial_worst_rmse_rad": 0.013581184031074972,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            40.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028158538431647628,
+        "failures": [
+          {
+            "case_id": "yaw_0001",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.8,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            40.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028157427848121336,
+        "failures": [
+          {
+            "case_id": "yaw_0004",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.0,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            40.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028156367201905938,
+        "failures": [
+          {
+            "case_id": "yaw_0007",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            40.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028151321924442543,
+        "failures": [
+          {
+            "case_id": "yaw_0010",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            40.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028151234800595393,
+        "failures": [
+          {
+            "case_id": "yaw_0013",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            40.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028151394493472443,
+        "failures": [
+          {
+            "case_id": "yaw_0016",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            48.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815659277478059,
+        "failures": [
+          {
+            "case_id": "yaw_0019",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.8,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            48.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815980797414346,
+        "failures": [
+          {
+            "case_id": "yaw_0022",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.0,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            48.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815841981626972,
+        "failures": [
+          {
+            "case_id": "yaw_0025",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            48.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815333427715165,
+        "failures": [
+          {
+            "case_id": "yaw_0028",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            48.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815352827775108,
+        "failures": [
+          {
+            "case_id": "yaw_0031",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            48.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028153875916826124,
+        "failures": [
+          {
+            "case_id": "yaw_0034",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012056863244495588,
+        "failures": [
+          {
+            "case_id": "yaw_0037",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0038",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.8,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028160738805347422,
+        "failures": [
+          {
+            "case_id": "yaw_0040",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.0,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02816358944254427,
+        "failures": [
+          {
+            "case_id": "yaw_0043",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.4,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028150263861336452,
+        "failures": [
+          {
+            "case_id": "yaw_0049",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028155266715681387,
+        "failures": [
+          {
+            "case_id": "yaw_0052",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012061588240094765,
+        "failures": [
+          {
+            "case_id": "yaw_0055",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0056",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.8,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.026607435835481932,
+        "failures": [
+          {
+            "case_id": "yaw_0058",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.0,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02865512837784023,
+        "failures": [
+          {
+            "case_id": "yaw_0061",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815597558833304,
+        "failures": [
+          {
+            "case_id": "yaw_0070",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012065254523489022,
+        "failures": [
+          {
+            "case_id": "yaw_0073",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0074",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.8,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012065134005332155,
+        "failures": [
+          {
+            "case_id": "yaw_0076",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0077",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.0,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02948675499419383,
+        "failures": [
+          {
+            "case_id": "yaw_0079",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            72.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028156284193907383,
+        "failures": [
+          {
+            "case_id": "yaw_0088",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            80.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012068170162253805,
+        "failures": [
+          {
+            "case_id": "yaw_0091",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0092",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            0.8,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            80.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012068051457918783,
+        "failures": [
+          {
+            "case_id": "yaw_0094",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0095",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.0,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            80.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 1,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.012067917907496348,
+        "failures": [
+          {
+            "case_id": "yaw_0097",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          },
+          {
+            "case_id": "yaw_0098",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            80.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.029434649114566225,
+        "failures": [
+          {
+            "case_id": "yaw_0100",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.6,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            80.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02815652968122719,
+        "failures": [
+          {
+            "case_id": "yaw_0106",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      }
+    ],
+    "roll": [
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013578610055512202,
+        "partial_worst_rmse_rad": 0.013578610055512202,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            275.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013579905006798438,
+        "partial_worst_rmse_rad": 0.013579905006798438,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            325.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580103374547793,
+        "partial_worst_rmse_rad": 0.013580103374547793,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580228008742921,
+        "partial_worst_rmse_rad": 0.013580228008742921,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            275.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013580936394302906,
+        "partial_worst_rmse_rad": 0.013580936394302906,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            250.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581312655373089,
+        "partial_worst_rmse_rad": 0.013581312655373089,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            5.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            325.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581578187279805,
+        "partial_worst_rmse_rad": 0.013581578187279805,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            5.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            350.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581710709078895,
+        "partial_worst_rmse_rad": 0.013581710709078895,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            5.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581717149897766,
+        "partial_worst_rmse_rad": 0.013581717149897766,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            250.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013581995153885317,
+        "partial_worst_rmse_rad": 0.013581995153885317,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            5.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            275.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013582176693372423,
+        "partial_worst_rmse_rad": 0.013582176693372423,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            5.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            250.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 3,
+        "all_pass": true,
+        "worst_rmse_rad": 0.013582793000011143,
+        "partial_worst_rmse_rad": 0.013582793000011143,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            6.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            250.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028159411553066158,
+        "failures": [
+          {
+            "case_id": "roll_0010",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            6.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            275.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028158802018476873,
+        "failures": [
+          {
+            "case_id": "roll_0022",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            6.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028158357344815758,
+        "failures": [
+          {
+            "case_id": "roll_0034",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            325.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028893717904397775,
+        "failures": [
+          {
+            "case_id": "roll_0037",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            6.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            325.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028158096129643716,
+        "failures": [
+          {
+            "case_id": "roll_0046",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            350.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.029849526729728862,
+        "failures": [
+          {
+            "case_id": "roll_0049",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            350.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.02943013010050138,
+        "failures": [
+          {
+            "case_id": "roll_0052",
+            "reason": "post_step_measured_velocity_limit",
+            "exclusions": [
+              "final_hold_incomplete",
+              "post_step_measured_velocity_limit"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            6.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            350.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 3,
+        "passed": 2,
+        "all_pass": false,
+        "worst_rmse_rad": null,
+        "partial_worst_rmse_rad": 0.028158015314400636,
+        "failures": [
+          {
+            "case_id": "roll_0058",
+            "reason": "joint_stopping_envelope_exhausted",
+            "exclusions": [
+              "final_hold_incomplete",
+              "joint_stopping_envelope_exhausted"
+            ]
+          }
+        ]
+      }
+    ],
+    "validation": [
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 12,
+        "passed": 12,
+        "all_pass": true,
+        "worst_rmse_rad": 0.014014588331269116,
+        "partial_worst_rmse_rad": 0.014014588331269116,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            275.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 12,
+        "passed": 12,
+        "all_pass": true,
+        "worst_rmse_rad": 0.014015164998115616,
+        "partial_worst_rmse_rad": 0.014015164998115616,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 12,
+        "passed": 12,
+        "all_pass": true,
+        "worst_rmse_rad": 0.014015183947565464,
+        "partial_worst_rmse_rad": 0.014015183947565464,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 12,
+        "passed": 12,
+        "all_pass": true,
+        "worst_rmse_rad": 0.01401549282166178,
+        "partial_worst_rmse_rad": 0.01401549282166178,
+        "failures": []
+      }
+    ],
+    "regression": [
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            275.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 14,
+        "passed": 14,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011335821686960103,
+        "partial_worst_rmse_rad": 0.011335821686960103,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            3.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 14,
+        "passed": 14,
+        "all_pass": true,
+        "worst_rmse_rad": 0.011356695570591453,
+        "partial_worst_rmse_rad": 0.011356695570591453,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            64.0,
+            100.0
+          ]
+        },
+        "cases": 14,
+        "passed": 14,
+        "all_pass": true,
+        "worst_rmse_rad": 0.01135918451506463,
+        "partial_worst_rmse_rad": 0.01135918451506463,
+        "failures": []
+      },
+      {
+        "candidate": {
+          "kd": [
+            1.4,
+            4.0,
+            1.2,
+            1.4
+          ],
+          "kp": [
+            100.0,
+            300.0,
+            56.0,
+            100.0
+          ]
+        },
+        "cases": 14,
+        "passed": 14,
+        "all_pass": true,
+        "worst_rmse_rad": 0.012905016397742101,
+        "partial_worst_rmse_rad": 0.012905016397742101,
+        "failures": []
+      }
+    ]
+  },
+  "selected_filtered_pipeline_vector": {
+    "kd": [
+      1.4,
+      3.0,
+      1.2,
+      1.4
+    ],
+    "kp": [
+      100.0,
+      300.0,
+      64.0,
+      100.0
+    ]
+  },
+  "base_rejections": {
+    "joint_stopping_envelope_exhausted": 24,
+    "post_step_measured_velocity_limit": 21
+  },
+  "guard_events": {
+    "joint_stopping_envelope_exhausted": 24
+  },
+  "minimum_soft_margin_rad": 0.21179860120574887,
+  "minimum_model_hard_margin_rad": 0.2617986012057489,
+  "minimum_stopping_slack_rad": -0.010142237703702373,
+  "simulated_seconds": 7604.7504999992925,
+  "manifest_sha256": "c12baf771ad2c6a5aac886e3e3a4efde7182832c14e79d4340017524fc88f202",
+  "regression_scope": "14declared cases per validated vector, not inherited previous passes"
+}

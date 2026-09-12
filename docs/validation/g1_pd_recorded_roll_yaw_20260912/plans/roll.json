@@ -1,0 +1,1802 @@
+[
+  {
+    "case_id": "roll_0000",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0001",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0002",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0003",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0004",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0005",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0006",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0007",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0008",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0009",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0010",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0011",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        250.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0012",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0013",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0014",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0015",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0016",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0017",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0018",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0019",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0020",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0021",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0022",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0023",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        275.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0024",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0025",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0026",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0027",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0028",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0029",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0030",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0031",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0032",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0033",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0034",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0035",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        300.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0036",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0037",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0038",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0039",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0040",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0041",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0042",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0043",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0044",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0045",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0046",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0047",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        325.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0048",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0049",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0050",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        3.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0051",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0052",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0053",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        4.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0054",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0055",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0056",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        5.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0057",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "nominal",
+      "mass_scale": 1.0,
+      "damping_scale": 1.0,
+      "friction_scale": 1.0,
+      "delay_s": 0.0,
+      "lag_s": 0.0,
+      "dt": 0.001
+    }
+  },
+  {
+    "case_id": "roll_0058",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "send",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  },
+  {
+    "case_id": "roll_0059",
+    "stage": "roll",
+    "kind": "recorded",
+    "candidate": {
+      "kd": [
+        1.4,
+        6.0,
+        1.2,
+        1.4
+      ],
+      "kp": [
+        100.0,
+        350.0,
+        64.0,
+        100.0
+      ]
+    },
+    "episode": 0,
+    "clock": "sample",
+    "scenario": {
+      "name": "delay_boundary",
+      "mass_scale": 1.35,
+      "damping_scale": 0.85,
+      "friction_scale": 0.15,
+      "delay_s": 0.004,
+      "lag_s": 0.008,
+      "dt": 0.0005
+    }
+  }
+]

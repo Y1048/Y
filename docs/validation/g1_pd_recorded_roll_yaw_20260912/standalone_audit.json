@@ -1,0 +1,16 @@
+{
+  "exit_code": 0,
+  "actual_new_integrations": 0,
+  "observed": {
+    "passed": true,
+    "cases": 272,
+    "all29_500hz_rows": 3802512,
+    "all29_margin_records": 7888,
+    "all_cases_sha256": "dcef1b6b1151212c1b29ca9878724a36c678cad5c00a15d9e318206220a430e7",
+    "source_and_recording_checked": true,
+    "physical_validation": false,
+    "scope": "full saved traces and guard extrema; not independent continuous dynamics"
+  },
+  "command": "mujoco_pd_recorded_roll_yaw.py --output <raw-folder> --audit-only",
+  "note": "Tool PID34804 completed in40.02s; separate readback, not an additional simulation"
+}

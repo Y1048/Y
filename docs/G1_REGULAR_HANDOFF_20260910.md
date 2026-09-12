@@ -1383,3 +1383,24 @@ All438protectedsourcehashes anddirtyliveGitstatusunchanged. NoG1SSH,DDS/SDK,
 actuation,ARMdeployment,IK/livegain/model edits orRobot/Allunblock. Nextoffline
 work must separate command-generation timing from yawtuning and regress new
 vectors across priorconditions; no automatic adoption or hardwareapproval.
+
+
+## 2026-09-12 — recorded-pipeline roll/yaw refinement started
+
+Base 450f4241c61143236f0530e89138e8152885c0c3. The user requests further PD
+research, not deployment. Keep the causal20ms pipeline fixed and preserve the
+raw rejected prior study. Add a separate coordinate-search runner and24tests.
+Yaw36vectors x3knownconditions; then roll20vectors x3conditions at the best
+all-pass yaw. Freeze up to4 finalists for both clocks and all6models, followed
+by14declared synthetic regression cases per replay survivor. Stage dependencies
+and all plans are recorded before their execution. No global optimum or new
+holdout claim. Only a process-local research context extends rollKp300to350;
+all old files, actual hardware gains, input bounds, model limits and guards stay.
+
+Observed:24/24new tests pass, including full-state baseline parity, actual350
+simulation and audit, scope restoration, stage selection, failed-case exclusion,
+tampered manifest/trace/score refusal and synthetic smoke. The full study is now
+running; its counts and selected candidate are not yet known. Smoke is not
+formal data. Append actual results and final regression/CI outcomes after audit.
+No G1 SSH, DDS/SDK, live publisher, VR/IK edit, deployment or launch unblock.
+Usage: experiments/twist2_right_arm_manual/MUJOCO_PD_RECORDED_ROLL_YAW.md.

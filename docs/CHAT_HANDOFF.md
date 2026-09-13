@@ -197,3 +197,12 @@ publisher/socket, emits `LowCmd`, modifies gains, or connects to G1. See
 integration work. This is offline infrastructure, not measured-G1 evidence or
 a hardware gain recommendation. The five new focused tests and the existing
 recorded-target parser regression pass on Windows Python 3.14.
+
+The same branch now integrates a passive `real_response.jsonl` sink at the
+existing single LowCmd owner's completed 500 Hz writer frame. It separates the
+original joints 22..28 target from the final shaped command and pairs both with
+the LowState, estimated torque, IMU, temperature and status values already read
+by that writer. Two focused C++ offline tests pass with strict warnings enabled.
+The Unitree/ARM controller has not been linked, deployed or run, so the next
+step is an ARM compile-only review followed by a separately authorized small
+measurement—not immediate gain optimization.

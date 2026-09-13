@@ -51,7 +51,7 @@ def validate_record(record: dict) -> dict:
         "target_monotonic_ns", "command_monotonic_ns", "lowstate_monotonic_ns",
         *VECTOR_FIELDS,
     }
-    if set(record) - (required | {"measured_tau_nm", "imu", "motor"}):
+    if set(record) - (required | {"write_returned_monotonic_ns", "measured_tau_nm", "imu", "motor"}):
         raise ValueError("unknown_field")
     if not required.issubset(record):
         raise ValueError("missing_field")
@@ -64,11 +64,14 @@ def validate_record(record: dict) -> dict:
     if record["state"] not in ("idle", "initializing", "active", "return", "hold", "fault"):
         raise ValueError("invalid_state")
     provenance = record["source_provenance"]
-    if not isinstance(provenance, dict) or not isinstance(provenance.get("controller_commit"), str) or not provenance["controller_commit"]:
+    identity = provenance.get("controller_commit") or provenance.get("binary_sha256") if isinstance(provenance, dict) else None
+    if not isinstance(provenance, dict) or not isinstance(identity, str) or not identity:
         raise ValueError("invalid_source_provenance")
     for key in ("target_monotonic_ns", "command_monotonic_ns", "lowstate_monotonic_ns"):
         if type(record[key]) is not int or record[key] < 0:
             raise ValueError("invalid_monotonic_timestamp")
+    if "write_returned_monotonic_ns" in record and (type(record["write_returned_monotonic_ns"]) is not int or record["write_returned_monotonic_ns"] < record["command_monotonic_ns"]):
+        raise ValueError("invalid_write_returned_timestamp")
     if not record["target_monotonic_ns"] <= record["command_monotonic_ns"]:
         raise ValueError("target_after_command")
     for key in VECTOR_FIELDS:

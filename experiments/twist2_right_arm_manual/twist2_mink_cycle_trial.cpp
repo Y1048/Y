@@ -2,6 +2,7 @@
 #include "native_vr_cycle_udp.hpp"
 #include "mink_live_cycle_target.hpp"
 #include "periodic_csv.hpp"
+#include "real_response_frame.hpp"
 #include "writer_frame.hpp"
 #include "pd_reach_trial.hpp"
 #include "pd_small_signal_trial.hpp"
@@ -393,6 +394,11 @@ class Controller {
         this);
   }
 
+  void start_response_log(const std::string& path,const std::string& session,const std::string& binary_sha){
+    response_log_=std::make_unique<RealResponseLog>(path,session,binary_sha);
+  }
+  void finish_response_log(){if(response_log_)response_log_->Finish();}
+
   void handoff_and_activate() {
     std::string form;
     std::string name;
@@ -682,12 +688,11 @@ class Controller {
     const auto cycle_started = Clock::now();
     Clock::time_point received;
     const LowState state = snapshot(nullptr,&received);
-    Desired command_desired;
+    Desired command_desired = desired();
     if (!handoff_requested_.load()) {
       try {
         if(input_watchdog_){const auto why=input_watchdog_();if(!why.empty())throw std::runtime_error(why);}
         validate_state(state, kVelocityLimit, false, received, true);
-        command_desired = desired();
         if (command_watchdog_expired(
                 Clock::now(),
                 command_desired.created,
@@ -798,6 +803,17 @@ class Controller {
       frame.tau_ff[i]=command.motor_cmd()[i].tau();
     }
     writer_frames_.Publish(frame);
+    frame=writer_frames_.Read();
+    if(response_log_){
+      RealResponseFrame response;response.writer=frame;
+      response.state=handoff_requested_.load()?"hold":"active";
+      for(std::size_t i=0;i<7;++i){const auto joint=i+22;response.original_target[i]=command_desired.target[joint];
+        response.temperature_c[i]=static_cast<float>(state.motor_state()[joint].temperature()[0]);
+        response.motor_status[i]=state.motor_state()[joint].motorstate();}
+      const auto& rpy=state.imu_state().rpy();const auto& gyro=state.imu_state().gyroscope();
+      for(std::size_t i=0;i<3;++i){response.imu_rpy[i]=rpy[i];response.imu_gyroscope[i]=gyro[i];}
+      response_log_->Append(response);
+    }
     std::lock_guard<std::mutex> lock(stats_mutex_);
     if (last_write_ != Clock::time_point{}) {
       intervals_ms_.push_back(
@@ -824,6 +840,7 @@ class Controller {
   std::mutex write_cycle_mutex_;
   std::function<std::string()> input_watchdog_;
   WriterFrameStore writer_frames_;
+  std::unique_ptr<RealResponseLog> response_log_;
   mutable std::mutex state_mutex_;
   LowState state_{};
   Clock::time_point state_received_{};
@@ -1120,9 +1137,13 @@ int main(int argc, char** argv) {
 
     controller.capture(controller.snapshot());
     // Persist provenance before handoff, outside the real-time loops.
+    const auto binary_sha=sha256sum(std::filesystem::read_symlink("/proc/self/exe"));
+    const auto response_path=csv_directory/"real_response.jsonl";
+    const auto response_session="g1-response-"+std::to_string(csv_stamp)+"-"+std::to_string(::getpid());
+    controller.start_response_log(response_path.string(),response_session,binary_sha);
     const nlohmann::json run_manifest={
       {"schema","g1.pd.run.v1"},{"mode",handoff_only?"handoff_only":(pd_sweep?"pd_sweep":(pd_trial?"pd_reach":"udp"))},
-      {"binary_sha256",sha256sum(std::filesystem::read_symlink("/proc/self/exe"))},
+      {"binary_sha256",binary_sha},
       {"policy_sha256",kExpectedPolicySha256},
       {"argv",std::vector<std::string>(argv,argv+argc)},
       {"cycle_speed_profile",selected_profile},
@@ -1133,7 +1154,8 @@ int main(int argc, char** argv) {
                     {"timing_du",PdReachReference::timing_du}}},
       {"logging",{{"nominal_policy_hz",50},{"writer_hz",500},
                   {"all_writer_frames",false},{"tau_est_is_estimate",true},
-                  {"state_pairing","state used to form command; not subsequent response"}}},
+                  {"state_pairing","state used to form command; not subsequent response"},
+                  {"real_response_schema","g1.real-response.v1"},{"real_response_file","real_response.jsonl"}}},
       {"physical_context",nullptr}
     };
     {
@@ -1511,7 +1533,7 @@ int main(int argc, char** argv) {
       // the comparison artifacts first so a completed PD run remains usable
       // even though the LowCmd hold continues until a successor owner exists.
       const bool artifacts_sealed = regular_handoff::TryArtifact([&]() {
-      csv.Finish();
+      csv.Finish();controller.finish_response_log();
       const nlohmann::json persistent_result={{"schema","g1.pd.result.v1"},
         {"reason",controller.reason()},
         {"completed_reach",pd_trial&&(controller.reason()=="pd trial completed"||controller.reason()=="pd sweep completed")},
@@ -1553,7 +1575,7 @@ int main(int argc, char** argv) {
       }
       controller.finish();
     }
-    csv.Finish();
+    csv.Finish();controller.finish_response_log();
     {
       const nlohmann::json result={{"schema","g1.pd.result.v1"},
         {"reason",controller.reason()},

@@ -10,7 +10,8 @@ find_package(Threads REQUIRED)
 enable_testing()
 
 foreach(name pd_gain_options pd_small_signal_trial writer_frame
-             verified_regular_handoff regular_handoff_safety periodic_csv_failure)
+             verified_regular_handoff regular_handoff_safety periodic_csv_failure
+             real_response_frame)
   add_executable(test_${name} "../test_${name}.cpp")
   target_link_libraries(test_${name} PRIVATE Threads::Threads)
   if(MSVC)

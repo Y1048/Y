@@ -18,6 +18,7 @@ template<class T> class PeriodicCsv {
  std::condition_variable wake;
  std::deque<T> queue;
  std::thread worker;
+ std::size_t capacity;
  bool closing=false;
  std::string error;
  void Run() noexcept {
@@ -40,7 +41,9 @@ template<class T> class PeriodicCsv {
  }
 public:
  PeriodicCsv(const std::string& path,const std::string& header,
-             std::function<void(std::ostream&,const T&)> writer):encode(writer){
+             std::function<void(std::ostream&,const T&)> writer,
+             std::size_t queue_capacity=250):encode(writer),capacity(queue_capacity){
+  if(capacity==0)throw std::invalid_argument("csv_queue_capacity_zero");
   stream.exceptions(std::ios::failbit|std::ios::badbit);
   stream.open(path);stream<<header;stream.flush();
   worker=std::thread([this](){Run();});
@@ -51,7 +54,7 @@ public:
   std::lock_guard<std::mutex> lock(mutex);
   if(!error.empty())throw std::runtime_error(error);
   if(closing)throw std::runtime_error("csv_closed");
-  if(queue.size()>=250){error="csv_queue_overflow";throw std::runtime_error(error);}
+  if(queue.size()>=capacity){error="csv_queue_overflow";throw std::runtime_error(error);}
   queue.push_back(item);wake.notify_one();
  }
  void Finish(){

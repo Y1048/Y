@@ -180,3 +180,20 @@ regression requires at least 120 moving frames, lower final target error and a
 ## 8. Historical handoff
 
 Historical detail remains in [`CHAT_HANDOFF_HISTORY_20260903.md`](CHAT_HANDOFF_HISTORY_20260903.md). Use this current handoff and `REVIEW_LATEST.md` first.
+
+## 9. 2026-09-14 main-baseline continuation
+
+Fetched `origin/main` and confirmed it exactly matched
+`0da866f7833c21ee1898c3e3ccf7932cdb401475`. The older dirty
+`codex/g1-regular-handoff-20260910` worktree was left untouched; continuation
+uses a clean branch from current main.
+
+Phase 1 of `G1_REAL_SYSTEM_ID_NEXT_20260913.md` now has an offline foundation:
+`real_response_log.py` supplies a versioned, strict, asynchronous local trace
+sink, while `real_response_identification.py` supplies a gap-refusing low-order
+offline fitter skeleton. Neither module imports Unitree SDK/DDS, creates a
+publisher/socket, emits `LowCmd`, modifies gains, or connects to G1. See
+`G1_REAL_RESPONSE_LOGGER_20260914.md` for schema, tests, limits and remaining
+integration work. This is offline infrastructure, not measured-G1 evidence or
+a hardware gain recommendation. The five new focused tests and the existing
+recorded-target parser regression pass on Windows Python 3.14.

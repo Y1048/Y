@@ -175,3 +175,22 @@ py -3.11 -B -m unittest -v test_sysid_excitation_reference.py
 These tests establish offline formula parity only. They do not validate control
 loop timing, motor response, physical safety or command ownership, and they do
 not authorize a hardware run. `recommended_hardware_gains` remains null.
+
+## SDK-free C++ sequence core
+
+`sysid_excitation_sequence.hpp` adds deterministic sample-grid sequencing around
+the waveform reference. It accepts a 29-axis start vector and a list of holds and
+single-axis quintic moves. Construction fails closed on nonfinite data, off-grid
+durations, joints outside 22..28, discontinuous holds/moves, empty sequences and
+sequences that do not return every arm offset to zero.
+
+`AtTick()` produces one 29-axis target sample without reading a clock. The native
+test moves joints 22..28 one at a time, proves that all inactive joints remain
+bit-for-bit equal to their starting values, checks target bounds and verifies the
+final sample equals the complete starting vector. It also exercises invalid joint,
+discontinuity and off-grid rejection.
+
+This is still an offline library: it has no plan-file parser, SDK, DDS, network,
+publisher, controller or process entry point and is not linked to the existing
+runtime. A file adapter that converts a validated saved plan into these segments
+is the next offline integration step.

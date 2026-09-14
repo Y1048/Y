@@ -403,3 +403,12 @@ test checks constants/formulas and the expected 0.878 s move duration. This is a
 offline integration reference only. No G1/DDS/controller was run, command-owner
 and termination behavior remain unresolved, physical execution is unauthorized,
 and `recommended_hardware_gains=null`.
+
+Added `sysid_excitation_sequence.hpp`, an SDK-free deterministic C++ sequence
+core over the reference quintic. It consumes an explicit 29-axis start vector and
+in-memory hold/move segments, rejects nonfinite/off-grid/discontinuous/non-returning
+plans and only permits active joints 22..28. Its native test sequentially moves all
+seven right-arm joints and proves every inactive joint is held exactly, targets do
+not overshoot, and the final 29-axis vector equals the start. There is still no
+plan-file parser, writer integration, DDS, publisher or robot executable. Next is
+an offline saved-plan adapter; command-owner and termination work remain on hold.

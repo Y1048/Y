@@ -153,3 +153,25 @@ py -3.11 -B experiments\twist2_right_arm_manual\sysid_excitation_preview.py `
 The CSV is generated reference data only. The preview module has no SDK,
 transport, publisher or process-launching imports and its summary always records
 `physical_execution_authorized=false` and `recommended_hardware_gains=null`.
+
+## SDK-free C++ waveform reference
+
+`sysid_excitation_reference.hpp` mirrors only the duration-grid and quintic
+position, velocity and acceleration math used by the Python plan and preview.
+It has no Unitree SDK, DDS, publisher, controller, clock, file, concurrency or
+network dependency. It is deliberately not included from a LowCmd writer or any
+robot executable.
+
+The native test samples the full ±8 degree draft move at 2 ms, verifies endpoint
+clamping and monotonic position, and checks that the 20 deg/s velocity and
+60 deg/s² acceleration limits are not exceeded. The matching Python test checks
+the same constants and the expected grid duration of 0.878 s.
+
+```powershell
+wsl.exe -e bash -lc "cd /mnt/c/path/to/repo/experiments/twist2_right_arm_manual && g++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -UNDEBUG test_sysid_excitation_reference.cpp -o /tmp/test_sysid_excitation_reference && /tmp/test_sysid_excitation_reference"
+py -3.11 -B -m unittest -v test_sysid_excitation_reference.py
+```
+
+These tests establish offline formula parity only. They do not validate control
+loop timing, motor response, physical safety or command ownership, and they do
+not authorize a hardware run. `recommended_hardware_gains` remains null.

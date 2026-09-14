@@ -393,3 +393,13 @@ It rejects discontinuities, off-grid segments and nonzero final offsets and has
 no command path. The current draft shape computes to169segments and116.252s per
 episode (232.504s combined), but no actual start pose has been selected and no
 physical run is authorized or claimed.
+
+Added `sysid_excitation_reference.hpp` as an SDK-free C++ implementation of the
+same grid-rounded quintic waveform used by the offline Python plan/preview. It is
+pure trajectory math and is not included by any LowCmd writer, DDS process or
+robot controller. The native C++ test checks the complete 2 ms grid, endpoint
+clamping, monotonic position and the draft 20 deg/s and 60 deg/s² bounds; a Python
+test checks constants/formulas and the expected 0.878 s move duration. This is an
+offline integration reference only. No G1/DDS/controller was run, command-owner
+and termination behavior remain unresolved, physical execution is unauthorized,
+and `recommended_hardware_gains=null`.

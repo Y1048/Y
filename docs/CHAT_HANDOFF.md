@@ -293,3 +293,20 @@ reviewed observer hook cpp; its command equations are checked separately.
 Full Controller ARM compile, SDK field compatibility, callback timing, real v2
 capture and asynchronous fitter integration remain unverified. No G1 SSH,
 deployment, mode or gain change this turn. Do not run the candidate yet.
+
+### 2026-09-14: asynchronous offline identification and compile-only check
+
+Added sysid_async_model.py and generated tests: shared-host-clock asynchronous
+command/state integration, frozen delay/lag grid, independent episode validation,
+leakage/gap/invalid-model rejection. See G1_SYSID_OFFLINE_PIPELINE_20260914.md for
+commands and interpretation limits. Actual parameter identification is data-blocked;
+recommended_hardware_gains=null. No PD optimization or hardware recommendation.
+
+Full local WSL x86_64 controller compile/link passed with Torch header warnings;
+controller binary was not executed or deployed. Windows numerical/schema tests32
+and WSL SDK-free native tests2 passed (native suite initially failed under Windows
+because g++ was absent, then rerun in WSL). Fixtures are generated, not measured.
+Existing motor equations, gains, model and launch paths remain unchanged this turn.
+No SSH, SDK/DDS initialization, motor output, mode work or live worktree changes.
+ARM/runtime timing/real v2 capture remain pending; do not interpret compilation as
+hardware approval. Prior ZeroTorque/hold data is insufficient for dynamic fitting.

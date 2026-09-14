@@ -154,3 +154,45 @@ unverified. The new v2 output is asynchronous and the initial synchronous fitter
 will deliberately reject it until timestamp-aware fitting is implemented.
 Do not fabricate alignment to make that test pass. Existing legacy v1 logging
 remains present and is not promoted to a validated recording/control path.
+
+## Timestamp-aware fitter and local build (2026-09-14 follow-up)
+
+`sysid_async_model.py` now supports asynchronous command-write and LowState
+receive timestamps within the declared shared host clock. It integrates a
+zero-order-held command exactly between measurement times, deduplicates repeated
+state samples, and rejects gaps. It does not invent synchronous measurements.
+Only the first observation initializes each prediction; later predictions use
+commands, not measured q feedback. This supersedes the pending async-fitter note.
+
+Freeze an extended plan BEFORE examining validation data, using `freeze(path,
+base_plan, delays_s=[.01,.02,.03], lags_s=[.06,.08,.1])`. Those grids are example
+fixture values, not robot parameters. The base plan is created with
+`sysid_model.create_plan` and includes disjoint episode IDs and fixed thresholds.
+Then, from the experiment directory:
+
+```powershell
+py -3.14 -B sysid_async_model.py fit --plan plan.json --output fit.json train.jsonl
+py -3.14 -B sysid_async_model.py validate --plan plan.json --model fit.json --output scores.json heldout.jsonl
+```
+
+Outputs are exclusive-create. Fit uses training episodes only; validation checks
+plan identity, joint coverage, gains contract, session and content separation.
+Changing held-out dynamics fails without retuning. Delay and lag are an effective
+closed-loop host-time description, not independently identified motor pure delay,
+physical friction/damping/inertia or sensor noise. Clock offset zero is a declared
+shared-clock assumption, not measured alignment with the robot clock. This model
+cannot justify changing PD gains or extrapolating responses under other gains.
+
+Local full C++ controller compilation/linking succeeded in WSL x86_64 using the
+existing SDK/Torch installations. Torch headers emitted maybe-uninitialized
+warnings. The resulting controller was NEVER executed or sent to G1. ARM build,
+control-loop timing and real v2 recording remain unverified.
+
+Verification: Windows Python tests (async9 + pipeline21 + legacy2); SDK-free
+native tests2 run in WSL. An initial combined Windows run could not locate g++;
+the native tests were then run successfully in WSL, not skipped. Generated async
+fixtures use an independent 10us Euler oracle and known20ms delay/80ms lag.
+No actual G1 measurement or hardware validation is claimed.
+
+`actual parameter identification is data-blocked`.
+`recommended_hardware_gains = null`.

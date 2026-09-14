@@ -337,3 +337,21 @@ blocked on controlled command excitation and an unused validation capture.
 Kp 40/48/56 and reaches the deferred mode-handoff path. Next code task is a fixed
 current-gain, bounded per-joint identification trajectory with an explicit
 termination/ownership contract; physical execution requires separate review.
+
+### 2026-09-14: offline excitation-plan contract
+
+Implemented the next code task as `sysid_excitation_plan.py`, an offline-only
+plan generator with no execution/SDK/DDS/network/controller path. It requires a
+SHA-bound controller, exact29-axis start/soft-limit/Kp/Kd vectors and explicit
+seven-axis amplitudes, speed and acceleration limits. It produces sequential
+one-joint quintic moves; analytic peak velocity/acceleration are bounded and
+training/validation reverse joint order and initial sign. Output explicitly says
+`command_capable=false`, `execution_authorized=false` and
+`recommended_hardware_gains=null`.
+
+The termination owner is an explicit unresolved/reviewed contract in the input.
+Current status remains unresolved because handoff research is on hold, so this
+plan is not connected to LowCmd and is not a physical-run instruction. See
+`G1_SYSID_EXCITATION_PLAN_20260914.md`. Generated tests cover order, limits,
+analytic bounds, deterministic hash binding, malformed/nonfinite inputs and
+absence of transport imports. No G1 connection or output was performed.

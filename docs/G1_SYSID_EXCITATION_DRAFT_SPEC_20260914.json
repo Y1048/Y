@@ -1,0 +1,18 @@
+{
+  "schema": "g1.sysid.excitation-draft-spec.v1",
+  "contract_id": "review-required-before-physical-collection",
+  "amplitude_rad": [0.13962634015954636, 0.13962634015954636, 0.13962634015954636, 0.13962634015954636, 0.13962634015954636, 0.13962634015954636, 0.13962634015954636],
+  "velocity_limit_rad_s": [0.3490658503988659, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659],
+  "acceleration_limit_rad_s2": [1.0471975511965976, 1.0471975511965976, 1.0471975511965976, 1.0471975511965976, 1.0471975511965976, 1.0471975511965976, 1.0471975511965976],
+  "sample_period_s": 0.002,
+  "hold_s": 0.5,
+  "cycles": 3,
+  "tail_s": 0.5,
+  "pose_range_tolerance_rad": 0.01,
+  "velocity_tolerance_rad_s": 0.05,
+  "termination_owner_contract": {
+    "status": "unresolved",
+    "description": "Supervisor lower-body policy and continuous command ownership are not selected; physical execution is blocked."
+  },
+  "parameter_basis": "Draft only: reuses the existing joint-22 PdSmallSignalTrial shape of +/-8 deg, 20 deg/s, 60 deg/s^2 and 3 cycles. Applying the same shape sequentially to joints 23-28 is unvalidated and requires review. Pose/velocity tail thresholds are acquisition-screening choices, not measured G1 noise limits."
+}

@@ -108,7 +108,8 @@ it is never compiled, imported or executed.
 The accompanying draft-spec JSON must provide every experimental choice:
 amplitudes, speed/acceleration limits, sample period, hold duration, cycles,
 stable-tail duration/tolerances and termination-owner contract. There are no
-physical defaults. Create the request with:
+physical defaults. It must also state the parameter basis, which is hash-bound
+in the receipt. Create the request with:
 
 ```powershell
 py -3.11 -B experiments\twist2_right_arm_manual\sysid_excitation_request.py `
@@ -122,3 +123,10 @@ The tool rejects a short/moving/variable-mode tail and then runs the complete
 plan request validator. It writes `request.json.receipt.json` but still does not
 authorize execution. Existing ZeroTorque recordings are retained as measured
 state evidence; they are not automatically selected as a controlled start pose.
+
+`G1_SYSID_EXCITATION_DRAFT_SPEC_20260914.json` is a review draft based on the
+existing joint-22 `PdSmallSignalTrial`: ±8 degrees, 20 deg/s, 60 deg/s² and
+three cycles. Reusing that shape sequentially for joints 23..28 is explicitly
+unvalidated. The owner remains `unresolved`, so the draft cannot support a
+physical run. Its pose/velocity tail thresholds are acquisition-screening
+choices rather than measured sensor-noise limits.

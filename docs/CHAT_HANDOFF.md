@@ -378,3 +378,10 @@ request through the plan builder. The output receipt remains explicitly
 non-authorizing. Generated tests verify the current right-arm gain extraction,
 hash binding, motion rejection, malformed-source refusal and absence of command
 imports. Existing ZeroTorque data was not promoted to an approved start pose.
+
+Added `G1_SYSID_EXCITATION_DRAFT_SPEC_20260914.json`. It reuses the existing
+joint22 small-signal shape (±8deg,20deg/s,60deg/s²,3cycles) across seven
+sequential axes only as a review draft. The extension to joints23..28 is marked
+unvalidated, tail thresholds are not claimed as measured noise, and termination
+ownership remains unresolved. Draft receipts now hash and retain a mandatory
+human-readable parameter basis. This does not authorize or implement motion.

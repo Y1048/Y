@@ -39,9 +39,11 @@ def _spec(value):
     required = {"schema", "contract_id", "amplitude_rad", "velocity_limit_rad_s",
                 "acceleration_limit_rad_s2", "sample_period_s", "hold_s", "cycles",
                 "tail_s", "pose_range_tolerance_rad", "velocity_tolerance_rad_s",
-                "termination_owner_contract"}
+                "termination_owner_contract", "parameter_basis"}
     if not isinstance(value, dict) or set(value) != required or value["schema"] != SPEC_SCHEMA:
         raise ValueError("draft_spec")
+    if not isinstance(value["parameter_basis"], str) or not value["parameter_basis"].strip():
+        raise ValueError("parameter_basis")
     return value
 
 
@@ -87,6 +89,8 @@ def create(capture_path, common_source, controller_source, spec):
         "capture_session": rows[0]["session"], "tail_samples": len(tail),
         "observed_mode": {"mode_pr": tail[-1]["mode_pr"], "mode_machine": tail[-1]["mode_machine"]},
         "source_sha256": sources, "controller_source_sha256": bundle_hash,
+        "draft_spec_sha256": hashlib.sha256(canonical(spec)).hexdigest(),
+        "parameter_basis": spec["parameter_basis"],
         "request_sha256": hashlib.sha256(canonical(request)).hexdigest(),
         "physical_execution_authorized": False, "recommended_hardware_gains": None,
     }

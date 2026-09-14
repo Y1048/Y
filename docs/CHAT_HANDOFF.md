@@ -206,3 +206,40 @@ by that writer. Two focused C++ offline tests pass with strict warnings enabled.
 The Unitree/ARM controller has not been linked, deployed or run, so the next
 step is an ARM compile-only review followed by a separately authorized small
 measurement—not immediate gain optimization.
+
+## 2026-09-14 read-only system-identification foundation, isolated continuation
+
+Current user priority supersedes earlier PD48/5 and mode-research plans:
+measurement -> real model identification -> unused-episode validation -> PD
+optimization. Mode research stays HOLD. Later clarification permits data
+acquisition, but no robot connection/actuation was needed or performed here.
+
+Fetched remote and compared local branches/worktrees. origin/main0da866f,
+origin/codex/g1-main-continuation-20260914=5de8586; main is an ancestor.
+The former isolated worktree contains uncommitted unrelated shutdown/diagnostic
+work; it is preserved. New initially clean independent working copy:
+C:/Users/user/AppData/Local/Temp/g1_sysid_offline_20260914, same continuation branch.
+The dirty live tree remains on05d4ebf with423status entries at initial inventory.
+
+Added sysid_capture.py (29-axis v2 immutable-byte queue/file sink and parser),
+sysid_model.py (training-only delay/first-order fit and separate recursive
+validation), test_sysid_pipeline.py and G1_SYSID_OFFLINE_PIPELINE_20260914.md.
+No inherited controller/hook, v1 logger, launcher, gains, model, IK or transport
+files changed. New module is not connected to the existing writer. v1 files are
+legacy, not automatically converted or used by this v2 identification pipeline.
+
+Actually executed: Windows Python3.14 unittest,21new generated-fixture tests plus
+5existing v1 tests =26passed,0failed. Known fixture40msdelay and first-order lag
+recovered; independent session validation passes; changed-delay validation fails
+without retuning. Preservation test, ordering, malformed/nonfinite, clock/gap,
+exact bytes, queue/file failure and leakage cases covered. No new MuJoCo runs,
+ARM/C++ build, SDK/DDS, SSH, physical output, hardware gains or mode switching.
+
+actual parameter identification is data-blocked: no suitable excited and held-out
+real v2 episodes available. Earlier handoff-only trace has constant arm commands.
+Effective delay/lag are fixture-only closed-loop estimates, NOT motor latency or
+inertia; physical damping/friction/inertia/load require additional identifiable
+models/data and remain null. recommended_hardware_gains=null always.
+Uniform aligned-clock fitter deliberately rejects asynchronous real frames;
+future timestamp-aware fitting/adapter timing validation remains separate work.
+Current task delivers the offline foundation, not a deployed hardware recorder.

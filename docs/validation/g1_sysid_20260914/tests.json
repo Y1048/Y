@@ -1,0 +1,16 @@
+{
+  "schema": "g1.sysid.offline-test-receipt.v1",
+  "python": "3.14.4 (tags/v3.14.4:23116f9, Apr  7 2026, 14:10:54) [MSC v.1944 64 bit (AMD64)]",
+  "command": "py -3.14 -B -m unittest -v test_sysid_pipeline test_real_response_identification",
+  "new_generated_tests_passed": 21,
+  "legacy_tests_passed": 5,
+  "failures": 0,
+  "hardware_validation": false,
+  "actual_parameter_identification": "data-blocked",
+  "recommended_hardware_gains": null,
+  "source_sha256": {
+    "experiments/twist2_right_arm_manual/sysid_capture.py": "37958f522ede38a64eceb67f79598d23b7ff2e197bdd3e7c37706fe8100c4ee9",
+    "experiments/twist2_right_arm_manual/sysid_model.py": "b85badd8371eb5ca87f130e97d76a374a30f48b5740b29e475d7cd0d08fa10b8",
+    "experiments/twist2_right_arm_manual/test_sysid_pipeline.py": "c0bdec872af81c441c51cd60e60e486071016af8a119e89747e2453e421a9a31"
+  }
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "worktree": "C:\\Users\\user\\AppData\\Local\\Temp\\g1_sysid_offline_20260914",
+    "baseline_head": "5de85864988e2c62671dbe7ec6ecc9826dd45ebd",
+    "protected_files": 1058,
+    "changed_protected_files": [],
+    "dirty_status_unchanged": null
+  },
+  {
+    "worktree": "C:\\Users\\user\\Desktop\\G1_Teleop_Project",
+    "baseline_head": "05d4ebf3827ffbaf287d3d6d39ce4ef89c6ed3e8",
+    "protected_files": 727,
+    "changed_protected_files": [],
+    "dirty_status_unchanged": true
+  },
+  {
+    "worktree": "C:\\Users\\user\\AppData\\Local\\Temp\\g1_pd_roll_yaw_20260912_review\\source",
+    "baseline_head": "5de85864988e2c62671dbe7ec6ecc9826dd45ebd",
+    "protected_files": 1060,
+    "changed_protected_files": [],
+    "dirty_status_unchanged": true
+  }
+]

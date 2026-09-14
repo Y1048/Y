@@ -1595,3 +1595,12 @@ The next milestone remains the read-only real-response logger and offline system
 identification pipeline described in `docs/G1_REAL_SYSTEM_ID_NEXT_20260913.md`.
 No G1 connection, gain deployment, VR/IK change, DDS/SDK actuation or safety-limit
 relaxation was performed as part of this branch integration.
+## 2026-09-14 offline system-ID continuation
+
+Mode-transition investigation is deferred by the user. New file-only29-axis
+capture/parser and training/held-out delay-model baseline are described in
+G1_SYSID_OFFLINE_PIPELINE_20260914.md. This change preserves the existing control
+path and launch blocks; it does not resolve or approve the prior physical handoff.
+The later user clarification permits obtaining data, but no G1 operation occurred
+in this change.21new synthetic tests and5legacy tests passed on Windows Python3.14.
+Actual identification remains data-blocked and recommended_hardware_gains=null.

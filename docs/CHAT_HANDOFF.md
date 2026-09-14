@@ -367,3 +367,14 @@ Generated tests cover matching evidence plus pose, motion, gain and unresolved-
 owner blockers. The three existing ZeroTorque captures were not converted into
 an excitation plan because they have no commands and their posture is not an
 approved controlled start. No G1/DDS/controller execution occurred.
+
+Added `sysid_excitation_request.py` to remove manual29-vector transcription.
+It extracts literal gains/soft limits from the chosen C++ common header, derives
+a median start pose only from a caller-bounded stable tail, and hash-binds the
+capture plus common/controller sources. All motion limits and ownership text
+remain required in a separate draft spec; there are no physical defaults. It
+rejects moving, short or variable-mode captures and validates the resulting
+request through the plan builder. The output receipt remains explicitly
+non-authorizing. Generated tests verify the current right-arm gain extraction,
+hash binding, motion rejection, malformed-source refusal and absence of command
+imports. Existing ZeroTorque data was not promoted to an approved start pose.

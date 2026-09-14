@@ -95,3 +95,30 @@ as null rather than claiming a match. An unresolved termination owner, unstable
 mode, excessive motion, pose mismatch or observed gain mismatch is listed as a
 blocker. `physical_execution_authorized` is always false: a passing saved-file
 comparison is evidence for review, not knowledge of the robot's current state.
+
+## Build a request without copying 29 values by hand
+
+`sysid_excitation_request.py` reads literal `kKp`, `kKd`, `kLower`, `kUpper`
+and `kJointLimitMargin` arrays from the selected `twist2_common.hpp`. It derives
+the start pose as the per-axis median of a stable tail from a completed read-only
+capture. The request and receipt bind SHA-256 hashes of the capture, common
+header and selected controller source. Source text is parsed as numeric literals;
+it is never compiled, imported or executed.
+
+The accompanying draft-spec JSON must provide every experimental choice:
+amplitudes, speed/acceleration limits, sample period, hold duration, cycles,
+stable-tail duration/tolerances and termination-owner contract. There are no
+physical defaults. Create the request with:
+
+```powershell
+py -3.11 -B experiments\twist2_right_arm_manual\sysid_excitation_request.py `
+  capture.jsonl draft-spec.json `
+  --common-source references\lower_body\twist2_deploy\cpp_g1_twist2\twist2_common.hpp `
+  --controller-source experiments\twist2_right_arm_manual\twist2_mink_cycle_trial.cpp `
+  --output request.json
+```
+
+The tool rejects a short/moving/variable-mode tail and then runs the complete
+plan request validator. It writes `request.json.receipt.json` but still does not
+authorize execution. Existing ZeroTorque recordings are retained as measured
+state evidence; they are not automatically selected as a controlled start pose.

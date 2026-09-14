@@ -310,3 +310,30 @@ Existing motor equations, gains, model and launch paths remain unchanged this tu
 No SSH, SDK/DDS initialization, motor output, mode work or live worktree changes.
 ARM/runtime timing/real v2 capture remain pending; do not interpret compilation as
 hardware approval. Prior ZeroTorque/hold data is insufficient for dynamic fitting.
+
+### 2026-09-14: standalone read-only DDS capture on G1
+
+Added `sysid_readonly_dds.cpp`, a subscriber-only aarch64 logger for `rt/lowcmd`
+and `rt/lowstate`, plus strict parser, quiet-summary utility and tests. Static
+checks require zero `ChannelPublisher`, motion client and command-write symbols.
+It uses an asynchronous heap ring. An initial pre-fix launch segfaulted before
+creating a file because the large ring was on the stack; moving it to the heap
+fixed the issue. That failed attempt produced no command and no measurement file.
+
+The corrected ARM binary SHA is
+`80d854e0492a6adadfef329d9447ae66f26bec994c4d7109aa9cd91646f4a1ad` in
+`/home/unitree/g1_sysid_observer_437db16`. Three 5 s subscriber-only runs in the
+user-reported ZeroTorque state produced 15,742 LowState records, zero observed
+LowCmd records and zero ring drops. No actuation or mode change was performed.
+Raw logs/receipts are durably copied to
+`C:/Users/user/Documents/G1_SysID_Data/20260914_zerotorque_readonly`; Git contains
+only their hashes/statistical summary and deployment receipt. Repeated state tick
+values occurred 263/262/264 times while data changed, so tick is diagnostic, not
+treated as a unique sequence number.
+
+Actual state data now exists, but actual dynamic parameter identification remains
+blocked on controlled command excitation and an unused validation capture.
+`recommended_hardware_gains=null`. Do not use the existing PD sweep: it changes
+Kp 40/48/56 and reaches the deferred mode-handoff path. Next code task is a fixed
+current-gain, bounded per-joint identification trajectory with an explicit
+termination/ownership contract; physical execution requires separate review.

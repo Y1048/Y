@@ -1,0 +1,24 @@
+{
+  "schema": "g1.sysid.readonly-dds.deployment.v1",
+  "date": "2026-09-14",
+  "robot_host": "192.168.123.164",
+  "robot_arch": "aarch64",
+  "remote_directory": "/home/unitree/g1_sysid_observer_437db16",
+  "binary": "build/g1_sysid_readonly_dds",
+  "binary_sha256": "80d854e0492a6adadfef329d9447ae66f26bec994c4d7109aa9cd91646f4a1ad",
+  "source_sha256": "f42e1aa3415cf2b8a40d52f9dc6700f77f163d96596bf27efe07ea6025bf01bf",
+  "dds_subscriptions": ["rt/lowcmd", "rt/lowstate"],
+  "dds_publishers": 0,
+  "motion_clients": 0,
+  "executed_capture": {
+    "robot_state": "user-reported ZeroTorque",
+    "episodes": 3,
+    "seconds_each": 5,
+    "samples": 15742,
+    "commanded_samples": 0,
+    "dropped_samples": 0
+  },
+  "actuation_executed": false,
+  "mode_change_executed": false,
+  "recommended_hardware_gains": null
+}

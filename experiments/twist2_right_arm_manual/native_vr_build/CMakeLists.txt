@@ -160,3 +160,11 @@ endif()
 add_twist2_executable(g1_twist2_mink_cycle_trial "${CMAKE_CURRENT_LIST_DIR}/../twist2_mink_cycle_trial.cpp")
 set_target_properties(g1_twist2_mink_cycle_trial PROPERTIES EXCLUDE_FROM_ALL TRUE)
 target_include_directories(g1_twist2_mink_cycle_trial PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../../references/lower_body/twist2_deploy/cpp_g1_twist2")
+
+# Subscriber-only system-identification recorder. It deliberately has no Torch,
+# motion client, or ChannelPublisher dependency and cannot issue a motor command.
+add_executable(g1_sysid_readonly_dds "${CMAKE_CURRENT_LIST_DIR}/../sysid_readonly_dds.cpp")
+target_include_directories(g1_sysid_readonly_dds PRIVATE "${UNITREE_SDK2_ROOT}/include" ${DDS_INCLUDE_DIRS})
+target_link_directories(g1_sysid_readonly_dds PRIVATE "${UNITREE_ARCH_LIB}" ${DDS_LIBRARY_DIRS})
+target_link_libraries(g1_sysid_readonly_dds PRIVATE unitree_sdk2 ddsc ddscxx Threads::Threads)
+target_compile_options(g1_sysid_readonly_dds PRIVATE -Wall -Wextra -Wpedantic -Werror=return-type)

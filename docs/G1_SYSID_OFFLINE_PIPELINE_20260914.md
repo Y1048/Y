@@ -196,3 +196,37 @@ No actual G1 measurement or hardware validation is claimed.
 
 `actual parameter identification is data-blocked`.
 `recommended_hardware_gains = null`.
+
+## Standalone subscriber-only recorder and first measured baseline
+
+`sysid_readonly_dds.cpp` is a separate executable with exactly two DDS
+subscriptions (`rt/lowcmd`, `rt/lowstate`). Its source and CMake target contain no
+`ChannelPublisher`, motion client, or command write call. It records the latest
+observed LowCmd beside each LowState callback using host steady-clock receive
+timestamps. Observing a LowCmd does not prove that a motor accepted or executed
+it, so every row retains `acceptance=unknown`. Original Mink targets and the
+originating writer's send timestamp are unavailable on this subscriber path.
+
+The callback copies fixed-size fields into an 8192-slot heap SPSC ring. JSON and
+file I/O occur in a worker thread. Overflow or encoding/file failure makes the
+exclusive-create receipt incomplete. `sysid_readonly_parse.py` rejects malformed,
+nonfinite, dropped, reversed or conflicting records. Equal LowState ticks are
+reported rather than rejected because the first real capture showed updated
+measurements under a repeated tick; logger sequence and receive time remain the
+ordering authority.
+
+The ARM target was built in the new robot directory
+`/home/unitree/g1_sysid_observer_437db16`; the prior controller directory was not
+modified. The read-only logger was run three times for 5 s while the user reported
+ZeroTorque. It recorded 5,240/5,246/5,256 state samples, zero LowCmd samples and
+zero queue drops. Raw captures and receipts are preserved outside Git at
+`C:/Users/user/Documents/G1_SysID_Data/20260914_zerotorque_readonly`.
+The committed summary and SHA-256 values are under
+`docs/validation/g1_sysid_20260914`.
+
+This is actual measured G1 state-only evidence, not an actuator response trial.
+It cannot set validation thresholds for a controlled posture or identify delay,
+lag, friction, inertia, load scale, or PD gains. A command-excited training episode
+and separate command-excited validation episode are still required. Existing
+`--pd-sweep-trial` is unsuitable because it changes Kp and invokes the deferred
+mode-handoff path. Do not run it for this purpose.

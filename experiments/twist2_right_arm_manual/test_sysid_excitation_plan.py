@@ -40,12 +40,18 @@ class ExcitationPlanTests(unittest.TestCase):
         self.assertEqual(train["joint_order"], list(range(22, 29)))
         self.assertEqual(validation["joint_order"], list(reversed(range(22, 29))))
         for episode in (train, validation):
+            previous = None
             for segment in episode["segments"]:
                 if segment["kind"] == "quintic_move":
                     local = segment["joint_index"] - 22
                     self.assertLessEqual(segment["analytic_peak_velocity_rad_s"], 0.2 + 1e-12)
                     self.assertLessEqual(segment["analytic_peak_acceleration_rad_s2"], 0.4 + 1e-12)
                     self.assertLessEqual(abs(segment["end_offset_rad"]), 0.1 + 1e-12)
+                    previous = segment
+                elif previous is not None:
+                    self.assertEqual(segment["joint_index"], previous["joint_index"])
+                    self.assertEqual(segment["offset_rad"], previous["end_offset_rad"])
+                    previous = None
 
     def test_request_is_hash_bound_and_deterministic(self):
         a = plan.build(request())

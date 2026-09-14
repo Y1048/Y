@@ -385,3 +385,11 @@ sequential axes only as a review draft. The extension to joints23..28 is marked
 unvalidated, tail thresholds are not claimed as measured noise, and termination
 ownership remains unresolved. Draft receipts now hash and retain a mandatory
 human-readable parameter basis. This does not authorize or implement motion.
+
+Fixed an ambiguity in the offline plan: every post-move hold now carries the
+active joint index/name and exact held offset. Added `sysid_excitation_preview.py`
+to expand plans to sample-level training/validation CSV plus a hash-bound summary.
+It rejects discontinuities, off-grid segments and nonzero final offsets and has
+no command path. The current draft shape computes to169segments and116.252s per
+episode (232.504s combined), but no actual start pose has been selected and no
+physical run is authorized or claimed.

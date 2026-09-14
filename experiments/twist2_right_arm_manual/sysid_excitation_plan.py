@@ -108,7 +108,9 @@ def _episode(order, first_sign, amplitude, velocity, acceleration, dt, hold, cyc
                     "analytic_peak_velocity_rad_s": _MAX_QUINTIC_SPEED * abs(end - begin) / duration,
                     "analytic_peak_acceleration_rad_s2": _MAX_QUINTIC_ACCELERATION * abs(end - begin) / duration**2,
                 })
-                segments.append({"kind": "hold", "offset_rad": end, "duration_s": hold})
+                segments.append({"kind": "hold", "joint_index": index,
+                                 "joint_name": JOINT_NAMES[index],
+                                 "offset_rad": end, "duration_s": hold})
     return {"joint_order": [RIGHT_ARM[x] for x in order], "segments": segments,
             "duration_s": sum(x["duration_s"] for x in segments)}
 

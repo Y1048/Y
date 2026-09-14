@@ -130,3 +130,26 @@ three cycles. Reusing that shape sequentially for joints 23..28 is explicitly
 unvalidated. The owner remains `unresolved`, so the draft cannot support a
 physical run. Its pose/velocity tail thresholds are acquisition-screening
 choices rather than measured sensor-noise limits.
+
+The draft shape contains 169 segments per episode. Its generated training and
+validation schedules are each 116.252 s; combined commanded time would be
+232.504 s before any external setup time. These are computed reference durations,
+not a completed or approved robot run.
+
+## Sample-level waveform preview
+
+`sysid_excitation_preview.py` expands a completed plan into `training.csv`,
+`validation.csv` and a SHA-bound `summary.json`. Each row contains time, segment,
+active joint, all seven offsets, active velocity and active acceleration. The
+expander rejects discontinuities, off-grid durations, unknown joints and an
+episode that does not finish at zero offset. Output directories are exclusive,
+so an earlier preview cannot be overwritten silently.
+
+```powershell
+py -3.11 -B experiments\twist2_right_arm_manual\sysid_excitation_preview.py `
+  excitation-plan.json --output-directory excitation-preview
+```
+
+The CSV is generated reference data only. The preview module has no SDK,
+transport, publisher or process-launching imports and its summary always records
+`physical_execution_authorized=false` and `recommended_hardware_gains=null`.

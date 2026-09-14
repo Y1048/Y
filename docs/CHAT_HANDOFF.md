@@ -243,3 +243,24 @@ models/data and remain null. recommended_hardware_gains=null always.
 Uniform aligned-clock fitter deliberately rejects asynchronous real frames;
 future timestamp-aware fitting/adapter timing validation remains separate work.
 Current task delivers the offline foundation, not a deployed hardware recorder.
+
+## 2026-09-14 next data-readiness check
+
+User explicitly permits data acquisition and reports powered-on ZeroTorque.
+Read-only SSH inventory only (no controller launch/setter/SDK/DDS): known response
+build/cycle directories contain only the already retrieved real_response.jsonl
+under trial1789346113063495_6812; PID6812 is absent at this observation.
+No new trace copied and no physical state changed. Does not prove no other PID.
+Local v1 inspection:2500records,4.997848125s,0sequence gaps,2repeated states,
+0conflicting repeats; all7command excursions0rad. Report in
+validation/g1_sysid_20260914/legacy_readiness.json, raw source hash retained.
+Added reusable sysid_inspect_legacy.py; it does NOT fabricate29-axis fields,
+write-begin timestamps, missing clock metadata or receipts. fit_ready=false.
+23tests actually passed (2new inspector+21v2 pipeline); preservation scope still
+excludes only explicitly new file-only sysid modules/tests. No hardware gains.
+
+Next meaningful implementation is a reviewed native observer adapter that
+captures all required existing writer values without changing control decisions,
+plus timestamp-aware fitting. Actual excited training and separate validation
+captures remain missing. More stationary ZeroTorque samples alone cannot fill
+that gap. No new motion authorized/executed by this data-inventory step.

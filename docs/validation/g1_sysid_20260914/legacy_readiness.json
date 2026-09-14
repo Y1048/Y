@@ -1,0 +1,48 @@
+{
+  "schema": "g1.sysid.legacy-readiness.v1",
+  "source": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\handoff_20260914_6812\\g1_twist2_trial_1789346113063495_6812\\real_response.jsonl",
+  "sha256": "7f1b1990309f9f65dc50df92853ac38ba8ad54ebe581285017011a1da6920552",
+  "records": 2500,
+  "recorded_joints": [
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28
+  ],
+  "joint_names": [
+    "right_shoulder_pitch",
+    "right_shoulder_roll",
+    "right_shoulder_yaw",
+    "right_elbow",
+    "right_wrist_roll",
+    "right_wrist_pitch",
+    "right_wrist_yaw"
+  ],
+  "command_excursion_rad": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "sequence_gaps": 0,
+  "repeated_state_records": 2,
+  "conflicting_state_records": 0,
+  "duration_s": 4.997848125,
+  "fit_ready": false,
+  "blockers": [
+    "legacy7_axis_schema_not_v2",
+    "write_begin_not_proven",
+    "no_v2_complete_capture_receipt",
+    "no_independent_validation_episode",
+    "no_command_excitation",
+    "asynchronous_timestamps"
+  ],
+  "recommended_hardware_gains": null,
+  "note": "Excursion is data screening, not physical identifiability; no measurement or conversion performed."
+}

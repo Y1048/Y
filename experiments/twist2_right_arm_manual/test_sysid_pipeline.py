@@ -175,6 +175,8 @@ class PipelineTests(unittest.TestCase):
             'experiments/twist2_right_arm_manual',
             ':!experiments/twist2_right_arm_manual/sysid_capture.py',
             ':!experiments/twist2_right_arm_manual/sysid_model.py',
+            ':!experiments/twist2_right_arm_manual/sysid_inspect_legacy.py',
+            ':!experiments/twist2_right_arm_manual/test_sysid_inspect_legacy.py',
             ':!experiments/twist2_right_arm_manual/test_sysid_pipeline.py'],
             cwd=root,capture_output=True,text=True)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)

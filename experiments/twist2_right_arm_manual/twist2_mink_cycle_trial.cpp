@@ -3,6 +3,8 @@
 #include "mink_live_cycle_target.hpp"
 #include "periodic_csv.hpp"
 #include "real_response_frame.hpp"
+#include "sysid_native_observer.hpp"
+#include <cstdlib>
 #include "writer_frame.hpp"
 #include "pd_reach_trial.hpp"
 #include "pd_small_signal_trial.hpp"
@@ -396,8 +398,34 @@ class Controller {
 
   void start_response_log(const std::string& path,const std::string& session,const std::string& binary_sha){
     response_log_=std::make_unique<RealResponseLog>(path,session,binary_sha);
+    // Explicit opt-in only. Setup failures affect recording, never controller state.
+    const auto opt=std::getenv("G1_SYSID_CAPTURE_V2");
+    if(opt&&std::string(opt)=="1"){
+      try{
+        sysid_path_=path+".v2.jsonl";
+        sysid_log_=std::make_unique<sysid::Observer>(sysid_path_,session,binary_sha,"measured");
+      }catch(...){std::fputs("[SYSID] recording unavailable; control unchanged\n",stderr);}
+    }
   }
-  void finish_response_log(){if(response_log_)response_log_->Finish();}
+  void finish_response_log(){
+    finish_sysid_log();
+    if(response_log_)response_log_->Finish();
+  }
+  void finish_sysid_log() noexcept {
+    try{
+      std::unique_ptr<sysid::Observer> detached;
+      {std::lock_guard<std::mutex> lock(write_cycle_mutex_);detached=std::move(sysid_log_);}
+      if(!detached)return;
+      auto receipt=detached->Finish(); // disk/join outside writer mutex
+      receipt["sha256"]=sha256sum(sysid_path_);
+      auto path=std::filesystem::path(sysid_path_);path.replace_extension(".receipt.json");
+      const auto text=receipt.dump();
+      const int fd=::open(path.c_str(),O_WRONLY|O_CREAT|O_EXCL,0600);
+      if(fd<0)throw std::runtime_error("sysid receipt open failed");
+      const auto count=::write(fd,text.data(),text.size());const int closed=::close(fd);
+      if(count!=static_cast<ssize_t>(text.size())||closed!=0)throw std::runtime_error("sysid receipt write failed");
+    }catch(...){std::fputs("[SYSID] incomplete recording; control unchanged\n",stderr);}
+  }
 
   void handoff_and_activate() {
     std::string form;
@@ -781,6 +809,7 @@ class Controller {
     command.crc() = crc32_core(
         reinterpret_cast<std::uint32_t*>(&command),
         (sizeof(LowCmd) >> 2U) - 1U);
+    const auto write_begin = Clock::now();
     publisher_->Write(command);
 
     const auto sent = Clock::now();
@@ -804,6 +833,22 @@ class Controller {
     }
     writer_frames_.Publish(frame);
     frame=writer_frames_.Read();
+    if(sysid_log_){
+      sysid::Frame observed;
+      const auto ns=[](Clock::time_point t){return static_cast<std::uint64_t>(
+          std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch()).count());};
+      observed.target_ns=ns(command_desired.created);observed.write_begin_ns=ns(write_begin);
+      observed.write_end_ns=ns(sent);observed.state_receive_ns=ns(received);
+      observed.target_q=command_desired.target;observed.command_q=frame.target;
+      observed.command_dq=frame.target_dq;observed.kp=frame.kp;observed.kd=frame.kd;
+      observed.tau_ff=frame.tau_ff;observed.q=frame.q;observed.dq=frame.dq;observed.tau=frame.tau_est;
+      observed.hold=handoff_requested_.load();
+      for(std::size_t i=0;i<kDofs;++i){observed.temperature[i]=static_cast<float>(state.motor_state()[i].temperature()[0]);
+        observed.status[i]=state.motor_state()[i].motorstate();}
+      for(std::size_t i=0;i<3;++i){observed.rpy[i]=state.imu_state().rpy()[i];
+        observed.gyro[i]=state.imu_state().gyroscope()[i];observed.accel[i]=state.imu_state().accelerometer()[i];}
+      (void)sysid_log_->Offer(observed); // no throw; losses invalidate receipt
+    }
     if(response_log_){
       RealResponseFrame response;response.writer=frame;
       response.state=handoff_requested_.load()?"hold":"active";
@@ -841,6 +886,8 @@ class Controller {
   std::function<std::string()> input_watchdog_;
   WriterFrameStore writer_frames_;
   std::unique_ptr<RealResponseLog> response_log_;
+  std::unique_ptr<sysid::Observer> sysid_log_;
+  std::string sysid_path_;
   mutable std::mutex state_mutex_;
   LowState state_{};
   Clock::time_point state_received_{};

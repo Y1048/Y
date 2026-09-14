@@ -264,3 +264,32 @@ captures all required existing writer values without changing control decisions,
 plus timestamp-aware fitting. Actual excited training and separate validation
 captures remain missing. More stationary ZeroTorque samples alone cannot fill
 that gap. No new motion authorized/executed by this data-inventory step.
+
+## 2026-09-14 native observer hook candidate (not deployed)
+
+Added sysid_native_observer.hpp: SDK/transport-free fixed-size2048-slot SPSC ring,
+POD29-axis snapshot and worker-only JSON/file encoding. Lock-free index assertion,
+nonthrowing Offer, overflow/failure receipt, exclusive file creation. Producer
+makes no allocations, file writes or queue waits in Offer; actual callback timing
+is not benchmarked/guaranteed. A native receiver/publisher is NOT created by it.
+
+Existing Controller start_response_log optionally starts v2 only when
+G1_SYSID_CAPTURE_V2=1. Defaults and launchers are unchanged. Records include actual
+write-begin/end steady-clock nanoseconds, original full target, post-limiter
+command/dq/gains/feedforward, paired29-axis q/dq/torque/temperature/status and
+IMU rpy/gyro/acceleration. Mode is null (no extra RPC), acceptance unknown.
+Output is real_response.jsonl.v2.jsonl with SHA-bound receipt on explicit finish.
+Native Finish detaches under writer mutex, then drains/hashes outside it; native
+setup/finish failure only reports incomplete recording. Existing v1 logger code
+and its exception/lifecycle semantics are inherited, not repaired by this patch.
+A killed process/destructor-only cleanup has no completion receipt: reject it.
+
+Actually executed:2 SDK-free C++/Python tests in WSL using g++17 mode and
+-Wall -Wextra -Werror (ring full/empty, exact29-axis mapping through Python parser,
+exclusive output, nonfinite encoding/worker failure), plus21Python v2 tests on
+Windows. All passed. Source comparison confirms motor equation block unchanged
+and no added publisher Write call. Preservation test now explicitly excludes the
+reviewed observer hook cpp; its command equations are checked separately.
+Full Controller ARM compile, SDK field compatibility, callback timing, real v2
+capture and asynchronous fitter integration remain unverified. No G1 SSH,
+deployment, mode or gain change this turn. Do not run the candidate yet.

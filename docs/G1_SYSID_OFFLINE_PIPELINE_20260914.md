@@ -142,3 +142,15 @@ without retuning. Import checks enforce the file/numerical-only dependency list.
 Preservation receipts compare existing tracked files and dirty worktree status.
 No MuJoCo integrations, hardware measurements, model calibration, C++/ARM build,
 mode switching or gain recommendation are claimed for this change.
+
+## Native observer candidate added after the initial foundation
+
+`sysid_native_observer.hpp` now offers an opt-in observation hook in the existing
+controller (`G1_SYSID_CAPTURE_V2=1`); default launch configuration remains unchanged.
+This supersedes the earlier statement that no adapter code exists, but not the
+lack of hardware validation. See CHAT_HANDOFF's native observer entry for fields
+and tests. SDK-free tests passed; full ARM Controller build and timing remain
+unverified. The new v2 output is asynchronous and the initial synchronous fitter
+will deliberately reject it until timestamp-aware fitting is implemented.
+Do not fabricate alignment to make that test pass. Existing legacy v1 logging
+remains present and is not promoted to a validated recording/control path.

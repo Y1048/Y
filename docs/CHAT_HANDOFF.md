@@ -355,3 +355,15 @@ plan is not connected to LowCmd and is not a physical-run instruction. See
 `G1_SYSID_EXCITATION_PLAN_20260914.md`. Generated tests cover order, limits,
 analytic bounds, deterministic hash binding, malformed/nonfinite inputs and
 absence of transport imports. No G1 connection or output was performed.
+
+Added `sysid_excitation_readiness.py` as the next offline gate. It compares the
+plan against a strict completed `g1.sysid.readonly-dds.v1` capture and reports
+tail pose error, right-arm velocity, observed modes, command coverage and gain
+agreement. Pose/velocity tolerances are mandatory caller inputs so no unmeasured
+physical threshold is invented. Missing LowCmd produces unknown gain agreement;
+it is never relabelled as a match. The output always keeps
+`physical_execution_authorized=false` and `recommended_hardware_gains=null`.
+Generated tests cover matching evidence plus pose, motion, gain and unresolved-
+owner blockers. The three existing ZeroTorque captures were not converted into
+an excitation plan because they have no commands and their posture is not an
+approved controlled start. No G1/DDS/controller execution occurred.

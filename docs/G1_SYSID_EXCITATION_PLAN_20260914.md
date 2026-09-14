@@ -74,3 +74,24 @@ Generated fixture tests verify sequential excitation, analytic speed and
 acceleration bounds, deterministic hash binding, exact right-arm ordering,
 limit/nonfinite/missing-field rejection and absence of command-capable imports.
 No hardware gain is recommended; `recommended_hardware_gains` remains null.
+
+## Read-only readiness comparison
+
+After a plan exists, `sysid_excitation_readiness.py` can compare it with a
+completed subscriber-only capture. It reads files only and reports the final
+window's right-arm start-pose error, maximum measured velocity, observed mode
+pairs, LowCmd coverage and whether observed Kp/Kd match the plan.
+
+```powershell
+py -3.11 -B experiments\twist2_right_arm_manual\sysid_excitation_readiness.py `
+  excitation-plan.json capture.jsonl `
+  --pose-tolerance-rad VALUE_CHOSEN_BEFORE_CAPTURE `
+  --velocity-tolerance-rad-s VALUE_CHOSEN_BEFORE_CAPTURE `
+  --output readiness.json
+```
+
+No tolerance defaults are supplied. Missing observed LowCmd leaves gain matching
+as null rather than claiming a match. An unresolved termination owner, unstable
+mode, excessive motion, pose mismatch or observed gain mismatch is listed as a
+blocker. `physical_execution_authorized` is always false: a passing saved-file
+comparison is evidence for review, not knowledge of the robot's current state.

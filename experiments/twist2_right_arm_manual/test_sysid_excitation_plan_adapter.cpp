@@ -58,6 +58,8 @@ Json Plan() {
           {"joint_indices", training},
           {"joint_names", names},
           {"start_q_rad", std::vector<double>(29, 0.0)},
+          {"kp_nm_rad", std::vector<double>(29, 40.0)},
+          {"kd_nm_s_rad", std::vector<double>(29, 5.0)},
           {"soft_lower_q_rad", std::vector<double>(29, -1.0)},
           {"soft_upper_q_rad", std::vector<double>(29, 1.0)},
           {"sample_period_s", 0.002},
@@ -108,6 +110,9 @@ int main() {
   MustReject(invalid);
   invalid = Plan();
   invalid["start_q_rad"][0] = std::numeric_limits<double>::quiet_NaN();
+  MustReject(invalid);
+  invalid = Plan();
+  invalid["kp_nm_rad"][22] = 0.0;
   MustReject(invalid);
   return 0;
 }

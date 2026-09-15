@@ -241,3 +241,30 @@ generated from the test request and contains no measured G1 data.
 These files remain review tools only. They do not provide a clocked runtime or
 write targets to another process, and they do not resolve physical acquisition,
 termination ownership or hardware gains.
+
+## Detached 500 Hz writer-hook candidate
+
+The existing controller generates policy targets at 50 Hz and its writer runs at
+500 Hz. Feeding the 2 ms excitation plan through the policy loop would therefore
+discard nine of every ten planned samples. `sysid_excitation_writer_hook.hpp`
+models the required writer-side boundary without being included by the physical
+controller.
+
+The hook accepts only the seven right-arm positions, never a complete command.
+Before arming it requires an explicitly supplied writer period, start-pose
+tolerance and gain tolerance. It rejects a plan-period mismatch, right-arm start
+mismatch, current Kp/Kd mismatch, nonfinite inputs, repeat arming and sampling
+before arming. `Next()` advances exactly one plan tick and holds the final starting
+pose after completion. It does not change gains and has no clock, SDK, DDS,
+publisher, network, termination or process ownership code.
+
+The saved-plan adapter now retains and validates all 29 planned Kp/Kd values so
+the hook can compare joints 22..28 against the active values. Native tests cover
+arming gates, all seven bounded trajectories, completion hold and 20 ms versus
+2 ms period rejection. The existing physical controller source was deliberately
+left unchanged; its SHA-256 remains
+`aa38a2e7d7e1686493b9c535ee2d13636856025f1a67928ef4c9290da5e01359`.
+
+This is not yet a command-capable option. Connecting the hook requires a reviewed
+start tolerance, explicit episode selection, logger provenance and fault/completion
+ownership behavior. No value in the draft supplies hardware approval.

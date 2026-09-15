@@ -17,6 +17,8 @@ using Json = nlohmann::json;
 
 struct LoadedPlan {
   std::array<double, kJointCount> start_q_rad{};
+  std::array<double, kJointCount> kp_nm_rad{};
+  std::array<double, kJointCount> kd_nm_s_rad{};
   double sample_period_s{};
   std::vector<Segment> training;
   std::vector<Segment> validation;
@@ -197,12 +199,17 @@ inline LoadedPlan LoadPlan(const Json& value) {
 
   LoadedPlan result;
   result.start_q_rad = detail::Vector29(value, "start_q_rad");
+  result.kp_nm_rad = detail::Vector29(value, "kp_nm_rad");
+  result.kd_nm_s_rad = detail::Vector29(value, "kd_nm_s_rad");
   const auto lower = detail::Vector29(value, "soft_lower_q_rad");
   const auto upper = detail::Vector29(value, "soft_upper_q_rad");
   for (std::size_t joint = 0; joint < kJointCount; ++joint) {
     detail::Require(lower[joint] < result.start_q_rad[joint] &&
                         result.start_q_rad[joint] < upper[joint],
                     "start outside soft limits");
+    detail::Require(result.kp_nm_rad[joint] > 0.0 &&
+                        result.kd_nm_s_rad[joint] > 0.0,
+                    "nonpositive planned gain");
   }
   result.sample_period_s = detail::Number(value, "sample_period_s");
   detail::Require(result.sample_period_s > 0.0, "invalid sample period");

@@ -433,3 +433,16 @@ matched all 47,907 rows in both training and validation; maximum numeric error w
 `8.526512829121202e-14`. Tests reject changed, missing and nonfinite samples and
 statically exclude transport/robot dependencies. This is generated evidence, not
 measured G1 data, and no physical execution or gain recommendation follows.
+
+Added detached `sysid_excitation_writer_hook.hpp` after confirming the existing
+policy loop is 50 Hz while LowCmd construction is 500 Hz. Passing the 2 ms plan
+through the policy loop would drop nine of ten samples, so the candidate models
+the later writer boundary but is not included by the physical controller. It
+returns only seven right-arm targets, holds the final start pose and rejects
+unarmed use, wrong writer period, start-pose mismatch, current Kp/Kd mismatch and
+nonfinite inputs. The adapter now retains/validates planned 29-axis Kp/Kd for this
+check. Native and static tests passed; the physical controller SHA remains
+`aa38a2e7d7e1686493b9c535ee2d13636856025f1a67928ef4c9290da5e01359`.
+No CLI option, SDK/DDS execution, publisher, gain change or G1 access was added.
+Actual integration still requires reviewed arming tolerances and completion/fault
+ownership. `recommended_hardware_gains=null`.

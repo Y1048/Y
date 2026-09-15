@@ -457,3 +457,25 @@ and retains request/contract/owner provenance. Tests cover both hold paths, bad
 hashes and pre-sample fault rejection. This remains detached from the observer and
 physical controller, which is still unchanged. No G1/DDS/publisher/gain action was
 performed and `recommended_hardware_gains=null`.
+
+Added detached `sysid_excitation_observer_bridge.hpp` and an optional fixed-size
+excitation tag to `sysid_native_observer.hpp`. It preserves plan/request/contract/
+episode provenance and records runtime state, tick, segment, active joint, seven
+planned arm positions, velocity/acceleration and bounded fault reason through the
+existing asynchronous ring. Existing observer callers remain source-compatible
+and emit the prior schema shape when no excitation context is supplied. The bridge
+does not assign target/command/measured/gain/torque arrays; native tests compare
+those arrays before/after and exercise the asynchronous file worker. Focused
+Python tests 28 and SDK-free C++ bridge/runtime tests passed; the existing native
+observer's two tests also passed when rerun with the WSL worktree Git path supplied.
+The first native rerun had one environment-only Git worktree-path error while its
+ring/schema test passed; the corrected rerun passed both. The physical controller
+is still not connected or changed. No G1, DDS, publisher, gain or motor action was
+performed; `recommended_hardware_gains=null`.
+
+Final bridge verification also ran the full 73-test Python regression set, every
+SDK-free excitation C++ test/tool, and a complete local x86_64 compile/link of
+`g1_twist2_mink_cycle_trial` using the existing Unitree SDK/Torch files. All
+completed successfully; the controller binary was not executed. Third-party SDK
+and Torch warnings remain. This is compile/offline evidence only, not ARM timing,
+hardware validation or execution authorization.

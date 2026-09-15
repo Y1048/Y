@@ -292,3 +292,33 @@ full-body target or termination implementation. The physical controller remains
 unchanged. Connecting these fields to the asynchronous observer is the next
 offline integration step; selecting an actual fallback owner remains separately
 blocked.
+
+## Detached asynchronous-observer bridge
+
+`sysid_excitation_observer_bridge.hpp` converts one `RuntimeSample` into a
+fixed-size optional tag on `sysid::Frame`. The asynchronous observer keeps the
+plan-file/request hashes, contract, termination-owner status and episode in an
+immutable per-observer context; each queued frame carries only the runtime state,
+plan tick, segment, active joint, seven planned right-arm positions, planned
+velocity/acceleration and a bounded fault reason. Existing non-excitation observer
+construction remains valid and produces no `excitation` object.
+
+The bridge rejects changed provenance, invalid joint identity, nonfinite or
+invalid numeric values, invalid context values and truncated/embedded-null
+fault text. It assigns only `frame.excitation`; the original Mink target, limited
+writer command, measured state, gains and torque fields remain separate and are
+unchanged. A native test checks those arrays before and after attachment and also
+passes the tagged frame through the real asynchronous ring/file worker.
+
+This bridge is deliberately not included by `twist2_mink_cycle_trial.cpp`. It adds
+no controller option, clock, SDK, DDS, publisher, gain mutation or motor output.
+Connecting it to the command-capable controller is a later reviewed source change;
+physical execution and termination ownership remain unauthorized, and
+`recommended_hardware_gains` remains null.
+
+Verification executed for this bridge: 73 Python regression tests, all SDK-free
+excitation C++ tests/tools, the two existing native observer tests and a full local
+x86_64 compile/link of `g1_twist2_mink_cycle_trial`. The full build used the
+existing Unitree SDK and Torch files and emitted existing third-party warnings;
+the target built successfully and was not executed. These checks establish source
+compatibility and offline behavior only, not ARM timing or G1 safety.

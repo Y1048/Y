@@ -412,3 +412,14 @@ seven right-arm joints and proves every inactive joint is held exactly, targets 
 not overshoot, and the final 29-axis vector equals the start. There is still no
 plan-file parser, writer integration, DDS, publisher or robot executable. Next is
 an offline saved-plan adapter; command-owner and termination work remain on hold.
+
+Added `sysid_excitation_plan_adapter.hpp` and the file-only
+`sysid_excitation_plan_check.cpp`. The adapter refuses executing/authorized plans,
+non-null hardware recommendations, wrong 29-axis/right-arm identity, soft-limit
+breaches, discontinuities, nonfinite values and altered analytic peak metadata.
+It constructs training and validation sequences without any SDK, DDS, network,
+publisher or controller path. The compiled checker successfully opened a plan
+produced by the Python generator and reported matching 47,906-tick episodes at
+2 ms. Native malformed-plan tests and static dependency tests passed. Nothing was
+connected to the robot runtime; physical acquisition and gain selection remain
+blocked pending a reviewed procedure, and `recommended_hardware_gains=null`.

@@ -194,3 +194,32 @@ This is still an offline library: it has no plan-file parser, SDK, DDS, network,
 publisher, controller or process entry point and is not linked to the existing
 runtime. A file adapter that converts a validated saved plan into these segments
 is the next offline integration step.
+
+## Saved-plan C++ adapter
+
+`sysid_excitation_plan_adapter.hpp` strictly converts a parsed
+`g1.sysid.excitation-plan.v1` JSON value into the sequence core. It rejects a
+plan unless `command_capable` and `execution_authorized` are both false and
+`recommended_hardware_gains` is null. It also checks the exact 29-axis start and
+soft-limit vectors, right-arm indices/names, fixed training/validation ordering,
+segment continuity, endpoint soft limits and independently recomputed analytic
+peak velocity/acceleration.
+
+`sysid_excitation_plan_check.cpp` is a file-only command-line checker. It parses
+one saved plan, constructs both sequences and prints their sample counts and
+period; it has no SDK, DDS, publisher, network or controller code. A Python-built
+schema fixture was opened successfully by the compiled C++ checker and produced
+47,906 ticks for each episode at 2 ms. The native malformed-plan tests cover
+execution flags, identity mismatch, altered analytic metadata, soft-limit breach,
+discontinuity and nonfinite input.
+
+```powershell
+wsl.exe -e g++ -std=c++17 -Wall -Wextra -Wpedantic -Werror `
+  experiments/twist2_right_arm_manual/sysid_excitation_plan_check.cpp `
+  -o /tmp/sysid_excitation_plan_check
+wsl.exe -e /tmp/sysid_excitation_plan_check /mnt/c/path/to/excitation-plan.json
+```
+
+This remains offline validation. It does not create or send targets and is not
+linked to a robot runtime. Physical execution and gain recommendations remain
+blocked on the separately reviewed acquisition and command-ownership procedure.

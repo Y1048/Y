@@ -268,3 +268,27 @@ left unchanged; its SHA-256 remains
 This is not yet a command-capable option. Connecting the hook requires a reviewed
 start tolerance, explicit episode selection, logger provenance and fault/completion
 ownership behavior. No value in the draft supplies hardware approval.
+
+## Detached runtime state and provenance
+
+`sysid_excitation_runtime.hpp` wraps the writer hook with explicit `disarmed`,
+`running`, `complete_hold` and `fault_hold` states. Every returned sample carries
+the plan-file SHA-256, request SHA-256, contract id, termination-owner status,
+episode, plan tick, segment and active joint. The saved-plan adapter now validates
+and retains the request hash, contract id and termination-owner status as well as
+the planned gains.
+
+After the first valid sample, `LatchFault()` freezes the last seven right-arm
+targets, zeroes the reported planned velocity and acceleration, preserves the
+first fault reason and prevents the plan tick from advancing. Normal completion
+holds the plan's original right-arm start pose and likewise stops advancing. A
+fault before the first valid target is rejected because this detached component
+cannot choose a safe full-body fallback by itself.
+
+Native tests verify both state paths, immutable provenance, repeated hold samples,
+invalid plan hashes and pre-sample fault rejection. The coordinator emits only
+seven positions and still has no SDK, DDS, publisher, clock, gain mutation,
+full-body target or termination implementation. The physical controller remains
+unchanged. Connecting these fields to the asynchronous observer is the next
+offline integration step; selecting an actual fallback owner remains separately
+blocked.

@@ -446,3 +446,14 @@ check. Native and static tests passed; the physical controller SHA remains
 No CLI option, SDK/DDS execution, publisher, gain change or G1 access was added.
 Actual integration still requires reviewed arming tolerances and completion/fault
 ownership. `recommended_hardware_gains=null`.
+
+Added detached `sysid_excitation_runtime.hpp` with explicit disarmed, running,
+complete-hold and fault-hold states. Each sample carries plan/request hashes,
+contract, termination-owner status, episode, tick, segment and active joint. A
+latched fault after the first valid sample freezes the last seven targets, reports
+zero planned velocity/acceleration, preserves the first reason and stops tick
+advance; normal completion holds the original arm start. The adapter now validates
+and retains request/contract/owner provenance. Tests cover both hold paths, bad
+hashes and pre-sample fault rejection. This remains detached from the observer and
+physical controller, which is still unchanged. No G1/DDS/publisher/gain action was
+performed and `recommended_hardware_gains=null`.

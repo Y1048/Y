@@ -52,6 +52,10 @@ Json Plan() {
     names.push_back(Name(joint));
   }
   return {{"schema", "g1.sysid.excitation-plan.v1"},
+          {"request_sha256", std::string(64, '0')},
+          {"contract_id", "generated-native-fixture"},
+          {"termination_owner_contract",
+           {{"status", "unresolved"}, {"description", "offline fixture"}}},
           {"command_capable", false},
           {"execution_authorized", false},
           {"recommended_hardware_gains", nullptr},
@@ -113,6 +117,12 @@ int main() {
   MustReject(invalid);
   invalid = Plan();
   invalid["kp_nm_rad"][22] = 0.0;
+  MustReject(invalid);
+  invalid = Plan();
+  invalid["request_sha256"] = "short";
+  MustReject(invalid);
+  invalid = Plan();
+  invalid["termination_owner_contract"]["status"] = "invented";
   MustReject(invalid);
   return 0;
 }

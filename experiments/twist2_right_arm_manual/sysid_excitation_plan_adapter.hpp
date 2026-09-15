@@ -16,6 +16,9 @@ namespace sysid_excitation {
 using Json = nlohmann::json;
 
 struct LoadedPlan {
+  std::string request_sha256;
+  std::string contract_id;
+  std::string termination_owner_status;
   std::array<double, kJointCount> start_q_rad{};
   std::array<double, kJointCount> kp_nm_rad{};
   std::array<double, kJointCount> kd_nm_s_rad{};
@@ -177,6 +180,25 @@ inline LoadedPlan LoadPlan(const Json& value) {
   detail::Require(value.contains("recommended_hardware_gains") &&
                       value.at("recommended_hardware_gains").is_null(),
                   "hardware gain recommendation rejected");
+  const auto valid_hash = [](const std::string& text) {
+    if (text.size() != 64) return false;
+    for (const char value : text) {
+      if (!((value >= '0' && value <= '9') ||
+            (value >= 'a' && value <= 'f'))) return false;
+    }
+    return true;
+  };
+  const auto request_sha256 = detail::Text(value, "request_sha256");
+  detail::Require(valid_hash(request_sha256), "invalid request hash");
+  const auto contract_id = detail::Text(value, "contract_id");
+  detail::Require(!contract_id.empty(), "empty contract id");
+  detail::Require(value.contains("termination_owner_contract") &&
+                      value.at("termination_owner_contract").is_object(),
+                  "missing termination owner contract");
+  const auto owner_status = detail::Text(
+      value.at("termination_owner_contract"), "status");
+  detail::Require(owner_status == "unresolved" || owner_status == "reviewed",
+                  "invalid termination owner status");
   detail::Require(value.contains("joint_indices") &&
                       value.at("joint_indices").is_array() &&
                       value.at("joint_indices").size() == 7,
@@ -198,6 +220,9 @@ inline LoadedPlan LoadPlan(const Json& value) {
   }
 
   LoadedPlan result;
+  result.request_sha256 = request_sha256;
+  result.contract_id = contract_id;
+  result.termination_owner_status = owner_status;
   result.start_q_rad = detail::Vector29(value, "start_q_rad");
   result.kp_nm_rad = detail::Vector29(value, "kp_nm_rad");
   result.kd_nm_s_rad = detail::Vector29(value, "kd_nm_s_rad");

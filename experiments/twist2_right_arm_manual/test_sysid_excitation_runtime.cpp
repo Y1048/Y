@@ -52,6 +52,13 @@ sysid_excitation::Runtime Runtime() {
 int main() {
   const auto plan = Plan();
   auto runtime = Runtime();
+  const auto described = runtime.Describe();
+  assert(described.state == sysid_excitation::RuntimeState::kDisarmed);
+  assert(described.plan_file_sha256 == std::string(64, 'a'));
+  assert(described.request_sha256 == std::string(64, '1'));
+  assert(described.contract_id == "offline-runtime-fixture");
+  assert(described.termination_owner_status == "unresolved");
+  assert(described.episode == "training");
   MustReject([&]() { (void)runtime.Tick(); });
   runtime.Arm(plan.start_q_rad, plan.kp_nm_rad, plan.kd_nm_s_rad);
   const auto first = runtime.Tick();

@@ -4,6 +4,7 @@
 #include "periodic_csv.hpp"
 #include "real_response_frame.hpp"
 #include "sysid_native_observer.hpp"
+#include "sysid_excitation_observer_bridge.hpp"
 #include <cstdlib>
 #include "writer_frame.hpp"
 #include "pd_reach_trial.hpp"
@@ -31,6 +32,7 @@
 #include <iomanip>
 #include <iostream>
 #include <mutex>
+#include <optional>
 #include <poll.h>
 #include <sstream>
 #include <termios.h>
@@ -353,6 +355,7 @@ class Controller {
           std::clamp(state.motor_state()[i].tau_est(), -limit, limit);
       last_target_[i] = capture_q_[i];
     }
+    capture_ready_ = true;
     set_capture_desired();
   }
 
@@ -396,15 +399,53 @@ class Controller {
         this);
   }
 
+  // Compile-integrated seam only. No current CLI or launcher calls this method.
+  // A later reviewed caller must install it before the writer and handoff start.
+  void install_sysid_excitation_for_review(
+      std::unique_ptr<sysid_excitation::Runtime> runtime) {
+    std::lock_guard<std::mutex> write_lock(write_cycle_mutex_);
+    if (!runtime) throw std::invalid_argument("null excitation runtime");
+    if (writer_ || active_.load() || excitation_runtime_)
+      throw std::logic_error("excitation must be installed before writer start");
+    if (!capture_ready_) throw std::logic_error("excitation requires captured state");
+    const auto context =
+        sysid_excitation::MakeObserverContext(runtime->Describe());
+    if (context.termination_owner_status != "reviewed")
+      throw std::invalid_argument("excitation termination owner is not reviewed");
+    const auto capture_enabled = std::getenv("G1_SYSID_CAPTURE_V2");
+    if (!capture_enabled || std::string(capture_enabled) != "1")
+      throw std::invalid_argument("excitation requires G1_SYSID_CAPTURE_V2=1");
+    std::array<double, kDofs> measured_q{}, active_kp{}, active_kd{};
+    std::array<float, kDofs> kp{}, kd{};
+    {
+      std::lock_guard<std::mutex> gain_lock(gains_mutex_);
+      kp = kp_;
+      kd = kd_;
+    }
+    for (std::size_t i = 0; i < kDofs; ++i) {
+      measured_q[i] = capture_q_[i];
+      active_kp[i] = kp[i];
+      active_kd[i] = kd[i];
+    }
+    runtime->Arm(measured_q, active_kp, active_kd);
+    excitation_context_ = context;
+    excitation_runtime_ = std::move(runtime);
+  }
+
   void start_response_log(const std::string& path,const std::string& session,const std::string& binary_sha){
     response_log_=std::make_unique<RealResponseLog>(path,session,binary_sha);
-    // Explicit opt-in only. Setup failures affect recording, never controller state.
+    // Explicit opt-in only. A normal run tolerates logger setup failure; an
+    // excitation run refuses to start without its required provenance log.
     const auto opt=std::getenv("G1_SYSID_CAPTURE_V2");
     if(opt&&std::string(opt)=="1"){
       try{
         sysid_path_=path+".v2.jsonl";
-        sysid_log_=std::make_unique<sysid::Observer>(sysid_path_,session,binary_sha,"measured");
-      }catch(...){std::fputs("[SYSID] recording unavailable; control unchanged\n",stderr);}
+        sysid_log_=std::make_unique<sysid::Observer>(sysid_path_,session,binary_sha,"measured",
+            excitation_context_.value_or(sysid::ExcitationContext{}));
+      }catch(...){
+        if(excitation_runtime_)throw;
+        std::fputs("[SYSID] recording unavailable; control unchanged\n",stderr);
+      }
     }
   }
   void finish_response_log(){
@@ -719,9 +760,9 @@ class Controller {
     Desired command_desired = desired();
     if (!handoff_requested_.load()) {
       try {
-        if(input_watchdog_){const auto why=input_watchdog_();if(!why.empty())throw std::runtime_error(why);}
+        if(input_watchdog_&&!excitation_runtime_){const auto why=input_watchdog_();if(!why.empty())throw std::runtime_error(why);}
         validate_state(state, kVelocityLimit, false, received, true);
-        if (command_watchdog_expired(
+        if (!excitation_runtime_ && command_watchdog_expired(
                 Clock::now(),
                 command_desired.created,
                 activated_at_,
@@ -731,6 +772,28 @@ class Controller {
         }
       } catch (const std::exception& error) {
         latch(std::string("RuntimeError: ") + error.what());
+      }
+    }
+
+    std::optional<sysid_excitation::RuntimeSample> excitation_sample;
+    if (excitation_runtime_) {
+      try {
+        if (handoff_requested_.load() &&
+            excitation_runtime_->state() !=
+                sysid_excitation::RuntimeState::kFaultHold) {
+          excitation_runtime_->LatchFault("controller handoff requested");
+        }
+        excitation_sample = excitation_runtime_->Tick();
+        if (!handoff_requested_.load()) {
+          for (std::size_t arm = 0; arm < kRightArmDofs; ++arm) {
+            command_desired.target[kRightArmBegin + arm] = static_cast<float>(
+                excitation_sample->right_arm_target_q_rad[arm]);
+          }
+          command_desired.created = cycle_started;
+        }
+      } catch (const std::exception& error) {
+        excitation_sample.reset();
+        latch(std::string("RuntimeError: sysid excitation: ") + error.what());
       }
     }
 
@@ -847,6 +910,8 @@ class Controller {
         observed.status[i]=state.motor_state()[i].motorstate();}
       for(std::size_t i=0;i<3;++i){observed.rpy[i]=state.imu_state().rpy()[i];
         observed.gyro[i]=state.imu_state().gyroscope()[i];observed.accel[i]=state.imu_state().accelerometer()[i];}
+      if(excitation_sample)
+        sysid_excitation::AttachObserverTag(*excitation_sample,*excitation_context_,observed);
       (void)sysid_log_->Offer(observed); // no throw; losses invalidate receipt
     }
     if(response_log_){
@@ -887,6 +952,8 @@ class Controller {
   WriterFrameStore writer_frames_;
   std::unique_ptr<RealResponseLog> response_log_;
   std::unique_ptr<sysid::Observer> sysid_log_;
+  std::unique_ptr<sysid_excitation::Runtime> excitation_runtime_;
+  std::optional<sysid::ExcitationContext> excitation_context_;
   std::string sysid_path_;
   mutable std::mutex state_mutex_;
   LowState state_{};
@@ -894,6 +961,7 @@ class Controller {
   std::atomic<bool> has_state_{false};
   std::array<float, kDofs> capture_q_{};
   std::array<float, kDofs> capture_tau_{};
+  bool capture_ready_{false};
   std::array<float, kDofs> last_target_{};
 
   mutable std::mutex desired_mutex_;

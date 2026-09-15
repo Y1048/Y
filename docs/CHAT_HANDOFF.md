@@ -479,3 +479,21 @@ SDK-free excitation C++ test/tool, and a complete local x86_64 compile/link of
 completed successfully; the controller binary was not executed. Third-party SDK
 and Torch warnings remain. This is compile/offline evidence only, not ARM timing,
 hardware validation or execution authorization.
+
+Connected the excitation runtime to the actual 500 Hz writer source as a dormant
+integration seam. `twist2_mink_cycle_trial.cpp` has no CLI/launcher caller and its
+runtime pointer defaults null, so existing executable behavior is unchanged. A
+future installation is rejected unless it precedes writer start, capture is ready,
+the owner contract says `reviewed`, current gains/start pose match and V2 logging
+is enabled. The checked-in draft remains `unresolved` and cannot install. When
+installed, only desired joints22..28 come from the 2 ms sequence; the existing
+slew/range/torque clamps and single `publisher_->Write(command)` remain unchanged,
+and the observer separates plan target from actual constructed command. Static
+tests confirm there is exactly one installation method definition and no caller or
+`--sysid-excitation` option. Focused Python28, native C++ runtime/bridge, native
+observer2 and full local x86_64 controller compile/link passed. The binary was not
+executed. New controller source SHA is
+`af9f8e7bf988766b42210e75c9f909826bba0d2d0d369531d1f11b65a07c75a6`.
+No G1/SSH, DDS initialization, deployment, publisher execution, motor output or
+gain change occurred. Termination ownership and a physical caller remain blocked;
+`recommended_hardware_gains=null`.

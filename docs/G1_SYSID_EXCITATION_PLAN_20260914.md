@@ -322,3 +322,32 @@ x86_64 compile/link of `g1_twist2_mink_cycle_trial`. The full build used the
 existing Unitree SDK and Torch files and emitted existing third-party warnings;
 the target built successfully and was not executed. These checks establish source
 compatibility and offline behavior only, not ARM timing or G1 safety.
+
+## Dormant controller writer integration
+
+`twist2_mink_cycle_trial.cpp` now compiles the excitation runtime into the real
+500 Hz writer boundary, but no CLI argument or launcher calls the installation
+method. Its default-null runtime therefore leaves all existing runs unchanged.
+Installation is rejected unless it happens before writer start, a captured state
+exists, the plan's termination-owner status is `reviewed`, the current 29-axis
+Kp/Kd and right-arm start pose match the plan, and `G1_SYSID_CAPTURE_V2=1` is
+already selected. The checked-in draft remains `unresolved`, so it cannot be
+installed by this seam.
+
+When a later reviewed caller is added, each 2 ms writer tick replaces only joints
+22..28 in the desired target. Legs, waist and the left arm retain the existing
+policy targets. The existing slew, soft-range and torque clamps then construct the
+actual `LowCmd`; no gain or feedforward value is changed. The observer records the
+pre-limit excitation target and the post-limit command as distinct fields. The
+50 Hz input/command watchdogs are bypassed only while the installed excitation
+runtime owns those seven desired targets; LowState validation remains active.
+
+A controller hold request latches the excitation runtime's last valid sample so
+its tag remains complete while the existing controller handoff path owns the
+full-body command. This source change does not define or approve that handoff.
+The full controller compiled and linked locally, its pre-existing motor equation
+block and sole publisher write were comparison-tested unchanged, and no binary
+was run. The controller source SHA-256 for this dormant seam is
+`af9f8e7bf988766b42210e75c9f909826bba0d2d0d369531d1f11b65a07c75a6`.
+No G1, DDS initialization, deployment, motor output or gain change occurred.
+`recommended_hardware_gains` remains null.

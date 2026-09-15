@@ -89,6 +89,18 @@ class Runtime {
 
   RuntimeState state() const { return state_; }
 
+  RuntimeSample Describe() const {
+    RuntimeSample result;
+    result.state = state_;
+    result.plan_file_sha256 = plan_file_sha256_;
+    result.request_sha256 = request_sha256_;
+    result.contract_id = contract_id_;
+    result.termination_owner_status = termination_owner_status_;
+    result.episode = episode_;
+    result.fault_reason = fault_reason_;
+    return result;
+  }
+
  private:
   static bool ValidHash(const std::string& text) {
     if (text.size() != 64) return false;

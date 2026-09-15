@@ -15,12 +15,15 @@ class WriterHookSourceTests(unittest.TestCase):
                 "socket", "Write(", "Send(", "set_proximal_pd"):
             self.assertNotIn(forbidden, source)
 
-    def test_physical_controller_source_is_not_modified_in_this_step(self):
-        source = ROOT / "twist2_mink_cycle_trial.cpp"
+    def test_controller_seam_is_dormant_without_a_caller(self):
+        source = (ROOT / "twist2_mink_cycle_trial.cpp").read_text()
         self.assertEqual(
-            __import__("hashlib").sha256(source.read_bytes()).hexdigest(),
-            "aa38a2e7d7e1686493b9c535ee2d13636856025f1a67928ef4c9290da5e01359",
+            source.count("install_sysid_excitation_for_review("), 1)
+        self.assertNotIn("--sysid-excitation", source)
+        self.assertIn(
+            'context.termination_owner_status != "reviewed"', source
         )
+        self.assertIn('G1_SYSID_CAPTURE_V2', source)
 
 
 if __name__ == "__main__":

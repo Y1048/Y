@@ -205,6 +205,9 @@ class PipelineTests(unittest.TestCase):
             ':!experiments/twist2_right_arm_manual/sysid_excitation_plan_check.cpp',
             ':!experiments/twist2_right_arm_manual/test_sysid_excitation_plan_adapter.cpp',
             ':!experiments/twist2_right_arm_manual/test_sysid_excitation_plan_adapter.py',
+            ':!experiments/twist2_right_arm_manual/sysid_excitation_plan_dump.cpp',
+            ':!experiments/twist2_right_arm_manual/sysid_excitation_crosscheck.py',
+            ':!experiments/twist2_right_arm_manual/test_sysid_excitation_crosscheck.py',
             ':!experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp',
             ':!experiments/twist2_right_arm_manual/test_sysid_pipeline.py'],
             cwd=root,capture_output=True,text=True)

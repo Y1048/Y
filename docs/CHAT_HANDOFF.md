@@ -409,9 +409,10 @@ core over the reference quintic. It consumes an explicit 29-axis start vector an
 in-memory hold/move segments, rejects nonfinite/off-grid/discontinuous/non-returning
 plans and only permits active joints 22..28. Its native test sequentially moves all
 seven right-arm joints and proves every inactive joint is held exactly, targets do
-not overshoot, and the final 29-axis vector equals the start. There is still no
-plan-file parser, writer integration, DDS, publisher or robot executable. Next is
-an offline saved-plan adapter; command-owner and termination work remain on hold.
+not overshoot, and the final 29-axis vector equals the start. The sequence core
+has no writer integration, DDS, publisher or robot executable; its separate
+offline saved-plan adapter is recorded below. Command-owner and termination work
+remain on hold.
 
 Added `sysid_excitation_plan_adapter.hpp` and the file-only
 `sysid_excitation_plan_check.cpp`. The adapter refuses executing/authorized plans,
@@ -423,3 +424,12 @@ produced by the Python generator and reported matching 47,906-tick episodes at
 2 ms. Native malformed-plan tests and static dependency tests passed. Nothing was
 connected to the robot runtime; physical acquisition and gain selection remain
 blocked pending a reviewed procedure, and `recommended_hardware_gains=null`.
+
+Added the file-only C++ `sysid_excitation_plan_dump.cpp` and Python
+`sysid_excitation_crosscheck.py`. The native dumper expands a saved episode while
+the Python checker independently compares every time, segment, active-joint,
+seven-offset, velocity and acceleration field. An executed generated-fixture run
+matched all 47,907 rows in both training and validation; maximum numeric error was
+`8.526512829121202e-14`. Tests reject changed, missing and nonfinite samples and
+statically exclude transport/robot dependencies. This is generated evidence, not
+measured G1 data, and no physical execution or gain recommendation follows.

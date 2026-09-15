@@ -190,10 +190,9 @@ bit-for-bit equal to their starting values, checks target bounds and verifies th
 final sample equals the complete starting vector. It also exercises invalid joint,
 discontinuity and off-grid rejection.
 
-This is still an offline library: it has no plan-file parser, SDK, DDS, network,
-publisher, controller or process entry point and is not linked to the existing
-runtime. A file adapter that converts a validated saved plan into these segments
-is the next offline integration step.
+This sequence core itself has no plan-file parser, SDK, DDS, network, publisher,
+controller or process entry point and is not linked to the existing runtime. The
+separate offline saved-plan adapter is described below.
 
 ## Saved-plan C++ adapter
 
@@ -223,3 +222,22 @@ wsl.exe -e /tmp/sysid_excitation_plan_check /mnt/c/path/to/excitation-plan.json
 This remains offline validation. It does not create or send targets and is not
 linked to a robot runtime. Physical execution and gain recommendations remain
 blocked on the separately reviewed acquisition and command-ownership procedure.
+
+## Full native/Python sample cross-check
+
+`sysid_excitation_plan_dump.cpp` expands either saved episode through the C++
+adapter and sequence core into a review CSV. It refuses an existing output path
+and contains no SDK, DDS, publisher, network or controller dependency.
+`sysid_excitation_crosscheck.py` independently expands the same plan through the
+Python implementation and compares row count, time, segment, active joint, all
+seven offsets, active velocity and active acceleration. It rejects missing rows,
+identity changes, nonfinite values and numeric mismatches.
+
+An actually executed cross-language fixture comparison checked all 47,907 rows
+in each of the training and validation episodes. The largest numeric difference
+was `8.526512829121202e-14`, below the frozen per-field tolerances. The fixture was
+generated from the test request and contains no measured G1 data.
+
+These files remain review tools only. They do not provide a clocked runtime or
+write targets to another process, and they do not resolve physical acquisition,
+termination ownership or hardware gains.

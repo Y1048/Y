@@ -48,6 +48,63 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self._orientation_cost = np.asarray(self.planner.wrist_task.orientation_cost).copy()
         self.elbow_task = mink.FrameTask('right_elbow_link', 'body',
             position_cost=[0., 0., 8.], orientation_cost=0., gain=.6*self.dt_s)
+        self.torso_geom_ids = tuple(
+            geom_id for geom_id in range(self.planner.model.ngeom)
+            if (mujoco.mj_id2name(
+                self.planner.model, mujoco.mjtObj.mjOBJ_GEOM, geom_id
+            ) or '').startswith('mink_collision_torso_link_')
+        )
+        wrist_collision_radii = [
+            float(np.min(self.planner.model.geom_size[geom_id]))
+            for geom_id in range(self.planner.model.ngeom)
+            if (mujoco.mj_id2name(
+                self.planner.model, mujoco.mjtObj.mjOBJ_GEOM, geom_id
+            ) or '').startswith('mink_collision_right_wrist_')
+        ]
+        self.wrist_target_radius_m = max(wrist_collision_radii)
+        self.target_projected = False
+        self.raw_target_position = np.zeros(3)
+        self.effective_target_position = np.zeros(3)
+        self.target_projection_distance_m = 0.
+
+    def _project_target_outside_torso(self, goal, reference_position):
+        """Project a wrist origin out of model-derived torso exclusion boxes."""
+        raw = np.asarray(goal.translation(), dtype=float)
+        projected = raw.copy()
+        reference = np.asarray(reference_position, dtype=float)
+        margin = self.wrist_target_radius_m + float(self.planner.clearance_m)
+        changed = False
+        # Torso mesh bounds can overlap, so repeat until the point is outside
+        # every expanded oriented box. Keep the exit side consistent with the
+        # current wrist to prevent a target near the center jumping sides.
+        for _ in range(max(1, len(self.torso_geom_ids) * 2)):
+            pass_changed = False
+            for geom_id in self.torso_geom_ids:
+                center = self.planner.configuration.data.geom_xpos[geom_id]
+                rotation = self.planner.configuration.data.geom_xmat[geom_id].reshape(3, 3)
+                half = np.asarray(self.planner.model.geom_size[geom_id]) + margin
+                local = rotation.T @ (projected - center)
+                if np.any(np.abs(local) >= half):
+                    continue
+                reference_local = rotation.T @ (reference - center)
+                outside = np.flatnonzero(np.abs(reference_local) >= half)
+                if outside.size:
+                    axis = int(outside[np.argmax(
+                        np.abs(reference_local[outside]) / half[outside]
+                    )])
+                    sign = 1. if reference_local[axis] >= 0. else -1.
+                else:
+                    distance = half - np.abs(local)
+                    axis = int(np.argmin(distance))
+                    sign_source = local[axis] if abs(local[axis]) > 1e-9 else reference_local[axis]
+                    sign = 1. if sign_source >= 0. else -1.
+                local[axis] = sign * half[axis]
+                projected = center + rotation @ local
+                changed = pass_changed = True
+            if not pass_changed:
+                break
+        effective = base._matrix_to_se3(goal.rotation().as_matrix(), projected)
+        return effective, changed
 
     def _reset_orientation_priority(self):
         self.position_priority_active = False
@@ -122,6 +179,8 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.acceleration_bound.previous.fill(0)
         self.last_acceleration.fill(0)
         self.elbow_assist_active = False
+        self.target_projected = False
+        self.target_projection_distance_m = 0.
 
     def BeginReturn(self, current_q):
         self._reset_orientation_priority()
@@ -221,12 +280,22 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         if p.posture_reference is None:
             p.posture_reference = current_q.copy()
             p.posture_task.set_target(p.posture_reference)
-        p.wrist_task.set_target(goal)
+        current_pose = p.configuration.get_transform_frame_to_world(
+            'right_wrist_yaw_link', 'body')
+        effective_goal, self.target_projected = self._project_target_outside_torso(
+            goal, current_pose.translation())
+        self.raw_target_position = np.asarray(goal.translation(), dtype=float).copy()
+        self.effective_target_position = np.asarray(
+            effective_goal.translation(), dtype=float).copy()
+        self.target_projection_distance_m = float(np.linalg.norm(
+            self.effective_target_position - self.raw_target_position))
+        p.wrist_task.set_target(effective_goal)
         clearance = p.GetClearance(current_q)
-        self._update_orientation_priority(current_q, goal, clearance)
+        self._update_orientation_priority(current_q, effective_goal, clearance)
         if self.elbow_assist_active and clearance > .025:
             self.elbow_assist_active = False
-        if (not self.elbow_assist_active and clearance < .012
+        if (not self.target_projected and not self.elbow_assist_active
+                and clearance < .012
                 and current_q[p.qpos_ids[3]] < np.deg2rad(20.)):
             elbow = p.configuration.get_transform_frame_to_world('right_elbow_link', 'body')
             shoulder = p.configuration.get_transform_frame_to_world('right_shoulder_pitch_link', 'body')

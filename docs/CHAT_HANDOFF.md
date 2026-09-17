@@ -12,6 +12,14 @@ Last updated: 2026-09-17
 - Operator instructions and field definitions are in [IK_OMNI_TIMESERIES_20260917.md](IK_OMNI_TIMESERIES_20260917.md).
 - No G1 SSH, SDK, DDS, publisher, relay, or motor output was used. Tests use generated fixtures only; Quest/Omni hardware capture remains an operator step.
 - Restored the selected fast Quest-following limits in the standard virtual-center path: shoulder/elbow 90 deg/s, wrist 180 deg/s, and all right-arm joints 60 deg/s^2. This source change is not physical-G1 validation.
+- Restored the user-confirmed simulation v5 path for IK CSV capture. It now
+  separates the raw Quest wrist target from a model-derived collision-effective
+  target. A wrist target inside the torso exclusion volume is projected to the
+  nearest outside face using the torso mesh bounds, wrist collision radius and
+  configured clearance. Elbow reconfiguration is disabled while projection is
+  active, so the arm does not keep lifting its elbow to chase an unreachable
+  inside-body target. Raw/effective positions and projection distance remain in
+  runtime and raw-JSON CSV diagnostics. This is MuJoCo/offline validation only.
 
 ## Laptop migration checkpoint
 

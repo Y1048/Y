@@ -10,6 +10,26 @@ from replay_upstream_mink import build, base
 
 
 class UpstreamTrackingTests(unittest.TestCase):
+    def test_target_inside_torso_is_projected_without_elbow_assist(self):
+        model, planner, trajectory = build()
+        q = base._initial_configuration(model)
+        planner.configuration.update(q)
+        trajectory.Reset(q)
+        wrist = planner.configuration.get_transform_frame_to_world(
+            'right_wrist_yaw_link', 'body')
+        torso_geom = trajectory.torso_geom_ids[0]
+        inside = planner.configuration.data.geom_xpos[torso_geom].copy()
+        goal = base._matrix_to_se3(wrist.rotation().as_matrix(), inside)
+        step = trajectory.Track(q, goal)
+        self.assertTrue(step.applied, step.status)
+        self.assertTrue(trajectory.target_projected)
+        self.assertGreater(trajectory.target_projection_distance_m, 0.)
+        self.assertFalse(trajectory.elbow_assist_active)
+        self.assertFalse(np.shares_memory(
+            trajectory.raw_target_position, trajectory.effective_target_position))
+        self.assertGreater(np.linalg.norm(
+            trajectory.raw_target_position-trajectory.effective_target_position), .01)
+
     def test_position_priority_recovers_original_orientation_on_return(self):
         rows = json.loads((Path(__file__).parent / 'fixtures/mink_wrist_priority_20260909.json').read_text())
         for row in rows:
@@ -36,7 +56,16 @@ class UpstreamTrackingTests(unittest.TestCase):
                 if goal is difficult:
                     self.assertTrue(trajectory.position_priority_active)
                     self.assertAlmostEqual(scale, .25)
-                    self.assertLess(np.linalg.norm(pose.translation()-goal.translation()), .065)
+                    if trajectory.target_projected:
+                        self.assertFalse(trajectory.elbow_assist_active)
+                        self.assertLess(
+                            np.linalg.norm(pose.translation()-trajectory.effective_target_position),
+                            np.linalg.norm(pose.translation()-goal.translation()),
+                        )
+                        self.assertGreater(trajectory.target_projection_distance_m, .01)
+                    else:
+                        self.assertLess(np.linalg.norm(
+                            pose.translation()-goal.translation()), .065)
                 else:
                     self.assertFalse(trajectory.position_priority_active)
                     self.assertEqual(scale, 1.)
@@ -87,8 +116,12 @@ class UpstreamTrackingTests(unittest.TestCase):
         planner.configuration.update(q)
         raised = planner.configuration.get_transform_frame_to_world('right_elbow_link', 'body').translation()[2]
         wrist = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body').translation()
-        self.assertGreater(raised-elbow_z, .05)
-        self.assertLess(np.linalg.norm(wrist-goal.translation()), .06)
+        self.assertTrue(trajectory.target_projected)
+        self.assertFalse(trajectory.elbow_assist_active)
+        self.assertLess(raised-elbow_z, .03)
+        self.assertLess(np.linalg.norm(
+            wrist-trajectory.effective_target_position), .05)
+        self.assertGreater(np.linalg.norm(wrist-goal.translation()), .06)
         trajectory.Reset(q)
         self.assertFalse(trajectory.elbow_assist_active)
 

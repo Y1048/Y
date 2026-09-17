@@ -847,6 +847,14 @@ def main() -> None:
                         "trajectory_acceleration_rad_s2": list(
                             trajectory_acceleration_rad_s2
                         ),
+                        "collision_target_projected": bool(getattr(
+                            trajectory, "target_projected", False)),
+                        "collision_target_projection_distance_m": float(getattr(
+                            trajectory, "target_projection_distance_m", 0.0)),
+                        "collision_effective_target_position": np.asarray(getattr(
+                            trajectory, "effective_target_position",
+                            external_target_position,
+                        )).tolist(),
                     })
                     packet["right_arm"]["orientation_error_deg"] = orientation_error_deg
                     packet["right_arm"].update(
@@ -970,6 +978,9 @@ def main() -> None:
                             "position_priority_active": bool(getattr(trajectory, "position_priority_active", False)),
                             "orientation_priority_scale": float(getattr(trajectory, "orientation_priority_scale", 1.)),
                             "elbow_reconfiguration_active": bool(getattr(trajectory, "elbow_assist_active", False)),
+                            "collision_target_projected": bool(getattr(trajectory, "target_projected", False)),
+                            "collision_target_projection_distance_m": float(getattr(trajectory, "target_projection_distance_m", 0.)),
+                            "collision_effective_target_position": np.asarray(getattr(trajectory, "effective_target_position", target_center_position)).tolist(),
                             "corrected_zero_distance_pairs": int(getattr(trajectory, "corrected_zero_distances", 0)),
                             "arm_cycle_state": command_stream.return_state if cycle_enabled else None,
                             "arm_cycle_reason": return_cycle.reason if return_cycle else None,

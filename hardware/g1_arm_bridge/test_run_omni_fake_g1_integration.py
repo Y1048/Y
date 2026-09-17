@@ -1,6 +1,7 @@
 """End-to-end test for the one-click loopback-only fake G1 harness."""
 
 import asyncio
+import csv
 import json
 from pathlib import Path
 import subprocess
@@ -67,10 +68,28 @@ def main():
             raise RuntimeError(result.stdout)
         if '"physical_g1_output": false' not in result.stdout:
             raise RuntimeError("missing physical-output assertion")
-        lines = output.read_text(encoding="utf-8").splitlines()
-        if len(lines) < 20:
+        with output.open(newline="", encoding="utf-8") as stream:
+            rows = list(csv.DictReader(stream))
+        if len(rows) < 20:
             raise RuntimeError("capture CSV too short")
-        print(json.dumps({"status": "PASS", "csv_rows": len(lines) - 1,
+        required = {
+            "mx", "my", "omni_yaw_rate_deg_s", "vx", "vy", "yaw_rate",
+            "yaw_diff_deg", "raw_json_text",
+        }
+        if not required.issubset(rows[0]):
+            raise RuntimeError("capture CSV is missing raw/mapped columns")
+        if any(row["schema"] != "g1.omni.timeseries.v1" for row in rows):
+            raise RuntimeError("capture CSV schema mismatch")
+        sequences = [int(row["sample_sequence"]) for row in rows]
+        if sequences != list(range(len(rows))):
+            raise RuntimeError("capture CSV sequence mismatch")
+        sample = rows[-1]
+        raw = json.loads(sample["raw_json_text"])
+        if float(sample["mx"]) != float(raw["movementXY"][0]):
+            raise RuntimeError("raw mx was not preserved")
+        if float(sample["my"]) != float(raw["movementXY"][1]):
+            raise RuntimeError("raw my was not preserved")
+        print(json.dumps({"status": "PASS", "csv_rows": len(rows),
                           "loopback_only": True}))
     stop.set()
 

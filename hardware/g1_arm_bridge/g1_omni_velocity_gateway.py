@@ -26,11 +26,12 @@ except ImportError:
 
 SCHEMA = "g1.velocity.command.v1"
 PROVENANCE = "omni_gateway"
+OMNI_CSV_SCHEMA = "g1.omni.timeseries.v1"
 OMNI_CSV_HEADER = [
-    "receive_monotonic_s", "movement_x", "movement_y", "arm_yaw_deg",
-    "vx", "vy", "yaw_rate", "calibrated",
-    "arm_yaw_from_origin_deg", "arm_yaw_step_diff_deg",
-    "arm_yaw_rate_raw_deg_s",
+    "schema", "receive_monotonic_s", "elapsed_s", "sample_sequence",
+    "mx", "my", "arm_yaw_deg", "omni_yaw_rate_deg_s",
+    "vx", "vy", "yaw_rate", "yaw_diff_deg", "yaw_step_diff_deg",
+    "calibrated", "raw_json_text",
 ]
 
 
@@ -194,13 +195,15 @@ def encode_command(session: str, sequence: int, now_s: float,
     }, allow_nan=False, separators=(",", ":")).encode()
 
 
-def omni_csv_row(now_s: float, movement_x: float, movement_y: float,
-                 arm_yaw_deg: float, velocity: tuple[float, float, float],
-                 mapper: OmniVelocityMapper) -> list:
+def omni_csv_row(now_s: float, run_started_s: float, sequence: int,
+                 movement_x: float, movement_y: float, arm_yaw_deg: float,
+                 velocity: tuple[float, float, float],
+                 mapper: OmniVelocityMapper, raw_json_text: str) -> list:
     return [
-        f"{now_s:.9f}", movement_x, movement_y, arm_yaw_deg, *velocity,
-        int(mapper.calibrated), mapper.yaw_from_origin_deg,
-        mapper.yaw_step_diff_deg, mapper.yaw_rate_raw_deg_s,
+        OMNI_CSV_SCHEMA, f"{now_s:.9f}", f"{now_s - run_started_s:.9f}",
+        sequence, movement_x, movement_y, arm_yaw_deg,
+        mapper.yaw_rate_raw_deg_s, *velocity, mapper.yaw_from_origin_deg,
+        mapper.yaw_step_diff_deg, int(mapper.calibrated), raw_json_text,
     ]
 
 
@@ -300,7 +303,8 @@ def main() -> None:
             sequence += 1
         if csv_writer is not None:
             csv_writer.writerow(omni_csv_row(
-                now, movement_x, movement_y, yaw, velocity, mapper))
+                now, run_started, sample_count, movement_x, movement_y, yaw,
+                velocity, mapper, raw_message))
             csv_file.flush()
         if now < calibration_starts:
             state = f"PREP {calibration_starts - now:.1f}s"

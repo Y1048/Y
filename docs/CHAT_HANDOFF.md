@@ -4,6 +4,22 @@
 
 Last updated: 2026-09-17
 
+## Omni raw and mapped time-series CSV recorder
+
+- Run `tools\RECORD_OMNI_TIMESERIES_CSV.bat`. Optional arguments are total
+  duration and preparation delay in seconds; defaults are `120 20`.
+- Each `g1.omni.timeseries.v1` row records one received Omni sample with the
+  same timestamp and sequence: raw `mx`, `my`, `arm_yaw_deg`,
+  `omni_yaw_rate_deg_s`; mapped `vx`, `vy`, `yaw_rate`; relative
+  `yaw_diff_deg` and per-sample `yaw_step_diff_deg`; calibration state; and the
+  exact source JSON in the final column.
+- CSV files are written to `logs/test_results/omni_timeseries/`. The launcher
+  uses `--dry-run`: no G1 discovery, UDP output, SDK, DDS, or motor command.
+- Offline verification passed: 10 mapper/schema unit tests, a fake WebSocket to
+  discovery/UDP test with 10 accepted command packets and final zero, and a
+  loopback fake-G1 CSV test with 72 rows. No physical Omni capture was made in
+  this change, so actual movement data still need one user-operated recording.
+
 ## Current method audit: neither current behavior nor priority prototype accepted
 
 - User requested a rigorous review instead of further tuning followed by VR

@@ -1,5 +1,7 @@
 import json
 import math
+import csv
+import io
 import unittest
 
 from .g1_omni_velocity_gateway import (
@@ -57,17 +59,6 @@ class OmniVelocityGatewayTests(unittest.TestCase):
         mapper.update(0.01, -0.02, 125.0, 0.2)
         self.assertAlmostEqual(mapper.yaw_from_origin_deg, 15.0)
 
-    def test_csv_contains_raw_and_mapped_values_in_one_row(self):
-        mapper = self.mapper()
-        self.calibrate(mapper)
-        velocity = mapper.update(0.2, 0.3, 125.0, 0.2)
-        row = omni_csv_row(0.2, 0.2, 0.3, 125.0, velocity, mapper)
-        self.assertEqual(len(row), len(OMNI_CSV_HEADER))
-        values = dict(zip(OMNI_CSV_HEADER, row))
-        self.assertEqual(values["movement_x"], 0.2)
-        self.assertEqual(values["arm_yaw_from_origin_deg"], 15.0)
-        self.assertEqual(values["vx"], velocity[0])
-
     def test_gap_resets_rotation_to_zero(self):
         mapper = self.mapper()
         self.calibrate(mapper)
@@ -104,6 +95,30 @@ class OmniVelocityGatewayTests(unittest.TestCase):
         mapper.update(0.0, 0.0, 110.0, 1.0)
         with self.assertRaises(ValueError):
             mapper.update(0.0, 0.0, 110.0, 0.9)
+
+    def test_csv_keeps_raw_and_mapped_timeseries_on_the_same_row(self):
+        mapper = self.mapper()
+        self.calibrate(mapper)
+        velocity = mapper.update(0.31, 0.48, 112.0, 0.2)
+        raw = '{"armYaw":112.0,"movementXY":[0.31,0.48]}'
+        row = omni_csv_row(10.2, 10.0, 7, 0.31, 0.48, 112.0,
+                           velocity, mapper, raw)
+        stream = io.StringIO()
+        writer = csv.writer(stream)
+        writer.writerow(OMNI_CSV_HEADER)
+        writer.writerow(row)
+        parsed = next(csv.DictReader(io.StringIO(stream.getvalue())))
+        self.assertEqual(parsed["schema"], "g1.omni.timeseries.v1")
+        self.assertEqual(parsed["sample_sequence"], "7")
+        self.assertAlmostEqual(float(parsed["mx"]), 0.31)
+        self.assertAlmostEqual(float(parsed["my"]), 0.48)
+        self.assertAlmostEqual(float(parsed["omni_yaw_rate_deg_s"]), 20.0)
+        self.assertAlmostEqual(float(parsed["vx"]), velocity[0])
+        self.assertAlmostEqual(float(parsed["vy"]), velocity[1])
+        self.assertAlmostEqual(float(parsed["yaw_rate"]), velocity[2])
+        self.assertAlmostEqual(float(parsed["yaw_diff_deg"]), 2.0)
+        self.assertAlmostEqual(float(parsed["yaw_step_diff_deg"]), 2.0)
+        self.assertEqual(parsed["raw_json_text"], raw)
 
 
 if __name__ == "__main__":

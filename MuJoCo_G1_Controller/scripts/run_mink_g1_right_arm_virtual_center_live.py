@@ -847,6 +847,10 @@ def main() -> None:
                         "trajectory_acceleration_rad_s2": list(
                             trajectory_acceleration_rad_s2
                         ),
+                        "position_priority_active": bool(getattr(
+                            trajectory, "position_priority_active", False)),
+                        "orientation_priority_scale": float(getattr(
+                            trajectory, "orientation_priority_scale", 1.0)),
                         "collision_target_projected": bool(getattr(
                             trajectory, "target_projected", False)),
                         "collision_orientation_relaxed": bool(getattr(

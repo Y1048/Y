@@ -86,7 +86,7 @@ class UpstreamTrackingTests(unittest.TestCase):
                         self.assertGreater(trajectory.target_projection_distance_m, .01)
                     else:
                         self.assertTrue(trajectory.position_priority_active)
-                        self.assertAlmostEqual(scale, .25)
+                        self.assertAlmostEqual(scale, 0.)
                         self.assertLess(np.linalg.norm(
                             pose.translation()-goal.translation()), .065)
                 else:
@@ -109,7 +109,8 @@ class UpstreamTrackingTests(unittest.TestCase):
         self.assertFalse(trajectory.position_priority_active)
         for _ in range(60):trajectory._update_orientation_priority(q, outside, .006)
         self.assertTrue(trajectory.position_priority_active)
-        self.assertAlmostEqual(trajectory.orientation_priority_scale, .25)
+        for _ in range(10):trajectory._update_orientation_priority(q, outside, .006)
+        self.assertAlmostEqual(trajectory.orientation_priority_scale, 0.)
         trajectory.BeginReturn(q)
         self.assertFalse(trajectory.position_priority_active)
         self.assertEqual(trajectory.orientation_priority_scale, 1.)

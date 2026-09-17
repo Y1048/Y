@@ -134,7 +134,12 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         if self._priority_dwell >= .3:
             self.position_priority_active = not self.position_priority_active
             self._priority_dwell = 0.
-        target = .25 if self.position_priority_active else 1.
+        # A nonzero residual orientation cost can keep a redundant solution at
+        # a joint limit while leaving several centimetres of position error.
+        # Position priority therefore removes orientation cost completely;
+        # the original rotation target remains stored and is restored after
+        # position recovery by the existing hysteresis.
+        target = 0. if self.position_priority_active else 1.
         self.orientation_priority_scale += float(np.clip(
             target-self.orientation_priority_scale, -self.dt_s, self.dt_s))
         p.wrist_task.set_orientation_cost(self._orientation_cost*self.orientation_priority_scale)

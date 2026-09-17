@@ -17,6 +17,11 @@ Last updated: 2026-09-17
   fast. The wrist input gate is therefore 5.0 m/s instead of 1.1 m/s, and its
   diagnostic speed uses consecutive observed frames instead of distance from
   the last accepted frame. Joint velocity/acceleration limits remain unchanged.
+- A subsequent run retained 69 mm position error with elbow joint 25 at its
+  5-degree lower limit while orientation error fell to 5.65 degrees. The
+  position-priority state now ramps orientation cost to zero instead of 25%;
+  its original rotation goal is retained and restored after positional
+  recovery. Runtime packets now record the priority flag and scale.
 
 ## 2026-09-17 IK/Omni time-series capture
 

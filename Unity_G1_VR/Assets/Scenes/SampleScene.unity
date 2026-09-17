@@ -296,7 +296,7 @@ MonoBehaviour:
   workspace_exit_margin: 0.02
   use_rectangular_workspace_fallback: 0
   enable_pinch_disengage: 1
-  pinch_disengage_hold_seconds: 0.5
+  pinch_disengage_hold_seconds: 1
   disengage_on_tracking_loss: 1
   tracking_loss_confirm_seconds: 0.35
   live_position_filter_time_constant_s: 0.06

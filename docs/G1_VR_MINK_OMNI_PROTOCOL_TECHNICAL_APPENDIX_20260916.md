@@ -79,7 +79,7 @@ Unity 코드: `Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs`
 - 회전: quaternion `[x,y,z,w]`
 - engage 순간 Quest 손목과 G1 손목을 각각 기준으로 잡는 clutch-relative 방식이다.
   Quest의 절대 월드 pose를 G1에 그대로 넣지 않는다.
-- 0.5초 sustained thumb-index pinch는 해제 요청이다.
+- 1.0초 sustained thumb-index pinch는 해제 요청이다.
 
 현재 패킷 예:
 

@@ -4,6 +4,11 @@
 
 Last updated: 2026-09-17
 
+- The current Unity scene and sender now require a continuous 1.0 s
+  thumb-index pinch before emitting `pinch_disengaged` (previously 0.5 s).
+  This follows a recorded false/accidental sustained-pinch disconnect; it does
+  not alter tracking-loss handling or any G1 output path.
+
 ## 2026-09-17 IK/Omni time-series capture
 
 - Added a receive-only Mink logger for `g1.mink.right_arm.state.v1` on Windows loopback UDP 5008. It validates the complete 29-joint order and the duplicated right-arm indices 22-28, then records the seven targets in radians before any G1 relay/controller.

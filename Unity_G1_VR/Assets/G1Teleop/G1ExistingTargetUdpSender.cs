@@ -30,7 +30,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public float workspace_exit_margin = 0.02f;
     public bool use_rectangular_workspace_fallback = false;
     public bool enable_pinch_disengage = true;
-    public float pinch_disengage_hold_seconds = 0.50f;
+    public float pinch_disengage_hold_seconds = 1.00f;
     public bool disengage_on_tracking_loss = true;
     public float tracking_loss_confirm_seconds = 0.35f;
 

@@ -84,7 +84,7 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
 
         self.assertIn("pinch_disengaged", sender)
         self.assertIn("UpdatePinchDisengage", sender)
-        self.assertIn("pinch_disengage_hold_seconds = 0.50f", sender)
+        self.assertIn("pinch_disengage_hold_seconds = 1.00f", sender)
         self.assertIn("disengage_on_workspace_exit = false", sender)
         self.assertIn(
             "clamped_robot_target = use_rectangular_workspace_fallback",
@@ -180,7 +180,7 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertIn("if (auto_calibrate_on_first_track && EngagementProgress >= 1.0f)", binder)
         self.assertIn("Calibrate();", binder)
         self.assertIn("OVRHand.HandFinger.Index", sender)
-        self.assertIn("pinch_disengage_hold_seconds = 0.50f", sender)
+        self.assertIn("pinch_disengage_hold_seconds = 1.00f", sender)
         self.assertIn("pinch_wait_for_release", sender)
 
     def test_live_scene_disables_workspace_disengagement(self):

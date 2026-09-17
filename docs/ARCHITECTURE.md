@@ -231,7 +231,7 @@ target_position
 
 G1 손목의 engagement marker에 손을 맞추고 0.55초 유지하면 engage한다.
 Engagement 순간의 사용자 손 pose와 G1의 현재 손목 pose를 별도 기준으로
-저장하므로 target jump가 없다. Engage 후 엄지-검지 pinch를 0.50초 유지하면
+저장하므로 target jump가 없다. Engage 후 엄지-검지 pinch를 1.00초 유지하면
 수동으로 disengage한다.
 
 ---

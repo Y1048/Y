@@ -11,6 +11,7 @@ Last updated: 2026-09-17
 - Extended the existing Omni read-only CSV with raw `movementXY`/arm yaw, yaw relative to the first sample, wrapped per-sample yaw difference, raw yaw rate, and mapped `vx/vy/yaw_rate` with explicit units.
 - Operator instructions and field definitions are in [IK_OMNI_TIMESERIES_20260917.md](IK_OMNI_TIMESERIES_20260917.md).
 - No G1 SSH, SDK, DDS, publisher, relay, or motor output was used. Tests use generated fixtures only; Quest/Omni hardware capture remains an operator step.
+- Restored the selected fast Quest-following limits in the standard virtual-center path: shoulder/elbow 90 deg/s, wrist 180 deg/s, and all right-arm joints 60 deg/s^2. This source change is not physical-G1 validation.
 
 ## Laptop migration checkpoint
 

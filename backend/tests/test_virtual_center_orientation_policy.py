@@ -36,10 +36,9 @@ from run_mink_g1_right_arm_virtual_center_live import (  # noqa: E402
 
 
 class VirtualCenterOrientationPolicyTest(unittest.TestCase):
-    def test_live_joint_speed_matches_static_stand_reference(self):
-        expected = math.degrees(base.RIGHT_ARM_MAX_VELOCITY_RAD_S)
-        self.assertAlmostEqual(PROXIMAL_MAX_JOINT_VELOCITY_DEG_S, expected)
-        self.assertAlmostEqual(WRIST_MAX_JOINT_VELOCITY_DEG_S, expected)
+    def test_live_joint_speed_uses_fast_quest_profile(self):
+        self.assertAlmostEqual(PROXIMAL_MAX_JOINT_VELOCITY_DEG_S, 90.0)
+        self.assertAlmostEqual(WRIST_MAX_JOINT_VELOCITY_DEG_S, 180.0)
 
     def test_far_from_limit_preserves_wrist_only_behavior(self):
         latched, assist, cost_scale, error_cap = orientation_limit_policy(

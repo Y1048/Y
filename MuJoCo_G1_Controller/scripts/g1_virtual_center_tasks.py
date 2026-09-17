@@ -12,12 +12,10 @@ from mink.tasks.task import Task
 import run_mink_g1_right_arm_prototype as base
 
 
-# 공개 심볼 호환성은 유지하되 값은 공통 프로토타입에서 한 번만 정의한다.
-PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = math.degrees(
-    base.RIGHT_ARM_MAX_VELOCITY_RAD_S
-)
-WRIST_MAX_JOINT_VELOCITY_DEG_S = math.degrees(base.RIGHT_ARM_MAX_VELOCITY_RAD_S)
-JOINT_MAX_ACCELERATION_RAD_S2 = base.RIGHT_ARM_MAX_ACCELERATION_RAD_S2
+# Quest 추종에 사용한 빠른 프로파일. 어깨/팔꿈치와 손목을 구분한다.
+PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = 90.0
+WRIST_MAX_JOINT_VELOCITY_DEG_S = 180.0
+JOINT_MAX_ACCELERATION_RAD_S2 = math.radians(60.0)
 JOINT_MAX_JERK_RAD_S3 = base.RIGHT_ARM_MAX_JERK_RAD_S3
 
 # 관절 이동 비용과 자세 복원 비용을 구분한다. 모터 감쇠 게인과는 별개다.

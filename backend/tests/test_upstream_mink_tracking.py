@@ -10,6 +10,82 @@ from replay_upstream_mink import build, base
 
 
 class UpstreamTrackingTests(unittest.TestCase):
+    def test_elbow_reference_initializes_without_explicit_reset(self):
+        model, planner, trajectory = build()
+        q = base._initial_configuration(model)
+        planner.configuration.update(q)
+        goal = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body')
+        step = trajectory.Track(q, goal)
+        self.assertTrue(step.applied, step.status)
+        np.testing.assert_allclose(trajectory._elbow_reference_q, q)
+        self.assertFalse(trajectory.elbow_assist_active)
+
+    def test_front_target_lifts_elbow_without_ratchet_or_rotation_loss(self):
+        fixture = json.loads((Path(__file__).parent /
+            'fixtures/mink_front_elbow_20260917.json').read_text())
+        model, planner, trajectory = build()
+        reference = np.asarray(fixture['posture_reference'])
+        q = np.asarray(fixture['current_q'])
+        initial = q.copy()
+        planner.configuration.update(q)
+        initial_z = planner.configuration.get_transform_frame_to_world(
+            'right_elbow_link', 'body').translation()[2]
+        trajectory.Reset(q)
+        planner.posture_reference = reference.copy()
+        planner.posture_task.set_target(reference)
+        goal = base._matrix_to_se3(np.asarray(fixture['goal_rotation']),
+                                   np.asarray(fixture['goal_position']))
+        targets = []
+        previous = np.zeros(7)
+        frozen = np.ones(len(q), dtype=bool)
+        frozen[planner.qpos_ids] = False
+        for tick in range(600):
+            if tick % 100 == 0:
+                trajectory.elbow_assist_active = False  # Repeated re-entry cannot raise the anchor.
+            step = trajectory.Track(q, goal)
+            self.assertTrue(step.applied, step.status)
+            self.assertTrue(trajectory.elbow_assist_active)
+            targets.append(trajectory.elbow_task.target_position[1:3].copy())
+            q = step.q
+            velocity = np.asarray(step.velocity_rad_s)
+            self.assertTrue(np.all(abs(velocity-previous)/trajectory.dt_s <=
+                np.asarray(trajectory.acceleration_limits)+1e-5))
+            self.assertTrue(np.all(abs(velocity) <= np.asarray(trajectory.velocity_limits)+1e-6))
+            previous = velocity
+            self.assertTrue(planner.CheckConfiguration(q))
+            np.testing.assert_allclose(q[frozen], initial[frozen], atol=1e-10)
+        np.testing.assert_allclose(targets, np.broadcast_to(targets[0], (600, 2)), atol=1e-12)
+        planner.configuration.update(q)
+        elbow_z = planner.configuration.get_transform_frame_to_world('right_elbow_link', 'body').translation()[2]
+        self.assertGreater(elbow_z-initial_z, .04)
+        self.assertLess(elbow_z-initial_z, .10)
+        wrist = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body')
+        self.assertLess(np.linalg.norm(wrist.translation()-trajectory.effective_target_position), .08)
+        self.assertLess(np.degrees(base._rotation_error_radians(
+            goal.rotation().as_matrix(), wrist.rotation().as_matrix())), 5.)
+        trajectory.BeginReturn(q)
+        self.assertFalse(trajectory.elbow_assist_active)
+
+    def test_elbow_bias_jacobian_is_world_lateral_and_vertical(self):
+        model, planner, trajectory = build()
+        q = base._initial_configuration(model)
+        q[planner.qpos_ids[:3]] += [.25, -.2, .4]
+        planner.configuration.update(q)
+        pose = planner.configuration.get_transform_frame_to_world('right_elbow_link', 'body')
+        trajectory.elbow_task.set_target(base._matrix_to_se3(
+            pose.rotation().as_matrix(), pose.translation()+[.1, .02, .08]))
+        np.testing.assert_allclose(trajectory.elbow_task.compute_error(planner.configuration), [-.02, -.08])
+        jacobian = trajectory.elbow_task.compute_jacobian(planner.configuration)
+        for dof, address in zip(planner.right_dofs, planner.qpos_ids):
+            plus, minus = q.copy(), q.copy()
+            plus[address] += 1e-6
+            minus[address] -= 1e-6
+            planner.configuration.update(plus)
+            error_plus = trajectory.elbow_task.compute_error(planner.configuration).copy()
+            planner.configuration.update(minus)
+            error_minus = trajectory.elbow_task.compute_error(planner.configuration).copy()
+            np.testing.assert_allclose((error_plus-error_minus)/2e-6, jacobian[:, dof], atol=1e-7)
+
     def test_projected_recorded_goal_recovers_wrist_rotation_without_winding(self):
         fixture = json.loads((Path(__file__).parent /
             'fixtures/mink_projected_wrist_rotation_20260917.json').read_text())
@@ -119,7 +195,6 @@ class UpstreamTrackingTests(unittest.TestCase):
                 if goal is difficult:
                     if trajectory.target_projected:
                         self.assertFalse(trajectory.collision_orientation_relaxed)
-                        self.assertFalse(trajectory.elbow_assist_active)
                         self.assertLess(
                             np.linalg.norm(pose.translation()-trajectory.effective_target_position),
                             np.linalg.norm(pose.translation()-goal.translation()),
@@ -176,7 +251,7 @@ class UpstreamTrackingTests(unittest.TestCase):
         self.assertEqual(trajectory.velocity_limits[2], np.deg2rad(90.))
         self.assertGreater(peak_speed, np.deg2rad(10.))
 
-    def test_recorded_inside_body_goal_slides_without_elbow_lift(self):
+    def test_recorded_inside_body_goal_slides_with_bounded_elbow_lift(self):
         fixture = json.loads((Path(__file__).parent / 'fixtures/mink_elbow_boundary_20260909.json').read_text())
         model, planner, trajectory = build()
         q = np.asarray(fixture['current_q'])
@@ -203,8 +278,7 @@ class UpstreamTrackingTests(unittest.TestCase):
         wrist = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body').translation()
         self.assertTrue(trajectory.target_projected)
         self.assertFalse(trajectory.collision_orientation_relaxed)
-        self.assertFalse(trajectory.elbow_assist_active)
-        self.assertLess(raised-elbow_z, .03)
+        self.assertLess(raised-elbow_z, .09)
         self.assertLess(np.linalg.norm(
             wrist-trajectory.effective_target_position), .05)
         self.assertGreater(np.linalg.norm(wrist-goal.translation()), .05)

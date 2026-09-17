@@ -4,6 +4,54 @@
 
 Last updated: 2026-09-17
 
+## Current front-of-torso elbow correction (after the 15:58 simulation)
+
+- `mink_v5_right_arm_20260917_155826_842.csv` contains 789 active samples.
+  During the front-of-torso plateau, yaw reached the added 45-degree envelope,
+  elbow joint coordinate was at its 5-degree bound, and projection disabled the
+  old elbow-assist trigger. Joint coordinate 5 degrees must not be equated with
+  a human-visible elbow bend angle; use FK elbow height to judge elevation.
+- Front-face proximity is now checked against the model's expanded torso
+  boxes. When the effective wrist position error exceeds 2 cm and elbow joint
+  coordinate is below 20 degrees, a lateral/vertical elbow preference can
+  activate even for a projected goal. It releases outside the front area,
+  within 2.5 cm of the captured wrist target, on reset, or on pinch return.
+- The old `FrameTask` Z cost acted in a rotating local frame, not world height.
+  `ElbowClearanceTask` uses actual world Y/Z position error and `mj_jacBody`.
+  It anchors lateral position to the engage elbow and vertical target to
+  engage elbow +8 cm, capped 4 cm below the shoulder. Re-entry recomputes from
+  the same engage reference rather than adding height to the current elbow.
+  This is a soft pose preference, not an absolute 8 cm bound on every motion.
+- The added yaw envelope is now +/-90 degrees from engage (previously +/-45).
+  The 45-degree restriction prevented the required repositioning; increasing
+  elbow cost alone worsened wrist reach. This change is an IK pose-envelope
+  adjustment, not a velocity or hardware joint-limit change. Model/XML,
+  velocity/acceleration limits, and original wrist rotation targets remain intact.
+- A/B replay against `0be2f4c`, same target timestamps, 1,529 ticks:
+  final elbow height relative to engage was -1.39 -> +4.18 cm (5.57 cm higher);
+  final two-second wrist direction error 2.77 -> 2.98 degrees;
+  position error p95 19.12 -> 20.38 cm (a regression, not an overall accuracy gain);
+  minimum clearance 5.50 -> 31.74 mm; no rejected/braking steps or acceleration
+  violations. Earlier 15:38 replay also retained rotation recovery (final error
+  10.35 -> 9.83 degrees), with no rejected steps or acceleration violations.
+- Added a recorded simulation snapshot test: fixed front target raises the
+  elbow by 4-10 cm, maintains wrist rotation within 5 degrees and effective
+  position error below 8 cm, and preserves non-arm joints/checked geometry.
+  Forced repeated re-entry proves the assist target cannot ratchet upward.
+  A finite-difference test checks the world-frame Jacobian; original return
+  position/orientation tolerances remain unchanged.
+- Validation executed: five focused suites, 48 tests +18 subtests passed;
+  after adding constructor initialization, the initialization and front-target
+  regressions passed (2 tests). Earlier assertions forbidding all projected
+  elbow assistance were replaced by the bounded-lift requirement intentionally.
+- Replay reports: `logs/test_results/elbow_front_final_ab_20260917.json` and
+  `logs/test_results/wrist_elbow_final_ab_20260917.json`. These reports precede
+  the constructor-only initialization addition; their source hashes identify
+  that tested source. That addition does not change the Reset-based replay.
+- Natural appearance still needs user confirmation after restarting Input.
+  These are simulation/replay results, not measured G1 validation. No G1 SSH,
+  SDK/DDS initialization, publisher, motor output, PD changes or model changes.
+
 ## Current wrist-orientation correction (after the 15:38 simulation)
 
 - Torso projection now changes only the position target. The original user
@@ -86,7 +134,8 @@ Last updated: 2026-09-17
   along that outside boundary so an operator can route the hand around the
   torso. The old behavior replaced raw wrist orientation with the current
   wrist orientation; the current correction above removes that substitution.
-  Elbow assistance is still disabled for projected targets. When the
+  The front-of-torso correction above now permits bounded elbow assistance
+  for projected targets. When the
   raw target leaves the exclusion volume, normal position and orientation
   tracking resume. Raw/effective positions, projection distance and the
   orientation-relaxed flag remain in runtime and raw-JSON CSV diagnostics.

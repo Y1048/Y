@@ -31,6 +31,27 @@ class AccelerationBound(mink.Limit):
                                        (-self.previous+self.acceleration*dt)*dt)))
 
 
+class ElbowClearanceTask(mink.Task):
+    """World lateral/vertical elbow bias; FrameTask axes are body-local."""
+    def __init__(self, model, gain):
+        super().__init__(cost=np.array([8., 8.]), gain=gain, lm_damping=0.)
+        self.body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, 'right_elbow_link')
+        self.target_position = None
+
+    def set_target(self, transform):
+        self.target_position = np.asarray(transform.translation()).copy()
+
+    def compute_error(self, configuration):
+        if self.target_position is None:
+            raise ValueError('Elbow height target is not set')
+        return configuration.data.xpos[self.body_id, 1:3]-self.target_position[1:3]
+
+    def compute_jacobian(self, configuration):
+        jacobian = np.zeros((3, configuration.model.nv))
+        mujoco.mj_jacBody(configuration.model, configuration.data, jacobian, None, self.body_id)
+        return jacobian[1:3]
+
+
 class UpstreamMinkTracking(StatefulMinkTrajectory):
     def __init__(self, *args):
         super().__init__(*args)
@@ -41,6 +62,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.distance_probe_data = mujoco.MjData(self.planner.model)
         self.corrected_zero_distances = 0
         self.elbow_assist_active = False
+        self._elbow_reference_q = None
         self.orientation_priority_enabled = True
         self.orientation_priority_scale = 1.
         self.position_priority_active = False
@@ -50,9 +72,8 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         # into an extreme pose while satisfying wrist position or rotation.
         # This local envelope is referenced to the captured engage posture and
         # enforced as a velocity bound, so it does not slow motion inside it.
-        self.priority_shoulder_yaw_envelope_rad = np.deg2rad(45.)
-        self.elbow_task = mink.FrameTask('right_elbow_link', 'body',
-            position_cost=[0., 0., 8.], orientation_cost=0., gain=.6*self.dt_s)
+        self.priority_shoulder_yaw_envelope_rad = np.deg2rad(90.)
+        self.elbow_task = ElbowClearanceTask(self.planner.model, gain=.6*self.dt_s)
         self.torso_geom_ids = tuple(
             geom_id for geom_id in range(self.planner.model.ngeom)
             if (mujoco.mj_id2name(
@@ -200,6 +221,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.acceleration_bound.previous.fill(0)
         self.last_acceleration.fill(0)
         self.elbow_assist_active = False
+        self._elbow_reference_q = None
         self.target_projected = False
         self.collision_orientation_relaxed = False
         self.target_projection_distance_m = 0.
@@ -312,6 +334,50 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         velocity[ids] = result.x
         return velocity
 
+    def _update_elbow_assist(self, current_q, current_pose, goal):
+        p = self.planner
+        target = np.asarray(goal.translation())
+        if self._elbow_reference_q is None or not np.array_equal(
+                self._elbow_reference_q, p.posture_reference):
+            reference_data = self.distance_probe_data
+            reference_data.qpos[:] = p.posture_reference
+            mujoco.mj_forward(p.model, reference_data)
+            wrist_id = mujoco.mj_name2id(p.model, mujoco.mjtObj.mjOBJ_BODY, 'right_wrist_yaw_link')
+            self._reference_wrist_position = reference_data.xpos[wrist_id].copy()
+            self._reference_elbow_position = reference_data.xpos[self.elbow_task.body_id].copy()
+            self._elbow_reference_q = p.posture_reference.copy()
+        # Returning to the captured wrist target must release the added pose
+        # preference, even if that original reachable target is near the torso.
+        if np.linalg.norm(target-self._reference_wrist_position) < .025:
+            self.elbow_assist_active = False
+            return
+        front_near = False
+        for geom_id in self.torso_geom_ids:
+            rotation = p.configuration.data.geom_xmat[geom_id].reshape(3, 3)
+            local = rotation.T @ (target-p.configuration.data.geom_xpos[geom_id])
+            half = p.model.geom_size[geom_id] + self.wrist_target_radius_m + p.clearance_m
+            if (half[0]-.015 <= local[0] <= half[0]+.06
+                    and abs(local[1]) <= half[1]+.03
+                    and abs(local[2]) <= half[2]):
+                front_near = True
+                break
+        if self.elbow_assist_active and not front_near:
+            self.elbow_assist_active = False
+        error = np.linalg.norm(current_pose.translation()-target)
+        needs_reposition = front_near and error > .02
+        if (not self.elbow_assist_active and needs_reposition
+                and current_q[p.qpos_ids[3]] < np.deg2rad(20.)):
+            elbow = p.configuration.get_transform_frame_to_world('right_elbow_link', 'body')
+            shoulder = p.configuration.get_transform_frame_to_world('right_shoulder_pitch_link', 'body')
+            # Anchor the lift to the captured engage posture, not the latest
+            # elbow height. Repeated activation must never ratchet it upward.
+            position = elbow.translation().copy()
+            position[1] = self._reference_elbow_position[1]
+            position[2] = min(self._reference_elbow_position[2]+.08, shoulder.translation()[2]-.04)
+            if position[2] > elbow.translation()[2]+.005:
+                self.elbow_task.set_target(base._matrix_to_se3(elbow.rotation().as_matrix(), position))
+                self.elbow_assist_active = True
+
     def Track(self, current_q, goal):
         p = self.planner
         p.configuration.update(current_q)
@@ -335,18 +401,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         p.wrist_task.set_target(effective_goal)
         clearance = p.GetClearance(current_q)
         self._update_orientation_priority(current_q, effective_goal, clearance)
-        if self.elbow_assist_active and clearance > .025:
-            self.elbow_assist_active = False
-        if (not self.target_projected and not self.elbow_assist_active
-                and clearance < .012
-                and current_q[p.qpos_ids[3]] < np.deg2rad(20.)):
-            elbow = p.configuration.get_transform_frame_to_world('right_elbow_link', 'body')
-            shoulder = p.configuration.get_transform_frame_to_world('right_shoulder_pitch_link', 'body')
-            position = elbow.translation().copy()
-            position[2] = min(position[2]+.08, shoulder.translation()[2]-.04)
-            if position[2] > elbow.translation()[2]+.005:
-                self.elbow_task.set_target(base._matrix_to_se3(elbow.rotation().as_matrix(), position))
-                self.elbow_assist_active = True
+        self._update_elbow_assist(current_q, current_pose, effective_goal)
         self.rejected_sample = None
         previous = self.acceleration_bound.previous.copy()
         velocity = self._solve_velocity()

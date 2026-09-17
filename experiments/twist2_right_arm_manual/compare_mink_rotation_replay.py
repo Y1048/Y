@@ -62,6 +62,8 @@ def run(samples, tracker_class):
     initial = q.copy()
     planner.configuration.update(q)
     tracker.Reset(q)
+    initial_elbow_z = planner.configuration.get_transform_frame_to_world(
+        'right_elbow_link', 'body').translation()[2]
     frozen = np.ones(len(q), dtype=bool)
     frozen[planner.qpos_ids] = False
     index = 0
@@ -89,7 +91,10 @@ def run(samples, tracker_class):
         angle = np.degrees(replay.base._rotation_error_radians(rot, pose.rotation().as_matrix()))
         metrics.append((elapsed, angle, np.linalg.norm(pos-pose.translation()),
                         planner.GetClearance(q), q[planner.qpos_ids[2]],
-                        tracker.target_projected))
+                        tracker.target_projected,
+                        planner.configuration.get_transform_frame_to_world(
+                            'right_elbow_link', 'body').translation()[2],
+                        tracker.elbow_assist_active, q[planner.qpos_ids[3]]))
     m = np.asarray(metrics)
     return {
         'ticks': len(m), 'statuses': dict(statuses),
@@ -101,6 +106,10 @@ def run(samples, tracker_class):
         'clearance_min_mm': float(min(m[:, 3])*1000),
         'shoulder_yaw_min_deg': float(np.degrees(min(m[:, 4]))),
         'shoulder_yaw_max_deg': float(np.degrees(max(m[:, 4]))),
+        'elbow_lift_final_cm': float((m[-1, 6]-initial_elbow_z)*100),
+        'elbow_lift_max_cm': float((max(m[:, 6])-initial_elbow_z)*100),
+        'elbow_final_deg': float(np.degrees(m[-1, 8])),
+        'elbow_assist_ticks': int(sum(m[:, 7])),
         'acceleration_violations_including_hard_stops': acceleration_violations,
     }
 

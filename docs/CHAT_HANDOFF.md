@@ -4,6 +4,19 @@
 
 Last updated: 2026-09-17
 
+## Bimanual simulation candidate (not Unity or G1 connected)
+
+- Added isolated `MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py` and
+  `tools/START_BIMANUAL_SIM.bat`: coupled 14-axis IK, both hand collision meshes,
+  bilateral/body collision constraints, sampled-path guard, constrained home return.
+- Existing right-arm controller, runtime checkout, Unity, UDP, G1, gains and model
+  assets remain unchanged. This is a new kinematic candidate, not a replacement
+  for every right-arm posture refinement or a physical stopping controller.
+- Generated tests: 6 passed on MuJoCo 3.11.0 and 6 on 3.12.0. A 1,800-tick demo
+  reached ready after return. GUI and live Quest two-hand input remain untested.
+- Read `docs/BIMANUAL_SIM_20260917.md` for launcher, paired JSONL schema,
+  collision-check limitations, and the remaining Unity two-hand integration.
+
 ## Omni raw and mapped time-series CSV recorder
 
 - Run `tools\RECORD_OMNI_TIMESERIES_CSV.bat`. Optional arguments are total

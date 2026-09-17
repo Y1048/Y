@@ -1,0 +1,94 @@
+{
+  "source_csv": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\mink_right_arm_csv\\mink_v5_right_arm_20260917_163948_201.csv",
+  "source_sha256": "688121153694b897aef7785d5662e91f5f29363f80de72b8387bd4a778a91ad0",
+  "data_kind": "recorded Mink simulation only; not measured G1",
+  "samples": 669,
+  "active_duration_s": 21.68800000000192,
+  "timestamp_nonmonotonic": 0,
+  "max_sample_gap_s": 0.0470000000022992,
+  "wrist_priority_position_gate_zero_samples": 654,
+  "wrist_priority_position_gate_zero_fraction": 0.9775784753363229,
+  "windows": [
+    {
+      "start_s": 17.5,
+      "end_s": 18.5,
+      "sequence_start": 976,
+      "sequence_end": 1007,
+      "target_translation_bbox_diagonal_mm": 1.5570484899322634,
+      "target_rotation_net_deg": 10.245717638056064,
+      "proximal_joint_range_deg": [
+        0.07921085644110759,
+        6.037944543409225,
+        6.433642046377291,
+        0.0
+      ],
+      "wrist_joint_range_deg": [
+        42.33532418446916,
+        0.47845314976338216,
+        1.6393733116891962
+      ],
+      "position_error_median_mm": 22.758181053689924,
+      "position_error_min_mm": 20.67316310792289,
+      "position_error_max_mm": 24.51330192611005,
+      "orientation_error_median_deg": 37.710677074638625,
+      "clearance_min_mm": 36.513840177071216,
+      "projected_samples": 0
+    },
+    {
+      "start_s": 18.81300000000192,
+      "end_s": 19.82800000000134,
+      "sequence_start": 1016,
+      "sequence_end": 1047,
+      "target_translation_bbox_diagonal_mm": 6.255661435851617,
+      "target_rotation_net_deg": 10.713796598188594,
+      "proximal_joint_range_deg": [
+        10.70155827737836,
+        21.218282827198014,
+        38.37477582444088,
+        2.4480983491705333
+      ],
+      "wrist_joint_range_deg": [
+        22.45365415772475,
+        27.711420966394503,
+        28.727789609910587
+      ],
+      "position_error_median_mm": 8.84043974714033,
+      "position_error_min_mm": 3.7552498756667796,
+      "position_error_max_mm": 10.15985426468476,
+      "orientation_error_median_deg": 98.66946255003676,
+      "clearance_min_mm": 51.00826849949275,
+      "projected_samples": 0
+    },
+    {
+      "start_s": 12.015999999999622,
+      "end_s": 14.0,
+      "sequence_start": 807,
+      "sequence_end": 868,
+      "target_translation_bbox_diagonal_mm": 4.409240297375465,
+      "target_rotation_net_deg": 1.9104804277169969,
+      "proximal_joint_range_deg": [
+        8.401964756743135,
+        10.456521504897566,
+        20.479857847854408,
+        45.29841587341796
+      ],
+      "wrist_joint_range_deg": [
+        12.924240369904869,
+        17.281385848309654,
+        9.092344815811124
+      ],
+      "position_error_median_mm": 76.81177858289487,
+      "position_error_min_mm": 40.43007544924029,
+      "position_error_max_mm": 135.47724817320722,
+      "orientation_error_median_deg": 13.794573402637221,
+      "clearance_min_mm": 59.31745632423346,
+      "projected_samples": 0
+    }
+  ],
+  "limitations": [
+    "CSV has no raw Quest wrist/head pose, no per-task objective or wrist_priority_weight trace, and samples are not every IK tick.",
+    "Current source position gate inferred from recorded position error; no logged gate value.",
+    "Stationary target with residual lag may legitimately require proximal movement to correct translation.",
+    "Target orientation discontinuity peak ~890.8deg/s in a31ms sampled interval exceeds180deg/s wrist joint cap, but task angular speed is not identical to individual joint speed."
+  ]
+}

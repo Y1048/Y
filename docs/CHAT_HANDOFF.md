@@ -4,6 +4,43 @@
 
 Last updated: 2026-09-17
 
+## Current method audit: neither current behavior nor priority prototype accepted
+
+- User requested a rigorous review instead of further tuning followed by VR
+  feedback. Read `docs/IK_WRIST_ARM_METHOD_REVIEW_20260917.md` before more edits.
+- Source/runtime remain at the `6c32983` tracking implementation, SHA256
+  `fe0ab3273bb6a470fe5d982aa9d00faa7b106e25358ff5d610b7f806444b5ba3`.
+  No controller, launcher, model, gain, or hardware file was changed this turn.
+- Latest16:39 CSV: inferred wrist penalty disabled for654/669 active samples
+  (97.8%) because remaining position error>=8mm. At17.50-18.50s target position
+  range1.56mm/rotation10.25deg nevertheless recruits shoulder roll/yaw6.04/6.43deg,
+  with>=36.5mm clearance. Earlier position backlog also requires some valid
+  proximal motion; do not freeze the arm based on stationary input alone.
+- Independent generated hold test: current posture objective causes4.74/6.80deg
+  proximal motion during2s of an unchanged nonneutral wrist target, still moving
+  at2.05/2.97deg/s afterward. This masks fine-motion intent and was missing from
+  the previous neutral-pose regression suite.
+- Local model FK confirms pitch-to-yaw offset46mm; neutral wrist pitch origin
+  translation Jacobian norm=.046m/rad. Fixed arm plus30deg wrist pitch moves the
+  tracked origin23.8mm. Do not silently change the task frame to hide this error.
+- New OFFLINE ONLY `prototype_mink_task_priority.py` is a research comparison:
+  wrist6D primary, then minimize proximal velocity while preserving linear Jv.
+  It greatly improves some precise rotations but regresses cumulative shoulder
+  spread/elbow lift on full records. NOT approved for launcher/runtime use.
+- New `audit_mink_precision.py` fixes31 generated scenarios and predeclared
+  engineering criteria. Final matching-engine MuJoCo3.12.0 results:
+  current24pass/7fail; prototype27pass/1fail/3inconclusive. accepted=false BOTH.
+  Each run9,660test+3,720prelude ticks with no geometric, frozen-joint, velocity
+  or acceleration violations. Data are simulated; no measured G1 validation.
+- Complete reports/hashes are committed under
+  `docs/validation/ik_method_review_20260917/`.3.11 exploratory results remain in
+  ignored logs. Generated scenario comparisons have controller-dependent prelude
+  poses; same-CSV replay is separately labeled. No failed results were removed.
+- Next implementation must preserve fine task motion and assess cumulative
+  posture/continuity, not just instantaneous proximal speed. Do not request
+  another VR trial for the rejected prototype or raise thresholds to pass it.
+  More precise release criteria/remaining coverage are listed in the review.
+
 ## Current excessive elbow spread correction (after the 16:30 simulation)
 
 - User clarified the problem is excessive sideways/upward elbow spread, not

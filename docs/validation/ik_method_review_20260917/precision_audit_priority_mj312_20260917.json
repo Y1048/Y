@@ -1,0 +1,3081 @@
+{
+  "schema": "g1.offline.ik.precision.audit.v1",
+  "controller": "priority",
+  "simulated_generated": true,
+  "measured_g1_data": false,
+  "hardware_validation": false,
+  "source_sha256": "fe0ab3273bb6a470fe5d982aa9d00faa7b106e25358ff5d610b7f806444b5ba3",
+  "source_changed_during_run": false,
+  "mujoco_version": "3.12.0",
+  "predeclared_acceptance": {
+    "fine_translation_endpoint_mm": 0.5,
+    "fine_translation_rotation_deg": 0.5,
+    "fixed_rotation_endpoint_mm": 2.0,
+    "fixed_rotation_orientation_deg": 1.0,
+    "fixed_rotation_proximal_excursion_deg": 5.0,
+    "mixed_endpoint_mm": 2.0,
+    "mixed_orientation_deg": 1.0,
+    "roundtrip_joint_drift_deg": 3.0,
+    "minimum_clearance_m": 0.005,
+    "frozen_q_tolerance": 1e-10,
+    "velocity_tolerance_rad_s": 1e-06,
+    "acceleration_tolerance_rad_s2": 1e-05,
+    "witness_endpoint_mm": 0.1,
+    "witness_orientation_deg": 0.1
+  },
+  "cases": [
+    {
+      "name": "neutral_1mm_axis0",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9604847999980848,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.05141809676895746,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.2107399571228004e-11,
+        "orientation_error_deg": 3.5797905180184385e-10,
+        "proximal_delta_max_deg": 3.167703631655274
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.011048020077621424,
+      "final_orientation_error_deg": 1.1420183643676072e-08,
+      "worst_position_error_mm": 0.6568919546156448,
+      "proximal_excursion_max_deg": 0.23321137370564884,
+      "minimum_clearance_m": 0.040384285388303104,
+      "final_joint_delta_max_deg": 0.23321137370564884,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.002744299701398223,
+      "finite_difference_acceleration_max_rad_s2": 0.0049374370837851345,
+      "track_ms_mean": 2.4315849999999997,
+      "track_ms_p95": 2.5345199999999997,
+      "track_ms_max": 2.8783,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_1mm_axis1",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.946421200002078,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.050418096768957456,
+        -0.278472495656124,
+        0.7428505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.8725524127379947e-11,
+        "orientation_error_deg": 5.426277109056519e-10,
+        "proximal_delta_max_deg": 0.6061543043045969
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.01104776983636798,
+      "final_orientation_error_deg": 1.019093857867615e-07,
+      "worst_position_error_mm": 0.6568876331967823,
+      "proximal_excursion_max_deg": 0.585871515998877,
+      "minimum_clearance_m": 0.04020787960186587,
+      "final_joint_delta_max_deg": 0.585871515998877,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.006947014588121192,
+      "finite_difference_acceleration_max_rad_s2": 0.012567762753690204,
+      "track_ms_mean": 2.396514333333333,
+      "track_ms_p95": 2.471155,
+      "track_ms_max": 3.3979,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_1mm_axis2",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9454020000011951,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7438505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.6415037008595713e-11,
+        "orientation_error_deg": 4.905907394671884e-10,
+        "proximal_delta_max_deg": 1.7031144773098306
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.011045880560827281,
+      "final_orientation_error_deg": 5.409562451904068e-07,
+      "worst_position_error_mm": 0.6568575756674996,
+      "proximal_excursion_max_deg": 1.3623815379951671,
+      "minimum_clearance_m": 0.040384285388303104,
+      "final_joint_delta_max_deg": 1.3623815379951671,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.016230658658451524,
+      "finite_difference_acceleration_max_rad_s2": 0.029458941126092597,
+      "track_ms_mean": 2.393419666666666,
+      "track_ms_p95": 2.476095,
+      "track_ms_max": 3.535,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_3mm_axis0",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9430147999992187,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.05341809676895746,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.1862353191208726e-11,
+        "orientation_error_deg": 3.214362417120416e-10,
+        "proximal_delta_max_deg": 11.710931174956356
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.03314396488021961,
+      "final_orientation_error_deg": 7.666943668458233e-08,
+      "worst_position_error_mm": 1.97067459785884,
+      "proximal_excursion_max_deg": 0.7060427404489964,
+      "minimum_clearance_m": 0.04038251780799372,
+      "final_joint_delta_max_deg": 0.7060427404489964,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.00827672677962521,
+      "finite_difference_acceleration_max_rad_s2": 0.014850160657164935,
+      "track_ms_mean": 2.385993,
+      "track_ms_p95": 2.454955,
+      "track_ms_max": 3.7839,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_3mm_axis1",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9480308999991394,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.050418096768957456,
+        -0.276472495656124,
+        0.7428505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 3.5681368581677013e-12,
+        "orientation_error_deg": 1.0146112239755592e-10,
+        "proximal_delta_max_deg": 1.726430814300361
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.03314126500910512,
+      "final_orientation_error_deg": 8.731588583398455e-07,
+      "worst_position_error_mm": 1.970633583847487,
+      "proximal_excursion_max_deg": 1.711446200063054,
+      "minimum_clearance_m": 0.03985335850757716,
+      "final_joint_delta_max_deg": 1.711446200063054,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.0205187459964562,
+      "finite_difference_acceleration_max_rad_s2": 0.03741602986999659,
+      "track_ms_mean": 2.396459666666667,
+      "track_ms_p95": 2.4979649999999998,
+      "track_ms_max": 2.6388,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_3mm_axis2",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9362389000016265,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7458505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 6.414755034608681e-12,
+        "orientation_error_deg": 2.628707324759995e-10,
+        "proximal_delta_max_deg": 3.9562016600502137
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0331230740592081,
+      "final_orientation_error_deg": 4.4337914937844696e-06,
+      "worst_position_error_mm": 1.9703581600410933,
+      "proximal_excursion_max_deg": 3.9053190966770566,
+      "minimum_clearance_m": 0.040384285388303104,
+      "final_joint_delta_max_deg": 3.9053190966770566,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.04734637469735903,
+      "finite_difference_acceleration_max_rad_s2": 0.08721141205723093,
+      "track_ms_mean": 2.369515,
+      "track_ms_p95": 2.4491300000000003,
+      "track_ms_max": 2.7794,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_5mm_axis0",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9458756999993057,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.05541809676895745,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 2.0216012193897995e-12,
+        "orientation_error_deg": 5.6280479398976083e-11,
+        "proximal_delta_max_deg": 12.783237932894044
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.055239784779222534,
+      "final_orientation_error_deg": 2.3004884990237652e-07,
+      "worst_position_error_mm": 3.284455551953974,
+      "proximal_excursion_max_deg": 1.1876605971400966,
+      "minimum_clearance_m": 0.04037853005563255,
+      "final_joint_delta_max_deg": 1.1876605971400966,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.013868256155078473,
+      "finite_difference_acceleration_max_rad_s2": 0.02481350525591619,
+      "track_ms_mean": 2.391402333333333,
+      "track_ms_p95": 2.513235,
+      "track_ms_max": 2.7934,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_5mm_axis1",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9392440000010538,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.050418096768957456,
+        -0.27447249565612397,
+        0.7428505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 2.3065952118587557e-13,
+        "orientation_error_deg": 6.47223299199153e-15,
+        "proximal_delta_max_deg": 3.4640001702434216
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.05523256755081596,
+      "final_orientation_error_deg": 2.3380492206221005e-06,
+      "worst_position_error_mm": 3.2843432167909996,
+      "proximal_excursion_max_deg": 2.781292471441693,
+      "minimum_clearance_m": 0.03949682534617417,
+      "final_joint_delta_max_deg": 2.781292471441693,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.03367964862625472,
+      "finite_difference_acceleration_max_rad_s2": 0.06192216542242335,
+      "track_ms_mean": 2.3762653333333335,
+      "track_ms_p95": 2.43691,
+      "track_ms_max": 3.2732,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_5mm_axis2",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.9450746000002255,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7478505864831676
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 9.632486942997365e-12,
+        "orientation_error_deg": 3.343165830010344e-10,
+        "proximal_delta_max_deg": 9.73246909033257
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.055185199797326015,
+      "final_orientation_error_deg": 1.1375162737179039e-05,
+      "worst_position_error_mm": 3.2835987714780845,
+      "proximal_excursion_max_deg": 6.2526166966076175,
+      "minimum_clearance_m": 0.040384285388303104,
+      "final_joint_delta_max_deg": 6.2526166966076175,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.07688431514688121,
+      "finite_difference_acceleration_max_rad_s2": 0.1434820473525722,
+      "track_ms_mean": 2.389569333333333,
+      "track_ms_p95": 2.488155,
+      "track_ms_max": 3.324,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_1mm_axis0",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8594092999992426,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24690270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 3.122594773973033e-12,
+        "orientation_error_deg": 1.8735317329772468e-10,
+        "proximal_delta_max_deg": 0.5444644071282665
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.01104858375491895,
+      "final_orientation_error_deg": 2.0735987110071754e-07,
+      "worst_position_error_mm": 0.656898269744848,
+      "proximal_excursion_max_deg": 0.5721283256896338,
+      "minimum_clearance_m": 0.05622770197241271,
+      "final_joint_delta_max_deg": 0.5721283256896338,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.006724614377133786,
+      "finite_difference_acceleration_max_rad_s2": 0.012088467487014753,
+      "track_ms_mean": 2.162784333333333,
+      "track_ms_p95": 2.269315,
+      "track_ms_max": 3.608,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_1mm_axis1",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8536458999988099,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2509584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.979227502558419e-12,
+        "orientation_error_deg": 1.1194209916648965e-10,
+        "proximal_delta_max_deg": 0.32882915399320156
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.011048033074758233,
+      "final_orientation_error_deg": 1.5580717094328797e-08,
+      "worst_position_error_mm": 0.6568918946145795,
+      "proximal_excursion_max_deg": 0.29860117943342523,
+      "minimum_clearance_m": 0.05633168304892984,
+      "final_joint_delta_max_deg": 0.29860117943342523,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.0035299980429992495,
+      "finite_difference_acceleration_max_rad_s2": 0.006372622317041277,
+      "track_ms_mean": 2.1455116666666667,
+      "track_ms_p95": 2.22571,
+      "track_ms_max": 2.6034,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_1mm_axis2",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8629657000019506,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8585324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.5956438783387494e-12,
+        "orientation_error_deg": 5.171876663259634e-11,
+        "proximal_delta_max_deg": 2.846930218442314
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.011048014941264304,
+      "final_orientation_error_deg": 2.1876201125384105e-07,
+      "worst_position_error_mm": 0.6568909247353059,
+      "proximal_excursion_max_deg": 0.5651659810813652,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 0.5651659810813652,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.006682399979343057,
+      "finite_difference_acceleration_max_rad_s2": 0.01206524702466183,
+      "track_ms_mean": 2.1683283333333336,
+      "track_ms_p95": 2.27468,
+      "track_ms_max": 2.7362,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_3mm_axis0",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8510917999992671,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24890270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.1615501138396104e-11,
+        "orientation_error_deg": 3.03512851022883e-10,
+        "proximal_delta_max_deg": 2.7777497548106087
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0331485579158347,
+      "final_orientation_error_deg": 1.914246528455851e-06,
+      "worst_position_error_mm": 1.9707290667038473,
+      "proximal_excursion_max_deg": 1.7422956294201912,
+      "minimum_clearance_m": 0.05582390450443447,
+      "final_joint_delta_max_deg": 1.7422956294201912,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.020348348352960954,
+      "finite_difference_acceleration_max_rad_s2": 0.03641485309651138,
+      "track_ms_mean": 2.140255666666667,
+      "track_ms_p95": 2.215435,
+      "track_ms_max": 2.7357,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_3mm_axis1",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8536139999996522,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.24895846686564982,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 4.740356549789531e-12,
+        "orientation_error_deg": 1.9069807155560786e-10,
+        "proximal_delta_max_deg": 3.1563130519552467
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.03314394850202172,
+      "final_orientation_error_deg": 1.1669088637738966e-07,
+      "worst_position_error_mm": 1.9706734251866207,
+      "proximal_excursion_max_deg": 0.8840481556757894,
+      "minimum_clearance_m": 0.05613995554930708,
+      "final_joint_delta_max_deg": 0.8840481556757894,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.010510206385718757,
+      "finite_difference_acceleration_max_rad_s2": 0.01904578676170665,
+      "track_ms_mean": 2.1466453333333333,
+      "track_ms_p95": 2.206255,
+      "track_ms_max": 2.5972,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_3mm_axis2",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8986048999977356,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8605324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 9.605995809674354e-12,
+        "orientation_error_deg": 4.5905992615926384e-10,
+        "proximal_delta_max_deg": 1.7103685313583057
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.03314330312018622,
+      "final_orientation_error_deg": 1.932721770809803e-06,
+      "worst_position_error_mm": 1.9706624111706326,
+      "proximal_excursion_max_deg": 1.672163475534445,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 1.672163475534445,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.019886991820496913,
+      "finite_difference_acceleration_max_rad_s2": 0.03604974420778895,
+      "track_ms_mean": 2.259384333333333,
+      "track_ms_p95": 2.4883450000000003,
+      "track_ms_max": 3.8161,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_5mm_axis0",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8610245999989274,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.25090270406492315,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 7.871825735030768e-12,
+        "orientation_error_deg": 3.3006334640976584e-10,
+        "proximal_delta_max_deg": 2.8892504238079226
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.055252680124784764,
+      "final_orientation_error_deg": 5.455164695721948e-06,
+      "worst_position_error_mm": 3.2846070978844613,
+      "proximal_excursion_max_deg": 2.9492252819233773,
+      "minimum_clearance_m": 0.055408912207143,
+      "final_joint_delta_max_deg": 2.9492252819233773,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.034210839012478456,
+      "finite_difference_acceleration_max_rad_s2": 0.06094192444803248,
+      "track_ms_mean": 2.162792666666667,
+      "track_ms_p95": 2.280875,
+      "track_ms_max": 4.7218,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_5mm_axis1",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8812872000016796,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.24695846686564982,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 2.9504581591051766e-13,
+        "orientation_error_deg": 1.1764021292342995e-12,
+        "proximal_delta_max_deg": 5.979231146605
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.05523972633508399,
+      "final_orientation_error_deg": 3.1965411487607683e-07,
+      "worst_position_error_mm": 3.284452246932046,
+      "proximal_excursion_max_deg": 1.4542297617451205,
+      "minimum_clearance_m": 0.055943218860208165,
+      "final_joint_delta_max_deg": 1.4542297617451205,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.01738622192517969,
+      "finite_difference_acceleration_max_rad_s2": 0.031624296321242085,
+      "track_ms_mean": 2.2151353333333335,
+      "track_ms_p95": 2.3038499999999997,
+      "track_ms_max": 2.7043,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_5mm_axis2",
+      "kind": "translation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.875780800000939,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8625324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.6939998869943826e-12,
+        "orientation_error_deg": 2.2800492868425982e-10,
+        "proximal_delta_max_deg": 2.6451609347128064
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.055237769859989155,
+      "final_orientation_error_deg": 5.278458152661015e-06,
+      "worst_position_error_mm": 3.2844208782758257,
+      "proximal_excursion_max_deg": 2.749686893969127,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 2.749686893969127,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.03288447338714029,
+      "finite_difference_acceleration_max_rad_s2": 0.059847317170014236,
+      "track_ms_mean": 2.205155333333333,
+      "track_ms_p95": 2.364425,
+      "track_ms_max": 8.4944,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_rotation_axis0",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8589524000017263,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.8838341675408369,
+          0.1659568820347629,
+          0.437373384641425
+        ],
+        [
+          -0.23648579047157517,
+          0.9651987858285491,
+          0.11165023394569713
+        ],
+        [
+          -0.40362313510554665,
+          -0.2021128821732906,
+          0.892322109816391
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.0007415106216802e-13,
+        "orientation_error_deg": 6.799422063538668e-13,
+        "proximal_delta_max_deg": 10.659600544466372
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 1.695806351252288,
+        "orientation_error_deg": 8.328139347196474,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0002332805478307898,
+      "final_orientation_error_deg": 0.2209397961764572,
+      "worst_position_error_mm": 0.004639094369125411,
+      "proximal_excursion_max_deg": 1.271661925056098,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 19.437452536092184,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.23047266906074282,
+      "finite_difference_acceleration_max_rad_s2": 0.41724762118329206,
+      "track_ms_mean": 2.158718,
+      "track_ms_p95": 2.2192,
+      "track_ms_max": 2.6588,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_rotation_axis1",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8532661999997799,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.6705500816321537,
+          0.006357949714811169,
+          0.7418370201725822
+        ],
+        [
+          -0.37101445544601264,
+          0.8688035476181543,
+          0.3279156438723355
+        ],
+        [
+          -0.6424257637059794,
+          -0.49511611983607806,
+          0.5849351810288518
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.1443916996305594e-13,
+        "orientation_error_deg": 6.779400365593933e-14,
+        "proximal_delta_max_deg": 2.5942534321058353
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 0.7749114017597426,
+        "orientation_error_deg": 18.85101958428419,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0005528439259202053,
+      "final_orientation_error_deg": 0.22097293163711657,
+      "worst_position_error_mm": 0.011298444916785676,
+      "proximal_excursion_max_deg": 2.1329701478306125,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 23.483926289014523,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.2842821112842653,
+      "finite_difference_acceleration_max_rad_s2": 0.5211587220910863,
+      "track_ms_mean": 2.1424483333333333,
+      "track_ms_p95": 2.205905,
+      "track_ms_max": 2.7066,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_rotation_axis2",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8529245999998238,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.8327069921092978,
+          -0.2963145702281042,
+          0.46775713865511453
+        ],
+        [
+          0.07492436165134889,
+          0.8972911865609704,
+          0.4350343280146337
+        ],
+        [
+          -0.5486213679063403,
+          -0.3272097217237593,
+          0.7693818250297028
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 2.7645723704230113e-12,
+        "orientation_error_deg": 1.4971791628331635e-10,
+        "proximal_delta_max_deg": 9.737406971868104
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 0.0,
+        "orientation_error_deg": 3.8247917251433684e-15,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 1.0119138770627597e-06,
+      "final_orientation_error_deg": 0.22096054928701017,
+      "worst_position_error_mm": 7.1677939904936294e-06,
+      "proximal_excursion_max_deg": 7.237900734297254e-06,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 19.779035938772225,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.2331848960636823,
+      "finite_difference_acceleration_max_rad_s2": 0.42011313597484223,
+      "track_ms_mean": 2.144049,
+      "track_ms_p95": 2.204245,
+      "track_ms_max": 2.6261,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "folded_rotation_axis0",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.85245919999943,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -4.999999999999999,
+        -41.99999999999999,
+        35.0,
+        80.0,
+        20.0,
+        -20.0,
+        14.999999999999998
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.07677203440298179,
+        -0.3677752814391632,
+        0.7938259573249602
+      ],
+      "start_rotation_matrix": [
+        [
+          0.455567870942338,
+          -0.3602999825386928,
+          0.8140281552548928
+        ],
+        [
+          -0.2277913211739044,
+          0.8368050191982301,
+          0.4978639109661371
+        ],
+        [
+          -0.8605632045137145,
+          -0.4122393508961368,
+          0.29914827194857624
+        ]
+      ],
+      "endpoint_position_m": [
+        0.07677203440298179,
+        -0.3677752814391632,
+        0.7938259573249602
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.45556787094233797,
+          -0.06015720852949314,
+          0.8881661022731081
+        ],
+        [
+          -0.22779132117390438,
+          0.9566189877625034,
+          0.1816348706886739
+        ],
+        [
+          -0.8605632045137144,
+          -0.2850635411871943,
+          0.42210158554891053
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 4.163336342344337e-14,
+        "orientation_error_deg": 6.369399741119723e-14,
+        "proximal_delta_max_deg": 18.37329798593511
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 1.5050592016967574,
+        "orientation_error_deg": 15.02586706525845,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": true,
+      "proximal_criterion_inconclusive": true,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0006116714386642468,
+      "final_orientation_error_deg": 0.22087442396466092,
+      "worst_position_error_mm": 0.015690498745620327,
+      "proximal_excursion_max_deg": 9.537007214598718,
+      "minimum_clearance_m": 0.06569279537422004,
+      "final_joint_delta_max_deg": 21.117264473672574,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.25205575092504207,
+      "finite_difference_acceleration_max_rad_s2": 0.4610028911843145,
+      "track_ms_mean": 2.1423333333333336,
+      "track_ms_p95": 2.232095,
+      "track_ms_max": 2.6503,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "folded_rotation_axis1",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8533270999978413,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -4.999999999999999,
+        -41.99999999999999,
+        35.0,
+        80.0,
+        20.0,
+        -20.0,
+        14.999999999999998
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.07677203440298179,
+        -0.3677752814391632,
+        0.7938259573249602
+      ],
+      "start_rotation_matrix": [
+        [
+          0.455567870942338,
+          -0.3602999825386928,
+          0.8140281552548928
+        ],
+        [
+          -0.2277913211739044,
+          0.8368050191982301,
+          0.4978639109661371
+        ],
+        [
+          -0.8605632045137145,
+          -0.4122393508961368,
+          0.29914827194857624
+        ]
+      ],
+      "endpoint_position_m": [
+        0.07677203440298179,
+        -0.3677752814391632,
+        0.7938259573249602
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.149679740260254,
+          -0.3602999825386927,
+          0.9207496391192567
+        ],
+        [
+          -0.3843333097715069,
+          0.83680501919823,
+          0.3899298229742493
+        ],
+        [
+          -0.9109796278488901,
+          -0.4122393508961367,
+          -0.013222526877644131
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 1.6175215081877768e-11,
+        "orientation_error_deg": 1.8857714031720168e-10,
+        "proximal_delta_max_deg": 14.586306255199942
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 0.808034637574476,
+        "orientation_error_deg": 18.829983433974608,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": true,
+      "proximal_criterion_inconclusive": true,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0008719291573854753,
+      "final_orientation_error_deg": 0.22092084991692987,
+      "worst_position_error_mm": 0.026823389100963917,
+      "proximal_excursion_max_deg": 14.839395818438325,
+      "minimum_clearance_m": 0.06569279537422004,
+      "final_joint_delta_max_deg": 29.88281266953579,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.36898537946729315,
+      "finite_difference_acceleration_max_rad_s2": 0.9319280821640241,
+      "track_ms_mean": 2.146532333333333,
+      "track_ms_p95": 2.221495,
+      "track_ms_max": 3.1104,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "folded_rotation_axis2",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8341626999972505,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -4.999999999999999,
+        -41.99999999999999,
+        35.0,
+        80.0,
+        20.0,
+        -20.0,
+        14.999999999999998
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.07677203440298179,
+        -0.3677752814391632,
+        0.7938259573249602
+      ],
+      "start_rotation_matrix": [
+        [
+          0.455567870942338,
+          -0.3602999825386928,
+          0.8140281552548928
+        ],
+        [
+          -0.2277913211739044,
+          0.8368050191982301,
+          0.4978639109661371
+        ],
+        [
+          -0.8605632045137145,
+          -0.4122393508961368,
+          0.29914827194857624
+        ]
+      ],
+      "endpoint_position_m": [
+        0.07677203440298179,
+        -0.3677752814391632,
+        0.7938259573249602
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.3048639149235425,
+          -0.4943846233751694,
+          0.8140281552548927
+        ],
+        [
+          0.0721503490156268,
+          0.8642487218934294,
+          0.497863910966137
+        ],
+        [
+          -0.9496590548793893,
+          -0.0930483254860951,
+          0.2991482719485762
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 6.644200308479298e-11,
+        "orientation_error_deg": 7.74994792395041e-10,
+        "proximal_delta_max_deg": 0.9886378057207835
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 4.163336342344337e-14,
+        "orientation_error_deg": 1.7231914353707286e-13,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 1.4235884383930628e-05,
+      "final_orientation_error_deg": 0.2209605671445955,
+      "worst_position_error_mm": 0.00010291066511522932,
+      "proximal_excursion_max_deg": 0.0015619597897033725,
+      "minimum_clearance_m": 0.06569279537422004,
+      "final_joint_delta_max_deg": 19.778995709628603,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.23317828430639898,
+      "finite_difference_acceleration_max_rad_s2": 0.4200992467343845,
+      "track_ms_mean": 2.0948073333333332,
+      "track_ms_p95": 2.16126,
+      "track_ms_max": 2.5661,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "wrist_margin_rotation_axis0",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8590284999991127,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        82.5000253193055
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          -0.03220079688696181,
+          -0.8832702688967997,
+          0.46775713865511453
+        ],
+        [
+          0.8782920921109227,
+          0.19836364179020977,
+          0.43503432801463376
+        ],
+        [
+          -0.47703889738182065,
+          0.42483584794447465,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          -0.032200796886961806,
+          -0.6700201902374807,
+          0.7416441554775274
+        ],
+        [
+          0.8782920921109226,
+          0.33519135364163033,
+          0.3409541866282186
+        ],
+        [
+          -0.4770388973818206,
+          0.6623591934275705,
+          0.5776800059433554
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 6.647445873718772e-12,
+        "orientation_error_deg": 5.582150998973152e-10,
+        "proximal_delta_max_deg": 2.463956791948192
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 0.753459662474356,
+        "orientation_error_deg": 18.958564164192197,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.0005437825480336786,
+      "final_orientation_error_deg": 0.2209678980340087,
+      "worst_position_error_mm": 0.011122576580793448,
+      "proximal_excursion_max_deg": 2.132535231069994,
+      "minimum_clearance_m": 0.056389072755557566,
+      "final_joint_delta_max_deg": 23.686554708589323,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.28653422421994645,
+      "finite_difference_acceleration_max_rad_s2": 0.5250340332461634,
+      "track_ms_mean": 2.160122,
+      "track_ms_p95": 2.21772,
+      "track_ms_max": 2.6215,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "wrist_margin_rotation_axis1",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8736710000011954,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        82.5000253193055
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          -0.03220079688696181,
+          -0.8832702688967997,
+          0.46775713865511453
+        ],
+        [
+          0.8782920921109227,
+          0.19836364179020977,
+          0.43503432801463376
+        ],
+        [
+          -0.47703889738182065,
+          0.42483584794447465,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          -0.1902412148225308,
+          -0.8832702688967996,
+          0.42853461034766266
+        ],
+        [
+          0.6765340946321003,
+          0.19836364179020974,
+          0.7091921350494869
+        ],
+        [
+          -0.7114140137663665,
+          0.4248358479444746,
+          0.5598255114927574
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 6.412679328685964e-12,
+        "orientation_error_deg": 3.082982455160384e-10,
+        "proximal_delta_max_deg": 16.337402367690416
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 1.7038058941911187,
+        "orientation_error_deg": 8.106651907372697,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.00015217265888542043,
+      "final_orientation_error_deg": 0.2209790058930828,
+      "worst_position_error_mm": 0.003300211237186466,
+      "proximal_excursion_max_deg": 0.6385126711013304,
+      "minimum_clearance_m": 0.05590685819297383,
+      "final_joint_delta_max_deg": 20.154415912362058,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.23651301429143679,
+      "finite_difference_acceleration_max_rad_s2": 0.42436695362316756,
+      "track_ms_mean": 2.198068333333333,
+      "track_ms_p95": 2.26975,
+      "track_ms_max": 2.7104,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "wrist_margin_rotation_axis2",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.872608500001661,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        82.5000253193055
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          -0.03220079688696181,
+          -0.8832702688967997,
+          0.46775713865511453
+        ],
+        [
+          0.8782920921109227,
+          0.19836364179020977,
+          0.43503432801463376
+        ],
+        [
+          -0.47703889738182065,
+          0.42483584794447465,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          -0.3323550751814892,
+          -0.8189892326754282,
+          0.4677571386551145
+        ],
+        [
+          0.8931689590469405,
+          -0.11399273680309985,
+          0.4350343280146337
+        ],
+        [
+          -0.3029675140936918,
+          0.5623720234131963,
+          0.7693818250297028
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 7.89630272745086e-12,
+        "orientation_error_deg": 4.136012650350671e-10,
+        "proximal_delta_max_deg": 28.20614361423705
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 0.14805099821613146,
+        "orientation_error_deg": 9.871007666525268,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": true,
+      "proximal_criterion_inconclusive": true,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.006938403790008518,
+      "final_orientation_error_deg": 0.22237223576501314,
+      "worst_position_error_mm": 0.06213888210996575,
+      "proximal_excursion_max_deg": 26.654341723399494,
+      "minimum_clearance_m": 0.05642563264687591,
+      "final_joint_delta_max_deg": 26.654341723399494,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.33484438957718576,
+      "finite_difference_acceleration_max_rad_s2": 1.0093915675144283,
+      "track_ms_mean": 2.1981793333333335,
+      "track_ms_p95": 2.257295,
+      "track_ms_max": 3.6103,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "neutral_mixed_roundtrip",
+      "kind": "mixed",
+      "ticks": 480,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 1.464330400001927,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        10.0,
+        -22.0,
+        0.0,
+        55.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.050418096768957456,
+        -0.279472495656124,
+        0.7428505864831676
+      ],
+      "start_rotation_matrix": [
+        [
+          0.4234145812554802,
+          -0.01834977219349815,
+          0.9057501742979095
+        ],
+        [
+          -0.33087000235354563,
+          0.9275962368412889,
+          0.17346545172006017
+        ],
+        [
+          -0.8433535047195875,
+          -0.3731333639040156,
+          0.3866863830274638
+        ]
+      ],
+      "endpoint_position_m": [
+        0.06801544317043666,
+        -0.26885112190362037,
+        0.7433823251068747
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.5157000246410233,
+          -0.005837117420324403,
+          0.8567493289436936
+        ],
+        [
+          -0.21741753138990083,
+          0.9663520243473054,
+          0.13745319961421906
+        ],
+        [
+          -0.8287237788488813,
+          -0.2571569425469322,
+          0.49707867110784826
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 2.393787660494419e-12,
+        "orientation_error_deg": 6.908389614165513e-11,
+        "proximal_delta_max_deg": 5.748901465856026
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.6231599248955185,
+      "final_orientation_error_deg": 0.28171542866848764,
+      "worst_position_error_mm": 13.509300373287578,
+      "proximal_excursion_max_deg": 1.9219427059292424,
+      "minimum_clearance_m": 0.03849006559899223,
+      "final_joint_delta_max_deg": 0.13233258692600283,
+      "final_return_position_error_mm": 0.6120530074929496,
+      "final_return_orientation_error_deg": 0.27671144409352527,
+      "velocity_max_rad_s": 0.0519645205791041,
+      "finite_difference_acceleration_max_rad_s2": 0.09463802657418974,
+      "track_ms_mean": 2.315557708333334,
+      "track_ms_p95": 2.392435,
+      "track_ms_max": 3.3481,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 480
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_mixed_roundtrip",
+      "kind": "mixed",
+      "ticks": 480,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 1.331556700002693,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.2553032405067337,
+        -0.23689917821840412,
+        0.8643012284026661
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.9178518945719901,
+          -0.06488106856774063,
+          0.3915844054250843
+        ],
+        [
+          -0.09456705500386219,
+          0.9223958244490732,
+          0.37449034052537544
+        ],
+        [
+          -0.3854931539450541,
+          -0.3807576525566141,
+          0.8404871434359197
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 8.899114524108742e-13,
+        "orientation_error_deg": 4.328790520526305e-11,
+        "proximal_delta_max_deg": 5.968093533518321
+      },
+      "wrist_only_endpoint_witness": null,
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.5758274907789216,
+      "final_orientation_error_deg": 0.293750993479623,
+      "worst_position_error_mm": 12.483055215543265,
+      "proximal_excursion_max_deg": 1.6836385740062036,
+      "minimum_clearance_m": 0.05440568448968917,
+      "final_joint_delta_max_deg": 0.14180884954650438,
+      "final_return_position_error_mm": 0.5655746660080081,
+      "final_return_orientation_error_deg": 0.2885376868477474,
+      "velocity_max_rad_s": 0.05501511679277482,
+      "finite_difference_acceleration_max_rad_s2": 0.09921620969659539,
+      "track_ms_mean": 2.09174625,
+      "track_ms_p95": 2.1643049999999997,
+      "track_ms_max": 2.638,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 480
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_rotation_lag20mm",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8730585999983305,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.26590270406492317,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.8327069921092978,
+          -0.2963145702281042,
+          0.46775713865511453
+        ],
+        [
+          0.07492436165134889,
+          0.8972911865609704,
+          0.4350343280146337
+        ],
+        [
+          -0.5486213679063403,
+          -0.3272097217237593,
+          0.7693818250297028
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 3.942855121747915e-12,
+        "orientation_error_deg": 9.506586713517779e-11,
+        "proximal_delta_max_deg": 13.641926800738233
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": false,
+        "collision_clear": true,
+        "position_error_mm": 18.34602624107898,
+        "orientation_error_deg": 8.424841390258129,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": false,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.22183270715847483,
+      "final_orientation_error_deg": 0.22085458635330846,
+      "worst_position_error_mm": 13.151172477661415,
+      "proximal_excursion_max_deg": 13.579605945043967,
+      "minimum_clearance_m": 0.051753571025360365,
+      "final_joint_delta_max_deg": 22.579754659080585,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.26843353068056064,
+      "finite_difference_acceleration_max_rad_s2": 0.4842509052476518,
+      "track_ms_mean": 2.1938466666666665,
+      "track_ms_p95": 2.347245,
+      "track_ms_max": 2.7366,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    },
+    {
+      "name": "reach_rotation_fast_reversal",
+      "kind": "rotation",
+      "ticks": 300,
+      "timestep_s": 0.016666666666666666,
+      "wall_seconds": 0.8424127000034787,
+      "source": "generated_model_kinematics",
+      "post_prelude_start_joint_deg": [
+        -19.999999999999996,
+        -34.0,
+        20.0,
+        35.0,
+        14.999999999999998,
+        10.0,
+        -10.0
+      ],
+      "prelude_duration_s": 2.0,
+      "prelude_drift_max_deg": 0.0,
+      "prelude_final_speed_max_deg_s": 0.0,
+      "prelude_stationary_at_end": true,
+      "start_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "start_rotation_matrix": [
+        [
+          0.883834167540837,
+          0.00635794971481117,
+          0.4677571386551146
+        ],
+        [
+          -0.2364857904715752,
+          0.8688035476181544,
+          0.43503432801463376
+        ],
+        [
+          -0.4036231351055467,
+          -0.4951161198360781,
+          0.7693818250297029
+        ]
+      ],
+      "endpoint_position_m": [
+        0.24590270406492318,
+        -0.2519584668656498,
+        0.8575324772937348
+      ],
+      "endpoint_rotation_matrix": [
+        [
+          0.7622438669656311,
+          0.44742322973942894,
+          0.4677571386551146
+        ],
+        [
+          -0.6392044759915052,
+          0.6341630478995773,
+          0.43503432801463376
+        ],
+        [
+          -0.1019898286384831,
+          -0.6305947051539974,
+          0.7693818250297029
+        ]
+      ],
+      "independent_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 9.53827130338196e-12,
+        "orientation_error_deg": 4.2357211825398535e-10,
+        "proximal_delta_max_deg": 7.874933853314625
+      },
+      "wrist_only_endpoint_witness": {
+        "endpoint_witness_found": true,
+        "collision_clear": true,
+        "position_error_mm": 8.568339948907339e-13,
+        "orientation_error_deg": 5.944621469807841e-11,
+        "proximal_delta_max_deg": 0.0
+      },
+      "proximal_excursion_needs_review": true,
+      "proximal_criterion_inconclusive": false,
+      "settled_prelude_constraint_failures": {},
+      "final_position_error_mm": 0.4264904721827149,
+      "final_orientation_error_deg": 0.646989222417259,
+      "worst_position_error_mm": 20.02172130108255,
+      "proximal_excursion_max_deg": 11.505556272244354,
+      "minimum_clearance_m": 0.0498716350259412,
+      "final_joint_delta_max_deg": 24.162395459896857,
+      "final_return_position_error_mm": null,
+      "final_return_orientation_error_deg": null,
+      "velocity_max_rad_s": 0.5422112974655513,
+      "finite_difference_acceleration_max_rad_s2": 1.0471975523833166,
+      "track_ms_mean": 2.1154683333333333,
+      "track_ms_p95": 2.271105,
+      "track_ms_max": 2.4004,
+      "track_over_timestep": 0,
+      "statuses": {
+        "trajectory_following": 300
+      },
+      "constraint_failures": {},
+      "criterion_failures": [
+        "proximal_excursion_with_wrist_only_endpoint_witness"
+      ],
+      "scope": "endpoint witness does not prove path feasibility or physical safety"
+    }
+  ],
+  "failures": 1,
+  "mujoco_module_path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0\\mujoco\\__init__.py",
+  "audit_source_sha256": "9cc036ed1f88260df3ae20a42a208d2db88ff5163ed1c0f97206a37bf4dc518d",
+  "inconclusive_cases": 3,
+  "passing_cases": 27,
+  "accepted": false,
+  "timing_scope": "Wall-clock process timing on current host load; no real-time or device timing guarantee.",
+  "comparison_scope": "Identical scenario construction rules, not identical numerical goals: each controller runs a fixed two-second prelude; goal is built from its resulting pose. See reported start/endpoint values.",
+  "prototype_source_sha256": "d7fbeec1bba090a89803d8fcc3239e7d1cb7e69aa6b69694bfe477f564e93b1b"
+}

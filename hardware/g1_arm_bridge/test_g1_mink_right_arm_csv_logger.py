@@ -35,10 +35,12 @@ def packet():
 
 class MinkCsvLoggerTests(unittest.TestCase):
     def test_schema_and_joint_order_round_trip(self):
-        parsed = parse_mink_state(json.dumps(packet()).encode())
+        raw = json.dumps(packet(), separators=(",", ":"))
+        parsed = parse_mink_state(raw.encode())
         self.assertEqual(parsed["q_rad"], [index / 100.0 for index in range(22, 29)])
         row = row_for(parsed, 10.0)
-        self.assertEqual(row[-7:], parsed["q_rad"])
+        self.assertEqual(row[-8:-1], parsed["q_rad"])
+        self.assertEqual(row[-1], raw)
 
     def test_duplicate_joint_copy_must_match(self):
         value = packet()
@@ -56,6 +58,10 @@ class MinkCsvLoggerTests(unittest.TestCase):
         raw = b'{"schema":"g1.mink.right_arm.state.v1","schema":"x"}'
         with self.assertRaisesRegex(ValueError, "duplicate key"):
             parse_mink_state(raw)
+
+    def test_non_utf8_raw_packet_rejected(self):
+        with self.assertRaises(UnicodeDecodeError):
+            parse_mink_state(b"\xff")
 
     def test_receive_only_loopback_writes_csv(self):
         probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -82,6 +88,7 @@ class MinkCsvLoggerTests(unittest.TestCase):
                 rows = list(csv.DictReader(stream))
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["q22_right_shoulder_pitch_joint_rad"], "0.22")
+            self.assertEqual(json.loads(rows[0]["raw_json_text"])["sequence"], 7)
 
 
 if __name__ == "__main__":

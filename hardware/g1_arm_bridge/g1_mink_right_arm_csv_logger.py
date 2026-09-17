@@ -41,7 +41,8 @@ def parse_mink_state(raw: bytes) -> dict:
             result[key] = value
         return result
 
-    packet = json.loads(raw, object_pairs_hook=reject_duplicates)
+    raw_json_text = raw.decode("utf-8")
+    packet = json.loads(raw_json_text, object_pairs_hook=reject_duplicates)
     if not isinstance(packet, dict) or packet.get("schema") != SCHEMA:
         raise ValueError("schema")
     if packet.get("state_source") != "mink_simulation":
@@ -86,6 +87,7 @@ def parse_mink_state(raw: bytes) -> dict:
         "collision_limited": bool(right.get("collision_limited", False)),
         "trajectory_status": right.get("trajectory_status") or "",
         "q_rad": right_q,
+        "raw_json_text": raw_json_text,
     }
 
 
@@ -106,6 +108,7 @@ def row_for(packet: dict, receive_monotonic_s: float) -> list:
         int(packet["collision_limited"]),
         packet["trajectory_status"],
         *packet["q_rad"],
+        packet["raw_json_text"],
     ]
 
 
@@ -135,6 +138,7 @@ def main() -> int:
         "input_packet_age_s", "position_error_m", "minimum_clearance_m",
         "collision_limited", "trajectory_status",
         *[f"q{22 + index}_{name}_rad" for index, name in enumerate(JOINT_NAMES)],
+        "raw_json_text",
     ]
     print(f"[IK CSV] receive-only udp://{args.host}:{args.port}", flush=True)
     print(f"[IK CSV] {args.output}", flush=True)

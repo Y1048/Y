@@ -53,7 +53,7 @@ Mink 출력은 UDP `127.0.0.1:5008`의 JSON 스키마 `g1.mink.right_arm.state.v
 
 기록 종료는 IK CSV 창에서 `Ctrl+C`를 누른다. 파일은 `logs/test_results/mink_right_arm_csv/`에 생성된다. UDP 5008은 하나의 프로세스만 bind할 수 있으므로 Robot/Relay/Gate7 shadow와 동시에 실행하지 않는다.
 
-CSV에는 수신 monotonic 시각, Mink의 Unix 시각, sequence/session, active/상태, 입력 age, 오차·충돌 진단값과 오른팔 7개 관절각이 기록된다. 스키마·29축 순서·중복 관절값·유한값·증가 sequence가 맞지 않는 패킷은 기록하지 않고 reject 수에 포함한다.
+CSV에는 수신 monotonic 시각, Mink의 Unix 시각, sequence/session, active/상태, 입력 age, 오차·충돌 진단값과 오른팔 7개 관절각이 기록된다. 마지막 `raw_json_text` 열에는 UDP로 수신한 UTF-8 JSON 평문 전체를 변형 없이 함께 보존한다. CSV 안의 쉼표와 따옴표는 표준 CSV quoting으로 감싸진다. 스키마·29축 순서·중복 관절값·유한값·UTF-8·증가 sequence가 맞지 않는 패킷은 기록하지 않고 reject 수에 포함한다.
 
 ## 3. Omni 원본 및 변환 CSV 기록
 

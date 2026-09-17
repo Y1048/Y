@@ -7,6 +7,7 @@ Last updated: 2026-09-17
 ## 2026-09-17 IK/Omni time-series capture
 
 - Added a receive-only Mink logger for `g1.mink.right_arm.state.v1` on Windows loopback UDP 5008. It validates the complete 29-joint order and the duplicated right-arm indices 22-28, then records the seven targets in radians before any G1 relay/controller.
+- The final IK CSV column, `raw_json_text`, preserves the complete UTF-8 UDP JSON plaintext alongside the parsed fields.
 - Extended the existing Omni read-only CSV with raw `movementXY`/arm yaw, yaw relative to the first sample, wrapped per-sample yaw difference, raw yaw rate, and mapped `vx/vy/yaw_rate` with explicit units.
 - Operator instructions and field definitions are in [IK_OMNI_TIMESERIES_20260917.md](IK_OMNI_TIMESERIES_20260917.md).
 - No G1 SSH, SDK, DDS, publisher, relay, or motor output was used. Tests use generated fixtures only; Quest/Omni hardware capture remains an operator step.

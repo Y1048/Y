@@ -900,20 +900,22 @@ def main() -> None:
                         base.UNITY_STATE_HOST,
                         base.UNITY_STATE_PORT,
                     )
+                    if right_arm_csv_writer is not None:
+                        _write_right_arm_csv_row(
+                            right_arm_csv_writer,
+                            base._encode_state(packet),
+                            time.monotonic(),
+                        )
+                        right_arm_csv_stream.flush()
                     if live_bridge:
                         live_bridge.send(packet, command_stream)
                     if not cycle_enabled:
-                        raw_dry_run = _send_state(
+                        _send_state(
                             dry_run_sock,
                             packet,
                             base.SAFETY_DRY_RUN_HOST,
                             base.SAFETY_DRY_RUN_PORT,
                         )
-                        if right_arm_csv_writer is not None:
-                            _write_right_arm_csv_row(
-                                right_arm_csv_writer, raw_dry_run, time.monotonic()
-                            )
-                            right_arm_csv_stream.flush()
                     next_state = now + base.DT
 
                 cycle_ms = (time.perf_counter() - cycle_start) * 1000.0

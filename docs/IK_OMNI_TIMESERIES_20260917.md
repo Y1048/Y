@@ -39,13 +39,13 @@ Mink 출력은 UDP `127.0.0.1:5008`의 JSON 스키마 `g1.mink.right_arm.state.v
 
 ## 2. IK CSV 기록
 
-개선된 IK와 pinch 복귀를 함께 사용하면서 기록하려면 한 번에 실행한다.
+2026-09-09에 사용자가 확인한 simulation v5 IK와 pinch 복귀를 그대로 사용하면서 기록하려면 실행한다.
 
 ```powershell
-.\START_VR_HAND_TO_MUJOCO.bat --hierarchical --record-right-arm-csv
+.\tools\START_MINK_ARM_CYCLE_SIMULATION.bat today
 ```
 
-파일은 `logs/test_results/mink_right_arm_csv/`에 생성된다. 이 방식은 Mink가 UDP 5008로 보내는 동일한 JSON을 송신 지점에서 기록하므로 포트를 추가로 점유하지 않으며, 로컬 Gate7 복귀 시뮬레이터와 pinch 복귀를 유지한다. 별도 `RECORD_MINK_RIGHT_ARM_CSV.bat`은 외부 수신 시험용이며 로컬 복귀 시뮬레이터와 UDP 5008을 동시에 사용할 수 없다.
+Unity가 이미 열려 있으면 Play를 시작한다. 이 경로는 `vanilla 6D + upstream Mink collision + position-priority recovery v5`와 today 90/180 deg/s, 60 deg/s2 설정을 사용하며 pinch 복귀와 재engage를 포함한다. 파일은 `logs/test_results/mink_right_arm_csv/`에 생성된다. 후보 UDP 5008 출력과 G1 출력은 만들지 않고 같은 pre-relay JSON을 송신 구성 지점에서 직접 기록한다. 별도 `RECORD_MINK_RIGHT_ARM_CSV.bat`은 외부 수신 시험용이다.
 
 CSV에는 수신 monotonic 시각, Mink의 Unix 시각, sequence/session, active/상태, 입력 age, 오차·충돌 진단값과 오른팔 7개 관절각이 기록된다. 마지막 `raw_json_text` 열에는 UDP로 수신한 UTF-8 JSON 평문 전체를 변형 없이 함께 보존한다. CSV 안의 쉼표와 따옴표는 표준 CSV quoting으로 감싸진다. 스키마·29축 순서·중복 관절값·유한값·UTF-8·증가 sequence가 맞지 않는 패킷은 기록하지 않고 reject 수에 포함한다.
 

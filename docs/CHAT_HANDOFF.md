@@ -17,8 +17,14 @@ Last updated: 2026-09-17
   uses `--dry-run`: no G1 discovery, UDP output, SDK, DDS, or motor command.
 - Offline verification passed: 12 mapper/schema unit tests, a fake WebSocket to
   discovery/UDP test with 10 accepted command packets and final zero, and a
-  loopback fake-G1 CSV test with 72 rows. No physical Omni capture was made in
-  this change, so actual movement data still need one user-operated recording.
+  loopback fake-G1 CSV test with 72 rows.
+- A user-operated Omni capture was subsequently recorded on the laptop at
+  `C:\Users\user\Desktop\G1_Teleop_Project\logs\test_results\omni_timeseries\omni_timeseries_20260917_171846.csv`
+  (10,344 rows; 7,880 calibrated rows). The raw CSV and its generated interactive
+  visualization are laptop-local artifacts and are not tracked by Git, so a
+  desktop checkout of this branch will not contain them. Copy them separately
+  if the desktop must inspect the exact same recording. Code, tests, schema and
+  these handoff notes are in Git.
 - The default mapped yaw-rate ceiling was raised from `0.8 rad/s` to
   `1.6 rad/s` (about `91.7 deg/s`) after the user-operated recording showed
   sustained clipping in both turn directions. The limit remains finite; this

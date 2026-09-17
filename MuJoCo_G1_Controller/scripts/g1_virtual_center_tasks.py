@@ -17,6 +17,10 @@ PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = 90.0
 WRIST_MAX_JOINT_VELOCITY_DEG_S = 180.0
 JOINT_MAX_ACCELERATION_RAD_S2 = math.radians(60.0)
 JOINT_MAX_JERK_RAD_S3 = base.RIGHT_ARM_MAX_JERK_RAD_S3
+# Normal VR tracking is acceleration-limited, without the legacy slow jerk ramp.
+# A one-control-tick ramp preserves the finite Ruckig contract while allowing
+# acceleration to reach its configured bound immediately.
+JOINT_TRACKING_MAX_JERK_RAD_S3 = JOINT_MAX_ACCELERATION_RAD_S2 / base.DT
 
 # 관절 이동 비용과 자세 복원 비용을 구분한다. 모터 감쇠 게인과는 별개다.
 VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03

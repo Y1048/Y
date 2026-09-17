@@ -57,6 +57,7 @@ from g1_virtual_center_tasks import (
     WRIST_MAX_JOINT_VELOCITY_DEG_S,
     JOINT_MAX_ACCELERATION_RAD_S2,
     JOINT_MAX_JERK_RAD_S3,
+    JOINT_TRACKING_MAX_JERK_RAD_S3,
     VIRTUAL_CENTER_PROXIMAL_DAMPING_COST,
     VIRTUAL_CENTER_WRIST_DAMPING_COST,
     VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE,
@@ -329,7 +330,7 @@ def main() -> None:
         right_qpos_ids,
         [velocity_limits[name] for name in base.g1.RIGHT_ARM_JOINTS],
         [JOINT_MAX_ACCELERATION_RAD_S2] * 7,
-        [JOINT_MAX_JERK_RAD_S3] * 7,
+        [JOINT_TRACKING_MAX_JERK_RAD_S3] * 7,
         base.DT,
     )
     if upstream_mink:
@@ -1039,7 +1040,7 @@ def main() -> None:
                             "feasible_target_valid": feasible_target_valid,
                             "feasible_target_status": feasible_target_status,
                             "feasible_target_policy": feasible_target_policy,
-                            "trajectory_policy": "upstream_qp_acceleration_bounded_exact_checked" if upstream_mink and active else "ruckig_checked_prototype_limits_v1",
+                            "trajectory_policy": "upstream_qp_acceleration_bounded_exact_checked" if upstream_mink and active else "acceleration_bounded_checked_v2",
                             "trajectory_status": trajectory_status,
                             "trajectory_velocity_rad_s": list(
                                 trajectory_velocity_rad_s
@@ -1051,7 +1052,11 @@ def main() -> None:
                                 comparison_profile["acceleration_rad_s2"][0] if cycle_enabled else JOINT_MAX_ACCELERATION_RAD_S2
                             ),
                             "trajectory_max_velocity_rad_s": list(trajectory.velocity_limits),
-                            "trajectory_max_jerk_rad_s3": None if upstream_mink and active else JOINT_MAX_JERK_RAD_S3,
+                            "trajectory_max_jerk_rad_s3": (
+                                None if upstream_mink and active else
+                                JOINT_MAX_JERK_RAD_S3 if cycle_enabled else
+                                JOINT_TRACKING_MAX_JERK_RAD_S3
+                            ),
                             "input_position_delta": input_position_delta.tolist(),
                             "external_target_delta": (
                                 external_target_position

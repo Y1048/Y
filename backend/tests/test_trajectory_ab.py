@@ -8,6 +8,15 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from compare_mink_trajectory import ThroughTrajectory
 from g1_mink_trajectory import StatefulMinkTrajectory
+from g1_virtual_center_tasks import (
+    JOINT_MAX_ACCELERATION_RAD_S2,
+    JOINT_TRACKING_MAX_JERK_RAD_S3,
+)
+import run_mink_g1_right_arm_prototype as base
+
+
+def test_live_tracking_reaches_acceleration_limit_within_one_control_tick():
+    assert JOINT_TRACKING_MAX_JERK_RAD_S3 * base.DT >= JOINT_MAX_ACCELERATION_RAD_S2
 
 
 def test_forward_then_wrist_keeps_requested_position_fixed():

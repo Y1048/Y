@@ -37,6 +37,8 @@
 
 기존 전체 백업을 덮어쓰지 말고, 여유 공간이 있는 새 폴더에 소스를 받는다. GitHub에서 받으려면 인터넷이 필요하다. LAN으로 이미 복사한 환경/자료 복원에는 인터넷이 필수는 아니다.
 
+노트북과 데스크톱을 오가며 작업할 때는 반드시 [두 PC GitHub 동기화 규칙](TWO_PC_SYNC.md)을 따른다. 핵심은 작업 전 `fetch`와 clean 상태 확인, clean 상태에서만 `pull --ff-only`, 작업 후 작은 commit/push, 그리고 reset/clean/force push 금지다.
+
 ```powershell
 git clone --branch codex/g1-laptop-sync-20260917 https://github.com/Y1048/Y.git G1_Teleop_Source
 Set-Location .\G1_Teleop_Source
@@ -45,7 +47,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\VERIFY_DESKTOP_S
 
 새 Codex에 아래 내용을 전달한다.
 
-> 이 프로젝트에서 docs/migration/20260917/README.md와 docs/CHAT_HANDOFF.md를 먼저 읽어라. 전체 목표는 노트북 G1 Unity/VR/MuJoCo/Omni/학습 환경을 데스크톱에서 이어가는 것이다. Git 소스와 기존 전체 이전 백업을 함께 사용한다. 하체 정책은 다른 개발자가 제공하므로 기존 velocity 12DoF 정책을 계속 개발하거나 실제 G1에서 재시험하지 않는다. 먼저 현재 설치/복원/저장 공간 상태를 읽기 전용으로 확인하고, 세 가지 실패 검증과 분리 패치를 구분한다. 사용자 승인 없이 G1 명령·모드 전환·배포·파티션 삭제를 하지 않는다. 물리 실행 전 오프라인 환경 복원과 검증부터 진행한다.
+> 이 프로젝트에서 docs/migration/20260917/README.md, docs/migration/20260917/TWO_PC_SYNC.md와 docs/CHAT_HANDOFF.md를 먼저 읽어라. 전체 목표는 노트북 G1 Unity/VR/MuJoCo/Omni/학습 환경을 데스크톱에서 이어가는 것이다. Git 소스와 기존 전체 이전 백업을 함께 사용한다. 하체 정책은 다른 개발자가 제공하므로 기존 velocity 12DoF 정책을 계속 개발하거나 실제 G1에서 재시험하지 않는다. 먼저 현재 설치/복원/저장 공간 상태를 읽기 전용으로 확인하고, 세 가지 실패 검증과 분리 패치를 구분한다. 사용자 승인 없이 G1 명령·모드 전환·배포·파티션 삭제를 하지 않는다. 물리 실행 전 오프라인 환경 복원과 검증부터 진행한다.
 
 전체 백업의 `MigrationDocs/DESKTOP_CONTINUE.md`에는 설치 버전·환경 복원·저장 공간 관련 인계가 있다. 그 문서는 2026-09-16 상태이므로 이후 데스크톱에서 수행한 작업을 현재 상태와 대조한다. Ubuntu.tar는 노트북 WSL 백업이며 데스크톱 듀얼부팅 Ubuntu의 백업이 아니다.
 

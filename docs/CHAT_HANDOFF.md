@@ -6,7 +6,7 @@ Last updated: 2026-09-17
 
 ## Laptop migration checkpoint
 
-This integration branch combines the latest published continuation with the laptop source. Read [migration status](migration/20260917/README.md) first. Local historical notes are preserved in [LAPTOP_CHAT_HANDOFF.md](migration/20260917/LAPTOP_CHAT_HANDOFF.md). Conflicting temporary-worktree work is stored as patches, not enabled in this checkout. This is source synchronization, not hardware validation.
+This integration branch combines the latest published continuation with the laptop source. Read [migration status](migration/20260917/README.md) and [two-PC synchronization rules](migration/20260917/TWO_PC_SYNC.md) first. Local historical notes are preserved in [LAPTOP_CHAT_HANDOFF.md](migration/20260917/LAPTOP_CHAT_HANDOFF.md). Conflicting temporary-worktree work is stored as patches, not enabled in this checkout. This is source synchronization, not hardware validation.
 
 ### 2026-09-17 scope change and last locomotion evidence
 

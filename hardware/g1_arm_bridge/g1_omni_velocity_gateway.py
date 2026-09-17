@@ -26,6 +26,12 @@ except ImportError:
 
 SCHEMA = "g1.velocity.command.v1"
 PROVENANCE = "omni_gateway"
+OMNI_CSV_HEADER = [
+    "receive_monotonic_s", "movement_x", "movement_y", "arm_yaw_deg",
+    "vx", "vy", "yaw_rate", "calibrated",
+    "arm_yaw_from_origin_deg", "arm_yaw_step_diff_deg",
+    "arm_yaw_rate_raw_deg_s",
+]
 
 
 def clamp(value: float, limit: float) -> float:
@@ -65,10 +71,14 @@ class OmniVelocityMapper:
         self.zero_y_samples: list[float] = []
         self.zero_x = 0.0
         self.zero_y = 0.0
+        self.zero_yaw_deg: float | None = None
         self.calibrated = False
         self.previous_yaw: float | None = None
         self.previous_time_s: float | None = None
         self.filtered_yaw_rate = 0.0
+        self.yaw_from_origin_deg = 0.0
+        self.yaw_step_diff_deg = 0.0
+        self.yaw_rate_raw_deg_s = 0.0
         self.last_velocity = (0.0, 0.0, 0.0)
 
     def update(self, movement_x: float, movement_y: float, arm_yaw_deg: float,
@@ -86,6 +96,12 @@ class OmniVelocityMapper:
             self.zero_x_samples.append(movement_x)
             self.zero_y_samples.append(movement_y)
             self.previous_yaw = arm_yaw_deg
+            if self.zero_yaw_deg is None:
+                self.zero_yaw_deg = arm_yaw_deg
+            self.yaw_from_origin_deg = wrapped_delta_degrees(
+                arm_yaw_deg, self.zero_yaw_deg)
+            self.yaw_step_diff_deg = 0.0
+            self.yaw_rate_raw_deg_s = 0.0
             self.previous_time_s = now_s
             if now_s - self.started_s >= self.config.calibration_s:
                 self.zero_x = sum(self.zero_x_samples) / len(self.zero_x_samples)
@@ -100,11 +116,19 @@ class OmniVelocityMapper:
             self.previous_yaw = arm_yaw_deg
             self.previous_time_s = now_s
             self.filtered_yaw_rate = 0.0
+            origin = arm_yaw_deg if self.zero_yaw_deg is None else self.zero_yaw_deg
+            self.yaw_from_origin_deg = wrapped_delta_degrees(arm_yaw_deg, origin)
+            self.yaw_step_diff_deg = 0.0
+            self.yaw_rate_raw_deg_s = 0.0
             self.last_velocity = (0.0, 0.0, 0.0)
             return self.last_velocity
 
         yaw_delta = wrapped_delta_degrees(arm_yaw_deg, self.previous_yaw)
         raw_yaw_rate_deg_s = yaw_delta / dt
+        origin = arm_yaw_deg if self.zero_yaw_deg is None else self.zero_yaw_deg
+        self.yaw_from_origin_deg = wrapped_delta_degrees(arm_yaw_deg, origin)
+        self.yaw_step_diff_deg = yaw_delta
+        self.yaw_rate_raw_deg_s = raw_yaw_rate_deg_s
         if abs(raw_yaw_rate_deg_s) <= self.config.yaw_deadzone_deg_s:
             raw_yaw_rate_deg_s = 0.0
         raw_yaw_rate = math.radians(raw_yaw_rate_deg_s) * self.config.yaw_gain
@@ -170,6 +194,16 @@ def encode_command(session: str, sequence: int, now_s: float,
     }, allow_nan=False, separators=(",", ":")).encode()
 
 
+def omni_csv_row(now_s: float, movement_x: float, movement_y: float,
+                 arm_yaw_deg: float, velocity: tuple[float, float, float],
+                 mapper: OmniVelocityMapper) -> list:
+    return [
+        f"{now_s:.9f}", movement_x, movement_y, arm_yaw_deg, *velocity,
+        int(mapper.calibrated), mapper.yaw_from_origin_deg,
+        mapper.yaw_step_diff_deg, mapper.yaw_rate_raw_deg_s,
+    ]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--relay-token", default="")
@@ -222,9 +256,7 @@ def main() -> None:
         args.csv.parent.mkdir(parents=True, exist_ok=True)
         csv_file = args.csv.open("w", newline="", encoding="utf-8")
         csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(["receive_monotonic_s", "movement_x", "movement_y",
-                             "arm_yaw_deg", "vx", "vy", "yaw_rate",
-                             "calibrated"])
+        csv_writer.writerow(OMNI_CSV_HEADER)
     print(f"[OMNI] connected {args.omni_url}; preparation delay "
           f"{args.start_delay_seconds:.1f} s, then calibrating for "
           f"{mapper.config.calibration_s:.1f} s", flush=True)
@@ -267,8 +299,8 @@ def main() -> None:
                                            args.relay_token), target)
             sequence += 1
         if csv_writer is not None:
-            csv_writer.writerow([f"{now:.9f}", movement_x, movement_y, yaw,
-                                 *velocity, int(mapper.calibrated)])
+            csv_writer.writerow(omni_csv_row(
+                now, movement_x, movement_y, yaw, velocity, mapper))
             csv_file.flush()
         if now < calibration_starts:
             state = f"PREP {calibration_starts - now:.1f}s"

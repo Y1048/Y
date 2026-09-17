@@ -5,7 +5,9 @@ import unittest
 from .g1_omni_velocity_gateway import (
     OmniVelocityConfig,
     OmniVelocityMapper,
+    OMNI_CSV_HEADER,
     encode_command,
+    omni_csv_row,
     parse_omni_message,
     wrapped_delta_degrees,
 )
@@ -45,6 +47,26 @@ class OmniVelocityGatewayTests(unittest.TestCase):
         mapper.update(0.0, 0.0, 179.0, 0.1)
         _, _, wz = mapper.update(0.0, 0.0, -179.0, 0.2)
         self.assertAlmostEqual(wz, math.radians(20.0), places=5)
+        self.assertAlmostEqual(mapper.yaw_from_origin_deg, 2.0)
+        self.assertAlmostEqual(mapper.yaw_step_diff_deg, 2.0)
+        self.assertAlmostEqual(mapper.yaw_rate_raw_deg_s, 20.0)
+
+    def test_starting_yaw_is_recorded_as_relative_origin(self):
+        mapper = self.mapper()
+        self.calibrate(mapper)
+        mapper.update(0.01, -0.02, 125.0, 0.2)
+        self.assertAlmostEqual(mapper.yaw_from_origin_deg, 15.0)
+
+    def test_csv_contains_raw_and_mapped_values_in_one_row(self):
+        mapper = self.mapper()
+        self.calibrate(mapper)
+        velocity = mapper.update(0.2, 0.3, 125.0, 0.2)
+        row = omni_csv_row(0.2, 0.2, 0.3, 125.0, velocity, mapper)
+        self.assertEqual(len(row), len(OMNI_CSV_HEADER))
+        values = dict(zip(OMNI_CSV_HEADER, row))
+        self.assertEqual(values["movement_x"], 0.2)
+        self.assertEqual(values["arm_yaw_from_origin_deg"], 15.0)
+        self.assertEqual(values["vx"], velocity[0])
 
     def test_gap_resets_rotation_to_zero(self):
         mapper = self.mapper()

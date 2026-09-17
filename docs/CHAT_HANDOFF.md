@@ -19,9 +19,10 @@ Last updated: 2026-09-17
   the last accepted frame. Joint velocity/acceleration limits remain unchanged.
 - A subsequent run retained 69 mm position error with elbow joint 25 at its
   5-degree lower limit while orientation error fell to 5.65 degrees. The
-  position-priority state now ramps orientation cost to zero instead of 25%;
-  its original rotation goal is retained and restored after positional
-  recovery. Runtime packets now record the priority flag and scale.
+  position-priority state originally ramped orientation cost to zero instead
+  of 25%; the posture correction documented below supersedes that value with
+  a 10% floor. Its original rotation goal is retained and restored after
+  positional recovery. Runtime packets record the priority flag and scale.
 - The next replayed live run exposed a separate hysteresis gap: position error
   settled near 33 mm with elbow 25 at its 5-degree limit, below the old 80 mm
   entry threshold, so position priority never activated. Entry is now 25 mm
@@ -556,3 +557,10 @@ executed. New controller source SHA is
 No G1/SSH, DDS initialization, deployment, publisher execution, motor output or
 gain change occurred. Termination ownership and a physical caller remain blocked;
 `recommended_hardware_gains=null`.
+## 2026-09-17 position-priority posture correction (simulation only)
+
+- The latest simulation CSV `mink_v5_right_arm_20260917_150853_846.csv` showed that the apparent excessive elbow bend was not elbow flexion: joint 25 reached its 5 deg extension limit while right shoulder yaw reached its 150 deg upper limit and wrist pitch approached -80 deg.
+- Root cause: the position-priority fallback reduced wrist orientation cost to zero, leaving the redundant 7-DOF solution free to wind shoulder yaw toward its limit.
+- Position priority now retains 10% of the normal orientation cost and temporarily raises only the right shoulder-yaw posture cost to 8.0, referenced to the captured engage posture. Normal orientation and posture costs are restored when priority ends, on pinch return, and on reset.
+- Offline replay of the 1,238 active targets from that CSV reduced maximum shoulder yaw from the recorded 150 deg to 79.98 deg. This replay does not reproduce Unity timing exactly and is simulation evidence only.
+- Verification: `backend/tests/test_upstream_mink_tracking.py` and `backend/tests/test_standard_mink_live.py` passed (35 tests, 2 subtests). No G1 SDK/DDS, publisher, SSH, or physical output was used.

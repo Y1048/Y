@@ -46,6 +46,15 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.position_priority_active = False
         self._priority_dwell = 0.
         self._orientation_cost = np.asarray(self.planner.wrist_task.orientation_cost).copy()
+        self._posture_cost = np.asarray(self.planner.posture_task.cost).copy()
+        self._priority_posture_cost = self._posture_cost.copy()
+        # With orientation cost heavily reduced, the redundant 7-DOF solution can
+        # satisfy wrist position by winding shoulder yaw to its joint limit.
+        # Bias that one proximal axis toward the captured engage posture while
+        # leaving the other axes available for position recovery.
+        shoulder_yaw_dof = self.planner.right_dofs[2]
+        self._priority_posture_cost[shoulder_yaw_dof] = max(
+            self._priority_posture_cost[shoulder_yaw_dof], 8.0)
         self.elbow_task = mink.FrameTask('right_elbow_link', 'body',
             position_cost=[0., 0., 8.], orientation_cost=0., gain=.6*self.dt_s)
         self.torso_geom_ids = tuple(
@@ -112,6 +121,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.orientation_priority_scale = 1.
         self._priority_dwell = 0.
         self.planner.wrist_task.set_orientation_cost(self._orientation_cost)
+        self.planner.posture_task.set_cost(self._posture_cost)
 
     def _update_orientation_priority(self, current_q, goal, clearance):
         # Keep the original SE3 target. Only its orientation penalty changes;
@@ -147,15 +157,17 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         if self._priority_dwell >= .3:
             self.position_priority_active = not self.position_priority_active
             self._priority_dwell = 0.
-        # A nonzero residual orientation cost can keep a redundant solution at
-        # a joint limit while leaving several centimetres of position error.
-        # Position priority therefore removes orientation cost completely;
-        # the original rotation target remains stored and is restored after
-        # position recovery by the existing hysteresis.
-        target = 0. if self.position_priority_active else 1.
+        # Keep a small orientation residual so redundant motion does not fold
+        # the entire arm into an extreme visual posture. Shoulder yaw also gets
+        # a local neutral-posture bias during this mode. Position remains the
+        # dominant task and the full rotation cost returns after recovery.
+        target = .1 if self.position_priority_active else 1.
         self.orientation_priority_scale += float(np.clip(
             target-self.orientation_priority_scale, -self.dt_s, self.dt_s))
         p.wrist_task.set_orientation_cost(self._orientation_cost*self.orientation_priority_scale)
+        p.posture_task.set_cost(
+            self._priority_posture_cost if self.position_priority_active
+            else self._posture_cost)
 
     def _collision_constraint(self, limit):
         p = self.planner

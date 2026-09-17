@@ -4,6 +4,47 @@
 
 Last updated: 2026-09-17
 
+## Current wrist-orientation correction (after the 15:38 simulation)
+
+- Torso projection now changes only the position target. The original user
+  wrist rotation remains the QP target, including while the position lies
+  inside the torso exclusion volume. `collision_orientation_relaxed=false`
+  no longer conceals an overwritten rotation target.
+- Position-priority orientation cost scale is now 0.5 rather than 0.1.
+  Mink squares cost-weighted residuals, so the orientation term retains 25%
+  rather than 1% of its normal strength. Projected goals retain full cost.
+- Velocity/acceleration limits, the current +/-45 deg shoulder-yaw envelope,
+  collision checks, and return behavior were not changed in this correction.
+- A/B replay against `51b9035` used the same 840 active targets from
+  `mink_v5_right_arm_20260917_153809_875.csv`, held according to recorded
+  send timestamps at the fixed IK timestep (1,629 ticks per variant).
+  Rotation median: 50.24 -> 20.11 deg; p95: 96.83 -> 78.83 deg;
+  final two seconds median: 96.79 -> 10.35 deg. Position p95:
+  18.59 -> 17.75 cm. Both variants had no rejected/braking steps or
+  acceleration violations, minimum clearance >=5.49 mm, and yaw <=45 deg.
+- A recorded final-pose fixture, initialized at rest for a static regression,
+  reduces >90 deg rotation error to <5 deg within 600 ticks while remaining
+  collision checked, rate limited, and preserving other joints. This fixture
+  is derived from simulated joint values, not measured G1 state.
+- Remaining: fast rotation still produces a maximum ~119.58 deg transient
+  in both A/B runs. This change corrects sustained orientation abandonment;
+  fast transient response is not solved. Live Quest retesting remains pending.
+- Executed validation: upstream tracking, standard Mink, virtual-center
+  trajectory, simulation handoff boundary, and runtime compatibility suites:
+  **46 tests and 18 subtests passed**. The static fixture finished at 1.50 deg
+  rotation error, 5.50 mm clearance, and 45 deg shoulder yaw. Local simulation
+  runtime receives the identical tracking source; restart Input to load it.
+- Reproduce from the repository root (Python with the existing Mink dependencies):
+
+  ```powershell
+  py -3.11 experiments/twist2_right_arm_manual/compare_mink_rotation_replay.py <simulation.csv> --baseline-ref 51b9035 --output logs/test_results/wrist_rotation_ab.json
+  ```
+
+  The script rejects multi-episode input, uses no transport, and includes
+  source/CSV hashes in the report. Original logs are preserved. Timing between
+  logged targets is reconstructed; this is not exact replay of unlogged IK ticks
+  or hardware validation. No G1 SSH, SDK/DDS initialization or output occurred.
+
 - The current Unity scene and sender now require a continuous 1.0 s
   thumb-index pinch before emitting `pinch_disengaged` (previously 0.5 s).
   This follows a recorded false/accidental sustained-pinch disconnect; it does
@@ -20,8 +61,8 @@ Last updated: 2026-09-17
 - A subsequent run retained 69 mm position error with elbow joint 25 at its
   5-degree lower limit while orientation error fell to 5.65 degrees. The
   position-priority state originally ramped orientation cost to zero instead
-  of 25%; the posture correction documented below supersedes that value with
-  a 10% floor. Its original rotation goal is retained and restored after
+  of 25%; subsequent corrections used a 10% floor and now use a 50% cost
+  floor (see current correction above). Its original rotation goal is retained and restored after
   positional recovery. Runtime packets record the priority flag and scale.
 - The next replayed live run exposed a separate hysteresis gap: position error
   settled near 33 mm with elbow 25 at its 5-degree limit, below the old 80 mm
@@ -43,8 +84,9 @@ Last updated: 2026-09-17
   nearest outside face using the torso mesh bounds, wrist collision radius and
   configured clearance. While projection is active, position continues moving
   along that outside boundary so an operator can route the hand around the
-  torso; the infeasible raw wrist orientation is temporarily replaced by the
-  current wrist orientation. Elbow reconfiguration is also disabled. When the
+  torso. The old behavior replaced raw wrist orientation with the current
+  wrist orientation; the current correction above removes that substitution.
+  Elbow assistance is still disabled for projected targets. When the
   raw target leaves the exclusion volume, normal position and orientation
   tracking resume. Raw/effective positions, projection distance and the
   orientation-relaxed flag remain in runtime and raw-JSON CSV diagnostics.

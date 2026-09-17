@@ -136,10 +136,9 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         if not self.orientation_priority_enabled:
             self._reset_orientation_priority()
             return
-        # Torso projection already replaces the raw orientation with the
-        # current wrist orientation. Keep that stabilizing orientation cost;
-        # dropping it as well can let the redundant wrist solution drift into
-        # a collision during the later return.
+        # Torso projection changes only position. Keep the user's orientation
+        # objective active: replacing it with the current rotation each frame
+        # freezes persistent orientation error instead of correcting it.
         if self.target_projected:
             self._reset_orientation_priority()
             return
@@ -152,11 +151,10 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         if self._priority_dwell >= .3:
             self.position_priority_active = not self.position_priority_active
             self._priority_dwell = 0.
-        # Keep a small orientation residual so redundant motion does not fold
-        # the entire arm into an extreme visual posture. Shoulder yaw also gets
-        # a local neutral-posture bias during this mode. Position remains the
-        # dominant task and the full rotation cost returns after recovery.
-        target = .1 if self.position_priority_active else 1.
+        # Mink squares cost-weighted residuals. A 0.1 cost scale leaves only
+        # 1% of the normal orientation objective; retain 25% instead, while
+        # the position objective and geometric constraints remain active.
+        target = .5 if self.position_priority_active else 1.
         self.orientation_priority_scale += float(np.clip(
             target-self.orientation_priority_scale, -self.dt_s, self.dt_s))
         p.wrist_task.set_orientation_cost(self._orientation_cost*self.orientation_priority_scale)
@@ -324,19 +322,11 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             'right_wrist_yaw_link', 'body')
         projected_goal, self.target_projected = self._project_target_outside_torso(
             goal, current_pose.translation())
-        if self.target_projected:
-            # Continue sliding the position goal around the model-derived torso
-            # boundary, but do not chase an infeasible wrist orientation while
-            # the raw hand goal is inside the body. Requiring both at once can
-            # drive a redundant shoulder solution toward a joint limit.
-            effective_goal = base._matrix_to_se3(
-                current_pose.rotation().as_matrix(),
-                projected_goal.translation().copy(),
-            )
-            self.collision_orientation_relaxed = True
-        else:
-            effective_goal = goal
-            self.collision_orientation_relaxed = False
+        # The projected pose retains the original rotation. Collision and
+        # joint constraints decide which parts of the motion are feasible;
+        # do not silently substitute the current wrist direction as a target.
+        effective_goal = projected_goal
+        self.collision_orientation_relaxed = False
         self.raw_target_position = np.asarray(goal.translation(), dtype=float).copy()
         self.effective_target_position = np.asarray(
             effective_goal.translation(), dtype=float).copy()

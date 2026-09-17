@@ -10,6 +10,47 @@ from replay_upstream_mink import build, base
 
 
 class UpstreamTrackingTests(unittest.TestCase):
+    def test_projected_recorded_goal_recovers_wrist_rotation_without_winding(self):
+        fixture = json.loads((Path(__file__).parent /
+            'fixtures/mink_projected_wrist_rotation_20260917.json').read_text())
+        model, planner, trajectory = build()
+        q = np.asarray(fixture['current_q'])
+        initial = q.copy()
+        reference = np.asarray(fixture['posture_reference'])
+        planner.configuration.update(q)
+        trajectory.Reset(q)
+        planner.posture_reference = reference.copy()
+        planner.posture_task.set_target(reference)
+        goal = base._matrix_to_se3(np.asarray(fixture['goal_rotation']),
+                                   np.asarray(fixture['goal_position']))
+        original_rotation = planner.configuration.get_transform_frame_to_world(
+            'right_wrist_yaw_link', 'body').rotation().as_matrix()
+        self.assertGreater(np.degrees(base._rotation_error_radians(
+            goal.rotation().as_matrix(), original_rotation)), 90.)
+        previous = np.zeros(7)
+        frozen = np.ones(len(q), dtype=bool)
+        frozen[planner.qpos_ids] = False
+        for _ in range(600):
+            step = trajectory.Track(q, goal)
+            self.assertTrue(step.applied, step.status)
+            self.assertTrue(trajectory.target_projected)
+            self.assertFalse(trajectory.collision_orientation_relaxed)
+            q = step.q
+            velocity = np.asarray(step.velocity_rad_s)
+            self.assertTrue(np.all(abs(velocity-previous)/trajectory.dt_s <=
+                np.asarray(trajectory.acceleration_limits)+1e-5))
+            self.assertTrue(np.all(abs(velocity) <=
+                np.asarray(trajectory.velocity_limits)+1e-6))
+            previous = velocity
+            self.assertTrue(planner.CheckConfiguration(q))
+            self.assertLessEqual(abs(q[planner.qpos_ids[2]]-reference[planner.qpos_ids[2]]),
+                trajectory.priority_shoulder_yaw_envelope_rad+1e-5)
+            np.testing.assert_allclose(q[frozen], initial[frozen], atol=1e-10)
+        planner.configuration.update(q)
+        pose = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body')
+        self.assertLess(np.degrees(base._rotation_error_radians(
+            goal.rotation().as_matrix(), pose.rotation().as_matrix())), 5.)
+
     def test_target_inside_torso_is_projected_without_elbow_assist(self):
         model, planner, trajectory = build()
         q = base._initial_configuration(model)
@@ -23,7 +64,7 @@ class UpstreamTrackingTests(unittest.TestCase):
         step = trajectory.Track(q, goal)
         self.assertTrue(step.applied, step.status)
         self.assertTrue(trajectory.target_projected)
-        self.assertTrue(trajectory.collision_orientation_relaxed)
+        self.assertFalse(trajectory.collision_orientation_relaxed)
         self.assertGreater(trajectory.target_projection_distance_m, 0.)
         self.assertFalse(trajectory.elbow_assist_active)
         self.assertFalse(np.shares_memory(
@@ -48,7 +89,7 @@ class UpstreamTrackingTests(unittest.TestCase):
             step = trajectory.Track(q, goal)
             self.assertTrue(step.applied, step.status)
             self.assertTrue(trajectory.target_projected)
-            self.assertTrue(trajectory.collision_orientation_relaxed)
+            self.assertFalse(trajectory.collision_orientation_relaxed)
             effective.append(trajectory.effective_target_position.copy())
         self.assertGreater(np.linalg.norm(effective[1]-effective[0]), .02)
 
@@ -77,7 +118,7 @@ class UpstreamTrackingTests(unittest.TestCase):
                 pose = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body')
                 if goal is difficult:
                     if trajectory.target_projected:
-                        self.assertTrue(trajectory.collision_orientation_relaxed)
+                        self.assertFalse(trajectory.collision_orientation_relaxed)
                         self.assertFalse(trajectory.elbow_assist_active)
                         self.assertLess(
                             np.linalg.norm(pose.translation()-trajectory.effective_target_position),
@@ -86,7 +127,7 @@ class UpstreamTrackingTests(unittest.TestCase):
                         self.assertGreater(trajectory.target_projection_distance_m, .01)
                     else:
                         self.assertTrue(trajectory.position_priority_active)
-                        self.assertAlmostEqual(scale, .1)
+                        self.assertAlmostEqual(scale, .5)
                         self.assertLess(np.linalg.norm(
                             pose.translation()-goal.translation()), .065)
                 else:
@@ -110,7 +151,7 @@ class UpstreamTrackingTests(unittest.TestCase):
         for _ in range(60):trajectory._update_orientation_priority(q, outside, .006)
         self.assertTrue(trajectory.position_priority_active)
         for _ in range(10):trajectory._update_orientation_priority(q, outside, .006)
-        self.assertAlmostEqual(trajectory.orientation_priority_scale, .1)
+        self.assertAlmostEqual(trajectory.orientation_priority_scale, .5)
         trajectory.BeginReturn(q)
         self.assertFalse(trajectory.position_priority_active)
         self.assertEqual(trajectory.orientation_priority_scale, 1.)
@@ -161,7 +202,7 @@ class UpstreamTrackingTests(unittest.TestCase):
         raised = planner.configuration.get_transform_frame_to_world('right_elbow_link', 'body').translation()[2]
         wrist = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body').translation()
         self.assertTrue(trajectory.target_projected)
-        self.assertTrue(trajectory.collision_orientation_relaxed)
+        self.assertFalse(trajectory.collision_orientation_relaxed)
         self.assertFalse(trajectory.elbow_assist_active)
         self.assertLess(raised-elbow_z, .03)
         self.assertLess(np.linalg.norm(

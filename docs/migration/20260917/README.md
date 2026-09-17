@@ -2,6 +2,13 @@
 
 이 브랜치는 데스크톱 이전을 위한 소스 보존·통합 체크포인트다. 실물 실행 승인이나 정상 동작 인증이 아니다. `main`에는 아직 병합하지 않았다.
 
+## 현재 우선순위
+
+- 먼저 GitHub 소스를 데스크톱의 새 폴더에 복원하고 checkout을 검증한다.
+- 하체 정책 개발과 기존 velocity 12DoF 정책의 실제 G1 시험은 중단한다. 하체 정책은 다른 개발자가 제공하며, 추후 이 저장소의 Unity/Mink 상체 목표 및 단일 LowCmd 소유자 경계에 통합한다.
+- 2026-09-16의 기존 velocity 축 시험은 `+vx=0.05` 전환 중 IMU 제한에 도달했다. 당시 관측값은 roll `-0.19 rad`, pitch `+0.34 rad`였고 제어기는 마지막 유효 전신 위치 명령을 유지했다. 이 시험을 데스크톱에서 반복하지 않는다.
+- 다음 개발 주제는 데스크톱 소스·환경 복원이 끝난 뒤 별도로 정한다.
+
 ## 포함한 내용
 
 - 기준: `codex/g1-main-continuation-20260914`의 `563614a3f10e7188f820f19467ecafd4678c7212`. 이 기준은 당시 `main`보다 21커밋 앞선 시스템 식별 작업을 포함한다.
@@ -32,11 +39,13 @@
 
 ```powershell
 git clone --branch codex/g1-laptop-sync-20260917 https://github.com/Y1048/Y.git G1_Teleop_Source
+Set-Location .\G1_Teleop_Source
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1
 ```
 
 새 Codex에 아래 내용을 전달한다.
 
-> 이 프로젝트에서 docs/migration/20260917/README.md와 docs/CHAT_HANDOFF.md를 먼저 읽어라. 전체 목표는 노트북 G1 Unity/VR/MuJoCo/Omni/학습 환경을 데스크톱에서 이어가는 것이다. Git 소스와 기존 전체 이전 백업을 함께 사용한다. 먼저 현재 설치/복원/저장 공간 상태를 읽기 전용으로 확인하고, 세 가지 실패 검증과 분리 패치를 구분한다. 사용자 승인 없이 G1 명령·모드 전환·배포·파티션 삭제를 하지 않는다. 물리 실행 전 오프라인 환경 복원과 검증부터 진행한다.
+> 이 프로젝트에서 docs/migration/20260917/README.md와 docs/CHAT_HANDOFF.md를 먼저 읽어라. 전체 목표는 노트북 G1 Unity/VR/MuJoCo/Omni/학습 환경을 데스크톱에서 이어가는 것이다. Git 소스와 기존 전체 이전 백업을 함께 사용한다. 하체 정책은 다른 개발자가 제공하므로 기존 velocity 12DoF 정책을 계속 개발하거나 실제 G1에서 재시험하지 않는다. 먼저 현재 설치/복원/저장 공간 상태를 읽기 전용으로 확인하고, 세 가지 실패 검증과 분리 패치를 구분한다. 사용자 승인 없이 G1 명령·모드 전환·배포·파티션 삭제를 하지 않는다. 물리 실행 전 오프라인 환경 복원과 검증부터 진행한다.
 
 전체 백업의 `MigrationDocs/DESKTOP_CONTINUE.md`에는 설치 버전·환경 복원·저장 공간 관련 인계가 있다. 그 문서는 2026-09-16 상태이므로 이후 데스크톱에서 수행한 작업을 현재 상태와 대조한다. Ubuntu.tar는 노트북 WSL 백업이며 데스크톱 듀얼부팅 Ubuntu의 백업이 아니다.
 

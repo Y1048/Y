@@ -8,6 +8,14 @@ Last updated: 2026-09-17
 
 This integration branch combines the latest published continuation with the laptop source. Read [migration status](migration/20260917/README.md) first. Local historical notes are preserved in [LAPTOP_CHAT_HANDOFF.md](migration/20260917/LAPTOP_CHAT_HANDOFF.md). Conflicting temporary-worktree work is stored as patches, not enabled in this checkout. This is source synchronization, not hardware validation.
 
+### 2026-09-17 scope change and last locomotion evidence
+
+- GitHub-to-desktop continuation is the current priority.
+- Lower-body policy development in this repository is stopped. Another developer will provide that policy; later work only integrates it with the Unity/Mink upper-body target and the single LowCmd owner.
+- Do not repeat the preserved velocity 12DoF physical trial. In the last `+vx=0.05` axis trial, the policy transition reached approximately roll `-0.19 rad` and pitch `+0.34 rad`, then the controller stopped on `RuntimeError: IMU roll/pitch limit` and retained the last valid full-body position command.
+- The robot was reported stable in its support rig after that event. This observation is not policy validation.
+- Existing locomotion sources, MuJoCo results and logs remain historical evidence. Their presence is not authorization to deploy or run them on G1.
+
 
 ## 1. Start here
 

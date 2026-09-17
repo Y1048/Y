@@ -1,12 +1,21 @@
 # G1 VR Teleoperation
 
+> **2026-09-17 desktop continuation:** Until this checkpoint is reviewed and
+> merged, clone branch `codex/g1-laptop-sync-20260917` and read
+> [`docs/migration/20260917/README.md`](docs/migration/20260917/README.md) and
+> [`docs/CHAT_HANDOFF.md`](docs/CHAT_HANDOFF.md) first. The lower-body policy is
+> now supplied by another developer; this repository preserves the previous
+> locomotion experiments as evidence but does not continue or physically test
+> that policy. Future work is integration of the external lower-body policy with
+> the existing Unity/Mink upper-body and single-LowCmd-owner boundary.
+
 처음 읽는 순서: [코드 연결·주요 함수·Mink 해설](docs/CODE_GUIDE.md)
  -> [파일 색인과 검토 범위](docs/CODE_INDEX.md).
  [미사용 코드 정리 기록](docs/CLEANUP_20260903.md)은 변경 이력이다.
 
 VR 오른손 hand tracking을 Unity에서 수집하고, Mink + MuJoCo 기반 differential QP IK로 Unitree G1 오른팔 7DoF를 제어하는 텔레오퍼레이션 프로젝트다.
 
-> **현재 구조:** Unity/VR ↔ Mink/MuJoCo 시뮬레이션, Gate 7의 `rt/arm_sdk` 물리 출력, 기존 TWIST2 C++의 `rt/lowcmd` 수동 제어가 별도 경로로 있다. 기본 실행기는 시뮬레이션이며 물리 출력은 별도 설정과 검사로 제어한다. TWIST2 오른팔 코드에는 아직 VR/Mink 입력을 통합하지 않았다. 시험 결과와 남은 문제는 [CHAT_HANDOFF](docs/CHAT_HANDOFF.md)의 최신 항목을 참고한다.
+> **현재 구조:** Unity/VR ↔ Mink/MuJoCo 시뮬레이션, Gate 7의 `rt/arm_sdk` 물리 출력 후보, Mink 관절 목표를 받는 전신 C++ `rt/lowcmd` 실험 경로가 함께 보존돼 있다. 기본 실행기는 시뮬레이션이며 물리 출력은 별도 설정과 검사로 제어한다. 현재 하체 정책의 실제 G1 시험은 보류 상태다. 시험 결과와 남은 문제는 [CHAT_HANDOFF](docs/CHAT_HANDOFF.md)의 최신 항목을 참고한다.
 
 ## 현재 시스템
 

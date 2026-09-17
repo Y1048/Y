@@ -58,7 +58,7 @@ class OmniVelocityConfig:
     lateral_max_m_s: float = 0.8
     yaw_gain: float = 1.0
     yaw_deadzone_deg_s: float = 3.0
-    yaw_max_rad_s: float = 0.8
+    yaw_max_rad_s: float = 1.6
     yaw_output_deadzone_rad_s: float = 0.08
     yaw_filter_alpha: float = 0.25
     maximum_sample_gap_s: float = 0.25

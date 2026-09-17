@@ -73,6 +73,15 @@ class OmniVelocityGatewayTests(unittest.TestCase):
         _, _, wz = mapper.update(0.0, 0.0, 110.2, 0.2)
         self.assertEqual(wz, 0.0)
 
+    def test_default_yaw_output_is_bounded_at_1_6_rad_s(self):
+        mapper = OmniVelocityMapper(OmniVelocityConfig(
+            calibration_s=0.1, yaw_deadzone_deg_s=0.0,
+            yaw_output_deadzone_rad_s=0.0, yaw_filter_alpha=1.0))
+        mapper.update(0.0, 0.0, 0.0, 0.0)
+        mapper.update(0.0, 0.0, 0.0, 0.1)
+        _, _, wz = mapper.update(0.0, 0.0, 90.0, 0.2)
+        self.assertEqual(wz, 1.6)
+
     def test_packet_parse_and_command_schema(self):
         self.assertEqual(parse_omni_message('{"armYaw":112,"movementXY":[-0.2,0.4]}'), (-0.2, 0.4, 112.0))
         packet = json.loads(encode_command("s", 1, 2.0, (0.1, 0.2, 0.3), "a" * 32))

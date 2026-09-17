@@ -615,7 +615,7 @@ def _state_packet(
     }
 
 
-def _send_state(sock, packet, host, port) -> None:
+def _send_state(sock, packet, host, port) -> bytes:
     # 미측정 진단값만 별도 플래그로 표현한다. 제어값의 비유한 수치는 거부한다.
     packet = dict(packet)
     right = dict(packet["right_arm"])
@@ -626,7 +626,9 @@ def _send_state(sock, packet, host, port) -> None:
         if unknown:
             right["min_wrist_limit_margin_deg"] = 0.0
     packet["right_arm"] = right
-    sock.sendto(json.dumps(packet, separators=(",", ":"), allow_nan=False).encode("utf-8"), (host, port))
+    raw = json.dumps(packet, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    sock.sendto(raw, (host, port))
+    return raw
 
 
 def _write_status(payload: dict) -> None:

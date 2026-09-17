@@ -15,9 +15,11 @@ set "CHECK_ONLY=0"
 set "DISPLAY_MODE=simulation"
 set "EXTERNAL_FEEDBACK=0"
 set "CAMERA_REQUESTED=0"
+set "RECORD_RIGHT_ARM_CSV=0"
 for %%A in (%*) do (
     if /I "%%~A"=="--external-feedback" set "EXTERNAL_FEEDBACK=1"
     if /I "%%~A"=="--camera" set "CAMERA_REQUESTED=1"
+    if /I "%%~A"=="--record-right-arm-csv" set "RECORD_RIGHT_ARM_CSV=1"
 )
 if /I "%~1"=="--hardware-display" set "DISPLAY_MODE=hardware"
 if /I "%~2"=="--hardware-display" set "DISPLAY_MODE=hardware"
@@ -55,8 +57,14 @@ set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
 set "GATE7_FEEDBACK_PORT=5012"
 set "LOCAL_ENGINE_312=0"
 set "INITIAL_SEED_ARGS="
+set "RIGHT_ARM_CSV_ARGS="
 if defined G1_MINK_INITIAL_SEED set "INITIAL_SEED_ARGS=--seed-from-environment"
 if defined G1_MINK_INITIAL_SESSION set "INITIAL_SEED_ARGS=--seed-from-environment"
+if "%RECORD_RIGHT_ARM_CSV%"=="1" (
+    if not exist "%PROJECT_ROOT%logs\test_results\mink_right_arm_csv" mkdir "%PROJECT_ROOT%logs\test_results\mink_right_arm_csv"
+    for /f %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss_fff"') do set "RIGHT_ARM_CSV_PATH=%PROJECT_ROOT%logs\test_results\mink_right_arm_csv\mink_right_arm_%%T.csv"
+)
+if defined RIGHT_ARM_CSV_PATH set RIGHT_ARM_CSV_ARGS=--right-arm-csv "%RIGHT_ARM_CSV_PATH%"
 rem Local shared-loop baseline uses the engine validated by distance regression.
 if /I "%DISPLAY_MODE%"=="simulation" if /I "%IK_MODE%"=="virtual-center" set "LOCAL_ENGINE_312=1"
 if /I "%~1"=="--mujoco311" set "LOCAL_ENGINE_312=0"
@@ -239,7 +247,7 @@ if "%UDP_RUNNING%"=="0" (
     echo [START] Mink/DAQP G1 right-arm controller: %IK_MODE%
     if /I "%IK_MODE%"=="virtual-center" (
         echo [PROFILE] Collision: %COLLISION_PROFILE%
-        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE% --ik-solver %IK_SOLVER% %INITIAL_SEED_ARGS%
+        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE% --ik-solver %IK_SOLVER% %INITIAL_SEED_ARGS% %RIGHT_ARM_CSV_ARGS%
     ) else (
         echo [PROFILE] Collision: %COLLISION_PROFILE%
         start "G1 Vanilla Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE%

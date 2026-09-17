@@ -42,6 +42,7 @@ def main():
     parser.add_argument("--initial-lowstate-seed", type=Path)
     parser.add_argument("--initial-lowstate-session")
     parser.add_argument("--initial-state-check-only", type=Path)
+    parser.add_argument("--right-arm-csv", type=Path)
     args = parser.parse_args()
     if args.seed_from_environment:
         if args.initial_lowstate_seed or args.initial_lowstate_session:
@@ -69,6 +70,8 @@ def main():
                      "--initial-lowstate-session", args.initial_lowstate_session]
     if args.initial_state_check_only:
         sys.argv += ["--initial-state-check-only", str(args.initial_state_check_only)]
+    if args.right_arm_csv:
+        sys.argv += ["--right-arm-csv", str(args.right_arm_csv)]
     controller.main()
     return 0
 

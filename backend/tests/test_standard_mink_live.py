@@ -103,6 +103,39 @@ def test_live_parser_preserves_default_and_selects_vanilla(monkeypatch):
     assert args.collision_profile == "hardware-guarded"
 
 
+def test_embedded_csv_preserves_exact_transmitted_json(tmp_path):
+    import csv
+    import io
+    import json
+    import run_mink_g1_right_arm_virtual_center_live as live
+    packet = {
+        "timestamp": 123.5,
+        "sequence": 9,
+        "session_id": "session",
+        "input_command_mode": "tracked",
+        "input_packet_age_s": 0.01,
+        "all_joint_q_rad": [0.0] * 22 + [float(i) / 10 for i in range(7)],
+        "right_arm": {
+            "joints": [float(i) / 10 for i in range(7)],
+            "active": True,
+            "command_state": "tracking",
+            "position_error": 0.02,
+            "minimum_clearance_m": 0.03,
+            "collision_limited": False,
+            "trajectory_status": "tracking",
+        },
+    }
+    raw = json.dumps(packet, separators=(",", ":")).encode()
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(live.RIGHT_ARM_CSV_HEADER)
+    live._write_right_arm_csv_row(writer, raw, 456.75)
+    output.seek(0)
+    rows = list(csv.reader(output))
+    assert rows[1][-1] == raw.decode()
+    assert rows[1][12:19] == [str(float(i) / 10) for i in range(7)]
+
+
 @pytest.mark.parametrize("arguments, expected", [
     ([], "vanilla"),
     (["--hierarchical"], "hierarchical"),

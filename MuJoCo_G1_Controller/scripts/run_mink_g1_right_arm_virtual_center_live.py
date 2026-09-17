@@ -17,6 +17,7 @@ Unity에 돌려주는 외부 계약은 계속 right_wrist_yaw_link 기준이다.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import socket
@@ -147,7 +148,46 @@ def parse_args() -> argparse.Namespace:
                         help="Same current IK, named speed/acceleration preset; simulation arm cycle only")
     parser.add_argument("--live-cycle-candidate", action="store_true",
                         help="Explicit hardware cycle candidate; requires matching new receiver and relay")
+    parser.add_argument(
+        "--right-arm-csv",
+        type=Path,
+        help="Record the exact pre-relay UDP 5008 JSON and parsed q22..28 without binding the port",
+    )
     return parser.parse_args()
+
+
+RIGHT_ARM_CSV_HEADER = [
+    "send_monotonic_s", "source_timestamp_unix_s", "sequence",
+    "session_id", "active", "command_state", "input_command_mode",
+    "input_packet_age_s", "position_error_m", "minimum_clearance_m",
+    "collision_limited", "trajectory_status",
+    *[f"q{22 + index}_{name}_rad" for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS)],
+    "raw_json_text",
+]
+
+
+def _write_right_arm_csv_row(writer, raw: bytes, send_monotonic_s: float) -> None:
+    packet = json.loads(raw.decode("utf-8"))
+    right = packet["right_arm"]
+    q = right["joints"]
+    if len(q) != 7 or q != packet["all_joint_q_rad"][22:29]:
+        raise ValueError("right-arm packet mismatch")
+    writer.writerow([
+        f"{send_monotonic_s:.9f}",
+        f"{float(packet['timestamp']):.9f}",
+        packet["sequence"],
+        packet.get("session_id") or "",
+        int(right["active"]),
+        right["command_state"],
+        packet.get("input_command_mode") or "",
+        "" if packet.get("input_packet_age_s") is None else packet["input_packet_age_s"],
+        "" if right.get("position_error") is None else right["position_error"],
+        "" if right.get("minimum_clearance_m") is None else right["minimum_clearance_m"],
+        int(bool(right.get("collision_limited", False))),
+        right.get("trajectory_status") or "",
+        *q,
+        raw.decode("utf-8"),
+    ])
 
 
 def main() -> None:
@@ -367,6 +407,15 @@ def main() -> None:
     udp = base._open_udp_socket()
     state_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     dry_run_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    right_arm_csv_stream = None
+    right_arm_csv_writer = None
+    if args.right_arm_csv is not None:
+        args.right_arm_csv.parent.mkdir(parents=True, exist_ok=True)
+        right_arm_csv_stream = args.right_arm_csv.open("x", newline="", encoding="utf-8")
+        right_arm_csv_writer = csv.writer(right_arm_csv_stream)
+        right_arm_csv_writer.writerow(RIGHT_ARM_CSV_HEADER)
+        right_arm_csv_stream.flush()
+        print(f"[IK CSV] exact pre-relay packets: {args.right_arm_csv}", flush=True)
     gate7_feedback_sock = None
     if not args.disable_gate7_simulation_feedback:
         gate7_feedback_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -853,12 +902,17 @@ def main() -> None:
                     if live_bridge:
                         live_bridge.send(packet, command_stream)
                     if not cycle_enabled:
-                        _send_state(
+                        raw_dry_run = _send_state(
                             dry_run_sock,
                             packet,
                             base.SAFETY_DRY_RUN_HOST,
                             base.SAFETY_DRY_RUN_PORT,
                         )
+                        if right_arm_csv_writer is not None:
+                            _write_right_arm_csv_row(
+                                right_arm_csv_writer, raw_dry_run, time.monotonic()
+                            )
+                            right_arm_csv_stream.flush()
                     next_state = now + base.DT
 
                 cycle_ms = (time.perf_counter() - cycle_start) * 1000.0
@@ -1078,6 +1132,8 @@ def main() -> None:
         udp.close()
         state_sock.close()
         dry_run_sock.close()
+        if right_arm_csv_stream is not None:
+            right_arm_csv_stream.close()
         if gate7_feedback_sock is not None:
             gate7_feedback_sock.close()
 

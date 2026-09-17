@@ -45,6 +45,19 @@ def test_seed_environment_forwarding_without_shell_interpolation(monkeypatch):
     assert observed[observed.index("--initial-state-check-only")+1]=="report.json"
 
 
+def test_right_arm_csv_forwarding(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    observed = []
+    output = tmp_path / "right arm.csv"
+    monkeypatch.setattr(entry, "LoadEngine", lambda: SimpleNamespace(__version__="3.12.0", __file__="test"))
+    monkeypatch.setitem(sys.modules, "run_mink_g1_right_arm_prototype", SimpleNamespace(_state_packet=lambda: {}))
+    monkeypatch.setitem(sys.modules, "run_mink_g1_right_arm_virtual_center_live",
+                        SimpleNamespace(main=lambda: observed.extend(sys.argv)))
+    monkeypatch.setattr(sys, "argv", ["entry", "--right-arm-csv", str(output)])
+    assert entry.main() == 0
+    assert observed[observed.index("--right-arm-csv") + 1] == str(output)
+
+
 def test_partial_seed_environment_rejected_before_engine(monkeypatch):
     monkeypatch.setenv("G1_MINK_INITIAL_SEED", "seed.json")
     monkeypatch.delenv("G1_MINK_INITIAL_SESSION", raising=False)

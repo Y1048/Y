@@ -571,3 +571,10 @@ gain change occurred. Termination ownership and a physical caller remain blocked
 - Replaced that cost penalty with a checked shoulder-yaw tracking envelope of +/-65 deg from the captured engage posture. It is expressed as acceleration-aware QP velocity bounds, so no posture penalty is applied inside the envelope; return behavior remains unchanged.
 - The same 1,238-target offline replay held shoulder yaw at 65.0 deg, preserved the configured velocity limits, and reduced replay position-error p95 from 0.1795 m with the cost-8 experiment to 0.1571 m. Replay timing differs from Unity and is simulation evidence only.
 - Verification: 45 tests and 18 subtests passed across upstream tracking, standard live Mink, virtual-center trajectory, simulation handoff boundary, and runtime refactor compatibility. No G1 output was used.
+
+### 2026-09-17 follow-up simulation result and second correction
+
+- The next simulation CSV `mink_v5_right_arm_20260917_153207_224.csv` confirmed the 65 deg envelope exactly: shoulder yaw stayed in 0..65 deg, with no tracking stop and only two acceleration-limited braking samples. Compared with the preceding cost-8 run, shoulder pitch/roll p95 speeds increased from 4.8/13.5 to 11.8/19.0 deg/s; the perceived whole-arm slowdown was not present, although shoulder yaw was intentionally constrained.
+- The pose was still visually excessive because the solver repeatedly reached the 65 deg envelope and shoulder roll reached -62.7 deg. Recorded-target replay favored a 45 deg shoulder-yaw envelope: position-error p95 was 15.67 cm at 45 deg versus 16.12 cm at 65 deg.
+- The QP approach-rate braking allowance was also changed from a 4x to the standard 2x acceleration-distance factor, without changing the configured 60 deg/s2 acceleration or 90/180 deg/s velocity caps. On the same replay, position-error p95 improved to 14.17 cm and most shoulder/wrist p95 speeds rose by roughly 15-30%.
+- Verification after both changes: 45 tests and 18 subtests passed. Evidence remains simulation/replay only; no G1 output was used.

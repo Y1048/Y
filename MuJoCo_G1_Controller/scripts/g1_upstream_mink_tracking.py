@@ -50,7 +50,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         # into an extreme pose while satisfying wrist position or rotation.
         # This local envelope is referenced to the captured engage posture and
         # enforced as a velocity bound, so it does not slow motion inside it.
-        self.priority_shoulder_yaw_envelope_rad = np.deg2rad(65.)
+        self.priority_shoulder_yaw_envelope_rad = np.deg2rad(45.)
         self.elbow_task = mink.FrameTask('right_elbow_link', 'body',
             position_cost=[0., 0., 8.], orientation_cost=0., gain=.6*self.dt_s)
         self.torso_geom_ids = tuple(
@@ -234,7 +234,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             jacobian = p.wrist_task.compute_jacobian(p.configuration)[:, p.right_dofs]
             correction = np.linalg.lstsq(jacobian, -error, rcond=1e-4)[0]
             rate = min(1., float(np.min(np.sqrt(np.asarray(self.acceleration_limits) /
-                (4. * np.maximum(np.abs(correction), 1e-6))))))
+                (2. * np.maximum(np.abs(correction), 1e-6))))))
             p.wrist_task.gain = min(original_gain, dt * rate)
             # Preserve the task/posture equilibrium when slowing the approach.
             p.posture_task.gain = original_posture_gain * p.wrist_task.gain / original_gain

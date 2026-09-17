@@ -564,3 +564,10 @@ gain change occurred. Termination ownership and a physical caller remain blocked
 - Position priority now retains 10% of the normal orientation cost and temporarily raises only the right shoulder-yaw posture cost to 8.0, referenced to the captured engage posture. Normal orientation and posture costs are restored when priority ends, on pinch return, and on reset.
 - Offline replay of the 1,238 active targets from that CSV reduced maximum shoulder yaw from the recorded 150 deg to 79.98 deg. This replay does not reproduce Unity timing exactly and is simulation evidence only.
 - Verification: `backend/tests/test_upstream_mink_tracking.py` and `backend/tests/test_standard_mink_live.py` passed (35 tests, 2 subtests). No G1 SDK/DDS, publisher, SSH, or physical output was used.
+
+### Follow-up: remove the perceived slowdown
+
+- The temporary shoulder-yaw posture cost of 8.0 reduced not only winding but also requested shoulder-yaw velocity (recorded-target replay: about 79.5 deg/s at cost 2 versus 65.9 deg/s at cost 8). The user's slower-motion observation was therefore plausible even though the configured 90/180 deg/s caps had not changed.
+- Replaced that cost penalty with a checked shoulder-yaw tracking envelope of +/-65 deg from the captured engage posture. It is expressed as acceleration-aware QP velocity bounds, so no posture penalty is applied inside the envelope; return behavior remains unchanged.
+- The same 1,238-target offline replay held shoulder yaw at 65.0 deg, preserved the configured velocity limits, and reduced replay position-error p95 from 0.1795 m with the cost-8 experiment to 0.1571 m. Replay timing differs from Unity and is simulation evidence only.
+- Verification: 45 tests and 18 subtests passed across upstream tracking, standard live Mink, virtual-center trajectory, simulation handoff boundary, and runtime refactor compatibility. No G1 output was used.

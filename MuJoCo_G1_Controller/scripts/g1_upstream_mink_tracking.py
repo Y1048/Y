@@ -46,15 +46,11 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.position_priority_active = False
         self._priority_dwell = 0.
         self._orientation_cost = np.asarray(self.planner.wrist_task.orientation_cost).copy()
-        self._posture_cost = np.asarray(self.planner.posture_task.cost).copy()
-        self._priority_posture_cost = self._posture_cost.copy()
-        # With orientation cost heavily reduced, the redundant 7-DOF solution can
-        # satisfy wrist position by winding shoulder yaw to its joint limit.
-        # Bias that one proximal axis toward the captured engage posture while
-        # leaving the other axes available for position recovery.
-        shoulder_yaw_dof = self.planner.right_dofs[2]
-        self._priority_posture_cost[shoulder_yaw_dof] = max(
-            self._priority_posture_cost[shoulder_yaw_dof], 8.0)
+        # Tracking must not use the redundant arm chain to wind shoulder yaw
+        # into an extreme pose while satisfying wrist position or rotation.
+        # This local envelope is referenced to the captured engage posture and
+        # enforced as a velocity bound, so it does not slow motion inside it.
+        self.priority_shoulder_yaw_envelope_rad = np.deg2rad(65.)
         self.elbow_task = mink.FrameTask('right_elbow_link', 'body',
             position_cost=[0., 0., 8.], orientation_cost=0., gain=.6*self.dt_s)
         self.torso_geom_ids = tuple(
@@ -121,7 +117,6 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.orientation_priority_scale = 1.
         self._priority_dwell = 0.
         self.planner.wrist_task.set_orientation_cost(self._orientation_cost)
-        self.planner.posture_task.set_cost(self._posture_cost)
 
     def _update_orientation_priority(self, current_q, goal, clearance):
         # Keep the original SE3 target. Only its orientation penalty changes;
@@ -165,9 +160,6 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.orientation_priority_scale += float(np.clip(
             target-self.orientation_priority_scale, -self.dt_s, self.dt_s))
         p.wrist_task.set_orientation_cost(self._orientation_cost*self.orientation_priority_scale)
-        p.posture_task.set_cost(
-            self._priority_posture_cost if self.position_priority_active
-            else self._posture_cost)
 
     def _collision_constraint(self, limit):
         p = self.planner
@@ -297,6 +289,19 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             return .8 * (np.sqrt((a*dt)**2+2*a*np.maximum(0., distance))-a*dt)
         matrices.append(np.vstack((np.eye(7), -np.eye(7))))
         bounds.append(np.hstack((stopping_speed(upper-q), stopping_speed(q-lower))))
+        if p.posture_reference is not None:
+            yaw_reference = float(p.posture_reference[p.qpos_ids[2]])
+            yaw_lower = max(lower[2], yaw_reference-self.priority_shoulder_yaw_envelope_rad)
+            yaw_upper = min(upper[2], yaw_reference+self.priority_shoulder_yaw_envelope_rad)
+            yaw_row = np.zeros(7)
+            yaw_row[2] = 1.
+            yaw_stopping_speed = lambda distance: .8 * (
+                np.sqrt((a[2]*dt)**2+2*a[2]*max(0., distance))-a[2]*dt)
+            matrices.append(np.vstack((yaw_row, -yaw_row)))
+            bounds.append(np.array((
+                yaw_stopping_speed(yaw_upper-q[2]),
+                yaw_stopping_speed(q[2]-yaw_lower),
+            )))
         hessian = problem.P[np.ix_(ids, ids)] * dt**2
         linear = problem.q[ids] * dt
         scale = max(float(np.max(np.abs(hessian))), 1e-12)

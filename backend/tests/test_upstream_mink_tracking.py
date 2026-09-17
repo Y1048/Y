@@ -111,13 +111,29 @@ class UpstreamTrackingTests(unittest.TestCase):
         self.assertTrue(trajectory.position_priority_active)
         for _ in range(10):trajectory._update_orientation_priority(q, outside, .006)
         self.assertAlmostEqual(trajectory.orientation_priority_scale, .1)
-        shoulder_yaw_dof = planner.right_dofs[2]
-        self.assertAlmostEqual(planner.posture_task.cost[shoulder_yaw_dof], 8.0)
         trajectory.BeginReturn(q)
         self.assertFalse(trajectory.position_priority_active)
         self.assertEqual(trajectory.orientation_priority_scale, 1.)
         np.testing.assert_allclose(planner.wrist_task.orientation_cost, 2.)
-        np.testing.assert_allclose(planner.posture_task.cost, trajectory._posture_cost)
+
+    def test_position_priority_bounds_shoulder_yaw_without_changing_speed_limits(self):
+        row = json.loads((Path(__file__).parent / 'fixtures/mink_wrist_priority_20260909.json').read_text())[0]
+        model, planner, trajectory = build()
+        q = np.asarray(row['current_q']); planner.configuration.update(q); trajectory.Reset(q)
+        goal = base._matrix_to_se3(np.asarray(row['goal_rotation']), np.asarray(row['goal_position']))
+        yaw_reference = float(q[planner.qpos_ids[2]])
+        max_offset = 0.
+        peak_speed = 0.
+        for _ in range(900):
+            step = trajectory.Track(q, goal)
+            self.assertTrue(step.applied, step.status)
+            q = step.q
+            max_offset = max(max_offset, abs(q[planner.qpos_ids[2]]-yaw_reference))
+            peak_speed = max(peak_speed, abs(step.velocity_rad_s[2]))
+        self.assertLessEqual(
+            max_offset, trajectory.priority_shoulder_yaw_envelope_rad+1e-5)
+        self.assertEqual(trajectory.velocity_limits[2], np.deg2rad(90.))
+        self.assertGreater(peak_speed, np.deg2rad(10.))
 
     def test_recorded_inside_body_goal_slides_without_elbow_lift(self):
         fixture = json.loads((Path(__file__).parent / 'fixtures/mink_elbow_boundary_20260909.json').read_text())

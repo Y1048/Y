@@ -94,7 +94,12 @@ def run(samples, tracker_class):
                         tracker.target_projected,
                         planner.configuration.get_transform_frame_to_world(
                             'right_elbow_link', 'body').translation()[2],
-                        tracker.elbow_assist_active, q[planner.qpos_ids[3]]))
+                        tracker.elbow_assist_active, q[planner.qpos_ids[3]],
+                        q[planner.qpos_ids[1]]-initial[planner.qpos_ids[1]],
+                        planner.configuration.get_transform_frame_to_world(
+                            'right_elbow_link', 'body').translation()[1] -
+                        planner.configuration.get_transform_frame_to_world(
+                            'right_shoulder_pitch_link', 'body').translation()[1]))
     m = np.asarray(metrics)
     return {
         'ticks': len(m), 'statuses': dict(statuses),
@@ -110,6 +115,9 @@ def run(samples, tracker_class):
         'elbow_lift_max_cm': float((max(m[:, 6])-initial_elbow_z)*100),
         'elbow_final_deg': float(np.degrees(m[-1, 8])),
         'elbow_assist_ticks': int(sum(m[:, 7])),
+        'shoulder_roll_excursion_max_deg': float(np.degrees(np.max(np.abs(m[:, 9])))),
+        'elbow_lateral_distance_max_cm': float(np.max(np.abs(m[:, 10]))*100),
+        'elbow_lateral_distance_final_cm': float(abs(m[-1, 10])*100),
         'acceleration_violations_including_hard_stops': acceleration_violations,
     }
 

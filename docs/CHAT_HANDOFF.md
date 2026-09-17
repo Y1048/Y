@@ -4,6 +4,46 @@
 
 Last updated: 2026-09-17
 
+## Current excessive elbow spread correction (after the 16:30 simulation)
+
+- User clarified the problem is excessive sideways/upward elbow spread, not
+  failure to lift. The newest closed CSV is
+  `mink_v5_right_arm_20260917_163007_600.csv` (601 active samples). Recorded
+  shoulder yaw reaches 90 degrees, shoulder roll reaches -58.2 degrees, and
+  final wrist position error is 15.9 cm. These are simulated model values,
+  not actual G1 measurements or evidence of the human elbow position.
+- Tested removing/weakening the fixed elbow Y/Z preference. Alone this did
+  not eliminate the 90-degree yaw excursion. A global posture penalty reduced
+  excursion but could suppress the useful front lift. Those sweep candidates
+  were not copied to the runtime; local reports remain under `logs/test_results`.
+- Added `ShoulderComfortTask`: a soft squared excess-angle objective, with
+  zero error/Jacobian within engage-relative roll +/-20 and yaw +/-45 degrees.
+  Cost is 0.6 and gain follows the scheduled wrist task gain. Beyond those
+  bands the solver prefers less shoulder roll/yaw but can still cross them
+  to reach the target. This is not a new hard joint limit or a motor PD gain.
+  Existing +/-90 yaw envelope, collision constraints, wrist priority, velocity,
+  acceleration, elbow reference, return logic and model limits are unchanged.
+- Same-input A/B replay versus `8921f42`, newest CSV, 1,158 ticks:
+  shoulder yaw max 90.0 -> 77.98 degrees; roll excursion max 37.98 -> 34.95
+  degrees; final elbow lift 6.81 -> 5.15 cm. Peak elbow lateral distance from
+  shoulder decreases only 19.86 -> 19.39 cm; final lateral distance increases
+  10.70 -> 10.94 cm. Do not claim every pose is less spread. Wrist position
+  p95 remains 13.87 cm and final two-second rotation error 14.76 -> 14.72
+  degrees. Two checked braking steps, no hard holds or acceleration violations.
+- Earlier front-target CSV (15:58), 1,529 ticks: shoulder yaw max 90 -> 80.28
+  degrees, roll excursion 53.65 -> 40.79 degrees, maximum elbow lift
+  11.72 -> 7.96 cm. Position p95 20.38 -> 19.39 cm; final rotation error
+  2.98 -> 2.93 degrees. All steps accepted, no acceleration violations.
+  Reports: `logs/test_results/elbow_comfort_latest_20260917.json` and
+  `logs/test_results/elbow_comfort_front_20260917.json`.
+- Added a finite-difference Jacobian and neutral-band regression. Existing
+  tests preserve the front-lift, non-ratcheting, return and stationary wrist
+  behavior. Executed five regression suites: **51 tests +21 subtests passed**.
+  This is a preference candidate, not an optimal/naturalness proof:
+  the input has wrist pose but no measured human elbow/swivel target. User
+  visual acceptance after restarting Input remains necessary. No G1 execution,
+  SDK/DDS, motor output, or gain changes were performed.
+
 ## Current stationary wrist rotation correction
 
 - User confirmed the front-elbow change improved motion, but observed arm

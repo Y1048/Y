@@ -52,6 +52,26 @@ class ElbowClearanceTask(mink.Task):
         return jacobian[1:3]
 
 
+class ShoulderComfortTask(mink.Task):
+    """Soft roll/yaw excursion bands; does not create new joint limits."""
+    def __init__(self, model, qpos_ids, dofs):
+        super().__init__(cost=np.full(2, .6), gain=1., lm_damping=0.)
+        self.qpos_ids = np.asarray(qpos_ids)[1:3]
+        self.dofs = np.asarray(dofs)[1:3]
+        self.reference = np.zeros(2)
+        self.band = np.deg2rad([20., 45.])
+
+    def compute_error(self, configuration):
+        delta = configuration.q[self.qpos_ids]-self.reference
+        return delta-np.clip(delta, -self.band, self.band)
+
+    def compute_jacobian(self, configuration):
+        delta = configuration.q[self.qpos_ids]-self.reference
+        jacobian = np.zeros((2, configuration.model.nv))
+        jacobian[np.arange(2), self.dofs] = np.abs(delta) > self.band
+        return jacobian
+
+
 class UpstreamMinkTracking(StatefulMinkTrajectory):
     def __init__(self, *args):
         super().__init__(*args)
@@ -74,6 +94,8 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         # enforced as a velocity bound, so it does not slow motion inside it.
         self.priority_shoulder_yaw_envelope_rad = np.deg2rad(90.)
         self.elbow_task = ElbowClearanceTask(self.planner.model, gain=.6*self.dt_s)
+        self.shoulder_comfort_task = ShoulderComfortTask(
+            self.planner.model, self.planner.qpos_ids, self.planner.right_dofs)
         # Additional finite velocity penalty: use the wrist when position is
         # already reached, but release the arm for translation or wrist limits.
         self.wrist_priority_task = mink.DampingTask(self.planner.model, cost=np.zeros(self.planner.model.nv))
@@ -267,7 +289,9 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             # Preserve the task/posture equilibrium when slowing the approach.
             p.posture_task.gain = original_posture_gain * p.wrist_task.gain / original_gain
         try:
-            tasks = p.standard_tasks + [self.wrist_priority_task] + ([self.elbow_task] if self.elbow_assist_active else [])
+            self.shoulder_comfort_task.reference = p.posture_reference[p.qpos_ids[1:3]].copy()
+            self.shoulder_comfort_task.gain = p.wrist_task.gain
+            tasks = p.standard_tasks + [self.wrist_priority_task, self.shoulder_comfort_task] + ([self.elbow_task] if self.elbow_assist_active else [])
             problem = mink.build_ik(p.configuration, tasks, dt,
                 damping=1e-6, limits=[], constraints=p.constraints)
         finally:

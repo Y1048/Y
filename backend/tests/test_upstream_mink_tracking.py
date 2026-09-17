@@ -10,6 +10,28 @@ from replay_upstream_mink import build, base
 
 
 class UpstreamTrackingTests(unittest.TestCase):
+    def test_shoulder_comfort_band_is_soft_and_uses_matching_jacobian(self):
+        model, planner, trajectory = build()
+        q = base._initial_configuration(model)
+        task = trajectory.shoulder_comfort_task
+        task.reference = q[planner.qpos_ids[1:3]].copy()
+        planner.configuration.update(q)
+        np.testing.assert_allclose(task.compute_error(planner.configuration), 0.)
+        np.testing.assert_allclose(task.compute_jacobian(planner.configuration), 0.)
+        q[planner.qpos_ids[1:3]] += np.deg2rad([-35., 70.])
+        planner.configuration.update(q)
+        np.testing.assert_allclose(task.compute_error(planner.configuration), np.deg2rad([-15., 25.]))
+        jacobian = task.compute_jacobian(planner.configuration)
+        for dof, address in zip(planner.right_dofs, planner.qpos_ids):
+            plus, minus = q.copy(), q.copy()
+            plus[address] += 1e-6
+            minus[address] -= 1e-6
+            planner.configuration.update(plus)
+            error_plus = task.compute_error(planner.configuration).copy()
+            planner.configuration.update(minus)
+            error_minus = task.compute_error(planner.configuration).copy()
+            np.testing.assert_allclose((error_plus-error_minus)/2e-6, jacobian[:, dof], atol=1e-7)
+
     def test_fixed_position_rotations_prefer_wrist_but_allow_pivot_compensation(self):
         from compare_mink_stationary_rotation import run
         from g1_upstream_mink_tracking import UpstreamMinkTracking

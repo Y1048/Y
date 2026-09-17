@@ -10,6 +10,20 @@ from replay_upstream_mink import build, base
 
 
 class UpstreamTrackingTests(unittest.TestCase):
+    def test_fixed_position_rotations_prefer_wrist_but_allow_pivot_compensation(self):
+        from compare_mink_stationary_rotation import run
+        from g1_upstream_mink_tracking import UpstreamMinkTracking
+        for axis in range(3):
+            with self.subTest(axis=axis):
+                report = run(UpstreamMinkTracking, axis)
+                # Pitch needs proximal compensation for the offset wrist axes;
+                # roll/yaw must not recruit the redundant arm unnecessarily.
+                limit = 4. if axis == 1 else .5
+                self.assertLess(report['proximal_excursion_max_deg'], limit)
+                self.assertLess(report['position_error_max_mm'], 6.)
+                self.assertLess(report['position_error_final_mm'], 2.)
+                self.assertLess(report['rotation_error_final_deg'], .5)
+
     def test_elbow_reference_initializes_without_explicit_reset(self):
         model, planner, trajectory = build()
         q = base._initial_configuration(model)

@@ -4,6 +4,47 @@
 
 Last updated: 2026-09-17
 
+## Current stationary wrist rotation correction
+
+- User confirmed the front-elbow change improved motion, but observed arm
+  recruitment during stationary wrist rotation. The newest 16:19 CSV was still
+  zero bytes when inspected; do not describe this as an analysis of that run.
+- The active upstream tracking QP used the standard proximal/wrist damping
+  costs 0.25/0.015. The legacy banner's proximal cost 100 refers to the other
+  task path and does not describe this QP. A reachable fixed-position synthetic
+  30-degree local roll rotation recruited up to 6.12 degrees of proximal motion.
+- Added a finite proximal velocity penalty in `UpstreamMinkTracking`. It is an
+  IK objective, not motor Kd or a hard joint lock. Maximum extra cost is 5.
+  Its weight fades with position error (full <=2 mm, zero >=8 mm), rotation
+  error (full >=3 degrees, zero at zero error), wrist joint margin (full >=28
+  degrees, zero <=5 degrees), and clearance (full >=25 mm, zero <=5 mm).
+  Reset and BeginReturn clear it. Elbow assistance, yaw envelope, original
+  rotation target, speed/acceleration, exact geometry, and hardware files stay
+  unchanged. Finite cost allows proximal compensation for offset wrist axes.
+- Reproducible synthetic experiment:
+  `python experiments/twist2_right_arm_manual/compare_mink_stationary_rotation.py --baseline-ref a709874 --output logs/test_results/wrist_stationary_priority_20260917.json`.
+  Initial-pose wrist position stays fixed; rotate 30 degrees over 2 seconds,
+  hold 4 seconds, separately around each local axis. Baseline -> candidate
+  maximum proximal joint excursion: roll 6.12 -> 0.33 degrees, pitch 3.73 ->
+  3.44 degrees, yaw 1.83 -> 0.10 degrees. Final orientation errors <=0.29 degrees.
+  Pitch compensation is necessary for this model's offset wrist pivot; do not
+  promise absolutely fixed shoulders for every wrist rotation. Maximum pitch
+  position error increased from 0.70 to 5.60 mm; regression requires final
+  position error below 2 mm. Other two axes stay below 0.1 mm throughout.
+- Replayed the 15:58 recorded simulation targets (789 samples, 1,529 ticks)
+  against a709874. Final elbow lift remains +4.18 cm, final rotation error
+  remains 2.98 degrees, position p95 remains 20.38 cm. Rotation p95 changed
+  75.06 -> 76.01 degrees; this is not a global tracking improvement. All replay
+  steps accepted; no acceleration violations. Report:
+  `logs/test_results/wrist_priority_front_replay_20260917.json`.
+- Tests include generated three-axis stationary rotations with position,
+  orientation, proximal excursion, exact geometry, frozen joints, velocity,
+  and inter-step acceleration checks, plus existing straight reach, front
+  elbow, return and simulation boundary regressions. Executed five suites:
+  **50 tests and 21 subtests passed**. Reports identify the tested source hash;
+  only explanatory comments were added to tracking code afterward. No live G1 validation;
+  user must restart Input to assess appearance in VR. No robot execution.
+
 ## Current front-of-torso elbow correction (after the 15:58 simulation)
 
 - `mink_v5_right_arm_20260917_155826_842.csv` contains 789 active samples.

@@ -74,6 +74,10 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         # enforced as a velocity bound, so it does not slow motion inside it.
         self.priority_shoulder_yaw_envelope_rad = np.deg2rad(90.)
         self.elbow_task = ElbowClearanceTask(self.planner.model, gain=.6*self.dt_s)
+        # Additional finite velocity penalty: use the wrist when position is
+        # already reached, but release the arm for translation or wrist limits.
+        self.wrist_priority_task = mink.DampingTask(self.planner.model, cost=np.zeros(self.planner.model.nv))
+        self.wrist_priority_weight = 0.
         self.torso_geom_ids = tuple(
             geom_id for geom_id in range(self.planner.model.ngeom)
             if (mujoco.mj_id2name(
@@ -223,11 +227,15 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.elbow_assist_active = False
         self._elbow_reference_q = None
         self.target_projected = False
+        self.wrist_priority_weight = 0.
+        self.wrist_priority_task.cost[:] = 0.
         self.collision_orientation_relaxed = False
         self.target_projection_distance_m = 0.
 
     def BeginReturn(self, current_q):
         self._reset_orientation_priority()
+        self.wrist_priority_weight = 0.
+        self.wrist_priority_task.cost[:] = 0.
         self.elbow_assist_active = False
         self.target_projected = False
         self.collision_orientation_relaxed = False
@@ -259,7 +267,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             # Preserve the task/posture equilibrium when slowing the approach.
             p.posture_task.gain = original_posture_gain * p.wrist_task.gain / original_gain
         try:
-            tasks = p.standard_tasks + ([self.elbow_task] if self.elbow_assist_active else [])
+            tasks = p.standard_tasks + [self.wrist_priority_task] + ([self.elbow_task] if self.elbow_assist_active else [])
             problem = mink.build_ik(p.configuration, tasks, dt,
                 damping=1e-6, limits=[], constraints=p.constraints)
         finally:
@@ -334,6 +342,25 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         velocity[ids] = result.x
         return velocity
 
+    def _update_wrist_priority(self, current_q, current_pose, goal, clearance):
+        """Finite QP penalty, not motor damping or a proximal joint lock."""
+        p = self.planner
+        error = float(np.linalg.norm(current_pose.translation()-goal.translation()))
+        lower, upper = p.model.jnt_range[p.joint_ids[4:]].T
+        wrist = current_q[p.qpos_ids[4:]]
+        margin = float(np.min(np.minimum(wrist-lower, upper-wrist)))
+        # Full position weight inside 2 mm, none beyond 8 mm. Rotation demand
+        # gates the penalty so pure translation and final settling stay quick.
+        position_weight = float(np.clip((.008-error)/.006, 0., 1.))
+        rotation_error = base._rotation_error_radians(
+            current_pose.rotation().as_matrix(), goal.rotation().as_matrix())
+        rotation_weight = float(np.clip(rotation_error/np.deg2rad(3.), 0., 1.))
+        margin_weight = float(np.clip((margin-np.deg2rad(5.))/np.deg2rad(23.), 0., 1.))
+        clearance_weight = float(np.clip((clearance-.005)/.02, 0., 1.))
+        self.wrist_priority_weight = position_weight * rotation_weight * margin_weight * clearance_weight
+        self.wrist_priority_task.cost[:] = 0.
+        self.wrist_priority_task.cost[p.right_dofs[:4]] = 5. * self.wrist_priority_weight
+
     def _update_elbow_assist(self, current_q, current_pose, goal):
         p = self.planner
         target = np.asarray(goal.translation())
@@ -402,6 +429,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         clearance = p.GetClearance(current_q)
         self._update_orientation_priority(current_q, effective_goal, clearance)
         self._update_elbow_assist(current_q, current_pose, effective_goal)
+        self._update_wrist_priority(current_q, current_pose, effective_goal, clearance)
         self.rejected_sample = None
         previous = self.acceleration_bound.previous.copy()
         velocity = self._solve_velocity()

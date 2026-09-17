@@ -3,6 +3,7 @@
 import json
 import math
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -17,8 +18,9 @@ import verify_virtual_center_kinematics as probe
 class VirtualCenterKinematicsRegressionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        probe.base._prepare_mink_xml()
-        cls.model = mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = probe.base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            cls.model = mujoco.MjModel.from_xml_path(str(path))
         probe.base._apply_operational_joint_limits(cls.model)
         cls.initial_q = probe.base._initial_configuration(cls.model)
         cls.qpos = [int(cls.model.jnt_qposadr[probe.base._joint_id(cls.model, name)])
@@ -26,12 +28,14 @@ class VirtualCenterKinematicsRegressionTest(unittest.TestCase):
         cls.initial_q[cls.qpos] = np.deg2rad([10, -22, 0, 55, 0, 0, 0])
 
     def CheckLimits(self, result):
-        self.assertGreaterEqual(result["sampled_minimum_clearance_mm"], 19.5)
+        self.assertGreaterEqual(result["sampled_minimum_clearance_mm"], 19.5,
+                                result.get("minimum_clearance_sample"))
         self.assertLessEqual(result["maximum_joint_limit_violation_rad"], 1e-8)
         self.assertLessEqual(result["maximum_frozen_joint_drift_rad"], 1e-8)
         velocity = result["maximum_joint_velocity_deg_s"]
-        self.assertLessEqual(max(velocity[:4]), 40.0 + 1e-6)
-        self.assertLessEqual(max(velocity[4:]), 100.0 + 1e-6)
+        caps = probe.live.virtual_center_velocity_limits()
+        for name, speed in zip(probe.base.g1.RIGHT_ARM_JOINTS, velocity):
+            self.assertLessEqual(speed, math.degrees(caps[name]) + 1e-6)
 
     def test_orientation_jacobian_matches_finite_difference(self):
         result = probe.CheckJacobian(self.model, self.initial_q)
@@ -59,14 +63,17 @@ class VirtualCenterKinematicsRegressionTest(unittest.TestCase):
         for index in (4, 5, 6):
             with self.subTest(wrist_index=index):
                 target_configuration = mink.Configuration(self.model)
+                cap = probe.live.virtual_center_velocity_limits()[probe.base.g1.RIGHT_ARM_JOINTS[index]]
+                # A*sin(2*pi*t/T) has peak velocity 2*pi*A/T.
+                period = max(12.0, 2 * math.pi * math.radians(25) / (0.5 * cap))
 
                 def TargetAt(seconds):
                     q = self.initial_q.copy()
-                    q[self.qpos[index]] += math.radians(25) * math.sin(2 * math.pi * seconds / 12)
+                    q[self.qpos[index]] += math.radians(25) * math.sin(2 * math.pi * seconds / period)
                     target_configuration.update(q)
                     return target_configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
 
-                result = probe.RunCase(self.model, self.initial_q, TargetAt(0), "exact_posture", 12,
+                result = probe.RunCase(self.model, self.initial_q, TargetAt(0), "exact_posture", period,
                                        TargetAt, clearance_stride=1)
                 self.assertLess(result["maximum_proximal_excursion_deg"], 0.5)
                 self.assertLess(result["orientation_error_p95_deg"], 0.5)

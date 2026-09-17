@@ -168,7 +168,7 @@ def main():
     reference, _ = comparison.GetActiveSegments(packets)[args.segment - 1]
     rows = [json.loads(line) for line in args.trace.read_text(encoding="utf-8").splitlines()]
     row = rows[args.frame]
-    model = probe.mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    model, model_metadata = probe.base.LoadMinkModelWithMetadata()
     probe.base._apply_operational_joint_limits(model)
     q = probe.base._initial_configuration(model)
     addresses = [int(model.jnt_qposadr[probe.base._joint_id(model, name)]) for name in probe.base.g1.G1_29_JOINTS]
@@ -195,7 +195,7 @@ def main():
     report = {"robot_command": False, "mujoco_version": probe.mujoco.__version__,
               "capture_sha256": hashlib.sha256(args.capture.read_bytes()).hexdigest(),
               "trace_sha256": hashlib.sha256(args.trace.read_bytes()).hexdigest(),
-              "model_xml_sha256": hashlib.sha256(Path(probe.base.g1.DEMO_XML).read_bytes()).hexdigest(),
+              **model_metadata,
               "frame": args.frame, "time_s": row["time_s"],
               "geom_names": [probe.mujoco.mj_id2name(model, probe.mujoco.mjtObj.mjOBJ_GEOM, g) for g in pair],
               "maximum_frozen_q_difference": frozen_delta, "cases": cases,
@@ -207,7 +207,8 @@ def main():
     args.result_json.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     print(report["status"])
     print("Result saved to:", args.result_json.resolve())
+    return 4 if report["status"] == "BLOCK_DEPLOYMENT" else 3
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

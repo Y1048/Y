@@ -12,6 +12,7 @@ import json
 import math
 import socket
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -369,20 +370,20 @@ def SetInspectionSceneEnabled(model: mujoco.MjModel, enabled: bool) -> None:
         model.geom_conaffinity[geom_id] = 0
 
 
-def LoadModel(show_inspection_scene: bool = False):
+def LoadModel(show_inspection_scene: bool = False, *, include_metadata: bool = False):
     if str(SCRIPTS_DIR) not in sys.path:
         sys.path.insert(0, str(SCRIPTS_DIR))
     import run_mink_g1_right_arm_prototype as controller
 
-    controller._prepare_mink_xml(
-        show_inspection_scene=show_inspection_scene,
-    )
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    model, metadata = controller.LoadMinkModelWithMetadata(show_inspection_scene)
     controller._apply_operational_joint_limits(model)
+    metadata.update(controller.GetJointLimitMetadata(model))
     SetInspectionSceneEnabled(model, show_inspection_scene)
     data = mujoco.MjData(model)
     data.qpos[:] = controller._initial_configuration(model)
     mujoco.mj_forward(model, data)
+    if include_metadata:
+        return model, data, controller, metadata
     return model, data, controller
 
 

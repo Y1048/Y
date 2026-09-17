@@ -291,7 +291,11 @@ def build_measured_hold_frame(
 
 
 def validate_command_frame(frame: ArmSdkCommandFrame) -> None:
-    """Raise ValueError when a frame can affect anything outside both arms."""
+    """Validate payload fields, not firmware ownership or whole-body effects.
+
+    Non-arm mode and gains must be zero in this contract.  This does not prove
+    the firmware retains waist support when the Arm SDK weight changes.
+    """
 
     vectors = (
         (frame.motor_mode, "motor_mode"),

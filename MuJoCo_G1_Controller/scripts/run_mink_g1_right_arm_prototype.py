@@ -14,10 +14,14 @@ QP 구성:
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
+import os
 import socket
 import sys
+import tempfile
+import hashlib
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -47,6 +51,11 @@ RUNTIME_STATUS_PATH = PROJECT_ROOT / "logs" / "runtime" / "g1_mink_status.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import g1_right_arm_common as g1  # noqa: E402
+from g1_mink_collision_policy import (  # noqa: E402
+    COLLISION_PROFILE_MINK_DEFAULT,
+    COLLISION_PROFILES,
+    ResolveCollisionProfile,
+)
 
 sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 from g1_teleop.mink_command_stream import MinkCommandStream  # noqa: E402
@@ -71,8 +80,10 @@ FRAME_GAIN = 0.35
 LM_DAMPING = 1e-5
 QP_DAMPING = 1e-8
 
-COLLISION_MIN_DISTANCE_M = 0.012
-COLLISION_DETECTION_DISTANCE_M = 0.040
+# 호환성용 공개 기본값이다. 실행 시에는 명시적으로 선택한 profile을 사용한다.
+COLLISION_MIN_DISTANCE_M, COLLISION_DETECTION_DISTANCE_M = ResolveCollisionProfile(
+    COLLISION_PROFILE_MINK_DEFAULT
+)
 COLLISION_GAIN = 0.85
 ZERO_DISTANCE_TOLERANCE_M = 1e-12
 ZERO_DISTANCE_PROBE_RAD = 1e-7
@@ -84,7 +95,10 @@ STRUCTURAL_NEIGHBOR_DISTANCE = 2
 COLLISION_BODY_PAIR_EXEMPTIONS = {
     frozenset(("right_elbow_link", "right_wrist_yaw_link")),
 }
-RIGHT_ARM_MAX_VELOCITY_RAD_S = math.radians(75.0)
+# TWIST2 static-stand 키보드 기본 1배 속도와 동일한 공통 팔 관절 한계다.
+RIGHT_ARM_MAX_VELOCITY_RAD_S = (0.7 if os.environ.get("G1_TWIST2_KEYBOARD_RATE") == "1" else 0.16)
+RIGHT_ARM_MAX_ACCELERATION_RAD_S2 = (math.radians(10.0) if os.environ.get("G1_TWIST2_KEYBOARD_RATE") == "1" else 10.0)
+RIGHT_ARM_MAX_JERK_RAD_S3 = 1.28
 POSITION_MAX_SPEED_MPS = 0.12
 ROTATION_MAX_SPEED_RAD_S = math.radians(70.0)
 REACHABILITY_POSITION_ENTER_M = 0.035
@@ -96,6 +110,25 @@ PROXIMAL_DAMPING_COST = 0.25
 WRIST_DAMPING_COST = 0.015
 
 RIGHT_HAND_COLLISION_NAME = "mink_right_rubber_hand_collision"
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run the vanilla Mink comparison controller: one 6D FrameTask on "
+            "the G1 right wrist."
+        )
+    )
+    parser.add_argument(
+        "--collision-profile",
+        choices=tuple(COLLISION_PROFILES),
+        default=COLLISION_PROFILE_MINK_DEFAULT,
+        help=(
+            "mink-default uses upstream Mink 5/10 mm distances for local A/B "
+            "comparison; hardware-guarded remains an explicit separate profile"
+        ),
+    )
+    return parser.parse_args()
 
 
 def _update_reachability_limit(
@@ -127,13 +160,14 @@ def _find_body(element: ET.Element, name: str) -> ET.Element | None:
     return None
 
 
-def _prepare_mink_xml(show_inspection_scene: bool = False) -> None:
+def _prepare_mink_xml(show_inspection_scene: bool = False, *, output_path: Path | None = None) -> Path:
     """Generate the fixed-base demo and name its collision-enabled robot geoms."""
-    g1.make_demo_xml(
+    destination = g1.make_demo_xml(
         "control",
         show_inspection_scene=show_inspection_scene,
+        output_path=output_path,
     )
-    tree = ET.parse(g1.DEMO_XML)
+    tree = ET.parse(destination)
     root = tree.getroot()
     worldbody = root.find("worldbody")
     if worldbody is None:
@@ -178,7 +212,59 @@ def _prepare_mink_xml(show_inspection_scene: bool = False) -> None:
             local_index += 1
             name_counter += 1
 
-    tree.write(g1.DEMO_XML, encoding="unicode")
+    tree.write(destination, encoding="unicode")
+    return destination
+
+
+def LoadMinkModel(show_inspection_scene: bool = False) -> mujoco.MjModel:
+    """Load a freshly generated isolated model; callers apply operational limits."""
+    return LoadMinkModelWithMetadata(show_inspection_scene)[0]
+
+
+def GetModelAssetHash(path: Path) -> str:
+    """Hash explicit mesh/heightfield/texture files in the generated flat MJCF."""
+    root = ET.parse(path).getroot()
+    compiler = root.find("compiler")
+    options = {} if compiler is None else compiler.attrib
+    records = []
+    for element in root.iter():
+        for attribute, filename in sorted(element.attrib.items()):
+            if not attribute.startswith("file"):
+                continue
+            if element.tag not in {"mesh", "hfield", "texture"}:
+                raise ValueError(f"unsupported model asset dependency: {element.tag}/{attribute}")
+            if options.get("strippath", "false") == "true":
+                filename = Path(filename).name
+            directory = options.get("texturedir" if element.tag == "texture" else "meshdir",
+                                    options.get("assetdir", ""))
+            asset_path = Path(filename)
+            if not asset_path.is_absolute():
+                asset_path = path.parent / directory / asset_path
+            digest = hashlib.sha256(asset_path.read_bytes()).hexdigest()
+            records.append([element.tag, element.get("name", ""), attribute, digest])
+    return hashlib.sha256(json.dumps(records, separators=(",", ":")).encode()).hexdigest()
+
+
+def LoadMinkModelWithMetadata(show_inspection_scene: bool = False):
+    """Return the model and hash of the exact generated XML, not shared DEMO_XML.
+
+    The hash excludes later operational limits and external mesh/texture bytes.
+    """
+    with tempfile.TemporaryDirectory(prefix="g1_mink_model_") as directory:
+        path = _prepare_mink_xml(show_inspection_scene, output_path=Path(directory) / "model.xml")
+        xml_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        asset_hash = GetModelAssetHash(path)
+        model = mujoco.MjModel.from_xml_path(str(path))
+        if GetModelAssetHash(path) != asset_hash:
+            raise RuntimeError("model assets changed during loading")
+        return model, {
+            "model_xml_sha256": xml_hash,
+            "model_xml_path": None,
+            "model_xml_source": "isolated_current_source_generation",
+            "hash_scope": "generated XML only; excludes runtime limits and external asset bytes",
+            "model_assets_sha256": asset_hash,
+            "asset_hash_scope": "explicit mesh/hfield/texture files v1; excludes runtime changes",
+        }
 
 
 def _joint_id(model: mujoco.MjModel, joint_name: str) -> int:
@@ -195,6 +281,15 @@ def _apply_operational_joint_limits(model: mujoco.MjModel) -> None:
         model.jnt_range[joint_id, 0] = math.radians(low_deg)
         model.jnt_range[joint_id, 1] = math.radians(high_deg)
         model.jnt_limited[joint_id] = 1
+
+
+def GetJointLimitMetadata(model: mujoco.MjModel) -> dict:
+    """Describe applied joint limits and engine; not the entire runtime config."""
+    limits = {name: getattr(model, name).tolist()
+              for name in ("jnt_type", "jnt_limited", "jnt_range")}
+    payload = json.dumps(limits, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return {"model_joint_limits_sha256": hashlib.sha256(payload.encode()).hexdigest(),
+            "mujoco_version": mujoco.__version__}
 
 
 def _body_distance(model: mujoco.MjModel, first: int, second: int) -> int | None:
@@ -521,7 +616,17 @@ def _state_packet(
 
 
 def _send_state(sock, packet, host, port) -> None:
-    sock.sendto(json.dumps(packet, separators=(",", ":")).encode("utf-8"), (host, port))
+    # 미측정 진단값만 별도 플래그로 표현한다. 제어값의 비유한 수치는 거부한다.
+    packet = dict(packet)
+    right = dict(packet["right_arm"])
+    margin = right.get("min_wrist_limit_margin_deg")
+    if margin is not None:
+        unknown = not math.isfinite(margin)
+        right["wrist_limit_margin_unknown"] = unknown
+        if unknown:
+            right["min_wrist_limit_margin_deg"] = 0.0
+    packet["right_arm"] = right
+    sock.sendto(json.dumps(packet, separators=(",", ":"), allow_nan=False).encode("utf-8"), (host, port))
 
 
 def _write_status(payload: dict) -> None:
@@ -532,9 +637,13 @@ def _write_status(payload: dict) -> None:
 
 
 def main() -> None:
-    _prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(g1.DEMO_XML))
+    args = parse_args()
+    collision_min_distance_m, collision_detection_distance_m = (
+        ResolveCollisionProfile(args.collision_profile)
+    )
+    model, model_metadata = LoadMinkModelWithMetadata()
     _apply_operational_joint_limits(model)
+    model_metadata.update(GetJointLimitMetadata(model))
     configuration = mink.Configuration(model)
     configuration.update(_initial_configuration(model))
     data = configuration.data
@@ -568,8 +677,8 @@ def main() -> None:
         mink.CollisionAvoidanceLimit(
             model=model,
             geom_pairs=collision_pairs,
-            minimum_distance_from_collisions=COLLISION_MIN_DISTANCE_M,
-            collision_detection_distance=COLLISION_DETECTION_DISTANCE_M,
+            minimum_distance_from_collisions=collision_min_distance_m,
+            collision_detection_distance=collision_detection_distance_m,
             gain=COLLISION_GAIN,
             broadphase=True,
         ),
@@ -610,8 +719,9 @@ def main() -> None:
     print(f"Frozen non-right-arm DOFs: {len(frozen_dofs)}")
     print(f"Collision geom pairs: {len(collision_pairs)}")
     print(
-        f"Collision limit: min={COLLISION_MIN_DISTANCE_M*1000:.1f} mm, "
-        f"detect={COLLISION_DETECTION_DISTANCE_M*1000:.1f} mm"
+        f"Collision profile: {args.collision_profile}; "
+        f"min={collision_min_distance_m*1000:.1f} mm, "
+        f"detect={collision_detection_distance_m*1000:.1f} mm"
     )
     print(
         f"Proximal/wrist damping: {PROXIMAL_DAMPING_COST:.3f} / "
@@ -720,7 +830,7 @@ def main() -> None:
                 min_clearance = _min_pair_distance(model, data, collision_geom_ids)
                 collision_limited = bool(
                     min_clearance is not None
-                    and min_clearance <= COLLISION_DETECTION_DISTANCE_M
+                    and min_clearance <= collision_detection_distance_m
                 )
 
                 if now >= next_state:
@@ -742,6 +852,7 @@ def main() -> None:
                         session_id=command_update.session_id,
                         input_packet_age_s=command_update.packet_age_s,
                     )
+                    packet["model_metadata"] = model_metadata
                     state_sequence += 1
                     _send_state(state_sock, packet, UNITY_STATE_HOST, UNITY_STATE_PORT)
                     _send_state(
@@ -775,8 +886,9 @@ def main() -> None:
                             "rejected_packets": rejected_total,
                             "solver": solver,
                             "collision_pair_count": len(collision_pairs),
-                            "collision_min_distance_m": COLLISION_MIN_DISTANCE_M,
-                            "collision_detection_distance_m": COLLISION_DETECTION_DISTANCE_M,
+                            "collision_profile": args.collision_profile,
+                            "collision_min_distance_m": collision_min_distance_m,
+                            "collision_detection_distance_m": collision_detection_distance_m,
                             "minimum_clearance_m": min_clearance,
                             "collision_limit_nearby": collision_limited,
                             "target_position": target_position.tolist(),

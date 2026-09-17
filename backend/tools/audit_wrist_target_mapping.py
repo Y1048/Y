@@ -148,16 +148,16 @@ def main():
     unity_segments = ReadUnitySegments(args.unity_trace)
     if not segments or len(segments) != len(unity_segments):
         raise ValueError("Capture and Unity active segment counts differ; do not infer correspondence")
-    model = probe.mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    model, model_metadata = probe.base.LoadMinkModelWithMetadata()
     probe.base._apply_operational_joint_limits(model)
     root = Path(__file__).resolve().parents[2]
-    sources = [args.capture, args.unity_trace, Path(__file__), Path(probe.base.g1.DEMO_XML),
+    sources = [args.capture, args.unity_trace, Path(__file__),
         root / "Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs",
         root / "Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs",
         root / "Unity_G1_VR/Assets/Scenes/SampleScene.unity",
         root / "MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py"]
     result = {"robot_command": False, "settings_modified": False, "capture_id": manifest["capture_id"],
-        "mujoco_version": probe.mujoco.__version__,
+        "mujoco_version": probe.mujoco.__version__, "model_metadata": model_metadata,
         "sha256": {str(p.resolve()): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
         "limits_of_evidence": [
             "Current source/scene settings are not a snapshot of recording-time Inspector settings.",

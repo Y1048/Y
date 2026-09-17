@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
+import math
 from typing import Literal
 
 
@@ -202,7 +203,8 @@ class WorkspaceExitDebounce:
     """Confirm a continuous workspace violation before reporting an exit."""
 
     def __init__(self, confirm_after_s: float) -> None:
-        if not isinstance(confirm_after_s, (int, float)) or confirm_after_s <= 0.0:
+        if (isinstance(confirm_after_s, bool) or not isinstance(confirm_after_s, (int, float))
+                or not math.isfinite(confirm_after_s) or confirm_after_s <= 0.0):
             raise ValueError("confirm_after_s must be positive")
         self.confirm_after_s = float(confirm_after_s)
         self.reset()
@@ -213,7 +215,8 @@ class WorkspaceExitDebounce:
     def update(self, is_safe: bool, delta_time_s: float) -> bool:
         if not isinstance(is_safe, bool):
             raise TypeError("is_safe must be a bool")
-        if not isinstance(delta_time_s, (int, float)) or delta_time_s < 0.0:
+        if (isinstance(delta_time_s, bool) or not isinstance(delta_time_s, (int, float))
+                or not math.isfinite(delta_time_s) or delta_time_s < 0.0):
             raise ValueError("delta_time_s must be non-negative")
 
         if is_safe:

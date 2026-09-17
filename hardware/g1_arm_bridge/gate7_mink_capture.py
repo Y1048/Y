@@ -24,7 +24,7 @@ MAX_PACKET_BYTES: Final[int] = 65535
 def _automatic_path() -> Path:
     CAPTURE_DIRECTORY.mkdir(parents=True, exist_ok=True)
     return CAPTURE_DIRECTORY / (
-        "g1_mink_capture_" + time.strftime("%Y%m%d_%H%M%S") + ".jsonl"
+        "g1_mink_capture_" + time.strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex + ".jsonl"
     )
 
 
@@ -56,6 +56,8 @@ def main() -> int:
     output_path = args.output or _automatic_path()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     result_path = output_path.with_suffix(".result.json")
+    if output_path.exists() or result_path.exists():
+        raise FileExistsError("Capture or result already exists; choose a new --output path. Existing files were not changed.")
     capture_id = uuid.uuid4().hex
     input_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     output_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -74,7 +76,7 @@ def main() -> int:
     try:
         input_socket.bind((args.listen_host, args.listen_port))
         input_socket.settimeout(0.1)
-        with output_path.open("w", encoding="utf-8") as stream:
+        with output_path.open("x", encoding="utf-8") as stream:
             _write_line(
                 stream,
                 {
@@ -133,7 +135,8 @@ def main() -> int:
         "publisher_present": False,
         "command_output_enabled": False,
     }
-    result_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+    with result_path.open("x", encoding="utf-8") as stream:
+        json.dump(result, stream, indent=2)
     print(f"Accepted={accepted} rejected={rejected}")
     print(f"Capture saved to: {output_path.resolve()}")
     print(f"Result saved to: {result_path.resolve()}")

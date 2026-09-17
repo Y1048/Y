@@ -20,6 +20,55 @@ REGULAR_PATH = PROJECT_ROOT / "config" / "g1_regular_arm_pose.json"
 
 
 class Gate7CaptureQualityTests(unittest.TestCase):
+    def test_capture_asset_hash_validation(self):
+        regular = load_regular_arm_pose(REGULAR_PATH)
+        cases = [(field, digest, digest == "a" * 64)
+                 for field in ("model_assets_sha256", "model_joint_limits_sha256")
+                 for digest in ["a" * 64, "bad", None, 42]]
+        cases += [("mujoco_version", value, valid) for value, valid in
+                  [("3.11.0", True), ("", False), (None, False), (42, False)]]
+        for field, digest, valid in cases:
+            with self.subTest(field=field, digest=digest), tempfile.TemporaryDirectory() as directory:
+                value = json.loads(_packet(regular, 0))
+                value["model_metadata"] = {"model_xml_sha256": "a" * 64,
+                                           field: digest}
+                records = [{"schema": "g1.mink.capture.manifest.v1", "hardware_output_authorized": False},
+                           {"schema": "g1.mink.capture.packet.v1", "index": 0, "offset_s": 0,
+                            "payload_base64": base64.b64encode(json.dumps(value).encode()).decode()}]
+                path = Path(directory) / "capture.jsonl"
+                path.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+                if valid:
+                    self.assertEqual(_decode_capture(path)[1][0]["value"]["model_metadata"], value["model_metadata"])
+                else:
+                    with self.assertRaisesRegex(ValueError, "invalid captured"):
+                        _decode_capture(path)
+
+    def test_capture_model_identity(self):
+        regular = load_regular_arm_pose(REGULAR_PATH)
+        for hashes, valid in [([None, None], True), (["a" * 64, "a" * 64], True),
+                              (["a" * 64, "b" * 64], False), ([None, "a" * 64], False),
+                              (["bad", "bad"], False)]:
+            with self.subTest(hashes=hashes), tempfile.TemporaryDirectory() as directory:
+                records = [{"schema": "g1.mink.capture.manifest.v1",
+                            "hardware_output_authorized": False}]
+                for index, digest in enumerate(hashes):
+                    value = json.loads(_packet(regular, index))
+                    if digest is not None:
+                        value["model_metadata"] = {"model_xml_sha256": digest}
+                    records.append({"schema": "g1.mink.capture.packet.v1", "index": index,
+                        "offset_s": index * .02,
+                        "payload_base64": base64.b64encode(json.dumps(value).encode()).decode()})
+                path = Path(directory) / "capture.jsonl"
+                path.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+                if valid:
+                    _, packets = _decode_capture(path)
+                    self.assertEqual(len(packets), 2)
+                    self.assertEqual(packets[0]["value"].get("model_metadata"),
+                                     None if hashes[0] is None else {"model_xml_sha256": hashes[0]})
+                else:
+                    with self.assertRaises(ValueError):
+                        _decode_capture(path)
+
     def test_equal_receive_times_keep_poses_without_dividing_by_zero(self):
         regular = load_regular_arm_pose(REGULAR_PATH)
         packets = []

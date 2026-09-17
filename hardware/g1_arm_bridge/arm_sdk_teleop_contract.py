@@ -439,11 +439,20 @@ def parse_mink_arm_sample(payload: bytes | str) -> MinkArmSample:
     if not isinstance(collision_limited, bool):
         raise Gate7ContractError("right_arm.collision_limited must be boolean")
     clearance_value = right.get("minimum_clearance_m")
+    if clearance_value is not None and (
+        isinstance(clearance_value, bool)
+        or not isinstance(clearance_value, (int, float))
+    ):
+        raise Gate7ContractError("right_arm.minimum_clearance_m must be a number")
     minimum_clearance = (
         None
         if clearance_value is None
         else _finite_number(clearance_value, "right_arm.minimum_clearance_m")
     )
+    if active and minimum_clearance is None:
+        raise Gate7ContractError(
+            "active Mink state requires finite right_arm.minimum_clearance_m"
+        )
     nearest_geoms_value = right.get("nearest_collision_geoms", [])
     nearest_bodies_value = right.get("nearest_collision_bodies", [])
     if not isinstance(nearest_geoms_value, list) or not all(
@@ -791,8 +800,17 @@ class Gate7TeleopController:
             return self._safety_hold(
                 measured_dual, measured_all, "workspace_hold", dt_s
             )
-        if current_sample.minimum_clearance_m is None:
-            if current_sample.collision_limited:
+        clearance = current_sample.minimum_clearance_m
+        if clearance is not None and (
+            isinstance(clearance, bool)
+            or not isinstance(clearance, (int, float))
+            or not math.isfinite(clearance)
+        ):
+            return self._safety_hold(
+                measured_dual, measured_all, "collision_state_incomplete_hold", dt_s
+            )
+        if clearance is None:
+            if current_sample.active or current_sample.collision_limited:
                 return self._safety_hold(
                     measured_dual,
                     measured_all,

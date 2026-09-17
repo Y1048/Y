@@ -10,6 +10,7 @@ Safety contract:
 from __future__ import annotations
 
 import argparse
+import math
 import signal
 import socket
 import struct
@@ -88,6 +89,10 @@ def ConnectUnity(host: str, port: int, timeout_s: float) -> socket.socket:
 
 
 def ValidateArguments(args: argparse.Namespace) -> None:
+    for field in ("fps", "camera_timeout", "connect_timeout", "reconnect_delay"):
+        value = getattr(args, field)
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise SystemExit(f"--{field.replace('_', '-')} must be a finite number")
     if args.host not in ("127.0.0.1", "localhost"):
         raise SystemExit("camera bridge output is restricted to loopback")
     if args.port < 1 or args.port > 65535:

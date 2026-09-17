@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import time
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -28,26 +29,35 @@ def GetNextRelease(start, dt):
     return start + dt
 
 
-def LoadReplay(capture, report_path, segment):
+def LoadReplay(capture, report_path, segment, model_path=None):
     probe = comparison.probe
     report = json.loads(report_path.read_text(encoding="utf-8"))
-    model_path = Path(probe.base.g1.DEMO_XML)
     digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+    if model_path is None:
+        model, metadata = probe.base.LoadMinkModelWithMetadata()
+    else:
+        model_path = Path(model_path)
+        metadata = {"model_xml_sha256": digest(model_path), "model_xml_path": None,
+                    "model_xml_source": "isolated_current_source_generation",
+                    "hash_scope": "generated XML only; excludes runtime limits and external asset bytes"}
+        model = probe.mujoco.MjModel.from_xml_path(str(model_path))
     if (report["capture_sha256"] != digest(capture)
-            or report["model_xml_sha256"] != digest(model_path)
+            or report["model_xml_sha256"] != metadata["model_xml_sha256"]
             or report["mujoco_version"] != probe.mujoco.__version__
             or report["horizon_steps"] != 3):
         raise ValueError("Capture, model, engine or horizon differs from reference")
     trace_path = report_path.with_name(report_path.stem + f"_s{segment}_limit_avoidance.jsonl")
     expected = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
     _, packets = probe._decode_capture(capture)
-    reference, goals = comparison.GetActiveSegments(packets)[segment - 1]
-    model = probe.mujoco.MjModel.from_xml_path(str(model_path))
+    segments = comparison.GetActiveSegments(packets)
+    if not 1 <= segment <= len(segments):
+        raise ValueError(f"Requested segment {segment}, but capture has {len(segments)} active segments")
+    reference, goals = segments[segment - 1]
     probe.base._apply_operational_joint_limits(model)
     q = probe.base._initial_configuration(model)
     addresses = [int(model.jnt_qposadr[probe.base._joint_id(model, n)]) for n in probe.base.g1.G1_29_JOINTS]
     q[addresses] = reference["value"]["all_joint_q_rad"]
-    hashes = {"capture_sha256": digest(capture), "model_xml_sha256": digest(model_path),
+    hashes = {"capture_sha256": digest(capture), **metadata,
               "reference_trace_sha256": digest(trace_path), "tool_sha256": digest(Path(__file__)),
               "candidate_tool_sha256": digest(Path(__file__).with_name("benchmark_mink_candidate.py"))}
     return model, q, goals, expected, hashes
@@ -116,15 +126,15 @@ def RunRenderedReplay(model, initial, goals, expected, renderer, repeat):
     return_goal = planner.configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
     q = initial.copy()
     checks = {"calls": 0, "rejected": 0}
-    original_check = planner.CheckConfiguration
+    original_check = planner.CheckConfigurationWithClearance
 
-    def CheckConfiguration(value):
-        valid = original_check(value)
+    def CheckConfigurationWithClearance(value):
+        valid, clearance = original_check(value)
         checks["calls"] += 1
         checks["rejected"] += int(not valid)
-        return valid
+        return valid, clearance
 
-    planner.CheckConfiguration = CheckConfiguration
+    planner.CheckConfigurationWithClearance = CheckConfigurationWithClearance
     timings, samples, snapshots = [], [], {}
     errors = {"actual_qpos_max": 0., "preview_qpos_max": 0., "accepted_step_mismatches": 0}
     changed_frames = 0
@@ -226,7 +236,28 @@ def main():
     if not np.isfinite(args.renderer_stall_ms) or args.renderer_stall_ms < 0 or (
             args.renderer_stall_ms and not args.decoupled_render):
         parser.error("Finite nonnegative renderer stall requires decoupled rendering")
-    model, initial, goals, expected, hashes = LoadReplay(args.capture, args.expected_report, args.segment)
+    # Keep the same XML alive until every renderer has closed, including failures.
+    try:
+        with tempfile.TemporaryDirectory(prefix="g1_render_replay_") as directory:
+            model_path = comparison.probe.base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            return RunReplay(args, model_path)
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError, IndexError, EOFError) as exc:
+        failure = {"status": "ERROR", "robot_command": False,
+                   "capture": str(args.capture), "error": f"{type(exc).__name__}: {exc}"}
+        print("[ERROR] Rendered replay failed:", failure["error"], flush=True)
+        try:
+            args.result_json.parent.mkdir(parents=True, exist_ok=True)
+            args.result_json.write_text(json.dumps(failure, indent=2), encoding="utf-8")
+            print("Result saved to:", args.result_json.resolve(), flush=True)
+        except OSError as report_error:
+            print("[ERROR] Failure report was not saved:", report_error)
+            print("[ACTION] Check output write access; any existing report is stale.")
+        print("[ACTION] Check reference/segment and renderer error before retrying. Partial images are not a completed benchmark.")
+        return 1
+
+
+def RunReplay(args, model_path):
+    model, initial, goals, expected, hashes = LoadReplay(args.capture, args.expected_report, args.segment, model_path)
     report = {"robot_command": False, "mujoco_version": comparison.probe.mujoco.__version__, **hashes,
         "resolution": [args.width, args.height], "runs": [], "screenshots": [],
         "scope": "MuJoCo offscreen GPU render/readback every frame, fixed-step IK, real-time pacing without catch-up. No Unity/Quest/UDP/DDS, physical dynamics or hardware. Fresh initial pose between repeats; reset jumps are not control transitions. Initialization/warmup and PNG writes excluded. Per-frame diagnostics included."}
@@ -244,7 +275,7 @@ def main():
             if args.decoupled_render:
                 from offline_render_worker import ProcessRenderer
                 trace_path = args.expected_report.with_name(args.expected_report.stem + f"_s{args.segment}_limit_avoidance.jsonl")
-                renderer = ProcessRenderer(comparison.probe.base.g1.DEMO_XML, initial,
+                renderer = ProcessRenderer(model_path, initial,
                     args.width, args.height, trace_path,
                     args.result_json.with_name(f"{args.result_json.stem}_r{repeat}"), args.renderer_stall_ms)
             elif renderer is None:
@@ -253,8 +284,9 @@ def main():
             report["runs"].append(result)
             if args.decoupled_render:
                 report["screenshots"].extend(result["render_worker"]["screenshots"])
-                renderer.Close()
+                completed_renderer = renderer
                 renderer = None
+                completed_renderer.Close()
             for frame, pixels in snapshots.items():
                 path = args.result_json.with_name(f"{args.result_json.stem}_r{repeat}_f{frame}.png")
                 Image.fromarray(pixels).save(path)
@@ -276,7 +308,8 @@ def main():
     args.result_json.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     print(report["status"], flush=True)
     print("Result saved to:", args.result_json.resolve(), flush=True)
-    return 1 if report["status"] == "PARITY_OR_RENDER_FAILURE" else 0
+    return {"PACED_RENDER_BUDGET_MET": 0, "PARITY_OR_RENDER_FAILURE": 1,
+            "DEADLINE_MISSES": 2, "DISPLAY_AGE_MISSES": 2}[report["status"]]
 
 
 if __name__ == "__main__":

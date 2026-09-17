@@ -12,10 +12,12 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from arm_sdk_hold_contract import build_measured_hold_frame, dual_arm_from_all_joints
+from arm_sdk_hold_contract import blend_weight, build_measured_hold_frame, dual_arm_from_all_joints
 from gate6_arm_sdk_hold import (
     DEFAULT_CONFIG_PATH,
     _apply_frame,
+    _status_details,
+    LowStateSnapshot,
     load_runtime_config,
     validate_output_authorization,
     validate_precheck,
@@ -43,6 +45,56 @@ class _FakeLowCmd:
 
 
 class Gate6ArmSdkHoldTests(unittest.TestCase):
+    def test_weight_comparison_keeps_all_other_command_fields_identical(self):
+        measured = (0.0,) * 29
+        target = dual_arm_from_all_joints(measured)
+        for tick in range(2276):
+            frames = []
+            for maximum in (0.2, 0.4):
+                phase, weight, done = blend_weight(tick / 250.0,
+                    ramp_up_s=3.0, hold_s=3.0, ramp_down_s=3.0,
+                    maximum_weight=maximum)
+                self.assertGreaterEqual(weight, 0.0)
+                self.assertLessEqual(weight, maximum)
+                self.assertEqual(done, tick >= 2250)
+                frames.append(build_measured_hold_frame(measured, target,
+                    mode_pr=0, mode_machine=5, weight=weight, config=self.config.safety))
+            self.assertAlmostEqual(frames[1].weight, 2 * frames[0].weight)
+            self.assertEqual(frames[0].motor_q_rad[:29], frames[1].motor_q_rad[:29])
+            self.assertEqual(frames[0].motor_q_rad[30:], frames[1].motor_q_rad[30:])
+            for field in ("motor_mode", "motor_kp", "motor_kd", "motor_dq_rad_s", "motor_tau_nm"):
+                self.assertEqual(getattr(frames[0], field), getattr(frames[1], field))
+        self.assertEqual(frames[1].weight, 0.0)
+
+    def test_hold_diagnostics_separate_fixed_target_from_measured_waist(self):
+        initial_q = tuple([0.0] * 29)
+        target = dual_arm_from_all_joints(initial_q)
+        measured_q = list(initial_q)
+        measured_q[13] = 0.1
+        snapshot = LowStateSnapshot(time.monotonic(), 123456, 7, 0, 5,
+                                    tuple(measured_q), tuple([0.0] * 29))
+        frame = build_measured_hold_frame(snapshot.all_q_rad, target,
+                    mode_pr=0, mode_machine=5, weight=0.2, config=self.config.safety)
+        details = _status_details(network_interface="offline", snapshot=snapshot,
+                    target_dual_arm_q_rad=target, mode_form="0", mode_name="ai",
+                    weight=0.2, schedule_phase="HOLD", published_frames=1,
+                    reason="offline test", command_frame=frame)
+        self.assertEqual(details["lowstate_received_unix_ns"], 123456)
+        self.assertEqual(details["measured_all_q_rad"][13], 0.1)
+        self.assertEqual(details["target_dual_arm_q_rad"], list(target))
+        self.assertEqual(details["sampled_command"]["q_rad"][15:29], list(target))
+        self.assertEqual(details["sampled_command"]["waist_kp"], [0.0] * 3)
+        self.assertFalse(details["sampled_command"]["firmware_acknowledgement"])
+        self.assertEqual(snapshot.all_q_rad[13], 0.1)
+
+    def test_blocked_diagnostics_do_not_invent_state_or_command(self):
+        details = _status_details(network_interface="", snapshot=None,
+                    target_dual_arm_q_rad=None, mode_form=None, mode_name=None,
+                    weight=0.0, schedule_phase="BLOCKED", published_frames=0,
+                    reason="offline test")
+        self.assertIsNone(details["measured_all_q_rad"])
+        self.assertIsNone(details["sampled_command"])
+
     def setUp(self) -> None:
         self.config = load_runtime_config(DEFAULT_CONFIG_PATH)
 

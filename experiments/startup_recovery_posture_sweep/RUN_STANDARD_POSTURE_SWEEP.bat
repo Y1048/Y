@@ -23,10 +23,10 @@ set "exit_code=%errorlevel%"
 
 echo.
 if not "%exit_code%"=="0" (
-    echo [FAIL] Standard posture sweep has unresolved infrastructure errors.
-    echo [ACTION] Open %SUMMARY_PATH%, then resume its run directory with a longer --case-timeout.
+    echo [FAIL] Standard posture sweep has errors or no successful evaluated poses.
+    echo [ACTION] Open %SUMMARY_PATH% and inspect ERROR, FAIL or SKIPPED cases before retrying.
 ) else (
-    echo [PASS] Standard 75-pose sampled map completed.
+    echo [COMPLETED] Sampled map saved. Check outcome and status counts; individual poses may have failed.
     echo Map saved to: %MAP_PATH%
     echo Summary saved to: %SUMMARY_PATH%
     start "" "%MAP_PATH%"

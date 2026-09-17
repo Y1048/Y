@@ -15,6 +15,12 @@ from verify_feasible_target import BuildPlanner, probe
 from compare_recorded_pose_speeds import GetActiveSegments, GetRecordedTargets, GetTargetIndex
 
 
+def GetLimitMetadata():
+    return {"joint_velocity_caps_rad_s": dict(probe.live.virtual_center_velocity_limits()),
+            "collision_minimum_distance_m": probe.live.TELEOP_COLLISION_TARGET_DISTANCE_M,
+            "solver_dt_s": probe.base.DT}
+
+
 class WristPositionTask(probe.mink.Task):
     """OFFLINE: exact world-space point error at the unchanged yaw-wrist origin."""
 
@@ -264,10 +270,11 @@ def EvaluateStep(planner, current_q, goal, require_merit=True, audit=False, cons
         for interval in (0.25, 0.5, 0.75, 1.0):
             q = current_q.copy()
             probe.mujoco.mj_integratePos(planner.model, q, velocity, base.DT * fraction * interval)
-            if not planner.CheckConfiguration(q):
+            valid, clearance = planner.CheckConfigurationWithClearance(q)
+            if not valid:
                 path_ok = False
                 break
-            minimum = min(minimum, planner.GetClearance(q) * 1000)
+            minimum = min(minimum, clearance * 1000)
         result["merit_rejections"] += int(not merit_ok)
         result["geometry_rejections"] += int(not path_ok)
         geometry_feasible |= path_ok
@@ -689,13 +696,12 @@ def main():
     if args.wrist_only and args.endpoint_audit:
         parser.error("Wrist-only cycles cannot be combined with a captured endpoint audit")
     manifest, packets = probe._decode_capture(args.capture)
-    model = probe.mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    model, model_metadata = probe.base.LoadMinkModelWithMetadata()
     probe.base._apply_operational_joint_limits(model)
     qpos = [int(model.jnt_qposadr[probe.base._joint_id(model, name)]) for name in probe.base.g1.G1_29_JOINTS]
     report = {"capture_id": manifest["capture_id"], "robot_command": False,
               "comparison_revision": "selective-limit-avoidance-v6-lookahead",
-              "model_xml_path": str(probe.base.g1.DEMO_XML),
-              "model_xml_sha256": hashlib.sha256(Path(probe.base.g1.DEMO_XML).read_bytes()).hexdigest(),
+              **model_metadata,
               "mujoco_version": probe.mujoco.__version__,
               "horizon_steps": args.horizon_steps,
               "input_kind": "synthetic_fk_wrist_cycles_not_capture" if args.wrist_only else "captured_6d_targets",
@@ -703,7 +709,8 @@ def main():
               "capture_path": str(args.capture.resolve()),
               "capture_sha256": hashlib.sha256(args.capture.read_bytes()).hexdigest(),
               "timing_scope": "Offline diagnostic planning includes rejected-candidate collision audits and requested lookahead; not a production runtime benchmark. first_step_ms includes the entire requested horizon.",
-              "boundary": "Offline first-step QP ablation. Same model, 20mm sampled collision checks, operational limits, 40/100 deg/s caps. Not original upstream G1, physical dynamics, exact runtime replay or hardware authorization.",
+              "limits": GetLimitMetadata(),
+              "boundary": "Offline first-step QP ablation. Current runtime caps and sampled collision limits are recorded in limits. Not original upstream G1, physical dynamics, exact runtime replay or hardware authorization.",
               "segments": []}
     if args.endpoint_audit is not None:
         source = json.loads(args.endpoint_audit.read_text(encoding="utf-8"))

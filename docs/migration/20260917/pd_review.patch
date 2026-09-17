@@ -1,0 +1,1519 @@
+diff --git a/docs/CHAT_HANDOFF.md b/docs/CHAT_HANDOFF.md
+index c36d8ba..24d9fad 100644
+--- a/docs/CHAT_HANDOFF.md
++++ b/docs/CHAT_HANDOFF.md
+@@ -206,3 +206,385 @@ by that writer. Two focused C++ offline tests pass with strict warnings enabled.
+ The Unitree/ARM controller has not been linked, deployed or run, so the next
+ step is an ARM compile-only review followed by a separately authorized small
+ measurement—not immediate gain optimization.
++
++## 2026-09-14 connected-G1 pre-deployment check
++
++SSH read-only check succeeded: host ubuntu, architecture aarch64. No matching
++TWIST2/Mink/restore controller process was observed in the pgrep snapshot.
++No source transfer, remote build, service change or actuation was performed.
++
++Pre-deployment review found that response-log Finish left the closed sink visible
++to the 500 Hz writer. Fixed by detaching it under write_cycle_mutex_, then draining
++outside the lock. Append exceptions are contained and cause finalization to report
++real_response_recording_incomplete. Fault-hold frames with unavailable desired
++metadata are excluded. Restored desired() acquisition inside the original guarded
++writer block. This corrects the earlier premature claim of deployment readiness.
++
++Windows focused Python tests: 5 passed. Windows handoff compilation could not
++start because g++ is absent from PATH; rerun in WSL passed. WSL tests: extracted
++production log-finalization method and existing handoff fake-controller test both
++passed (2 tests). New test checks detachment, unlocked drain, repeated finish and
++incomplete-log refusal. Full SDK/ARM build and physical recording remain pending.
++
++## 2026-09-14 approved G1 source transfer and ARM build
++
++User approved source transfer and compile only. Created isolated remote folder
++/home/unitree/g1_response_build_20260914; existing run directories preserved.
++Uploaded local current source/header snapshot and native_vr_build CMakeLists.
++Initial archive SHA256:
++5bfb7726f8548397515848cf30d1fc1aa54c3171d66abb6a5f298ef3a9ef3090
++First compile failed because vendor/json.hpp was omitted from the package.
++Added that exact repository header (PC/G1 SHA256 matched):
++5f09d1eebe9b3557f21df155869af13bcde79b74a0748f82ca946e8cc088aaa0
++
++CMake configuration: BUILD_LEGACY_NATIVE_TARGETS=OFF; ABI=1;
++UNITREE_SDK2_ROOT=/home/unitree/unitree_sdk2-main;
++TORCH_PYTHON_ROOT=/home/unitree/.local/lib/python3.8/site-packages/torch.
++GNU 9.4.0 compilation and linking completed, exit 0. SDK/Torch warnings and
++unused print_keyboard_help warning remain. file reports ELF64 ARM aarch64.
++Binary: /home/unitree/g1_response_build_20260914/build/g1_twist2_mink_cycle_trial
++SHA256: a282e1afc20b68826f6f5f83c59546b501b82a1db8aee92a5007b60541008897
++
++Binary was NOT executed, including no --help invocation. No mode/service
++change, publisher initialization or motor command was performed by this task.
++Launchers still point to their previous targets and were not unblocked.
++Compile success is not physical acceptance or proof of response-log quality.
++Next: review measurement startup/shutdown and timing/data-quality readiness
++before authorizing a small physical recording. Real PD identification remains
++blocked on appropriate measured records and independent validation episodes.
++
++## Next-step readiness review — 2026-09-14
++
++ARM compile completion does not clear the physical launcher block.
++Current tools/START_TWIST2_MINK_CYCLE_CANDIDATE.ps1 explicitly blocks Robot/All
++following the backward-balance PD-sweep abort. UDP Q/Ctrl+C returns to TWIST2
++hold, not a verified process exit/Regular handoff. No launcher was unblocked
++and no motor process was started in this review.
++
++Offline reproduction: duplicated a LowState timestamp/q/dq across successive
++writer frames in the generated fixture. parse_trace accepted it, but estimate
++failed with ValueError nonpositive_sample_period. Repeated state snapshots are
++possible with independently scheduled writer/subscriber callbacks. Do not use
++this fitter as a ready real-data pipeline or drop duplicate records blindly:
++commands between state observations must remain available for causal alignment.
++
++Remaining pre-trial work: separate command and state time series with explicit
++clock/provenance metadata; test causal alignment/repeated states using C++-emitted
++fixtures; review the prior balance abort and establish an executable verified
++shutdown route. No hardware PD recommendation or new physical trial authorized
++by this offline review. Earlier 'only connect and record' wording was premature.
++
++## 2026-09-14 command/state alignment correction
++
++Offline fitter now separates unique LowState observations from every command
++write-return event. Repeated q/dq with the same receive timestamp is accepted;
++conflicting q/dq at that timestamp is rejected. Each observation interval uses
++the duration-weighted piecewise-constant command across ALL intervening writes.
++Missing command coverage at the beginning excludes that interval explicitly;
++at least seven covered intervals are required. Equal/reversed command times
++are refused. Future commands cannot influence earlier intervals.
++
++Fit still approximates q/dq using the left endpoint. Write-return is not motor
++acceptance time; shared clock domain is a prerequisite, not measured latency.
++Schema alone does not establish real measurements: measured_data is now null.
++No fitted parameter is a hardware PD recommendation. Synthetic recovery fixture
++command time was moved to its actual generated integration boundary, correcting
++its former 1-ms mismatch. New fixture tests cover repeated-state intermediate
++command weighting, state conflicts and future-command exclusion.
++
++Windows: 8 focused Python tests passed. WSL: actual extracted log-finalization
++and existing controller handoff fake-backend tests both passed (2 tests).
++Start/stop source review confirms CheckMode ai and FSM500/501 before takeover;
++normal UDP Q/P/Ctrl+C returns to hold, not process exit. Only completed sweep or
++handoff-only paths attempt verified Regular handoff. Thus stopping a trial early
++can still leave a persistent TWIST2 owner. Offline tests are not physical handoff
++or balance validation. Robot/All launcher block remains; no G1 command executed.
++
++PC-only change this turn: real_response_identification.py and tests. The already
++compiled G1 logger binary does not require rebuilding for this parser change.
++Still needed before a physical trial: reviewed operational shutdown/abort path
++and prior balance-event disposition. Do not present the live path as ready.
++
++## 2026-09-14 planned UDP shutdown candidate (PC only)
++
++Q/Ctrl+C in UDP mode now sets a separate planned shutdown request. The existing
++return state machine must report AutomaticHandbackReady, the returned target
++must be committed, and no existing controller fault may be latched before the
++new reason operator UDP return completed is latched. Only that reason enters
++the existing verified_regular_handoff path. Pinch/Select/B/recoverable faults
++without an explicit Q/Ctrl+C request still return/re-engage under TWIST2.
++PD trial abort behavior is unchanged. A failed settle or ownership verification
++still does NOT guarantee exit; the existing owner protection/fallback applies.
++
++Verified locally: planned shutdown C++ truth-table test (no request, return
++incomplete, target uncommitted, existing fault, successful request, repeated
++request); extracted production handoff test covering 12 fake-backend scenarios;
++extracted log finalization test. All passed in WSL. This is not a full updated
++controller compile or a physical handoff test. Robot/All remains blocked.
++G1 binary a282e1af... is the earlier logging build and does NOT include this
++shutdown change. A separately authorized new build/deployment and reviewed
++physical handoff test are still required. No robot action performed this turn.
++
++## 2026-09-14 approved planned-shutdown ARM build
++
++User approved the next transfer/compile step. New isolated remote directory:
++/home/unitree/g1_shutdown_build_20260914
++Includes planned_udp_shutdown.hpp, Q/Ctrl+C candidate and vendor/json.hpp.
++Archive PC/G1 SHA256 matched:
++2815fb1e68f7468c78830d446bd473a5d1d8c5b83715787b063b5b81dbab364c
++CMake configured using existing SDK/Torch paths and ABI1, legacy targets OFF.
++ARM build and link completed with exit0. ELF64 ARM aarch64 confirmed.
++Binary: /home/unitree/g1_shutdown_build_20260914/build/g1_twist2_mink_cycle_trial
++Binary SHA256:
++123de17632ff1fe6ac9b6d7bbfb6ecc5199ac450c179235b18b6719e5761deb3
++Remote configure.log and build.log retained in the new folder.
++PC analysis tests rerun:8 passed.
++Earlier response-build and original robot executables preserved.
++No binary execution, publisher initialization, service/mode change or physical
++output occurred. Launchers still blocked and not retargeted. Real Regular
++handoff, balance and abnormal-stop behavior remain physically unverified.
++
++## 2026-09-14 supported handoff-only physical trial — incomplete
++
++User confirmed Regular/stability/support/helper readiness. Ran approved
++handoff-only on binary123de176... in g1_shutdown_build_20260914, profile yesterday,
++no UDP and no arm trajectory. Exact SHA check passed. Operator confirmation P
++was entered by assistant based on the confirmed trial readiness.
++Preflight passed; warmup final2.751ms/max41.675ms. Regular FSM501 observed,
++GetBalanceMode returned7301 (unavailable), ai released. Four-second leg blend
++completed after capture. Console reached handoff-only completed, then no
++SHUTDOWN COMPLETE or fallback output during observation. Session49208 remains
++open; do not kill it or run an overlapping restore/controller.
++
++Existing artifacts copied read-only from G1 to Windows:
++C:/Users/user/Desktop/G1_Teleop_Project/logs/test_results/handoff_20260914_6812/g1_twist2_trial_1789346113063495_6812
++249 policy samples; result.json is PRE_HANDOFF_CHECKPOINT, not current ownership
++or success proof. No handoff.json at copy time. real_response.jsonl exists.
++User asked asynchronously about current physical stability/noise; reply pending.
++Next must establish observed robot state and diagnose handoff verification;
++no second physical trial or PD sweep. Previous balance concern remains open.
++
++## 2026-09-14 handoff-only failure: user observed loss of support torque
++
++User reported damping without touching controls, then confirmed physical support
++is stable. Treat this as a failed physical handoff, not operator error.
++Getter-only RPC diagnosis (no setters/motor publisher) returned:
++- CheckMode: (0, {form: '0', name: 'ai'})
++- GetFsmId: (0, 0)
++Installed SDK g1_loco_client.py defines ZeroTorque as SetFsmId(0), Damp as
++SetFsmId(1), and Start as SetFsmId(500). Thus the observed query is FSM0,
++not verified Regular501; user-described damping is not the exact queried FSM.
++The production path stops the writer before SelectMode(ai). The monitor waits
++indefinitely for captured FSM501 and cannot resume when service name is ai.
++This explains the unresolved wait; exact cause/timing of FSM0 transition remains
++unproven because response logging ends at the pre-handoff checkpoint.
++No handoff.json was present; result.json owner_state is pre-handoff only and
++MUST NOT be read as current position hold. PID6812 was still alive at prior check.
++Do not rerun trial, terminate original session49208, call restore scripts or
++change mode as part of diagnosis. Full live launcher remains blocked.
++Next work: offline correction of handoff observability and review of supported
++mode transition contract; new physical execution needs separate authorization.
++
++## 2026-09-14 official SDK transition review (no robot action)
++
++Reviewed official sources:
++- https://github.com/unitreerobotics/unitree_sdk2/blob/main/example/g1/high_level/g1_userctrl_dds_example.cpp
++- https://github.com/unitreerobotics/unitree_sdk2/blob/main/include/unitree/robot/g1/loco/g1_loco_client.hpp
++- https://github.com/unitreerobotics/unitree_sdk2/blob/main/include/unitree/robot/g1/loco/g1_loco_api.hpp
++
++The official user-control example publishes rt/user_lowcmd, enters through
++SwitchToUserCtrl (API7110), and leaves through SwitchToInternalCtrl(LAST)
++(API7111). This is a DIFFERENT architecture from this trial's service release,
++direct rt/lowcmd and SelectMode(ai). Do not substitute one exit call into the
++existing direct-control path or launch the example as a recovery command.
++LAST encodes0, PASSIVE1, WALKRUN2 in API7111; these are NOT SetFsmId values.
++The example explicitly requires FSM1/PASSIVE initially and emits a damping-like
++initial command (kp0, kd1.5). It therefore does not demonstrate uninterrupted
++Regular501 -> user control -> Regular501 with load-bearing balance.
++
++Findings: SelectMode(ai) is insufficient in the observed physical trial. Official
++SDK supplies a distinct user/internal-control mechanism worth investigating,
++but compatibility and continuous support torque are NOT established. Source
++presence in installed Python SDK does not prove robot firmware support.
++The UniStore switch-sdk2 manual URL returned no readable page text; no claims
++are derived from its body.
++
++Next bounded checks before implementation:
++1. Read deployed firmware/application versions and SDK user-control contract;
++   obtain manufacturer confirmation of supported Regular/WALKRUN transition,
++   LowCmd arbitration, missed-command behavior and required initial posture.
++2. Keep handoff observations (RPC results, FSM, writer phase, timestamps) logged
++   through selection and verification; current pre-handoff log cannot establish
++   the exact transition time. This is a local observability change first.
++3. Only after the contract is known, prepare an isolated offline candidate;
++   preserve existing trial and require a separately authorized physical test.
++No source deployment, process termination, mode switch or motor output this turn.
++
++## 2026-09-14 local handoff console observability
++
++Added HANDOFF SELECT begin/result timestamps and rate-limited (one second)
++HANDOFF OBS records with RPC interval, service/result, FSM/result, expected FSM,
++state validity, freshness, writer-enabled flag and verification deadline status.
++Records go to flushed stderr for the existing console capture; this does NOT
++extend real_response.jsonl or guarantee logging if an RPC never returns.
++Control decisions, RPC ordering, fallback and mode selection remain unchanged.
++Extracted production C++ methods compiled with warnings-as-errors and passed
++12 memory-only scenarios; assertions verify emitted diagnostic fields and a
++post-deadline observation. No SDK/DDS/motor binary was run. No G1 deployment.
++Full ARM build and physical behavior are not verified. This is diagnostics only,
++not a fix for the observed FSM0 or a reason to unblock the live launcher.
++
++## 2026-09-14 read-only deployed SDK compatibility inventory
++
++SSH filesystem reads only: installed C++ LocoClient includes SwitchToUserCtrl
++and SwitchToInternalCtrl with LAST0/PASSIVE1/WALKRUN2; installed high_level
++examples include g1_userctrl_dds_example.cpp. SDK directory has no .git, so
++rev-parse cannot establish a release/commit. Jetson kernel is5.10.104-tegra;
++/etc/user_release_version says User release0.0. Neither is the locomotion
++firmware version. Bounded version-file searches under unitree and the install
++folder did not identify a motion-controller firmware version.
++PID6812 remains alive at elapsed16:25; no assertion about current FSM or torque
++is made from this process listing. No setter, motor binary, or cleanup executed.
++Conclusion: client-side API availability confirmed, server-side compatibility
++and uninterrupted handoff remain UNKNOWN. Need Unitree app/controller software
++version or manufacturer compatibility information before choosing this path.
++Do not infer compatibility by calling the state-changing APIs experimentally.
++
++## 2026-09-14 expanded read-only package inventory
++
++Corrected prior search scope: /unitree/robot/pkg/version/version.json on
++192.168.123.164 contains master_service_pc4=1.0.0.2,
++unitree_patch_pc4=1.0.0.4, video_hub_pc4=1.0.2.3; Package is empty.
++/unitree/ota/pipe/version is1.1.0.3. These are PC4/OTA module versions,
++NOT a verified locomotion firmware release. Process inventory shows OTA,
++master_service and PC4 video processes; this does not establish where the
++motion service executes. OTA hosts file only points to local164:1026.
++Master service configuration was not readable plain text. No attempt made to
++modify/decode protected configuration or invoke update endpoints.
++User should not be asked for app version solely because /etc has no useful
++version: package metadata was discoverable remotely. Remaining missing fact is
++motion-service firmware version and API7110/7111 compatibility, not SDK presence.
++No robot mutation, mode setter, controller launch or process termination.
++
++## 2026-09-14 version discovery bounded follow-up
++
++Read existing OTA/master logs and SDK query declarations. OTA log records
++list-service/version RPC activity but no returned version payload in the inspected
++tail. Master log search supplied no motion-version evidence. Installed SDK has
++GetServerApiVersion (protocol compatibility, not firmware identification) and
++Go2/B2 ServiceList declarations; these do not establish G1 API7110/7111 support.
++Upgrade service source inspected only; no endpoint invoked. Upload directory
++empty, recover/backup.zip exists but is not evidence of the running release.
++Stop repeating PC4 version searches: exact motion firmware/transition contract
++is still missing. Next useful external evidence is Unitree device information
++or vendor confirmation for this robot; do not trial state-changing APIs merely
++to detect support. Local diagnostic change remains un-deployed. Robot ownership
++and physical recovery remain unresolved, with prior supported stability report.
++
++## 2026-09-14 official manual retrieval and concrete compatibility blocker
++
++Tried browser rendering of official switch-sdk2 manual after web extraction
++returned no text. Browser accessibility tree also remained empty; no manual
++body was verified. Search did not establish a supported firmware threshold.
++Prepared docs/G1_HANDOFF_VENDOR_QUESTIONS_20260914.md with observed FSM501->later0,
++API7110/7111, topic/arbitration and load-bearing handoff questions. Draft only,
++not sent. No robot action. Do not continue repeated version-only searches or
++claim API client presence proves a gap-free handoff. External compatibility
++answer or readable manufacturer documentation is needed for this design choice.
++
++## 2026-09-14 PD priority resumed; mode research on HOLD
++
++User explicitly deferred mode-transition research because supervisor may change
++policy. Do not resume it as a prerequisite for OFFLINE PD analysis. No physical
++trial or deployment authorized by this priority change.
++Recomputed pd_replay_source_20260910/policy.csv arm_tracking data:871 samples,
++17.39999s, max policy interval20.277ms. SHA256 matches archived review:
++5b2fd408c72ad3c0e5929879e98976c5ffd675ca7e148aa32155ab2f73e525c8.
++All7 writer_target minus writer_q RMSE values match prior review to1e-10rad.
++Initial comparison using policy desired_target/q differed; verified prior metrics
++use writer-paired fields. Do not mix these timestamp/pair definitions.
++New details: docs/G1_PD_BASELINE_RECHECK_20260914.json.
++RMS degrees22..28:3.6734,3.3615,1.2455,3.0655,1.3884,1.0931,0.4637.
++Signed mean error22..25:-3.054,-3.240,-1.041,-2.183degrees.
++Roll target excursion only6.46deg, yaw3.87deg; weak independent excitation.
++Bias is trajectory mean, not proof of gravity/static load or a model parameter.
++Free VR motion does not supply specified endpoint holds; overshoot and settling
++are not reliably scored from this entire tracking interval. Lag correlation on
++small-excursion axes is not a reliable physical delay measurement.
++
++Next narrow candidate PLAN, not hardware-optimal gains:
++Keep baseline proximal40/5, wrists20/1. Fixed repeated reference and speed/accel.
++Compare baseline vs ONLY22 Kp48/Kd5, then baseline vs ONLY25 Kp48/Kd5.
++Do not change both axes simultaneously in this first attribution comparison.
++These are modest screening values from the existing48 candidate, not estimated
++best gains. Require measured improvement/repeatability before another increase;
++Kd investigation follows the fixed-Kp comparison, with endpoint/ringing metrics.
++Prior simulation roll300 and pitch120 remain research-only; no transfer to G1.
++No new simulator search or physical validation completed in this turn.
++
++## 2026-09-14 correction: follow canonical ChatGPT system-ID handoff
++
++Supersedes the preceding 48/5 candidate plan: user requested continuation of
++ChatGPT's latest work, not a reset to old hardware candidates. Read
++G1_REAL_SYSTEM_ID_NEXT_20260913.md and pitch/wrist result receipt. Fetched main;
++origin/main remains0da866f; inspected worktree list without resetting anything.
++Latest direction is real-response model calibration and held-out prediction
++BEFORE more PD optimization; pitch120/1+wrist30/1 remains unselected research.
++
++Ran existing offline parser/fitter against the already retrieved handoff-only
++real_response.jsonl:2500records, accepted by strict parser/alignment.
++ALL SEVEN command_q ranges are exactly0rad. Therefore this is an upper-arm hold
++record during leg takeover, not independent arm excitation or quiet-standing
++identification data. It cannot identify commanded arm response or rank new PD.
++Diagnostic fit: G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json. Any fitted parameters
++are descriptive only; algebraic rank is not physical identifiability. Do not
++use them to calibrate gains. recommended_hardware_gains remains null.
++Observed paired-state-to-command median0.6333325ms is software timestamp age,
++NOT actuator latency. No new robot observation/connection performed here.
++Need independently excited arm response episodes and distinct validation data;
++old VR CSV remains descriptive evidence but lacks this exact timing contract.
++Mode research stays HOLD. Next PD work should prepare data sufficiency/holdout
++validation offline, rather than promote old48/5 or simulator120/300 gains.
++
++## 2026-09-14 offline identifiability and holdout contract
++
++Implemented the next PD/system-identification step in the isolated worktree;
++no G1 connection, SDK/DDS initialization, publisher or motor output was used.
++`real_response_identification.py` now refuses to emit coefficients unless each
++joint passes the versioned provisional excitation screen (50 intervals, 0.5 s,
++0.05 rad command range, 0.01 rad measured range and 0.002 rad command-error
++standard deviation) and the regression design has rank three. These thresholds
++screen data acquisition only; they do not establish model validity or sensor
++repeatability.
++
++Added a distinct-session held-out scorer and a strict validation-contract
++parser. Training and validation with the same session ID is rejected. Validation
++thresholds must be seven frozen positive finite values. The checked-in template
++intentionally uses null values so it cannot be used until repeatability-derived
++thresholds are fixed before examining a held-out episode. Outputs continue to
++set `recommended_hardware_gains` to null.
++
++Reprocessed the actual 2,500-record handoff hold trace. Although its algebraic
++design rank is three, all seven command ranges are numerical zero, so all seven
++joints are now `identifiable=false` and all model coefficients/RMSE values are
++null. Updated diagnostic: `G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json`, source
++SHA256 `7f1b1990309f9f65dc50df92853ac38ba8ad54ebe581285017011a1da6920552`.
++The paired 0.633 ms clock interval remains software timing, not actuator delay.
++
++Executed `py -3.11 -B -m unittest -v test_real_response_identification.py`:
++13/13 passed. Coverage includes known synthetic parameter recovery, unexcited
++hold rejection, sequence/clock/nonfinite refusal, repeated-state alignment,
++command causality, distinct train/validation sessions, frozen-contract checks
++and insufficient-training rejection. Synthetic fixtures are generated data;
++the rejected hold diagnostic is measured G1 data. Actual parameter
++identification remains data-blocked pending independently excited training and
++separate validation episodes.
++
++Additional verification: the two C++ memory-only response/shutdown tests were
++compiled with WSL `g++ -std=c++17 -Wall -Wextra -Wpedantic -Werror` and passed;
++the two Python wrapper tests also passed under WSL. Windows Python cannot run
++those compiler-backed wrappers because `g++`/`cmake` are absent there. A broader
++legacy contract run found one stale assertion expecting `[Q SAFE HOLD]` in the
++currently uncommitted controller candidate; this belongs to the deferred mode
++handoff work and was not changed or used for the identification result. Do not
++commit or deploy that controller candidate as part of this offline PD step.
+diff --git a/docs/G1_REAL_RESPONSE_LOGGER_20260914.md b/docs/G1_REAL_RESPONSE_LOGGER_20260914.md
+index 9316d3e..65bd5cb 100644
+--- a/docs/G1_REAL_RESPONSE_LOGGER_20260914.md
++++ b/docs/G1_REAL_RESPONSE_LOGGER_20260914.md
+@@ -19,9 +19,21 @@ or a motor accepted the command.
+ `real_response_identification.py` is an offline parser/fitter skeleton. It
+ refuses sequence gaps, reports the observed clock intervals, and performs a
+ per-joint least-squares fit of acceleration against command error, velocity and
+-bias. Its output always leaves `recommended_hardware_gains` null and explicitly
+-marks the missing holdout validation. It does not estimate a deployable PD
+-vector from one episode.
++bias. Before emitting coefficients, every joint must satisfy the versioned
++`g1.real-response.sufficiency.v1` acquisition screen: at least 50 aligned
++intervals, 0.5 s duration, 0.05 rad command range, 0.01 rad measured range and
++0.002 rad command-error standard deviation. These are provisional excitation
++screens. They are not sensor-noise estimates, hardware limits or evidence that
++a low-order model is valid.
++
++The fitter can score a distinct validation session with a frozen
++`g1.real-response.validation-contract.v1` file. It rejects a shared session ID,
++insufficient training excitation, missing thresholds and nonpositive or
++nonfinite thresholds. The template
++`docs/G1_REAL_RESPONSE_VALIDATION_CONTRACT_TEMPLATE.json` deliberately contains
++null thresholds. Repeatability data must be collected and thresholds frozen
++before opening the held-out validation episode. Both identification and
++validation outputs always leave `recommended_hardware_gains` null.
+ 
+ The existing single-owner `twist2_mink_cycle_trial.cpp` now copies its completed
+ 500 Hz `WriterFrame` into `real_response.jsonl`. The copy occurs only after the
+@@ -39,10 +51,12 @@ Run the offline regression from the experiment directory:
+ python -m unittest -v test_real_response_identification.py
+ ```
+ 
+-Verified on Windows with Python 3.14: 5/5 new tests passed. The tests cover
++Verified on Windows with Python 3.11: 13/13 identification tests passed. The tests cover
+ asynchronous round-trip writing and parameter recovery, sequence-gap refusal,
+ nonmonotonic-clock refusal, nonfinite-field refusal, and the absence of
+-command-capable imports. The existing recorded-target parser regression was
++command-capable imports. They also cover rejection of an unexcited hold,
++train/validation session separation, held-out scoring, rejection of the
++unfilled validation template and insufficient-training rejection. The existing recorded-target parser regression was
+ also rerun separately; these checks create no SDK/DDS endpoint or robot output.
+ Two C++ tests compiled with `-Wall -Wextra -Wpedantic -Werror` and passed in
+ local WSL: the new response-frame schema/slicing/finish test and the existing
+@@ -58,3 +72,11 @@ Remaining work requires a separate review before any physical run:
+    authorization, then freeze train/validation episode splits.
+ 3. Add delay estimation and held-out prediction scoring after real records
+    exist. No latency, friction, inertia or final PD value is claimed here.
++
++The recovered 2,500-record handoff trace was rerun through the sufficiency
++screen. All seven command ranges were numerical zero (at most 2.22e-16 rad), so
++all seven fits are rejected and every coefficient is null in
++`docs/G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json`. The 0.633 ms paired
++LowState-to-command median is a software timestamp interval, not measured
++actuator delay. This trace is real recorded data but is only a hold episode; it
++does not unblock parameter identification.
+diff --git a/experiments/twist2_right_arm_manual/offline_handoff_tests/CMakeLists.txt b/experiments/twist2_right_arm_manual/offline_handoff_tests/CMakeLists.txt
+index d55dbc3..9c30cc9 100644
+--- a/experiments/twist2_right_arm_manual/offline_handoff_tests/CMakeLists.txt
++++ b/experiments/twist2_right_arm_manual/offline_handoff_tests/CMakeLists.txt
+@@ -11,7 +11,7 @@ enable_testing()
+ 
+ foreach(name pd_gain_options pd_small_signal_trial writer_frame
+              verified_regular_handoff regular_handoff_safety periodic_csv_failure
+-             real_response_frame)
++             real_response_frame planned_udp_shutdown)
+   add_executable(test_${name} "../test_${name}.cpp")
+   target_link_libraries(test_${name} PRIVATE Threads::Threads)
+   if(MSVC)
+diff --git a/experiments/twist2_right_arm_manual/real_response_identification.py b/experiments/twist2_right_arm_manual/real_response_identification.py
+index b5adfbb..3431547 100644
+--- a/experiments/twist2_right_arm_manual/real_response_identification.py
++++ b/experiments/twist2_right_arm_manual/real_response_identification.py
+@@ -1,16 +1,106 @@
+ """Offline-only low-order identification skeleton for g1.real-response.v1."""
+ from __future__ import annotations
+ import argparse
++import hashlib
+ import json
++import math
+ from pathlib import Path
+ import numpy as np
+ from real_response_log import JOINT_NAMES, parse_trace
+ 
+ 
++SUFFICIENCY_CONTRACT = {
++    "schema": "g1.real-response.sufficiency.v1",
++    "min_aligned_intervals": 50,
++    "min_duration_s": 0.5,
++    "min_command_range_rad": 0.05,
++    "min_measured_range_rad": 0.01,
++    "min_command_error_std_rad": 0.002,
++}
++VALIDATION_CONTRACT_SCHEMA = "g1.real-response.validation-contract.v1"
++
++
+ def _matrix(trace, key):
+     return np.asarray([r[key] for r in trace.records], dtype=np.float64)
+ 
+ 
++def align_intervals(trace):
++    """Unique observations plus duration-weighted ZOH commands between them.
++
++    Write-return time is a logging boundary, not a measured actuation time.
++    Do not collapse command events when an observation is repeated.
++    """
++    rows = trace.records
++    if trace.dropped_sequences:
++        raise ValueError('sequence_gaps_require_episode_rejection')
++    command_times = np.asarray([r['command_monotonic_ns'] for r in rows], dtype=np.int64)
++    if np.any(np.diff(command_times) <= 0):
++        raise ValueError('ambiguous_command_clock')
++    unique = []
++    for i, row in enumerate(rows):
++        if unique and row['lowstate_monotonic_ns'] == rows[unique[-1]]['lowstate_monotonic_ns']:
++            if any(row[k] != rows[unique[-1]][k] for k in ('measured_q_rad', 'measured_dq_rad_s')):
++                raise ValueError('conflicting_repeated_state')
++        else:
++            if unique and row['lowstate_monotonic_ns'] < rows[unique[-1]]['lowstate_monotonic_ns']:
++                raise ValueError('nonmonotonic_state_clock')
++            unique.append(i)
++    times = np.asarray([rows[i]['lowstate_monotonic_ns'] for i in unique], dtype=np.int64)
++    commands = _matrix(trace, 'command_q_rad')
++    means, starts, ends, durations = [], [], [], []
++    for a, b, ia, ib in zip(times[:-1], times[1:], unique[:-1], unique[1:]):
++        index = int(np.searchsorted(command_times, a, side='right')) - 1
++        if index < 0:
++            continue  # no recorded command covers this interval's beginning
++        cursor = int(a)
++        integral = np.zeros(7)
++        while cursor < b:
++            boundary = min(int(b), int(command_times[index+1])) if index+1 < len(rows) else int(b)
++            integral += commands[index] * (boundary-cursor)
++            cursor = boundary
++            if cursor < b:
++                index += 1
++        means.append(integral / (int(b)-int(a)))
++        starts.append(ia); ends.append(ib); durations.append((int(b)-int(a))*1e-9)
++    if len(means) < 7:
++        raise ValueError('insufficient_aligned_intervals')
++    return np.asarray(means), np.asarray(starts), np.asarray(ends), np.asarray(durations), len(rows)-len(unique)
++
++
++def _excitation(command, q, starts, ends, dt, joint):
++    command_values = command[:, joint]
++    measured_values = np.concatenate((q[starts, joint], q[ends[-1:], joint]))
++    command_error = command_values - q[starts, joint]
++    metrics = {
++        "aligned_intervals": int(len(dt)),
++        "duration_s": float(np.sum(dt)),
++        "command_range_rad": float(np.ptp(command_values)),
++        "measured_range_rad": float(np.ptp(measured_values)),
++        "command_error_std_rad": float(np.std(command_error)),
++    }
++    reasons = []
++    for metric, threshold in (
++        ("aligned_intervals", SUFFICIENCY_CONTRACT["min_aligned_intervals"]),
++        ("duration_s", SUFFICIENCY_CONTRACT["min_duration_s"]),
++        ("command_range_rad", SUFFICIENCY_CONTRACT["min_command_range_rad"]),
++        ("measured_range_rad", SUFFICIENCY_CONTRACT["min_measured_range_rad"]),
++        ("command_error_std_rad", SUFFICIENCY_CONTRACT["min_command_error_std_rad"]),
++    ):
++        if metrics[metric] < threshold:
++            reasons.append(f"{metric}_below_{threshold}")
++    return metrics, reasons
++
++
++def _design(command, q, dq, starts, ends, dt, joint):
++    derivative = (dq[ends, joint] - dq[starts, joint]) / dt
++    matrix = np.column_stack((
++        command[:, joint] - q[starts, joint],
++        -dq[starts, joint],
++        np.ones(len(dt)),
++    ))
++    return matrix, derivative
++
++
+ def estimate(trace):
+     """Estimate timing and dq=a*(command-q)-b*dq+c per joint.
+ 
+@@ -18,45 +108,128 @@ def estimate(trace):
+     """
+     if trace.dropped_sequences:
+         raise ValueError("sequence_gaps_require_episode_rejection")
+-    command = _matrix(trace, "command_q_rad")
++    command, starts, ends, dt, repeated = align_intervals(trace)
+     q = _matrix(trace, "measured_q_rad")
+     dq = _matrix(trace, "measured_dq_rad_s")
+-    times = np.asarray([r["lowstate_monotonic_ns"] for r in trace.records], dtype=np.int64)
+-    if len(times) < 8:
+-        raise ValueError("insufficient_samples")
+-    dt = np.diff(times).astype(np.float64) * 1e-9
+-    if np.any(dt <= 0):
+-        raise ValueError("nonpositive_sample_period")
+-    derivative = np.diff(dq, axis=0) / dt[:, None]
+     fits = []
+     for joint in range(7):
+-        x = np.column_stack((command[:-1, joint] - q[:-1, joint], -dq[:-1, joint], np.ones(len(dt))))
+-        beta, _, rank, singular = np.linalg.lstsq(x, derivative[:, joint], rcond=None)
++        x, derivative = _design(command, q, dq, starts, ends, dt, joint)
++        rank = int(np.linalg.matrix_rank(x))
++        metrics, reasons = _excitation(command, q, starts, ends, dt, joint)
++        if rank != 3:
++            reasons.append("design_rank_below_3")
++        if reasons:
++            fits.append({
++                "joint": JOINT_NAMES[joint],
++                "command_error_gain_s2": None,
++                "effective_damping_s1": None,
++                "acceleration_bias_rad_s2": None,
++                "acceleration_rmse_rad_s2": None,
++                "rank": rank,
++                "identifiable": False,
++                "sufficiency": metrics,
++                "rejection_reasons": reasons,
++            })
++            continue
++        beta, _, rank, _ = np.linalg.lstsq(x, derivative, rcond=None)
+         prediction = x @ beta
+         fits.append({
+             "joint": JOINT_NAMES[joint], "command_error_gain_s2": float(beta[0]),
+             "effective_damping_s1": float(beta[1]), "acceleration_bias_rad_s2": float(beta[2]),
+-            "acceleration_rmse_rad_s2": float(np.sqrt(np.mean((prediction-derivative[:, joint])**2))),
+-            "rank": int(rank), "identifiable": bool(rank == 3),
++            "acceleration_rmse_rad_s2": float(np.sqrt(np.mean((prediction-derivative)**2))),
++            "rank": int(rank), "identifiable": True,
++            "sufficiency": metrics, "rejection_reasons": [],
+         })
+     target_to_command = np.asarray([r["command_monotonic_ns"]-r["target_monotonic_ns"] for r in trace.records]) * 1e-6
+     state_to_command = np.asarray([r["command_monotonic_ns"]-r["lowstate_monotonic_ns"] for r in trace.records]) * 1e-6
+     return {
+         "schema": "g1.real-response.identification.v1", "source_sha256": trace.sha256,
+-        "samples": len(trace.records), "measured_data": True,
++        "samples": len(trace.records), "measured_data": None,
++        "aligned_intervals": len(dt), "repeated_state_records": repeated,
+         "timing_ms": {"target_to_command_median": float(np.median(target_to_command)),
+                       "paired_lowstate_to_command_median": float(np.median(state_to_command)),
+                       "lowstate_period_median": float(np.median(dt)*1000)},
++        "sufficiency_contract": SUFFICIENCY_CONTRACT,
++        "all_joints_identifiable": all(x["identifiable"] for x in fits),
+         "joint_models": fits, "recommended_hardware_gains": None,
+-        "limitations": ["single-episode descriptive fit", "no holdout validation", "clock timestamps do not prove command acceptance"],
++        "limitations": ["single-episode descriptive fit", "no holdout validation", "clock timestamps do not prove command acceptance", "same clock domain must be established externally", "state is approximated by the left endpoint within each interval", "input schema alone does not establish real hardware provenance"],
++    }
++
++
++def _validation_contract(value):
++    required = {"schema", "contract_id", "max_acceleration_rmse_rad_s2"}
++    if not isinstance(value, dict) or set(value) != required:
++        raise ValueError("invalid_validation_contract_fields")
++    if value["schema"] != VALIDATION_CONTRACT_SCHEMA:
++        raise ValueError("invalid_validation_contract_schema")
++    if not isinstance(value["contract_id"], str) or not value["contract_id"]:
++        raise ValueError("invalid_validation_contract_id")
++    thresholds = value["max_acceleration_rmse_rad_s2"]
++    if (not isinstance(thresholds, list) or len(thresholds) != 7 or
++            not all(type(x) in (int, float) and math.isfinite(x) and x > 0 for x in thresholds)):
++        raise ValueError("validation_thresholds_must_be_frozen_positive_7_vector")
++    canonical = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
++    return value, hashlib.sha256(canonical).hexdigest()
++
++
++def fit_and_validate(train_trace, validation_trace, contract):
++    """Fit one session and score a distinct session under a predeclared contract."""
++    contract, contract_sha256 = _validation_contract(contract)
++    train_session = train_trace.records[0]["session_id"]
++    validation_session = validation_trace.records[0]["session_id"]
++    if train_session == validation_session:
++        raise ValueError("train_validation_session_overlap")
++    trained = estimate(train_trace)
++    if not trained["all_joints_identifiable"]:
++        raise ValueError("train_excitation_insufficient")
++    command, starts, ends, dt, repeated = align_intervals(validation_trace)
++    q = _matrix(validation_trace, "measured_q_rad")
++    dq = _matrix(validation_trace, "measured_dq_rad_s")
++    scored = []
++    for joint, model in enumerate(trained["joint_models"]):
++        x, observed = _design(command, q, dq, starts, ends, dt, joint)
++        metrics, reasons = _excitation(command, q, starts, ends, dt, joint)
++        beta = np.asarray([
++            model["command_error_gain_s2"], model["effective_damping_s1"],
++            model["acceleration_bias_rad_s2"],
++        ])
++        rmse = float(np.sqrt(np.mean((x @ beta - observed) ** 2)))
++        threshold = float(contract["max_acceleration_rmse_rad_s2"][joint])
++        scored.append({
++            "joint": JOINT_NAMES[joint], "acceleration_rmse_rad_s2": rmse,
++            "threshold_rad_s2": threshold, "excitation_sufficient": not reasons,
++            "sufficiency": metrics, "rejection_reasons": reasons,
++            "passed": not reasons and rmse <= threshold,
++        })
++    return {
++        "schema": "g1.real-response.validation.v1",
++        "train_source_sha256": train_trace.sha256,
++        "validation_source_sha256": validation_trace.sha256,
++        "train_session_id": train_session,
++        "validation_session_id": validation_session,
++        "validation_contract": contract,
++        "validation_contract_sha256": contract_sha256,
++        "validation_repeated_state_records": repeated,
++        "trained_models": trained["joint_models"],
++        "validation": scored,
++        "all_passed": all(x["passed"] for x in scored),
++        "recommended_hardware_gains": None,
+     }
+ 
+ 
+ def main(argv=None):
+     parser = argparse.ArgumentParser()
+     parser.add_argument("trace", type=Path); parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--validation-trace", type=Path)
++    parser.add_argument("--validation-contract", type=Path)
+     args = parser.parse_args(argv)
+-    result = estimate(parse_trace(args.trace))
++    if bool(args.validation_trace) != bool(args.validation_contract):
++        parser.error("--validation-trace and --validation-contract are required together")
++    if args.validation_trace:
++        contract = json.loads(args.validation_contract.read_text(encoding="utf-8"))
++        result = fit_and_validate(parse_trace(args.trace), parse_trace(args.validation_trace), contract)
++    else:
++        result = estimate(parse_trace(args.trace))
+     args.output.write_text(json.dumps(result, indent=2), encoding="utf-8")
+ 
+ 
+diff --git a/experiments/twist2_right_arm_manual/test_controller_handoff_offline.py b/experiments/twist2_right_arm_manual/test_controller_handoff_offline.py
+index bc4aa9e..5bb9784 100644
+--- a/experiments/twist2_right_arm_manual/test_controller_handoff_offline.py
++++ b/experiments/twist2_right_arm_manual/test_controller_handoff_offline.py
+@@ -194,6 +194,16 @@ class ControllerHandoffOfflineTest(unittest.TestCase):
+             run = subprocess.run([str(exe)], capture_output=True, text=True, timeout=15)
+             self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+             self.assertIn("PASS 12 extracted-controller scenarios", run.stdout)
++            self.assertIn("[HANDOFF SELECT]", run.stderr)
++            observations = [line for line in run.stderr.splitlines()
++                            if line.startswith("[HANDOFF OBS]")]
++            self.assertTrue(observations)
++            for line in observations:
++                for field in ("rpc_start=", "rpc_end=", "mode_result=", "fsm_result=",
++                              "fsm=", "expected_fsm=501", "state_valid=", "fresh=",
++                              "writer_enabled=0", "deadline_exceeded="):
++                    self.assertIn(field, line)
++            self.assertTrue(any("deadline_exceeded=1" in line for line in observations))
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/experiments/twist2_right_arm_manual/test_real_response_identification.py b/experiments/twist2_right_arm_manual/test_real_response_identification.py
+index 08a39eb..e6014c2 100644
+--- a/experiments/twist2_right_arm_manual/test_real_response_identification.py
++++ b/experiments/twist2_right_arm_manual/test_real_response_identification.py
+@@ -5,12 +5,12 @@ import real_response_log as log
+ import real_response_identification as ident
+ 
+ 
+-def record(sequence, command, q, dq):
++def record(sequence, command, q, dq, session_id="fixture"):
+     t = 1_000_000_000 + sequence * 10_000_000
+     zero = [0.0] * 7
+-    return {"schema":log.SCHEMA,"session_id":"fixture","sequence":sequence,"state":"active",
++    return {"schema":log.SCHEMA,"session_id":session_id,"sequence":sequence,"state":"active",
+         "source_provenance":{"controller_commit":"fixture"},"target_monotonic_ns":t-2_000_000,
+-        "command_monotonic_ns":t-1_000_000,"lowstate_monotonic_ns":t,"target_q_rad":command.tolist(),
++        "command_monotonic_ns":t,"lowstate_monotonic_ns":t,"target_q_rad":command.tolist(),
+         "command_q_rad":command.tolist(),"command_dq_rad_s":zero,"kp_nm_rad":[40.0]*7,
+         "kd_nm_s_rad":[5.0]*7,"tau_ff_nm":zero,"measured_q_rad":q.tolist(),"measured_dq_rad_s":dq.tolist()}
+ 
+@@ -18,11 +18,11 @@ def record(sequence, command, q, dq):
+ class RealResponseTest(unittest.TestCase):
+     def setUp(self): self.tmp=tempfile.TemporaryDirectory(); self.path=Path(self.tmp.name)/"trace.jsonl"
+     def tearDown(self): self.tmp.cleanup()
+-    def rows(self):
++    def rows(self, session_id="fixture"):
+         q=np.zeros(7);dq=np.zeros(7);rows=[]
+         for i in range(80):
+             command=np.full(7, .2 if i>=10 else 0.)
+-            rows.append(record(i,command,q,dq));acc=8*(command-q)-1.5*dq+.01
++            rows.append(record(i,command,q,dq,session_id));acc=8*(command-q)-1.5*dq+.01
+             dq=dq+acc*.01;q=q+dq*.01
+         return rows
+     def test_async_round_trip_and_fit(self):
+@@ -33,6 +33,7 @@ class RealResponseTest(unittest.TestCase):
+         self.assertIsNone(result["recommended_hardware_gains"])
+         self.assertAlmostEqual(result["joint_models"][0]["command_error_gain_s2"],8,places=4)
+         self.assertAlmostEqual(result["joint_models"][0]["effective_damping_s1"],1.5,places=4)
++        self.assertTrue(result["all_joints_identifiable"])
+     def test_gap_is_detected_and_fit_refused(self):
+         rows=self.rows();rows.pop(20);self.path.write_text("".join(json.dumps(x)+"\n" for x in rows),encoding="utf-8")
+         trace=log.parse_trace(self.path);self.assertEqual(trace.dropped_sequences,1)
+@@ -53,5 +54,91 @@ class RealResponseTest(unittest.TestCase):
+         for forbidden in ("unitree_sdk", "socket", "subprocess"):
+             self.assertFalse(any(name==forbidden or name.startswith(forbidden+".") for name in imports))
+ 
++    def trace(self, rows):
++        self.path.write_text(''.join(json.dumps(r)+'\n' for r in rows), encoding='utf-8')
++        return log.parse_trace(self.path)
++
++    def test_repeated_state_preserves_intermediate_command(self):
++        rows=self.rows()
++        rows[20]['lowstate_monotonic_ns']=rows[19]['lowstate_monotonic_ns']
++        for key in ('measured_q_rad','measured_dq_rad_s'):
++            rows[20][key]=rows[19][key][:]
++        rows[20]['command_q_rad']=[.6]*7
++        command,starts,ends,dt,repeated=ident.align_intervals(self.trace(rows))
++        index=list(starts).index(19)
++        self.assertEqual(ends[index],21)
++        np.testing.assert_allclose(command[index],[.4]*7)
++        self.assertEqual(repeated,1)
++        result=ident.estimate(self.trace(rows))
++        self.assertEqual(result['repeated_state_records'],1)
++        self.assertIsNone(result['measured_data'])
++
++    def test_state_conflict_rejected(self):
++        rows=self.rows(); rows[20]['lowstate_monotonic_ns']=rows[19]['lowstate_monotonic_ns']
++        with self.assertRaisesRegex(ValueError,'conflicting_repeated_state'):
++            ident.align_intervals(self.trace(rows))
++
++    def test_future_command_does_not_leak_backwards(self):
++        rows=self.rows(); rows[20]['command_q_rad']=[123.]*7
++        command,starts,_,_,_=ident.align_intervals(self.trace(rows))
++        np.testing.assert_allclose(command[list(starts).index(19)],[.2]*7)
++
++    def test_hold_episode_has_no_reported_coefficients(self):
++        rows=self.rows()
++        for row in rows:
++            row['command_q_rad']=[0.0]*7
++            row['target_q_rad']=[0.0]*7
++        result=ident.estimate(self.trace(rows))
++        self.assertFalse(result['all_joints_identifiable'])
++        for model in result['joint_models']:
++            self.assertFalse(model['identifiable'])
++            self.assertIsNone(model['command_error_gain_s2'])
++            self.assertIsNone(model['acceleration_rmse_rad_s2'])
++            self.assertTrue(any('command_range_rad' in x for x in model['rejection_reasons']))
++
++    def test_same_session_cannot_be_train_and_validation(self):
++        train=self.trace(self.rows('same-session'))
++        with tempfile.TemporaryDirectory() as folder:
++            path=Path(folder)/'validation.jsonl'
++            path.write_text(''.join(json.dumps(r)+'\n' for r in self.rows('same-session')),encoding='utf-8')
++            validation=log.parse_trace(path)
++            with self.assertRaisesRegex(ValueError,'session_overlap'):
++                ident.fit_and_validate(train,validation,self.contract())
++
++    def test_distinct_held_out_session_is_scored(self):
++        train=self.trace(self.rows('train'))
++        with tempfile.TemporaryDirectory() as folder:
++            path=Path(folder)/'validation.jsonl'
++            path.write_text(''.join(json.dumps(r)+'\n' for r in self.rows('validation')),encoding='utf-8')
++            result=ident.fit_and_validate(train,log.parse_trace(path),self.contract())
++        self.assertTrue(result['all_passed'])
++        self.assertIsNone(result['recommended_hardware_gains'])
++        self.assertEqual(result['train_session_id'],'train')
++        self.assertEqual(result['validation_session_id'],'validation')
++
++    def test_unfrozen_validation_thresholds_are_rejected(self):
++        contract=self.contract();contract['max_acceleration_rmse_rad_s2']=[None]*7
++        train=self.trace(self.rows('train'))
++        with tempfile.TemporaryDirectory() as folder:
++            path=Path(folder)/'validation.jsonl'
++            path.write_text(''.join(json.dumps(r)+'\n' for r in self.rows('validation')),encoding='utf-8')
++            with self.assertRaisesRegex(ValueError,'thresholds_must_be_frozen'):
++                ident.fit_and_validate(train,log.parse_trace(path),contract)
++
++    def test_insufficient_training_excitation_is_rejected(self):
++        rows=self.rows('train')
++        for row in rows: row['command_q_rad']=[0.0]*7
++        train=self.trace(rows)
++        with tempfile.TemporaryDirectory() as folder:
++            path=Path(folder)/'validation.jsonl'
++            path.write_text(''.join(json.dumps(r)+'\n' for r in self.rows('validation')),encoding='utf-8')
++            with self.assertRaisesRegex(ValueError,'train_excitation_insufficient'):
++                ident.fit_and_validate(train,log.parse_trace(path),self.contract())
++
++    @staticmethod
++    def contract():
++        return {'schema':ident.VALIDATION_CONTRACT_SCHEMA,'contract_id':'fixture-v1',
++            'max_acceleration_rmse_rad_s2':[0.1]*7}
++
+ 
+ if __name__ == "__main__": unittest.main()
+diff --git a/experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp b/experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp
+index aab3238..596e27e 100644
+--- a/experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp
++++ b/experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp
+@@ -12,6 +12,7 @@
+ #include "native_state_tick.hpp"
+ #include "verified_regular_handoff.hpp"
+ #include "regular_handoff_safety.hpp"
++#include "planned_udp_shutdown.hpp"
+ #include <functional>
+ 
+ #include <unitree/common/thread/thread.hpp>
+@@ -172,7 +173,7 @@ void print_keyboard_help() {
+       << "  wrist roll     t/g/b    wrist pitch    y/h/n\n"
+       << "  wrist yaw      u/j/m\n"
+       << "[keyboard] speed: 1..9 = 0.08..0.72 rad/s; "
+-         "?=help; P/Q=safe arm return and continued TWIST2 hold\n"
++         "?=help; P=return; Q=return then verified Regular handoff (UDP)\n"
+       << "[keyboard] every command is clamped to its configured soft "
+          "joint limits\n";
+ }
+@@ -397,7 +398,18 @@ class Controller {
+   void start_response_log(const std::string& path,const std::string& session,const std::string& binary_sha){
+     response_log_=std::make_unique<RealResponseLog>(path,session,binary_sha);
+   }
+-  void finish_response_log(){if(response_log_)response_log_->Finish();}
++  void finish_response_log(){
++    std::unique_ptr<RealResponseLog> detached;
++    bool failed=false;
++    {
++      std::lock_guard<std::mutex> lock(write_cycle_mutex_);
++      detached=std::move(response_log_);
++      failed=response_log_failed_;
++    }
++    // Drain outside the control lock; the writer no longer sees this sink.
++    if(detached)detached->Finish();
++    if(failed)throw std::runtime_error("real_response_recording_incomplete");
++  }
+ 
+   void handoff_and_activate() {
+     std::string form;
+@@ -526,8 +538,23 @@ class Controller {
+   bool monitor_regular_handoff() {
+     VerifiedRegularHandoffGate gate(start_fsm_id_);
+     const double verify_deadline = Now() + 10.0;
++    double next_diagnostic = -1.0;
+     for (;;) {
+       const auto observation = regular_handoff::Observe(*this);
++      const double diagnostic_now = Now();
++      if (diagnostic_now >= next_diagnostic) {
++        std::fprintf(stderr,
++            "[HANDOFF OBS] t=%.6f rpc_start=%.6f rpc_end=%.6f "
++            "mode_result=%d mode=%s fsm_result=%d fsm=%d expected_fsm=%d "
++            "state_valid=%d fresh=%d writer_enabled=%d deadline_exceeded=%d\n",
++            diagnostic_now, observation.started, observation.finished,
++            observation.mode_result, observation.mode.c_str(),
++            observation.fsm_result, observation.fsm_id, start_fsm_id_,
++            int(observation.state_valid), int(observation.Fresh()),
++            int(active_.load()), int(diagnostic_now >= verify_deadline));
++        std::fflush(stderr);
++        next_diagnostic = diagnostic_now + 1.0;
++      }
+       if (gate.Update(observation.finished, observation.mode_result,
+                       observation.mode, observation.fsm_result,
+                       observation.fsm_id,
+@@ -609,7 +636,11 @@ class Controller {
+     { std::lock_guard<std::mutex> lock(write_cycle_mutex_); }
+     writer_.reset();
+     try {
++      std::fprintf(stderr, "[HANDOFF SELECT] t=%.6f writer_stopped=1 begin\n", Now());
++      std::fflush(stderr);
+       const auto selected = switcher_->SelectMode("ai");
++      std::fprintf(stderr, "[HANDOFF SELECT] t=%.6f result=%d\n", Now(), int(selected));
++      std::fflush(stderr);
+       if (selected != 0)
+         std::fputs("[handoff] selection returned an error; observing owner\n", stderr);
+     } catch (...) {
+@@ -688,11 +719,12 @@ class Controller {
+     const auto cycle_started = Clock::now();
+     Clock::time_point received;
+     const LowState state = snapshot(nullptr,&received);
+-    Desired command_desired = desired();
++    Desired command_desired;
+     if (!handoff_requested_.load()) {
+       try {
+         if(input_watchdog_){const auto why=input_watchdog_();if(!why.empty())throw std::runtime_error(why);}
+         validate_state(state, kVelocityLimit, false, received, true);
++        command_desired = desired();
+         if (command_watchdog_expired(
+                 Clock::now(),
+                 command_desired.created,
+@@ -804,7 +836,8 @@ class Controller {
+     }
+     writer_frames_.Publish(frame);
+     frame=writer_frames_.Read();
+-    if(response_log_){
++    if(response_log_ && !response_log_failed_ && !handoff_requested_.load()){
++      try {
+       RealResponseFrame response;response.writer=frame;
+       response.state=handoff_requested_.load()?"hold":"active";
+       for(std::size_t i=0;i<7;++i){const auto joint=i+22;response.original_target[i]=command_desired.target[joint];
+@@ -813,6 +846,11 @@ class Controller {
+       const auto& rpy=state.imu_state().rpy();const auto& gyro=state.imu_state().gyroscope();
+       for(std::size_t i=0;i<3;++i){response.imu_rpy[i]=rpy[i];response.imu_gyroscope[i]=gyro[i];}
+       response_log_->Append(response);
++      } catch (...) {
++        // Recording loss must not terminate the motor-command callback.
++        // Report failure on finalization; never treat this trace as complete.
++        response_log_failed_=true;
++      }
+     }
+     std::lock_guard<std::mutex> lock(stats_mutex_);
+     if (last_write_ != Clock::time_point{}) {
+@@ -841,6 +879,7 @@ class Controller {
+   std::function<std::string()> input_watchdog_;
+   WriterFrameStore writer_frames_;
+   std::unique_ptr<RealResponseLog> response_log_;
++  bool response_log_failed_=false;
+   mutable std::mutex state_mutex_;
+   LowState state_{};
+   Clock::time_point state_received_{};
+@@ -1043,8 +1082,8 @@ int main(int argc, char** argv) {
+     if (keyboard_right_arm && !controlled_trial) {
+       std::cout
+           << "UDP timeline: blend, both-arm initial pose, then absolute right-arm input; 300 s total policy\n";
+-      std::cout<<"[UDP] Cycle candidate: pinch, Q, Select/B and valid-state faults use safe arm return; TWIST2 remains the full-body owner. No damping or automatic AI handoff. Wait for udp_ready.\n";
+-      std::cout<<"[UDP] Ctrl+C requests the same checked safe return and does not stop LowCmd or exit the process.\n";
++      std::cout<<"[UDP] Pinch/Select/B and recoverable faults return under TWIST2. Wait for udp_ready.\n";
++      std::cout<<"[UDP] Q/Ctrl+C requests return, settle and verified Regular handoff. Do not close until SHUTDOWN COMPLETE; failed handoff may retain this process.\n";
+     }
+     std::cout
+         << "Select/B requests safe-waypoint return; TWIST2 remains the command owner.\n"
+@@ -1240,6 +1279,8 @@ int main(int argc, char** argv) {
+         kCaptureSeconds + kBlendSeconds + policy_seconds;
+ 
+     std::string automatic_ai_reason;
++    PlannedUdpShutdown udp_shutdown;
++    bool shutdown_return_ready=false;
+     bool policy_duration_return_requested = false;
+     unsigned handled_operator_signals = gOperatorSignalCount.load();
+     try {
+@@ -1260,9 +1301,10 @@ int main(int argc, char** argv) {
+           }
+           udp_target->RequestAutomaticHandback(
+               "operator Ctrl+C safe return");
++          udp_shutdown.Request();
+           std::cout
+               << "\n[operator] Ctrl+C requested a checked safe return; "
+-                 "LowCmd remains active and the process will not exit\n";
++                 "wait for SHUTDOWN COMPLETE before closing the window\n";
+         }
+         if (elapsed >= active_seconds && !policy_duration_return_requested) {
+           if(keyboard_right_arm&&!pd_active)
+@@ -1332,10 +1374,10 @@ int main(int argc, char** argv) {
+             if(key=='q'||key=='Q'){
+               if(pd_active)controller.latch("keyboard stop requested",true);
+               else {
+-                std::cout << "\n[Q SAFE HOLD] Automatic Regular/AI handoff "
+-                             "is disabled after the controller-overlap "
+-                             "incident. Returning through the safe waypoint; "
+-                             "TWIST2 will remain the command owner.\n";
++                udp_shutdown.Request();
++                std::cout << "\n[SHUTDOWN] Q accepted; return and settle first, "
++                             "then stop writer and verify Regular. "
++                             "Wait for SHUTDOWN COMPLETE.\n";
+                 udp_target->RequestAutomaticHandback(
+                     "operator Q safe hold");
+               }
+@@ -1402,12 +1444,16 @@ int main(int argc, char** argv) {
+             udp->Ack(*udp_target);
+             if(udp_target->AutomaticHandbackReady()){
+               automatic_ai_reason=udp_target->AutomaticHandbackReason();
++              if(udp_shutdown.Requested()){
++                shutdown_return_ready=true;
++              }else{
+               if(!udp_target->ContinueFromSafeHold())
+                 throw std::runtime_error("safe-hold continuation failed");
+               std::cout << "\n[safe hold] return complete after '"
+                         << automatic_ai_reason
+                         << "'; TWIST2 remains the single owner; re-engage is allowed\n";
+               automatic_ai_reason.clear();
++              }
+             }
+           }
+           for(std::size_t i=12;i<29;++i){
+@@ -1447,6 +1493,10 @@ int main(int argc, char** argv) {
+               (1.0F - alpha) * controller.capture_tau()[i];
+         }
+         controller.set_desired(desired);
++        if(udp_shutdown.MayHandoff(shutdown_return_ready,true,controller.handoff_requested())){
++          controller.latch("operator UDP return completed",true);
++          break;
++        }
+         const auto applied = target_as_action(desired.target);
+         history.commit(result.current, applied);
+ 
+@@ -1528,7 +1578,7 @@ int main(int argc, char** argv) {
+     std::cout << '\n';
+     if(controller.handoff_requested()){
+       std::cout << "[safe hold] controller fault '" << controller.reason()
+-                << "'; automatic AI handoff is disabled to prevent a damping transition\n";
++                << "'; only a completed planned return may attempt verified Regular handoff\n";
+       // The persistent owner intentionally never returns from finish().  Seal
+       // the comparison artifacts first so a completed PD run remains usable
+       // even though the LowCmd hold continues until a successor owner exists.
+@@ -1554,6 +1604,7 @@ int main(int argc, char** argv) {
+         std::fputs("[artifact error] sealing/hash/result failed; ownership is "
+                    "retained and planned handoff processing continues\n", stderr);
+       if(controller.reason()=="pd sweep completed"||
++         controller.reason()=="operator UDP return completed"||
+          controller.reason()=="handoff-only completed"){
+         const bool verified = controller.verified_regular_handoff();
+         const bool outcome_recorded = regular_handoff::TryArtifact([&]() {
+diff --git a/docs/G1_HANDOFF_VENDOR_QUESTIONS_20260914.md b/docs/G1_HANDOFF_VENDOR_QUESTIONS_20260914.md
+new file mode 100644
+index 0000000..4eb7d70
+--- /dev/null
++++ b/docs/G1_HANDOFF_VENDOR_QUESTIONS_20260914.md
+@@ -0,0 +1,30 @@
++# Unitree G1 control handoff: support inquiry draft
++
++We need a supported transition from load-bearing Regular standing to a custom
++full-body controller and back, without an intervening zero-torque/passive phase.
++
++Observed on this G1:
++- Before takeover: CheckMode=ai, GetFsmId=501.
++- Custom controller uses ReleaseMode and direct rt/lowcmd.
++- After stopping its writer and SelectMode(ai), a later read-only query returned
++  CheckMode=ai and GetFsmId=0. The supported robot lost posture-holding torque.
++- This observation does not establish the exact instant or cause of FSM0.
++
++Please confirm:
++1. Which motion firmware versions support rt/user_lowcmd with API7110
++   SwitchToUserCtrl and API7111 SwitchToInternalCtrl?
++2. Can entry start from load-bearing Regular501, or must it start in PASSIVE1?
++3. Does LAST or WALKRUN restore load-bearing standing without a torque gap?
++   What command streaming/acknowledgement ordering is required?
++4. How are stale user commands, process exit and network loss handled?
++5. Which read-only API identifies the actual motion firmware and supported APIs?
++
++Installed SDK exposes these client methods, but server support is unknown.
++PC4 metadata: master_service1.0.0.2, patch1.0.0.4, video1.0.2.3, OTA1.1.0.3.
++These are not claimed to identify motion firmware.
++
++References:
++https://github.com/unitreerobotics/unitree_sdk2/blob/main/example/g1/high_level/g1_userctrl_dds_example.cpp
++https://unistore.unitree.com/manuals?slug=switch-sdk2
++
++Draft only. Not sent. Do not attach robot logs or identifiers without review.
+diff --git a/docs/G1_PD_BASELINE_RECHECK_20260914.json b/docs/G1_PD_BASELINE_RECHECK_20260914.json
+new file mode 100644
+index 0000000..1bb310b
+--- /dev/null
++++ b/docs/G1_PD_BASELINE_RECHECK_20260914.json
+@@ -0,0 +1,107 @@
++{
++  "source": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\pd_replay_source_20260910\\policy.csv",
++  "sha256": "5b2fd408c72ad3c0e5929879e98976c5ffd675ca7e148aa32155ab2f73e525c8",
++  "samples": 871,
++  "duration_s": 17.399989983999994,
++  "max_dt_s": 0.020277056000004734,
++  "joints": [
++    {
++      "joint": 22,
++      "rmse_deg": 3.673396847985136,
++      "bias_deg": -3.054018352668111,
++      "centered_rmse_deg": 2.0412781055881375,
++      "peak_error_deg": 6.9727685151631205,
++      "range_deg": 30.2319395448877,
++      "kp": [
++        40.0
++      ],
++      "kd": [
++        5.0
++      ]
++    },
++    {
++      "joint": 23,
++      "rmse_deg": 3.36153681278124,
++      "bias_deg": -3.2400076749647395,
++      "centered_rmse_deg": 0.8957008484159433,
++      "peak_error_deg": 4.769758446493562,
++      "range_deg": 6.462429586984462,
++      "kp": [
++        40.0
++      ],
++      "kd": [
++        5.0
++      ]
++    },
++    {
++      "joint": 24,
++      "rmse_deg": 1.2454649820718373,
++      "bias_deg": -1.0406436650796829,
++      "centered_rmse_deg": 0.6842834090468122,
++      "peak_error_deg": 2.3117878748345935,
++      "range_deg": 3.8737524599433097,
++      "kp": [
++        40.0
++      ],
++      "kd": [
++        5.0
++      ]
++    },
++    {
++      "joint": 25,
++      "rmse_deg": 3.065519481674536,
++      "bias_deg": -2.183183587082288,
++      "centered_rmse_deg": 2.1520035124554577,
++      "peak_error_deg": 5.497458753497768,
++      "range_deg": 44.39667356737893,
++      "kp": [
++        40.0
++      ],
++      "kd": [
++        5.0
++      ]
++    },
++    {
++      "joint": 26,
++      "rmse_deg": 1.3884299762628978,
++      "bias_deg": 0.1636464381478423,
++      "centered_rmse_deg": 1.3787522048094483,
++      "peak_error_deg": 2.579549006102253,
++      "range_deg": 22.52365100989436,
++      "kp": [
++        20.0
++      ],
++      "kd": [
++        1.0
++      ]
++    },
++    {
++      "joint": 27,
++      "rmse_deg": 1.0931353051628858,
++      "bias_deg": -0.7471496077755769,
++      "centered_rmse_deg": 0.7979425160964648,
++      "peak_error_deg": 2.721581082345376,
++      "range_deg": 24.85830593118333,
++      "kp": [
++        20.0
++      ],
++      "kd": [
++        1.0
++      ]
++    },
++    {
++      "joint": 28,
++      "rmse_deg": 0.46372873837329914,
++      "bias_deg": 0.13708884066553662,
++      "centered_rmse_deg": 0.44300224893139184,
++      "peak_error_deg": 0.897933380556665,
++      "range_deg": 15.524103030542909,
++      "kp": [
++        20.0
++      ],
++      "kd": [
++        1.0
++      ]
++    }
++  ]
++}
+\ No newline at end of file
+diff --git a/docs/G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json b/docs/G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json
+new file mode 100644
+index 0000000..ef568aa
+--- /dev/null
++++ b/docs/G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json
+@@ -0,0 +1,174 @@
++{
++  "schema": "g1.real-response.identification.v1",
++  "source_sha256": "7f1b1990309f9f65dc50df92853ac38ba8ad54ebe581285017011a1da6920552",
++  "samples": 2500,
++  "measured_data": null,
++  "aligned_intervals": 2496,
++  "repeated_state_records": 2,
++  "timing_ms": {
++    "target_to_command_median": 10.228750999999999,
++    "paired_lowstate_to_command_median": 0.6333325,
++    "lowstate_period_median": 1.910959
++  },
++  "sufficiency_contract": {
++    "schema": "g1.real-response.sufficiency.v1",
++    "min_aligned_intervals": 50,
++    "min_duration_s": 0.5,
++    "min_command_range_rad": 0.05,
++    "min_measured_range_rad": 0.01,
++    "min_command_error_std_rad": 0.002
++  },
++  "all_joints_identifiable": false,
++  "joint_models": [
++    {
++      "joint": "right_shoulder_pitch",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 1.1102230246251565e-16,
++        "measured_range_rad": 0.020469000000000015,
++        "command_error_std_rad": 0.007262804130043449
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05"
++      ]
++    },
++    {
++      "joint": "right_shoulder_roll",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 5.551115123125783e-17,
++        "measured_range_rad": 0.025311,
++        "command_error_std_rad": 0.00945976227082377
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05"
++      ]
++    },
++    {
++      "joint": "right_shoulder_yaw",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 6.938893903907228e-18,
++        "measured_range_rad": 0.0011025000000000028,
++        "command_error_std_rad": 0.0003313023270046147
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05",
++        "measured_range_rad_below_0.01",
++        "command_error_std_rad_below_0.002"
++      ]
++    },
++    {
++      "joint": "right_elbow",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 2.220446049250313e-16,
++        "measured_range_rad": 0.01051000000000002,
++        "command_error_std_rad": 0.002777185625029003
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05"
++      ]
++    },
++    {
++      "joint": "right_wrist_roll",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 2.7755575615628914e-17,
++        "measured_range_rad": 0.0012823,
++        "command_error_std_rad": 0.00038616367779416484
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05",
++        "measured_range_rad_below_0.01",
++        "command_error_std_rad_below_0.002"
++      ]
++    },
++    {
++      "joint": "right_wrist_pitch",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 6.938893903907228e-18,
++        "measured_range_rad": 0.0009228000000000014,
++        "command_error_std_rad": 0.0002771687363583115
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05",
++        "measured_range_rad_below_0.01",
++        "command_error_std_rad_below_0.002"
++      ]
++    },
++    {
++      "joint": "right_wrist_yaw",
++      "command_error_gain_s2": null,
++      "effective_damping_s1": null,
++      "acceleration_bias_rad_s2": null,
++      "acceleration_rmse_rad_s2": null,
++      "rank": 3,
++      "identifiable": false,
++      "sufficiency": {
++        "aligned_intervals": 2496,
++        "duration_s": 4.994976063,
++        "command_range_rad": 6.938893903907228e-18,
++        "measured_range_rad": 0.0005992000000000011,
++        "command_error_std_rad": 0.00019340155484429047
++      },
++      "rejection_reasons": [
++        "command_range_rad_below_0.05",
++        "measured_range_rad_below_0.01",
++        "command_error_std_rad_below_0.002"
++      ]
++    }
++  ],
++  "recommended_hardware_gains": null,
++  "limitations": [
++    "single-episode descriptive fit",
++    "no holdout validation",
++    "clock timestamps do not prove command acceptance",
++    "same clock domain must be established externally",
++    "state is approximated by the left endpoint within each interval",
++    "input schema alone does not establish real hardware provenance"
++  ]
++}
+\ No newline at end of file
+diff --git a/docs/G1_REAL_RESPONSE_VALIDATION_CONTRACT_TEMPLATE.json b/docs/G1_REAL_RESPONSE_VALIDATION_CONTRACT_TEMPLATE.json
+new file mode 100644
+index 0000000..acbd3be
+--- /dev/null
++++ b/docs/G1_REAL_RESPONSE_VALIDATION_CONTRACT_TEMPLATE.json
+@@ -0,0 +1,13 @@
++{
++  "schema": "g1.real-response.validation-contract.v1",
++  "contract_id": "fill-before-opening-validation-episode",
++  "max_acceleration_rmse_rad_s2": [
++    null,
++    null,
++    null,
++    null,
++    null,
++    null,
++    null
++  ]
++}
+diff --git a/experiments/twist2_right_arm_manual/planned_udp_shutdown.hpp b/experiments/twist2_right_arm_manual/planned_udp_shutdown.hpp
+new file mode 100644
+index 0000000..ddb387a
+--- /dev/null
++++ b/experiments/twist2_right_arm_manual/planned_udp_shutdown.hpp
+@@ -0,0 +1,11 @@
++#pragma once
++// Pure decision state: faults cannot manufacture an operator shutdown request.
++class PlannedUdpShutdown {
++ bool requested_=false;
++public:
++ void Request() noexcept { requested_=true; }
++ bool Requested() const noexcept { return requested_; }
++ bool MayHandoff(bool return_ready,bool target_committed,bool fault) const noexcept {
++  return requested_ && return_ready && target_committed && !fault;
++ }
++};
+diff --git a/experiments/twist2_right_arm_manual/test_planned_udp_shutdown.cpp b/experiments/twist2_right_arm_manual/test_planned_udp_shutdown.cpp
+new file mode 100644
+index 0000000..598f20d
+--- /dev/null
++++ b/experiments/twist2_right_arm_manual/test_planned_udp_shutdown.cpp
+@@ -0,0 +1,11 @@
++#include "planned_udp_shutdown.hpp"
++#include <cassert>
++int main(){
++ PlannedUdpShutdown gate;
++ assert(!gate.MayHandoff(true,true,false)); // pinch/fault alone is not shutdown
++ gate.Request();gate.Request();
++ assert(!gate.MayHandoff(false,true,false));
++ assert(!gate.MayHandoff(true,false,false));
++ assert(!gate.MayHandoff(true,true,true));
++ assert(gate.MayHandoff(true,true,false));
++}
+diff --git a/experiments/twist2_right_arm_manual/test_response_log_shutdown.py b/experiments/twist2_right_arm_manual/test_response_log_shutdown.py
+new file mode 100644
+index 0000000..24b0bd2
+--- /dev/null
++++ b/experiments/twist2_right_arm_manual/test_response_log_shutdown.py
+@@ -0,0 +1,47 @@
++"""Compile the actual controller log-finalization method with a fake sink."""
++from pathlib import Path
++import subprocess
++import tempfile
++import unittest
++
++
++class ShutdownTest(unittest.TestCase):
++    def test_detach_before_drain_and_report_failure(self):
++        source = Path(__file__).with_name('twist2_mink_cycle_trial.cpp').read_text()
++        start = source.index('  void finish_response_log(){')
++        end = source.index('\n  void handoff_and_activate()', start)
++        method = source[start:end]
++        fixture = r'''
++#include <memory>
++#include <mutex>
++#include <stdexcept>
++#include <functional>
++#include <cassert>
++struct RealResponseLog { std::function<void()> callback; void Finish(){callback();} };
++struct Controller {
++ std::mutex write_cycle_mutex_;
++ std::unique_ptr<RealResponseLog> response_log_;
++ bool response_log_failed_=false;
++METHOD
++};
++int main(){
++ Controller c; bool drained=false;
++ c.response_log_=std::make_unique<RealResponseLog>();
++ c.response_log_->callback=[&](){
++   assert(!c.response_log_);
++   assert(c.write_cycle_mutex_.try_lock());c.write_cycle_mutex_.unlock();drained=true;
++ };
++ c.finish_response_log();assert(drained);c.finish_response_log();
++ c.response_log_failed_=true;
++ bool refused=false;try{c.finish_response_log();}catch(const std::runtime_error&){refused=true;}
++ assert(refused);
++}
++'''.replace('METHOD', method)
++        with tempfile.TemporaryDirectory() as directory:
++            cpp = Path(directory)/'test.cpp'; binary = Path(directory)/'test'
++            cpp.write_text(fixture)
++            subprocess.run(['g++','-std=c++17','-Wall','-Wextra','-Werror',str(cpp),'-pthread','-o',str(binary)],check=True)
++            subprocess.run([str(binary)],check=True,timeout=5)
++
++
++if __name__ == '__main__': unittest.main()

@@ -199,7 +199,7 @@ def main():
     segment = next(s for s in endpoint["segments"] if s["segment"] == args.segment)
     variant = segment["source_variant"]
     audit = next(s for s in held["segments"] if s["segment"] == args.segment)["variants"][variant]["held_goal_audit"]
-    model = probe.mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    model = probe.base.LoadMinkModel()
     probe.base._apply_operational_joint_limits(model)
     q = np.array(audit["q"])
     matrix = np.array(audit["goal_matrix"])

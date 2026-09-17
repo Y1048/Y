@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import math
+import ast
 import unittest
 from pathlib import Path
 
@@ -37,10 +38,10 @@ class Gate7FirstLiveProfileTests(unittest.TestCase):
         self.assertFalse(self.hardware.hardware_output_authorized)
         self.assertEqual(1.0, self.gate7.command_weight)
         self.assertAlmostEqual(
-            math.radians(10.0), self.gate7.proximal_max_velocity_rad_s
+            0.08, self.gate7.proximal_max_velocity_rad_s
         )
         self.assertAlmostEqual(
-            math.radians(25.0), self.gate7.wrist_max_velocity_rad_s
+            0.08, self.gate7.wrist_max_velocity_rad_s
         )
         self.assertEqual(20.0, self.hardware.maximum_active_duration_s)
         self.assertAlmostEqual(
@@ -50,6 +51,23 @@ class Gate7FirstLiveProfileTests(unittest.TestCase):
             math.radians(3.0), self.hardware.maximum_start_pose_excursion_rad
         )
         self.assertEqual(25, self.hardware.release_zero_cycles)
+
+    def test_settle_adapter_supplies_freshness_timeout(self) -> None:
+        source = (PROJECT_ROOT / "hardware/g1_arm_bridge/gate7_live_arm_sdk.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        call = next(node for node in ast.walk(tree)
+                    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id == "type" and node.args
+                    and isinstance(node.args[0], ast.Constant)
+                    and node.args[0].value == "SettleConfig")
+        config = eval(compile(ast.Expression(call), "<settle config>", "eval"),
+                      {"hardware_config": self.hardware})()
+        self.assertEqual(self.hardware.lowstate_timeout_s, config.hold.lowstate_timeout_s)
+        self.assertEqual(self.hardware.minimum_settle_samples, config.minimum_settle_samples)
+
+    def test_runtime_confirmation_precedes_adapter_start(self) -> None:
+        source = (PROJECT_ROOT / "tools/START_G1_GATE7_LIVE_HARDWARE.bat").read_text()
+        self.assertLess(source.index("choice /C YN"), source.index('start "G1 Gate 7 rt-arm-sdk PHYSICAL"'))
 
     def test_excursion_gate_accepts_boundary_and_rejects_beyond_it(self) -> None:
         measured = [0.0] * 29

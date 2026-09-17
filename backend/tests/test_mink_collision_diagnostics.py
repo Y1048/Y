@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -24,8 +25,9 @@ import diagnose_initial_pose_collision as collision_diag  # noqa: E402
 class MinkCollisionDiagnosticsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        base._prepare_mink_xml()
-        cls.model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            cls.model = mujoco.MjModel.from_xml_path(str(path))
         base._apply_operational_joint_limits(cls.model)
         cls.data = mujoco.MjData(cls.model)
         cls.data.qpos[:] = base._initial_configuration(cls.model)

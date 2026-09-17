@@ -5,6 +5,8 @@ import io
 import json
 import tempfile
 import unittest
+import sys
+from unittest.mock import patch
 from pathlib import Path
 
 from PIL import Image
@@ -18,6 +20,22 @@ from g1_camera_tcp_bridge import BuildFramePacket, FRAME_HEADER, FRAME_MAGIC
 
 
 class G1CameraReplayTcpTest(unittest.TestCase):
+    def test_live_and_replay_share_default_rate_and_allow_override(self):
+        import g1_camera_tcp_bridge as live
+        import g1_camera_replay_tcp as replay
+        self.assertEqual(live.DEFAULT_FPS, replay.DEFAULT_FPS)
+        self.assertEqual(live.DEFAULT_FPS, 20.0)
+        for rate in [None, "15"]:
+            options = [] if rate is None else ["--fps", rate]
+            with patch.object(sys, "argv", ["bridge", "unused-interface", *options]):
+                live_args = live.ParseArguments()
+            with patch.object(sys, "argv", ["replay", *options]):
+                replay_args = replay.ParseArguments()
+            self.assertEqual(live_args.fps, replay_args.fps)
+            self.assertEqual(live_args.fps, 20.0 if rate is None else 15.0)
+        starter = Path(__file__).with_name("start_camera_tcp_bridge_wsl.sh").read_text()
+        self.assertNotIn("--fps", starter)
+
     def test_replay_jpeg_is_decodable_and_nonblank(self):
         jpeg_payload = BuildReplayJpeg(17, 1.25, width=320, height=240)
 

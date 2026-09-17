@@ -11,6 +11,7 @@ import argparse
 import bisect
 import json
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -135,8 +136,9 @@ def Main() -> int:
         sys.path.insert(0, str(SCRIPTS_DIR))
     import run_mink_g1_right_arm_prototype as controller
 
-    controller._prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_replay_") as directory:
+        model_path = controller._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     controller._apply_operational_joint_limits(model)
     data = mujoco.MjData(model)
     data.qpos[:] = controller._initial_configuration(model)

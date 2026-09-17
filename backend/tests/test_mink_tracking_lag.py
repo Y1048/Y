@@ -9,6 +9,18 @@ from diagnose_mink_tracking_lag import GetSchedule, GetSustainedSettleTime, GetR
 
 
 class TrackingLagTests(unittest.TestCase):
+    def test_limit_metadata_uses_current_helper(self):
+        import compare_mink_step_acceptance as comparison
+        from unittest.mock import patch
+
+        with patch.object(comparison.probe.live, "virtual_center_velocity_limits",
+                          return_value={"test_joint": 0.123}):
+            report = comparison.GetLimitMetadata()
+        self.assertEqual(report["joint_velocity_caps_rad_s"], {"test_joint": 0.123})
+        self.assertEqual(report["solver_dt_s"], comparison.probe.base.DT)
+        self.assertEqual(report["collision_minimum_distance_m"],
+                         comparison.probe.live.TELEOP_COLLISION_TARGET_DISTANCE_M)
+
     def test_reach_bound_excludes_only_provably_outside_targets(self):
         rows = [{"shoulder_target_distance_m": d, "position_cm": e}
                 for d, e in ((.3, 1.), (.4, 3.), (.4000001, 5.), (.5, 10.))]

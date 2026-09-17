@@ -5,11 +5,20 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $unity = Join-Path $root 'Unity_G1_VR'
+$assemblyPath = Join-Path $unity 'Temp\bin\Debug\Assembly-CSharp.dll'
+# A timestamp gate rejects known-stale binaries; it is not a reproducible-build proof.
+$assemblyFile = Get-Item -LiteralPath $assemblyPath
+$sourceFiles = @(Get-ChildItem -LiteralPath (Join-Path $unity 'Assets') -Recurse -File -Filter '*.cs')
+$sourceFiles += Get-Item -LiteralPath (Join-Path $unity 'Assembly-CSharp.csproj')
+$newerSources = @($sourceFiles | Where-Object { $_.LastWriteTimeUtc -gt $assemblyFile.LastWriteTimeUtc })
+if ($newerSources.Count -gt 0)
+{
+    throw "Compiled Unity assembly is stale. Build the current project first. Newer input: $($newerSources[0].FullName)"
+}
 [xml]$project = Get-Content (Join-Path $unity 'Assembly-CSharp.csproj') -Raw
 $corePath = $project.SelectSingleNode("//Reference[@Include='UnityEngine.CoreModule']/HintPath").InnerText
 if (-not [IO.Path]::IsPathRooted($corePath)) { $corePath = Join-Path $unity $corePath }
 [void][Reflection.Assembly]::LoadFrom($corePath)
-$assemblyPath = Join-Path $unity 'Temp\bin\Debug\Assembly-CSharp.dll'
 $assembly = [Reflection.Assembly]::LoadFrom($assemblyPath)
 $type = $assembly.GetType('G1RobotStateUdpReceiver', $true)
 $flags = [Reflection.BindingFlags]'Static,NonPublic'
@@ -129,8 +138,9 @@ $result = [ordered]@{
     optional_contract_fixtures='PASS'; malformed_json_rejected=$malformedRejected;
     display_mode_cases=$modeCases; display_config_fixtures='PASS'; hardware_source_filter='PASS';
     compiled_assembly_sha256=(Get-FileHash $assemblyPath -Algorithm SHA256).Hash;
+    prebuilt_assembly_only=$true; source_timestamp_gate='PASS';
     robot_command=$false; socket_created=$false;
-    boundary='Compiled C# parsing and validation only; not a Unity headset or live UDP test.'
+    boundary='Prebuilt compiled C# parsing only. Timestamp freshness is not source-build equivalence; not a Unity headset or live UDP test.'
 }
 $resultPath = [IO.Path]::GetFullPath($ResultJson)
 [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($resultPath))

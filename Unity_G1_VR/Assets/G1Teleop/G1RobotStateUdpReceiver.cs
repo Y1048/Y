@@ -35,6 +35,7 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
         public float orientation_assist_gain;
         public float orientation_cost_scale;
         public float min_wrist_limit_margin_deg;
+        public bool wrist_limit_margin_unknown;
         public bool workspace_limited;
         public bool collision_limited;
     }
@@ -78,7 +79,21 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
         public RightArmState right_arm;
         public InspectionState inspection;
         public double timestamp;
+        public SimulationArmCyclePacket simulation_arm_cycle;
     }
+
+    [Serializable]
+    private class SimulationArmCyclePacket
+    {
+        public string state;
+        public bool candidate_output_disabled;
+    }
+
+    public string SimulationArmCycleState { get; private set; } = "";
+    public bool SimulationArmCycleBlocksEngage =>
+        !string.IsNullOrEmpty(SimulationArmCycleState)
+        && (!HasRecentState || (SimulationArmCycleState != "ready"
+                               && SimulationArmCycleState != "await_active"));
 
     [Serializable]
     private class InspectionState
@@ -351,6 +366,10 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
                     ? "legacy_unspecified"
                     : packet_value.state_source;
                 LatestSessionId = packet_value.session_id ?? "";
+                SimulationArmCycleState = LatestStateSource == MinkStateSource
+                    && packet_value.simulation_arm_cycle != null
+                    && packet_value.simulation_arm_cycle.candidate_output_disabled
+                    ? packet_value.simulation_arm_cycle.state ?? "fault" : "";
                 LatestSequence = packet_value.sequence;
                 source_contract_warning_reported = false;
                 IsTeleoperationActive = packet_value.right_arm.active;
@@ -358,7 +377,9 @@ public class G1RobotStateUdpReceiver : MonoBehaviour
                 LatestOrientationErrorDegrees = packet_value.right_arm.orientation_error_deg;
                 LatestOrientationAssistGain = packet_value.right_arm.orientation_assist_gain;
                 LatestOrientationCostScale = packet_value.right_arm.orientation_cost_scale;
-                LatestWristLimitMarginDegrees = packet_value.right_arm.min_wrist_limit_margin_deg;
+                LatestWristLimitMarginDegrees = packet_value.right_arm.wrist_limit_margin_unknown
+                    ? float.PositiveInfinity
+                    : packet_value.right_arm.min_wrist_limit_margin_deg;
                 IsWorkspaceLimited = packet_value.right_arm.workspace_limited;
                 IsCollisionLimited = packet_value.right_arm.collision_limited;
                 HasFeasibleTarget = packet_value.right_arm.feasible_target_valid

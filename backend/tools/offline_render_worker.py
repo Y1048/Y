@@ -180,9 +180,10 @@ class ProcessRenderer:
         self.stop.set()
         if self.process.is_alive():
             # Drain a possible final report so the child's pipe send cannot block join.
-            if self.result is None and self.connection.poll(5):
+            if self.result is None:
                 try:
-                    self.connection.recv()
+                    if self.connection.poll(5):
+                        self.connection.recv()
                 except (EOFError, OSError):
                     pass
             self.process.join(5)

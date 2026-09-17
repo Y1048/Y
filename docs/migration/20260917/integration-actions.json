@@ -1,0 +1,3182 @@
+[
+  {
+    "source": "primary",
+    "path": ".gitattributes",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/export_g1_mink_fk_reference.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_lowstate_seed.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_mink_command_provenance.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_mink_live_cycle_bridge.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_mink_return_cycle.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_mink_speed_profiles.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_mink_trajectory.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_right_arm_common.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_standard_mink_planner.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_tracking_diagnostic.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_upstream_mink_tracking.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/g1_virtual_center_tasks.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live_entry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "MuJoCo_G1_Controller/scripts/run_mink_g1_simulation_312.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "START_VR_HAND_TO_MUJOCO.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "START_VR_HAND_TO_MUJOCO_VANILLA_MINK.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "START_VR_STANDARD_MINK.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/query/client-agp/cache-v2",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/query/client-agp/cmakeFiles-v1",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/query/client-agp/codemodel-v2",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/cache-v2-232edcb59a2673a42f63.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/cmakeFiles-v1-068ebb6e210bab8e9379.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/codemodel-v2-715b6572c94447d0a879.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/directory-FramePacing-RelWithDebInfo-7f9c8865fd027a154c90.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/index-2026-09-14T04-38-14-0740.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/.cmake/api/v1/reply/target-swappywrapper-RelWithDebInfo-6d0563ec8f7126d00058.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeCache.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CMakeCCompiler.cmake",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CMakeCXXCompiler.cmake",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CMakeDetermineCompilerABI_C.bin",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CMakeDetermineCompilerABI_CXX.bin",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CMakeSystem.cmake",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CompilerIdC/CMakeCCompilerId.c",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CompilerIdC/CMakeCCompilerId.o",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CompilerIdCXX/CMakeCXXCompilerId.cpp",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/3.22.1-g37088a8-dirty/CompilerIdCXX/CMakeCXXCompilerId.o",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/TargetDirectories.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/cmake.check_cache",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/CMakeFiles/rules.ninja",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/FramePacing/cmake_install.cmake",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/additional_project_files.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/android_gradle_build.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/android_gradle_build_mini.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/build.ninja",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/build_file_index.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/cmake_install.cmake",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/compile_commands.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/compile_commands.json.bin",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/configure_fingerprint.bin",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/metadata_generation_command.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/prefab_config.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/arm64-v8a/symbol_folder_index.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/hash_key.txt",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/RelWithDebInfo/5lq6f2ff/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/games-frame-pacing/games-frame-pacingConfig.cmake",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/.utmp/tools/release/arm64-v8a/compile_commands.json",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/Editor/G1VRBuild.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1AmbientOperatorEnvironment.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1AmbientOperatorEnvironment.cs.meta",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1KeypadLocomotionUdpSender.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1KeypadLocomotionUdpSender.cs.meta",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/G1Teleop/G1RobotStateUdpReceiver.cs",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/Assets/Resources/DevAgentSettings.asset",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "Unity_G1_VR/ProjectSettings/TagManager.asset",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "VIEW_IK_COMPARISON.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "VIEW_TRAJECTORY_AB.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/calibration.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/camera_factory.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/config.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/mink_command_stream.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/protocol.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/transforms.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/g1_teleop/watchdog.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/fixtures/mink_elbow_boundary_20260909.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/fixtures/mink_wrist_priority_20260909.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_arm_cycle_stream_integration.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_capture_output_isolation.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_dds_firewall_rollback.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_diagnostic_exit_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_ethernet_dns_transaction.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_ethernet_transaction.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_feasible_target_return.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_foundation.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_gate7_mujoco_feedback_receiver.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_ik_visual_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_lowstate_firewall_scope.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_lowstate_mink_seed.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_lowstate_seed_writer.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_candidate_benchmark.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_collision_diagnostics.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_feasible_target.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_model_return.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_return_handshake.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_stateful_trajectory.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_step_acceptance_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_tracking_lag.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mink_virtual_center_trajectory.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mujoco312_simulation_entry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_mujoco_inspection_scene_visibility.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_offline_model_isolation.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_offline_owner.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_protocol_v2.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_recorded_ik_hierarchy.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_recorded_reach_bound.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_rotation_trace_analysis.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_seed_file_sharing.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_seed_observer_failure.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_seed_velocity_review.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_seed_window_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_simulation_handoff_boundary.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_standard_mink_live.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_synthetic_ik_cases.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_teleop_config.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_trajectory_ab.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_unity_display_mode_launcher.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_unity_workspace_policy.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_upstream_mink_tracking.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_virtual_center_kinematics_regression.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tests/test_virtual_center_orientation_policy.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/analyze_rotation_trace.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/audit_wrist_target_mapping.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/benchmark_mink_candidate.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/benchmark_mink_rendered_replay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/compare_mink_step_acceptance.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/compare_mink_trajectory.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/compare_recorded_ik_hierarchy.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/compare_recorded_pose_speeds.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/compare_synthetic_ik.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/diagnose_mink_collision_feasibility.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/diagnose_mink_distance_invariance.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/diagnose_mink_tracking_lag.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/diagnose_recorded_reach.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/inspect_feasible_target_return.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/offline_render_worker.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/verify_camera_simulation.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/verify_feasible_target.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/verify_unity_state_packets.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/verify_virtual_center_kinematics.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "backend/tools/view_ik_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "config/g1_gate6_hold.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "config/g1_gate7_first_live_mink_arm_sdk.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "config/g1_waist_hold_trial_draft.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/ARCHITECTURE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/ARM_CYCLE_OFFLINE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/CAMERA_SIMULATION_GUIDE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/CHAT_HANDOFF.md",
+    "action": "historical_notes_preserved_linked"
+  },
+  {
+    "source": "primary",
+    "path": "docs/CLEANUP_20260903.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/CODE_GUIDE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/CODE_INDEX.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/DIAGNOSIS_20260906_WRIST_ROLL_DISTANCE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/G1_ARM_SDK_WAIST_INCIDENT.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/G1_VR_MINK_OMNI_PROTOCOL_MEMO_20260916.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/G1_VR_MINK_OMNI_PROTOCOL_TECHNICAL_APPENDIX_20260916.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/IK_RECORDED_COMPARISON_20260905.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/IK_TARGET_COMPARISON.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/IK_VISUAL_COMPARISON.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/MINK_V4_G1_HANDOFF.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/OMNI_TWIST2_INPUT_AUDIT.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/PD_REACH_TRIAL.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/PD_TRIAL_OFFLINE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/PROTOCOL.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260905_APK_AND_SETTLE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260905_DIAGNOSTICS.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260905_MODEL_ISOLATION.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260905_PROTOCOL_V1.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260905_RIGID_POSE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260905_SWEEP_OUTCOME.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REMEDIATION_20260906_FIREWALL_SCOPE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/REVIEW_LATEST.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/STANDARD_MINK_LIVE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/STANDARD_MINK_OFFLINE_20260906.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/SYSTEM_IDENTIFICATION_DATA.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TECH_TRANSFER_LICENSE_AUDIT_20260915.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TRAJECTORY_AB.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_DIAGNOSTIC_PATCH_READY.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_FIRST_VR_PHYSICAL_TRIAL.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_INTEGRATION.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_KEYBOARD_BASED_MINK_UDP.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_NATIVE_VR_REVIEW.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_NEXT_DAY_RUNBOOK.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_PC_RUN.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_READY_GATE_REVIEW.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/TWIST2_SPLIT_CANDIDATE_PACKAGE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "docs/VR_PACKET_SPACING_OFFLINE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/CMakeLists.txt",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/manifest.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_live_cycle_contract.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_live_cycle_target.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_udp_target.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_relay_contract.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_snapshot_freshness.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_state_tick.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_vr_cycle_udp.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_vr_policy_adapter.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/offline_twist2_constants.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_gain_options.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_joint_trial.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_reach_reference.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_reach_trial.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_ready_settle.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_small_signal_trial.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/periodic_csv.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/raw_input_watch_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/source.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_common.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_mink_cycle_trial.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_mink_cycle_trial.remote_current.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/upper_target_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/validate_input.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/vendor/json.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/verified_regular_handoff.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/writer_frame.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_velocity/CMakeLists.txt",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_velocity/g1_velocity_policy.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_velocity/run_continuous_gait.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_velocity/twist2_common.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/base_velocity/twist2_static_stand.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/block_unverified_handoff_update.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/CMakeLists.txt",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/README.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/g1_velocity_mink_keypad_right_arm.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/g1_velocity_policy.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/leg_policy_switch.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_live_cycle_contract.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_live_cycle_target.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_udp_target.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/native_relay_contract.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/native_snapshot_freshness.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/native_state_tick.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/native_velocity_udp.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/native_vr_cycle_udp.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/native_vr_policy_adapter.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/offline_twist2_constants.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_gain_options.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_joint_trial.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_reach_reference.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_reach_trial.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_ready_settle.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_small_signal_trial.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/periodic_csv.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/raw_input_watch_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/run_static_stand_handoff_probe.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/run_velocity_axis_trial.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/run_velocity_mink_keypad.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/test_initial_ready_continuous_gait.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/test_leg_policy_switch.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/test_velocity_keypad_contract.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/twist2_common.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/upper_target_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/validate_input.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/velocity_keypad_contract.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/vendor/json.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/verified_regular_handoff.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/candidate/writer_frame.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/continuous_gait_arm_ready_20260915.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/continuous_gait_keypad_update_20260915.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/deploy_arm_ready_decouple_20260915.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/deploy_build_continuous_20260915.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/deploy_continuous_gait_arm_ready_20260915.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/deploy_dual_policy_idle_20260915.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/deploy_keypad_latched_08_20260915.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/dual_policy_idle_20260915.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/dual_policy_static_stand_update.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/g1_velocity_mink_keypad_right_arm_source.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/gait_ready_update.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/keypad_arm_ready_decouple_20260915.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/keypad_latched_08_20260915.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/static_stand_probe_update.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/g1_velocity_mink_right_arm_20260914/zero_hold_ankle_margin_update.tar.gz",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/README.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/data/mink_command_trajectories_v1.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/data/mink_command_trajectories_v1.npz",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/evaluate_upper_body_conditioned.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/evaluation_protocol_v1.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/matched_training_stage1.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/mink_trajectory_dataset.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/prepare_mink_trajectory_split.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/run_matched_training_continuation.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/run_matched_training_stage1.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/run_recorded_curriculum.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/select_matched_resume.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/smoke_mjlab.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/smoke_upper_body_conditioned.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/summarize_matched_training.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/test_mink_trajectory_dataset.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/test_recorded_curriculum.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/test_select_matched_resume.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/train_upper_body_conditioned.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/upper_body_conditioned_env.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/verify_mjlab.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/independent_locomotion/verify_upper_body_conditioned.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/startup_recovery_posture_sweep/RUN_POSTURE_SWEEP.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/startup_recovery_posture_sweep/RUN_STANDARD_POSTURE_SWEEP.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/startup_recovery_posture_sweep/run_sweep.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/startup_recovery_posture_sweep/single_pose_runner.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/startup_recovery_posture_sweep/test_sweep.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/MINK_CYCLE_CANDIDATE_OFFLINE.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/README.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/VERIFY_OFFLINE.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/analyze_cycle_packets.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/analyze_pd_abort.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/analyze_pd_reach_com.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/analyze_vr_pd_replay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/anchored_alignment_study.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/anchored_upper_study.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/arm_cycle_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/arm_cycle_stdio_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/audit_fresh_seed_mink.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/audit_identification_run.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/audit_mink_resampler_geometry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/audit_mink_torch_combined_geometry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/audit_native_relay.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/audit_saved_alignment.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/capture_hg_readonly.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/check_pc_receive_under_load.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/compare_feedback_recorded_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/compare_ik_targets.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/compare_native_writer_csv.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/compare_seed_windows_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/diagnose_mink_wrist_tradeoff.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/diagnose_mujoco_stance_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/guarded_composition_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/inspect_g1_native_readonly.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/inspect_wsl_sdk_readonly.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/lowstate_seed_writer.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/measured_composition_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_cycle_candidate_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_cycle_candidate_stdio_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_cycle_owner_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_live_cycle_stdio_test.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_resampler_batch_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_resampler_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mink_torch_owner_stdio_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/mujoco_feedback_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_command_limits.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_composition_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_relative_reference.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_state_audit.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_stop_audit.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_vr_invocation.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/native_vr_udp.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/observe_seed_file_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_blend.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_dispatch.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_hg_native_decoder.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_lag_fixture.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_observation_history.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_owner.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_policy_adapter.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_state_continuity.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_word_crc.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/offline_writer_study.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/owner_policy_stdio.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/pc_native_receive_probe.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/pd_gain_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/pd_reach_timing.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/pd_trial_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/plan_pd_followup_from_vr.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/plan_pd_reach_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/policy_cpu_worker_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/policy_worker_client_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/prepare_hg_class_fixture.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/prepare_observation_reference.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/probe_seed_file_sharing.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/probe_udp_receive_only.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/queued_input_offline.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/receive_only.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/receive_target_shadow.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/receive_vr_shadow.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_cpp_input_tick.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_cpp_receiver_log.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_guarded_quest_fixture.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_live_cycle_protocol.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_mink_boundary.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_mink_cycle_candidate_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_mink_torch_owner.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_upstream_mink.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/replay_writer_policy_trace.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/review_hg_capture_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/review_loaded_settle.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/review_pd_terms.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/review_ready_components.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/review_seed_velocity.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/run_event_clock_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/run_owner_continuous_cpu.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/run_owner_cpu_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/run_pc_twist2.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/run_policy_cpu_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/run_policy_history_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/split_ready_study.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/split_settle_window.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/split_vr_adapter_study.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/study_vr_packet_spacing.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/supply_lowstate_seed_readonly.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_analyze_vr_pd_replay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_anchored_alignment_study.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_arm_cycle_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_capture_hg_pack.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_compare_ik_targets.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_compare_native_writer_csv.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_guarded_composition.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_input_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_input_tick.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_measured_composition.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_queued_input.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_receive_only.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_receive_target_shadow.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_upper_target.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_cpp_validator.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_event_clock_loop.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_feedback_gyro.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_guarded_composition.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_guarded_replay.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_hg_native_decoder.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_identification_audit.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_input_validator.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_live_cycle_cadence.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_measured_composition.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_cycle_candidate_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_cycle_owner_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_live_cycle_bridge.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_live_cycle_contract.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_live_cycle_target.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_policy_hold_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_resampled_owner_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_resampler_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_speed_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mink_udp_target.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_mujoco_feedback_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_native_composition.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_native_snapshot_freshness.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_native_state_audit.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_native_vr_invocation.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_native_vr_policy_adapter.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_observation_history.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_offline_dispatch.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_offline_input_adapters.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_offline_owner.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_offline_word_crc.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_offline_writer_study.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_owner_startup.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_owner_torque_fade.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_pd_gain_comparison.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_pd_joint_trial.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_pd_reach_timing.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_pd_reach_trial.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_pd_ready_settle.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_pd_trial_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_periodic_csv.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_policy_history_loop.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_policy_worker_client_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_policy_worker_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_preinfer_blend.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_queued_input.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_raw_event_clock.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_real_state_continuity.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_receive_vr_shadow.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_review_loaded_settle.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_review_ready_components.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_split_ready_study.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_split_vr_adapter_study.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_state_watchdog.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_upper_target_offline.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_vr_input_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_vr_rate_limits.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_writer_trace_loop.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/test_wsl_sdk_inventory.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/twist2_mink_udp_trial.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/twist2_vr_native_draft.cpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vendor/README.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vendor/unitree_hg_reference/IMUState_.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vendor/unitree_hg_reference/LICENSE",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vendor/unitree_hg_reference/LowState_.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vendor/unitree_hg_reference/MotorState_.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vendor/unitree_hg_reference/manifest.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/vr_input_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "experiments/twist2_right_arm_manual/writer_reference_study.hpp",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/arm_sdk_hold_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/arm_sdk_teleop_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/check_startup_readiness.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/diagnose_initial_pose_collision.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/edit_startup_ready_pose.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_camera_replay_tcp.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_camera_tcp_bridge.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_omni_velocity_gateway.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_right_arm_jog.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_right_arm_jog_entry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_velocity_axis_trial_sender.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_velocity_discovery.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/g1_velocity_keypad_relay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate6_arm_sdk_hold.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate6_weight_hold_trial.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_capture_mujoco_replay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_capture_quality.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_hardware_virtual_e2e.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_live_arm_sdk.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_live_arm_sdk_entry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_mink_arm_sdk_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_mink_capture.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_mink_cycle_relay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_mink_wsl_relay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/gate7_relay_provenance_guard.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/live_lowstate_mujoco.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/plan_startup_transition.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/replay_startup_recovery.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/requirements-omni-gateway-test.txt",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/requirements-omni-gateway.txt",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/right_arm_jog_safety_guard.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/ruckig_joint_motion_limiter.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/run_omni_fake_g1_integration.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/simulate_startup_recovery.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/start_camera_tcp_bridge_wsl.sh",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_arm_sdk_hold_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_arm_sdk_release_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_arm_sdk_teleop_contract.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_camera_replay_tcp.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_omni_gateway_e2e.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_omni_velocity_gateway.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_right_arm_jog.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_velocity_axis_trial_sender.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_velocity_discovery.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_g1_velocity_keypad_relay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate6_arm_sdk_hold.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate6_weight_hold_trial.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate7_capture_quality.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate7_first_live_profile.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate7_live_arm_sdk.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate7_live_entrypoint.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate7_mink_wsl_relay.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_gate7_release_finalization.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_run_omni_fake_g1_integration.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_waist_baseline_read_only.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_waist_guard_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/test_waist_hold_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/validate_right_arm_jog_collision_path.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/validate_right_arm_jog_collision_path_entry.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/verify_initial_pose_sync.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/waist_baseline_read_only.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/waist_guard_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "hardware/g1_arm_bridge/waist_hold_offline.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "logs/review/20260903/source_checks.csv",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "logs/review/20260903/source_checks_summary_20260904.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/make_omni_visuals.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/omni_20260915_140714_643_analysis.png",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/omni_20260915_140714_643_movement.gif",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/omni_20260915_140748_147_analysis.png",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/omni_20260915_140748_147_movement.gif",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/omni_20260915_142051_796_analysis.png",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "outputs/omni_20260915_separate_analysis/omni_20260915_142051_796_movement.gif",
+    "action": "excluded_generated_backup_retained"
+  },
+  {
+    "source": "primary",
+    "path": "references/lower_body/restore_g1_ai_mode.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "references/lower_body/test_restore_g1_ai_mode_guard.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "references/lower_body/unitree_rl_gym_g1/LICENSE",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "references/lower_body/unitree_rl_gym_g1/g1.yaml",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "references/lower_body/unitree_rl_gym_g1/motion.pt",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "references/omni/installation_status.json",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "references/omni/omni_go2_reference.md",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/ALLOW_G1_DDS_WSL.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/ALLOW_G1_DDS_WSL_ADMIN.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/ALLOW_G1_LOWSTATE_TO_WINDOWS.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/ALLOW_G1_LOWSTATE_TO_WINDOWS_ADMIN.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/BUILD_AND_INSTALL_VR_APK.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/CHECK_MJLAB_MATCHED_TRAINING.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/CHECK_MJLAB_SETUP.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/CHECK_MJLAB_SETUP.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/CHECK_OMNI_GATEWAY_OFFLINE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/CONFIGURE_G1_ETHERNET_ADMIN.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/DETECT_G1_NETWORK_ADMIN.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/G1_ETHERNET_DNS.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/G1_ETHERNET_TRANSACTION.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/RECORD_G1_WAIST_BASELINE_READ_ONLY.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/RUN_PC_TWIST2.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_GATE6_WEIGHT_HOLD.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_GATE7_FIRST_LIVE_TRIAL.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_GATE7_LIVE_DRY_RUN.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_GATE7_LIVE_HARDWARE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_GATE7_STANDARD_MINK.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_GATE7_VR_RECORDING.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_STATIC_STAND_HANDOFF_PROBE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_VELOCITY_MINK_KEYPAD.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_VELOCITY_MINK_KEYPAD.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_G1_VR_PREVIEW_READ_ONLY.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_MINK_ARM_CYCLE_SIMULATION.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_MINK_SPEED_COMPARISON.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_MJLAB_MATCHED_CONTINUATION.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_MJLAB_RECORDED_CURRICULUM.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_OMNI_FAKE_G1_INTEGRATION.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_OMNI_GATEWAY_READONLY.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_TWIST2_MINK_CYCLE_CANDIDATE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_TWIST2_MINK_UDP.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_TWIST2_MINK_UDP.ps1",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_TWIST2_PD_SWEEP_TO_VR.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/START_TWIST2_VR_INPUT_SHADOW.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/TEST_G1_WAIST_HOLD_OFFLINE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/TEST_MINK_CYCLE_CANDIDATE_OFFLINE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/TEST_MINK_TORCH_OWNER_OFFLINE.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/VIEW_G1_LIVE_MUJOCO.bat",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/audit_ik_licenses.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/evaluate_g1_velocity_direction_mujoco.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/replay_omni_velocity_mujoco.py",
+    "action": "applied"
+  },
+  {
+    "source": "primary",
+    "path": "tools/run_logged_standard_mink.py",
+    "action": "applied"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/all_cases.csv",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/all_joint_margins.csv",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/manifest.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/overview.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/plan.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/raw_inventory.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/simulation_candidate.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/source_receipt.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "docs/validation/g1_pd_final_20260912/verification.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_final",
+    "path": "tools/RUN_MUJOCO_PD_FINAL.bat",
+    "action": "already_remote"
+  },
+  {
+    "source": "pd_review",
+    "path": "docs/CHAT_HANDOFF.md",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "docs/G1_HANDOFF_VENDOR_QUESTIONS_20260914.md",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "docs/G1_PD_BASELINE_RECHECK_20260914.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "docs/G1_PD_RESPONSE_FIT_DIAGNOSTIC_20260914.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "docs/G1_REAL_RESPONSE_LOGGER_20260914.md",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "docs/G1_REAL_RESPONSE_VALIDATION_CONTRACT_TEMPLATE.json",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/offline_handoff_tests/CMakeLists.txt",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/planned_udp_shutdown.hpp",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/real_response_identification.py",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/test_controller_handoff_offline.py",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/test_planned_udp_shutdown.cpp",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/test_real_response_identification.py",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/test_response_log_shutdown.py",
+    "action": "preserved_separate_patch"
+  },
+  {
+    "source": "pd_review",
+    "path": "experiments/twist2_right_arm_manual/twist2_mink_cycle_trial.cpp",
+    "action": "preserved_separate_patch"
+  }
+]

@@ -156,7 +156,7 @@ def install_jog_safety_guards(
 
     def guarded_load_path_permit(path, precheck, config_value):
         payload = json.loads(Path(path).read_text(encoding="utf-8"))
-        validate_jog_permit_provenance(payload, config_path)
+        validate_jog_permit_provenance(payload, config_path, collision_validator.model_metadata)
         return original_load_path_permit(path, precheck, config_value)
 
     jog.load_path_permit = guarded_load_path_permit

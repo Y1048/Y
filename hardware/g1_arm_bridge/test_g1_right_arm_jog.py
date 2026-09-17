@@ -10,9 +10,11 @@ from dataclasses import replace
 from pathlib import Path
 
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from g1_right_arm_jog import (
     calculate_active_weight,
+    collect_settled_snapshot,
     create_joint_tracking_stats,
     dual_arm_target_errors_deg,
     finalize_joint_tracking_stats,
@@ -36,6 +38,38 @@ FULL_AUTHORITY_CONFIG_PATH = (
 
 
 class G1RightArmJogTests(unittest.TestCase):
+    def test_settle_requires_fresh_tail_and_continuous_packets(self):
+        config = SimpleNamespace(settle_duration_s=0.5, minimum_settle_samples=3,
+            maximum_initial_arm_velocity_rad_s=0.1, hold=SimpleNamespace(lowstate_timeout_s=0.1))
+        for mode in ("continuous", "tail_stall", "gap"):
+            clock = [1.0]
+            sequence = [0]
+            latest = [None]
+
+            def snapshot():
+                if mode == "tail_stall" and sequence[0] >= 4:
+                    return latest[0]
+                clock[0] += 0.2 if mode == "gap" and sequence[0] == 4 else 0.01
+                sequence[0] += 1
+                latest[0] = SimpleNamespace(sequence=sequence[0], received_monotonic_s=clock[0],
+                    all_dq_rad_s=(0.0,) * 29)
+                return latest[0]
+
+            def sleep(seconds):
+                clock[0] += seconds
+
+            with self.subTest(mode=mode), patch("g1_right_arm_jog.time.monotonic", side_effect=lambda: clock[0]), \
+                    patch("g1_right_arm_jog.time.sleep", side_effect=sleep):
+                buffer = SimpleNamespace(snapshot=snapshot)
+                if mode == "continuous":
+                    value, samples, speed = collect_settled_snapshot(buffer, config)
+                    self.assertGreaterEqual(samples, 3)
+                    self.assertEqual(speed, 0.0)
+                    self.assertLessEqual(clock[0] - value.received_monotonic_s, 0.1)
+                else:
+                    with self.assertRaises(RuntimeError):
+                        collect_settled_snapshot(buffer, config)
+
     def test_launcher_polls_for_slow_mujoco_startup(self) -> None:
         launcher = (
             PROJECT_ROOT / "tools" / "START_G1_RIGHT_ARM_JOG_MUJOCO.bat"
@@ -323,5 +357,3 @@ class G1RightArmJogTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-    full_authority_ready,
-    maximum_dual_arm_target_error,

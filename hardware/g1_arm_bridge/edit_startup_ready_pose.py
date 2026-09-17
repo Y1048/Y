@@ -15,6 +15,7 @@ import math
 import os
 import queue
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -285,8 +286,9 @@ def CreateModel(pose_deg: np.ndarray):
 
     import run_mink_g1_right_arm_prototype as controller
 
-    controller._prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_editor_") as directory:
+        model_path = controller._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     controller._apply_operational_joint_limits(model)
     data = mujoco.MjData(model)
     data.qpos[:] = controller._initial_configuration(model)

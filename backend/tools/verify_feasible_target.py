@@ -15,8 +15,9 @@ from compare_recorded_pose_speeds import GetActiveSegments, GetRecordedTargets, 
 from g1_mink_feasible_target import FeasibleTargetPlanner
 
 
-def BuildPlanner(model, initial_q):
+def BuildPlanner(model, initial_q, collision_profile="hardware-guarded"):
     base, live = probe.base, probe.live
+    clearance, detection = live.ResolveCollisionProfile(collision_profile)
     position = mink.FrameTask("right_wrist_roll_link", "body", base.POSITION_COST, 0,
                               gain=base.FRAME_GAIN, lm_damping=base.LM_DAMPING)
     orientation = live.VirtualCenterOrientationTask(model)
@@ -28,12 +29,12 @@ def BuildPlanner(model, initial_q):
     limits = [mink.ConfigurationLimit(model),
               mink.VelocityLimit(model, live.virtual_center_velocity_limits()),
               mink.CollisionAvoidanceLimit(model, geom_pairs=base._build_collision_pairs(model)[0],
-                  minimum_distance_from_collisions=live.TELEOP_COLLISION_TARGET_DISTANCE_M,
-                  collision_detection_distance=base.COLLISION_DETECTION_DISTANCE_M,
+                  minimum_distance_from_collisions=clearance,
+                  collision_detection_distance=detection,
                   gain=base.COLLISION_GAIN, broadphase=True)]
     constraints = [mink.DofFreezingTask(model, dof_indices=base._frozen_dof_indices(model, dofs))]
     return FeasibleTargetPlanner(model, position, orientation, posture, damping, limits,
-        constraints, base._select_solver(), live.TELEOP_COLLISION_TARGET_DISTANCE_M,
+        constraints, base._select_solver(), clearance,
         live.virtual_center_velocity_limits())
 
 
@@ -103,7 +104,7 @@ def main():
     parser.add_argument("--result-json", type=Path, required=True)
     args = parser.parse_args()
     manifest, packets = probe._decode_capture(args.capture)
-    model = mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    model = probe.base.LoadMinkModel()
     probe.base._apply_operational_joint_limits(model)
     qpos = [int(model.jnt_qposadr[probe.base._joint_id(model, name)]) for name in probe.base.g1.G1_29_JOINTS]
     report = {"capture_id": manifest["capture_id"], "robot_command": False,
@@ -129,7 +130,8 @@ def main():
     args.result_json.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     print("Result saved to:", args.result_json.resolve())
     print(report["status"])
+    return 0 if report["status"] == "OFFLINE_CRITERIA_MET" else 3
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

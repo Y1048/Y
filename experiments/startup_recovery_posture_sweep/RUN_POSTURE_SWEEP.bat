@@ -17,9 +17,9 @@ set "exit_code=%errorlevel%"
 echo.
 if not "%exit_code%"=="0" (
     echo [FAIL] Startup Recovery posture sweep did not complete cleanly.
-    echo [ACTION] Open %SUMMARY_PATH% and inspect cases with status ERROR and their log paths.
+    echo [ACTION] Open %SUMMARY_PATH% and inspect ERROR, FAIL or SKIPPED cases and their log paths.
 ) else (
-    echo [PASS] Posture sweep and sampled success map completed.
+    echo [COMPLETED] Sampled map saved. Check outcome and status counts; individual poses may have failed.
     echo Map saved to: %MAP_PATH%
     echo Summary saved to: %SUMMARY_PATH%
     start "" "%MAP_PATH%"

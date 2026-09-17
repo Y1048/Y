@@ -2,13 +2,18 @@
 
 > **Absolute G1 mutation rule:** Never create, delete, rename, move, or modify any file on the G1; never run a program that can create a log, publish a command, change a service or mode, or otherwise mutate G1 state without the user's explicit approval for that exact action. Inspect source before running diagnostics. Remote-to-local copy is allowed only when it reads existing G1 files and writes exclusively to the Windows project.
 
-Last updated: 2026-09-04
+Last updated: 2026-09-17
+
+## Laptop migration checkpoint
+
+This integration branch combines the latest published continuation with the laptop source. Read [migration status](migration/20260917/README.md) first. Local historical notes are preserved in [LAPTOP_CHAT_HANDOFF.md](migration/20260917/LAPTOP_CHAT_HANDOFF.md). Conflicting temporary-worktree work is stored as patches, not enabled in this checkout. This is source synchronization, not hardware validation.
+
 
 ## 1. Start here
 
 For every new project conversation:
 
-1. Work from `main`.
+1. For this desktop migration, use `codex/g1-laptop-sync-20260917`. `main` remains the canonical branch after review and merge.
 2. Read this file, [`ARCHITECTURE.md`](ARCHITECTURE.md), and [`REVIEW_LATEST.md`](REVIEW_LATEST.md).
 3. Read the relevant review/remediation log before changing a reviewed defect.
 4. Read [`CODE_GUIDE.md`](CODE_GUIDE.md) before changing a control path.

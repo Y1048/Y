@@ -1,4 +1,4 @@
-﻿# ==============================
+# ==============================
 # Unity
 # ==============================
 **/[Ll]ibrary/
@@ -108,3 +108,6 @@ desktop.ini
 *.cache
 
 *Zone.Identifier
+
+# Machine-local Unity build cache
+Unity_G1_VR/.utmp/

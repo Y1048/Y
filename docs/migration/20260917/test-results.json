@@ -1,0 +1,227 @@
+[
+  {
+    "test": "hardware/g1_arm_bridge/test_arm_sdk_release_contract.py",
+    "exit_code": 0,
+    "summary": "elease_completes_zero_tail (__main__.ReleaseContractTests.test_normal_release_completes_zero_tail) ... ok\r\ntest_partial_zero_tail_keeps_output_state_unknown (__main__.ReleaseContractTests.test_partial_zero_tail_keeps_output_state_unknown) ... ok\r\ntest_snapshot_loss_during_release_keeps_output_unknown (__main__.ReleaseContractTests.test_snapshot_loss_during_release_keeps_output_unknown) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.000s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate6_fault_release.py",
+    "exit_code": 0,
+    "summary": "ReleaseTests.test_fault_status_distinguishes_unknown_output) ... ok\r\ntest_first_fault_release_write_failure_still_attempts_zero_tail (__main__.Gate6FaultReleaseTests.test_first_fault_release_write_failure_still_attempts_zero_tail) ... ok\r\ntest_interrupt_release_starts_from_last_successful_weight (__main__.Gate6FaultReleaseTests.test_interrupt_release_starts_from_last_successful_weight) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.021s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate6_interrupt_release.py",
+    "exit_code": 0,
+    "summary": "[PASS] Gate 6 interruption release contract passed.\r\nRelease: 0.200 -> 0.000 over 2.000 s at 250 Hz\r\nZero-weight tail: 25 frames\r\nMeasured dual-arm target: unchanged\r\nUnitree SDK: NONE\r\nDDS publisher: NONE\r\nRobot command: NONE\r\nResult saved to: C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\logs\\test_results\\g1_gate6_interrupt_release_offline_20260917_091109.json\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate7_release_finalization.py",
+    "exit_code": 0,
+    "summary": "_main__.Gate7ReleaseFinalizationTests.test_finalizer_does_not_reload_runtime_config) ... ok\r\ntest_finalizer_uses_shared_release_contract (__main__.Gate7ReleaseFinalizationTests.test_finalizer_uses_shared_release_contract) ... ok\r\ntest_release_failure_revokes_pass_and_marks_unknown_output (__main__.Gate7ReleaseFinalizationTests.test_release_failure_revokes_pass_and_marks_unknown_output) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 9 tests in 0.025s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate7_live_safety_guard.py",
+    "exit_code": 0,
+    "summary": "ok\r\ntest_missing_validator_fails_closed (__main__.Gate7LiveSafetyGuardTests.test_missing_validator_fails_closed) ... ok\r\ntest_rejected_final_segment_blocks_frame (__main__.Gate7LiveSafetyGuardTests.test_rejected_final_segment_blocks_frame) ... ok\r\ntest_unexpected_large_one_cycle_segment_is_rejected (__main__.Gate7LiveSafetyGuardTests.test_unexpected_large_one_cycle_segment_is_rejected) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.000s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate7_acquisition_guard.py",
+    "exit_code": 0,
+    "summary": "t_nonincreasing_sequence_fails (__main__.Gate7AcquisitionGuardTests.test_nonincreasing_sequence_fails) ... ok\r\ntest_session_change_and_nonactive_packet_fail (__main__.Gate7AcquisitionGuardTests.test_session_change_and_nonactive_packet_fail) ... ok\r\ntest_stream_stall_fails_before_weight_can_continue (__main__.Gate7AcquisitionGuardTests.test_stream_stall_fails_before_weight_can_continue) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.001s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_lowstate_health_guard.py",
+    "exit_code": 0,
+    "summary": "itch_limit_is_fail_closed (__main__.LowStateHealthGuardTests.test_roll_pitch_limit_is_fail_closed) ... ok\r\ntest_supported_entries_reference_health_guard (__main__.LowStateHealthGuardTests.test_supported_entries_reference_health_guard) ... ok\r\ntest_supported_wsl_starters_use_health_guarded_entries (__main__.LowStateHealthGuardTests.test_supported_wsl_starters_use_health_guarded_entries) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.024s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_runtime_base_state_guard.py",
+    "exit_code": 0,
+    "summary": "StateGuardTests.test_translation_drift_fails) ... ok\r\ntest_validate_only_paths_do_not_require_unitree_base_import (__main__.RuntimeBaseStateGuardTests.test_validate_only_paths_do_not_require_unitree_base_import) ... ok\r\ntest_yaw_drift_fails (__main__.RuntimeBaseStateGuardTests.test_yaw_drift_fails) ... ok\r\ntest_yaw_speed_fails (__main__.RuntimeBaseStateGuardTests.test_yaw_speed_fails) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 13 tests in 0.003s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_right_arm_jog_safety_guard.py",
+    "exit_code": 0,
+    "summary": "t_runtime_full_body_guard_detects_nonarm_change) ... ok\r\ntest_supported_jog_entry_installs_runtime_full_body_and_collision_checks (__main__.RightArmJogSafetyGuardTests.test_supported_jog_entry_installs_runtime_full_body_and_collision_checks) ... ok\r\ntest_supported_launchers_use_provenance_generator (__main__.RightArmJogSafetyGuardTests.test_supported_launchers_use_provenance_generator) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 5 tests in 0.029s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_g1_right_arm_jog_direct_release.py",
+    "exit_code": 0,
+    "summary": "ogReleaseIntegrationTests.test_direct_controller_uses_shared_release_contract) ... ok\r\ntest_fault_handler_does_not_claim_output_disabled (__main__.DirectJogReleaseIntegrationTests.test_fault_handler_does_not_claim_output_disabled) ... ok\r\ntest_finalizer_fails_closed_without_release_evidence (__main__.DirectJogReleaseIntegrationTests.test_finalizer_fails_closed_without_release_evidence) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.016s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "backend/tests/test_source_provenance.py",
+    "exit_code": 0,
+    "summary": "t_newer_packet_can_catch_up_after_stale_backlog) ... ok\r\ntest_same_pc_loopback_and_relative_clock_progress_are_accepted (__main__.CommandSourceGuardTests.test_same_pc_loopback_and_relative_clock_progress_are_accepted) ... ok\r\ntest_wrong_host_source_or_nonincreasing_source_time_is_rejected (__main__.CommandSourceGuardTests.test_wrong_host_source_or_nonincreasing_source_time_is_rejected) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 5 tests in 0.001s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate7_replay_provenance.py",
+    "exit_code": 0,
+    "summary": "ted_offline_port (__main__.Gate7ReplayProvenanceTests.test_exact_transport_can_use_dedicated_offline_port) ... ok\r\ntest_exact_transport_cannot_target_live_relay_port (__main__.Gate7ReplayProvenanceTests.test_exact_transport_cannot_target_live_relay_port) ... ok\r\ntest_normalized_replay_is_explicitly_marked (__main__.Gate7ReplayProvenanceTests.test_normalized_replay_is_explicitly_marked) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 3 tests in 0.000s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_lowstate_provenance_launchers.py",
+    "exit_code": 0,
+    "summary": "ync_propagates_failure_code) ... ok\r\ntest_hardware_pose_sync_requires_same_token_on_snapshot_receiver (__main__.LowStateProvenanceLauncherTests.test_hardware_pose_sync_requires_same_token_on_snapshot_receiver) ... ok\r\ntest_startup_precheck_launchers_use_same_run_token_at_both_ends (__main__.LowStateProvenanceLauncherTests.test_startup_precheck_launchers_use_same_run_token_at_both_ends) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.031s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_physical_precheck_provenance_entries.py",
+    "exit_code": 0,
+    "summary": "test_supported_entries_install_precheck_provenance_guard (__main__.PhysicalPrecheckProvenanceEntryTests.test_supported_entries_install_precheck_provenance_guard) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_precheck_provenance_guard.py",
+    "exit_code": 0,
+    "summary": "w_odometry_evidence_and_topic_are_required (__main__.PrecheckProvenanceGuardTests.test_raw_odometry_evidence_and_topic_are_required) ... ok\r\ntest_valid_provenance_is_accepted (__main__.PrecheckProvenanceGuardTests.test_valid_provenance_is_accepted) ... ok\r\ntest_verified_count_must_match_accepted_count (__main__.PrecheckProvenanceGuardTests.test_verified_count_must_match_accepted_count) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.036s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "MuJoCo_G1_Controller/scripts/test_mink_command_provenance.py",
+    "exit_code": 0,
+    "summary": "requires_explicit_live_marker (__main__.MinkCommandProvenanceTests.test_relay_requires_explicit_live_marker) ... ok\r\ntest_root_launcher_uses_provenance_entrypoints (__main__.MinkCommandProvenanceTests.test_root_launcher_uses_provenance_entrypoints) ... ok\r\ntest_supported_live_entrypoints_install_marker (__main__.MinkCommandProvenanceTests.test_supported_live_entrypoints_install_marker) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.021s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_async.py",
+    "exit_code": 0,
+    "summary": ".........\r\n----------------------------------------------------------------------\r\nRan 9 tests in 14.467s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_crosscheck.py",
+    "exit_code": 0,
+    "summary": "...\r\n----------------------------------------------------------------------\r\nRan 3 tests in 1.858s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_observer_bridge.py",
+    "exit_code": 0,
+    "summary": "...\r\n----------------------------------------------------------------------\r\nRan 3 tests in 0.006s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_plan.py",
+    "exit_code": 0,
+    "summary": "....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.003s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_plan_adapter.py",
+    "exit_code": 0,
+    "summary": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.010s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_preview.py",
+    "exit_code": 0,
+    "summary": "....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.432s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_readiness.py",
+    "exit_code": 0,
+    "summary": "....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.294s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_reference.py",
+    "exit_code": 0,
+    "summary": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.005s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_request.py",
+    "exit_code": 0,
+    "summary": "......\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.124s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_runtime.py",
+    "exit_code": 0,
+    "summary": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.005s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_sequence.py",
+    "exit_code": 0,
+    "summary": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.006s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_excitation_writer_hook.py",
+    "exit_code": 0,
+    "summary": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.006s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_inspect_legacy.py",
+    "exit_code": 0,
+    "summary": "..\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.012s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_quiet_stats.py",
+    "exit_code": 0,
+    "summary": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.030s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_readonly.py",
+    "exit_code": 0,
+    "summary": "......\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.056s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "backend/tests/test_teleop_config.py",
+    "exit_code": 0,
+    "summary": "........\r\n----------------------------------------------------------------------\r\nRan 8 tests in 0.064s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_g1_velocity_keypad_relay.py",
+    "exit_code": 0,
+    "summary": "...........\r\n----------------------------------------------------------------------\r\nRan 11 tests in 0.001s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_g1_right_arm_jog_entry.py",
+    "exit_code": 0,
+    "summary": "mJogReleaseGuardTests.test_nominal_pass_requires_complete_zero_tail) ... ok\r\ntest_release_error_keeps_output_unknown_even_with_full_count (__main__.RightArmJogReleaseGuardTests.test_release_error_keeps_output_unknown_even_with_full_count) ... ok\r\ntest_supported_wsl_starter_uses_guarded_entrypoint (__main__.RightArmJogReleaseGuardTests.test_supported_wsl_starter_uses_guarded_entrypoint) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.000s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "backend/tests/test_live_receiver.py",
+    "exit_code": 0,
+    "summary": ".........\r\n----------------------------------------------------------------------\r\nRan 9 tests in 0.062s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "backend/tests/test_mink_command_stream.py",
+    "exit_code": 0,
+    "summary": "............\r\n----------------------------------------------------------------------\r\nRan 12 tests in 0.064s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate7_mink_wsl_relay.py",
+    "exit_code": 0,
+    "summary": "nd provenance: live_mink only\r\nRelay provenance: TOKEN-BOUND\r\nUnitree SDK: NONE\r\nDDS publisher: NONE\r\nRobot command: NONE\r\n[REJECT] \"Gate7ContractError: live_mink_provenance_required\"\r\n\r\n[STOP] Relay stopped by operator.\r\nAccepted=0 rejected=1\r\nResult saved to: C:\\Users\\user\\AppData\\Local\\Temp\\tmpkj3lt0v9\\result.json\r\n[ACTION] Start Unity/Mink live output on UDP 5008, then retry.\r\n............\r\n----------------------------------------------------------------------\r\nRan 12 tests in 0.008s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_gate7_live_entrypoint.py",
+    "exit_code": 0,
+    "summary": "__main__.Gate7LiveEntrypointTests.test_guarded_wait_forwards_preview_and_preserves_confirmation) ... ok\r\ntest_installed_guard_does_not_bypass_authorization (__main__.Gate7LiveEntrypointTests.test_installed_guard_does_not_bypass_authorization) ... ok\r\ntest_wsl_starter_uses_supported_guarded_entrypoint (__main__.Gate7LiveEntrypointTests.test_wsl_starter_uses_supported_guarded_entrypoint) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 8 tests in 0.064s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_check_startup_readiness_entry.py",
+    "exit_code": 0,
+    "summary": "ntry_forwards_raw_odom_fields (__main__.StartupPrecheckEntryTests.test_supported_read_only_entry_forwards_raw_odom_fields) ... ok\r\ntest_token_format_accepts_uuid_hex (__main__.StartupPrecheckEntryTests.test_token_format_accepts_uuid_hex) ... ok\r\ntest_token_format_rejects_short_or_punctuated_values (__main__.StartupPrecheckEntryTests.test_token_format_rejects_short_or_punctuated_values) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.006s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "experiments/twist2_right_arm_manual/test_sysid_pipeline.py",
+    "exit_code": 1,
+    "summary": "in the working copy of 'tools/START_G1_GATE7_LIVE_HARDWARE.bat', LF will be replaced by CRLF the next time Git touches it\r\nwarning: in the working copy of 'tools/START_G1_GATE7_VR_RECORDING.bat', LF will be replaced by CRLF the next time Git touches it\r\nwarning: in the working copy of 'tools/VIEW_G1_LIVE_MUJOCO.bat', LF will be replaced by CRLF the next time Git touches it\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 21 tests in 1.190s\r\n\r\nFAILED (failures=1)\r\n"
+  },
+  {
+    "test": "backend/tests/test_foundation.py",
+    "exit_code": 0,
+    "summary": "w node\r\nexpected the node content, but found '<stream end>'\r\n  in \"<unicode string>\", line 1, column 15:\r\n    head_camera: [\r\n                  ^\r\nCamera configuration: FAIL\r\nResult saved to: C:\\Users\\user\\AppData\\Local\\Temp\\tmp372o8x0e\\result.json\r\n[ACTION] Check profile/YAML values and PyYAML installation: TeleImager image_shape must match profile [height, width]\r\n...........................\r\n----------------------------------------------------------------------\r\nRan 27 tests in 0.804s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "backend/tests/test_protocol_v2.py",
+    "exit_code": 0,
+    "summary": "..............\r\n----------------------------------------------------------------------\r\nRan 14 tests in 0.078s\r\n\r\nOK\r\n"
+  },
+  {
+    "test": "backend/tests/test_mink_feasible_target.py",
+    "exit_code": 1,
+    "summary": "w_targets_without_sockets\r\n    live.main()\r\n  File \"C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\run_mink_g1_right_arm_virtual_center_live.py\", line 169, in main\r\n    if args.speed_profile is not None and not cycle_enabled:\r\n       ^^^^^^^^^^^^^^^^^^\r\nAttributeError: 'types.SimpleNamespace' object has no attribute 'speed_profile'\r\n\r\n----------------------------------------------------------------------\r\nRan 16 tests in 61.223s\r\n\r\nFAILED (errors=1)\r\n"
+  },
+  {
+    "test": "backend/tests/test_virtual_center_kinematics_regression.py",
+    "exit_code": 1,
+    "summary": "7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.423306966596688e-19, -2.1193049717613925e-19, -6.687900009098426e-19, 0.17453292519943295, 0.3839724354387525, 0.0, 0.9599310885968813, 0.0, 0.0, 0.0, 0.1745427036881762, -0.3837495223593823, -0.0006811409589186536, 0.9598789920305901, 0.24764952907196308, 9.193757257260879e-05, 0.0001907919616838155]}\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 7.079s\r\n\r\nFAILED (failures=1)\r\n"
+  },
+  {
+    "test": "hardware/g1_arm_bridge/test_g1_velocity_axis_trial_sender.py",
+    "exit_code": 0,
+    "summary": "PASS: python -B -m unittest hardware.g1_arm_bridge.test_g1_velocity_axis_trial_sender (1 test). Direct execution was invalid for a package-relative import."
+  }
+]

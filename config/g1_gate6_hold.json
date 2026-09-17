@@ -18,7 +18,7 @@
   "ramp_up_s": 3.0,
   "hold_s": 3.0,
   "ramp_down_s": 3.0,
-  "maximum_weight": 0.2,
+  "maximum_weight": 0.4,
   "release_zero_cycles": 25,
   "proximal_kp": 80.0,
   "proximal_kd": 3.0,

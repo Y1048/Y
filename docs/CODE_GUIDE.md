@@ -93,12 +93,13 @@ twist2_right_arm_trial.cpp
 | 2 | `Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs` | 목표 단위/축, session/sequence, active/idle/disengage 패킷 |
 | 3 | `backend/g1_teleop/mink_command_stream.py` / `poll` | 패킷 검증과 clutch 재설정 조건; 입력 유실과 의도적 해제 구분 |
 | 4 | `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py` / `main` | task/limit 생성, 손목 목표 계산, 결과 표시·송신 |
-| 5 | 같은 파일 / `VirtualCenterOrientationTask` | 회전 Jacobian 유지, 손목 한계 근처 cost/오차 완화 |
-| 6 | `MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py` / `Plan` | QP 후보, backtracking, 중간 충돌 검사, 첫 단계 적용 |
-| 7 | `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py` | `_build_collision_pairs`, `_initial_configuration`, `_state_packet`, `_select_solver` |
-| 8 | `MuJoCo_G1_Controller/scripts/g1_right_arm_common.py` | 모델 생성, 관절 이름/주소, `operator_rotation_to_robot_matrix` |
-| 9 | `hardware/g1_arm_bridge/arm_sdk_teleop_contract.py` | 물리 출력 전 목표/상태 계약과 HOLD·복귀 상태 머신 |
-| 10 | `hardware/g1_arm_bridge/gate7_live_arm_sdk.py` | WSL 수신, 실측 검사, 승인 후 publisher 출력·해제 |
+| 5 | `MuJoCo_G1_Controller/scripts/g1_mink_trajectory.py` / `StatefulMinkTrajectory` | 충돌 검증된 IK look-ahead를 0.16 rad/s Ruckig 궤적으로 만들고 중간 자세를 재검사 |
+| 6 | `MuJoCo_G1_Controller/scripts/g1_virtual_center_tasks.py` / `VirtualCenterOrientationTask` | 정확한 회전 Jacobian, 손목 한계/특이도 기반 연속 proximal assist |
+| 7 | `MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py` / `Plan` | 같은 자세에서 위치 QP 후 위치 변위 보존 등식을 둔 회전 QP, 최종 속도 하나의 FK/충돌 검사 |
+| 8 | `MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_prototype.py` | `_build_collision_pairs`, `_initial_configuration`, `_state_packet`, `_select_solver` |
+| 9 | `MuJoCo_G1_Controller/scripts/g1_right_arm_common.py` | 모델 생성, 관절 이름/주소, `operator_rotation_to_robot_matrix` |
+| 10 | `hardware/g1_arm_bridge/arm_sdk_teleop_contract.py` | 물리 출력 전 목표/상태 계약과 HOLD·복귀 상태 머신 |
+| 11 | `hardware/g1_arm_bridge/gate7_live_arm_sdk.py` | WSL 수신, 실측 검사, 승인 후 publisher 출력·해제 |
 
 ### 오른팔 C++를 설명할 때
 
@@ -206,21 +207,23 @@ Mink는 문제를 조립하고 `qpsolvers.solve_problem`을 호출한다. 프로
 | `FRAME_GAIN` | 0.35 | 위치·회전 task 오차 피드백 |
 | `POSTURE_COST` | 0.04 | 기준 관절 자세 비용 |
 | `VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE` | 0.05 | 손목 3축 자세 비용은 0.002; 손목이 회전을 담당하기 쉽게 함 |
-| virtual-center proximal / wrist damping cost | 0.03 / 0.015 | 어깨·팔꿈치 움직임에 더 큰 비용 |
+| 위치 단계 proximal / wrist damping cost | 0.03 / 0.50 | 손목 중심 이동에는 근위 4축을 우선 |
+| 회전 단계 proximal damping cost | assist 0에서 100.0, assist 1에서 0.03 | 손목 우선이지만 hard freeze는 아님 |
+| 회전 단계 wrist damping cost | 0.015 | 손목 3축을 회전 해로 우선 선택 |
 | `LM_DAMPING`, `QP_DAMPING` | 1e-5 / 1e-8 | task별 / QP 전체 정규화 |
-| proximal / wrist velocity cap | 각각 0.08 rad/s (약 4.58 deg/s) | static stand 키보드 기본 1배와 동일한 수치의 상한; 추종 동작 동일 보장은 아님 |
+| proximal / wrist velocity cap | 각각 0.16 rad/s (약 9.17 deg/s) | 현재 로컬 Mink 공통 관절 속도 상한 |
 | local `mink-default` clearance / detection | 5 / 10 mm | Mink 1.3.0 기본값; Unity/MuJoCo 로컬 실행의 기본 프로필 |
 | physical `hardware-guarded` clearance / detection | 20 / 40 mm | 실제 출력 후보 경로에서 명시적으로 강제하는 추가 여유 |
 | Gate 7 command hard stop | 12 mm | 실제 출력 어댑터의 독립 검사; Mink 목표 거리와 별도 |
 | `COLLISION_GAIN` | 0.85 | 거리 기반 접근 제한 |
-| assist enter / release / full margin | 18 / 28 / 5 deg | 손목 한계 접근 시 히스테리시스 |
-| orientation cost 최소 배율 | 0.25 | 한계 근처 회전 추종을 완화 |
-| orientation error cap | 정상 180, 한계 근처 12 deg | 큰 회전 요구의 한 단계 피드백 크기 완화 |
+| assist start / full margin | 28 / 5 deg | 손목 한계 접근에 따라 근위 허용량을 연속 증가 |
+| wrist Jacobian assist start / full | 최소 특이값 0.35 / 0.08 | 손목 회전 특이점 접근 시 근위 관절 허용 |
+| orientation cost / error cap | 2.0 유지 / 180 deg | assist 때 목표를 약화하지 않고 관절 비용을 조절 |
 
 `PostureTask` 기준은 engage 때의 configuration으로 갱신된다. 항상 하나의
 고정된 “인간 기본 자세”를 향하는 것은 아니다.
-`prototype.py`의 proximal damping 0.25와 75 deg/s는 baseline용이다.
-기본 virtual-center의 0.03과 0.08 rad/s 제한을 설명할 때 섞지 않는다.
+`prototype.py`의 단일 6D baseline과 계층형 live 경로는 task 구성이 다르다.
+공통 속도 상한은 `prototype.py`의 0.16 rad/s 정의를 함께 사용한다.
 `config/teleop.json`에는 옛 DLS/voxel 필드가 남아 있지만 현재 Mink task 값을
 덮어쓰지 않는다. 기존 설정 계약과 런처 참조를 보존했으며 설정 통합은 하지 않았다.
 

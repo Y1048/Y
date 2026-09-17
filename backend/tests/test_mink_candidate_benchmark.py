@@ -3,6 +3,11 @@
 import sys
 import multiprocessing as mp
 import unittest
+import json
+import tempfile
+import os
+import time
+import pytest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -15,9 +20,35 @@ from benchmark_mink_candidate import (
 )
 from benchmark_mink_rendered_replay import WaitForRelease, GetNextRelease, GetRunStatus
 from offline_render_worker import LatestStateSlot
+from offline_render_worker import ProcessRenderer
+import benchmark_mink_candidate as tool
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_cli_runtime_failure_replaces_old_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "result.json"
+            output.write_text('{"status":"PLANNER_ONLY_BUDGET_MET"}')
+            with patch.object(sys, "argv", ["benchmark", "capture", "reference", "--result-json", str(output)]), \
+                 patch.object(tool, "RunReport", side_effect=RuntimeError("solver failed")):
+                self.assertEqual(tool.main(), 1)
+            result = json.loads(output.read_text())
+            self.assertEqual(result["status"], "FAIL")
+            self.assertFalse(result["robot_command"])
+            self.assertIn("solver failed", result["error"])
+
+    def test_cli_missing_reference_unwritable_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "result.json"
+            with patch.object(sys, "argv", ["benchmark", "capture", str(Path(directory) / "missing"),
+                                            "--result-json", str(output)]), \
+                 patch.object(Path, "write_text", side_effect=PermissionError("denied")), \
+                 patch("builtins.print") as printer:
+                self.assertEqual(tool.main(), 1)
+            messages = " ".join(str(call) for call in printer.call_args_list)
+            self.assertIn("existing report is stale", messages)
+            self.assertNotIn("Result saved to:", messages)
+
     def test_status_does_not_hide_stale_display_behind_fast_control(self):
         run = {"trajectory_parity": True, "render_check": {"nonblank_and_changing": True},
                "late_frames": [], "render_worker": {"timings": {"source_age_finish_ms": {"deadline_misses": 1}}}}
@@ -296,13 +327,56 @@ class BenchmarkTests(unittest.TestCase):
             np.testing.assert_array_equal(actual, q)
             self.assertEqual(check.call_count, 1)
             self.assertEqual(result["status"], "no_accepted_step")
-        with patch.object(planner, "CheckConfiguration", side_effect=[True, False, False, False, False, False, False]) as check, patch.object(
+        with patch.object(planner, "CheckConfigurationWithClearance", side_effect=[(True, .04)] + [(False, .0)] * 6) as check, patch.object(
             planner, "GetMerit", side_effect=[1., 0., 0., 0., 0., 0., 0.]
         ), patch.object(probe.mink, "solve_ik", return_value=velocity):
             actual, result = comparison.EvaluateStep(planner, q, goal, diagnostic_geometry=False)
             np.testing.assert_array_equal(actual, q)
             self.assertEqual(check.call_count, 7)
             self.assertNotEqual(result["status"], "accepted")
+
+
+@pytest.mark.skipif(os.environ.get("G1_TEST_REAL_RENDERER") != "1", reason="Explicit local GPU smoke opt-in")
+@pytest.mark.parametrize("invalid_trace", [False, True])
+def test_real_render_process_lifecycle(tmp_path, invalid_trace):
+    probe = comparison.probe
+    model_path = probe.base._prepare_mink_xml(output_path=tmp_path / "model.xml")
+    model = probe.mujoco.MjModel.from_xml_path(str(model_path))
+    initial = probe.base._initial_configuration(model)
+    joint = probe.base._joint_id(model, "right_elbow_joint")
+    address = int(model.jnt_qposadr[joint])
+    states = []
+    for angle in np.linspace(0, .4, 60):
+        q = initial.copy()
+        q[address] += angle
+        states.append(q)
+    trace = tmp_path / "trace.jsonl"
+    trace.write_text("invalid" if invalid_trace else "".join(
+        json.dumps({"qpos": q.tolist()}) + "\n" for q in states), encoding="utf-8")
+    children = {p.pid for p in mp.active_children()}
+    if invalid_trace:
+        with pytest.raises(RuntimeError, match="Renderer startup failed"):
+            ProcessRenderer(model_path, initial, 640, 480, trace, tmp_path / "frame")
+        assert {p.pid for p in mp.active_children()} <= children
+        return
+    renderer = ProcessRenderer(model_path, initial, 640, 480, trace, tmp_path / "frame")
+    try:
+        renderer.BeginRun()
+        for q in states:
+            renderer.Draw(q, [.4, -.2, 1.], [.35, -.2, 1.])
+            time.sleep(.03)
+        result = renderer.FinishRun()
+    finally:
+        renderer.Close()
+    assert not renderer.process.is_alive()
+    assert {p.pid for p in mp.active_children()} <= children
+    assert result["status"] == "COMPLETE"
+    assert result["state_qpos_mismatches"] == 0
+    assert result["last_sequence"] == 60
+    assert result["render_check"]["nonblank_and_changing"]
+    assert all(Path(p).is_file() for p in result["screenshots"])
+    (tmp_path / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    print("Renderer smoke result:", tmp_path / "result.json")
 
 
 if __name__ == "__main__":

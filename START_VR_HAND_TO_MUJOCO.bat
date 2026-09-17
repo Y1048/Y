@@ -10,10 +10,23 @@ set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_virtual_center_live_entry.py"
 set "CAMERA_LAUNCHER=%PROJECT_ROOT%tools\START_G1_CAMERA_TO_UNITY.bat"
 set "IK_MODE=virtual-center"
+set "IK_SOLVER=hierarchical"
 set "CHECK_ONLY=0"
 set "DISPLAY_MODE=simulation"
+set "EXTERNAL_FEEDBACK=0"
+set "CAMERA_REQUESTED=0"
+for %%A in (%*) do (
+    if /I "%%~A"=="--external-feedback" set "EXTERNAL_FEEDBACK=1"
+    if /I "%%~A"=="--camera" set "CAMERA_REQUESTED=1"
+)
 if /I "%~1"=="--hardware-display" set "DISPLAY_MODE=hardware"
 if /I "%~2"=="--hardware-display" set "DISPLAY_MODE=hardware"
+rem Standard 6D is the local baseline; preserve hardware solver selection.
+if /I "%DISPLAY_MODE%"=="simulation" set "IK_SOLVER=vanilla"
+if /I "%~1"=="--hierarchical" set "IK_SOLVER=hierarchical"
+if /I "%~2"=="--hierarchical" set "IK_SOLVER=hierarchical"
+if /I "%~1"=="--standard-mink" set "IK_SOLVER=vanilla"
+if /I "%~2"=="--standard-mink" set "IK_SOLVER=vanilla"
 rem Local Unity/MuJoCo uses Mink's upstream 5/10 mm collision distances.
 rem The hardware-display path below always overrides this with its guarded profile.
 set "COLLISION_PROFILE=mink-default"
@@ -28,15 +41,49 @@ if /I "%~2"=="--baseline" (
     set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype_entry.py"
     set "IK_MODE=baseline"
 )
+if /I "%~1"=="--vanilla-mink" (
+    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype_entry.py"
+    set "IK_MODE=vanilla-mink"
+)
+if /I "%~2"=="--vanilla-mink" (
+    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_prototype_entry.py"
+    set "IK_MODE=vanilla-mink"
+)
 if /I "%~1"=="--check" set "CHECK_ONLY=1"
 if /I "%~2"=="--check" set "CHECK_ONLY=1"
 set "TELEOP_CONFIG=%PROJECT_ROOT%config\teleop.json"
 set "GATE7_FEEDBACK_PORT=5012"
+set "LOCAL_ENGINE_312=0"
+set "INITIAL_SEED_ARGS="
+if defined G1_MINK_INITIAL_SEED set "INITIAL_SEED_ARGS=--seed-from-environment"
+if defined G1_MINK_INITIAL_SESSION set "INITIAL_SEED_ARGS=--seed-from-environment"
+rem Local shared-loop baseline uses the engine validated by distance regression.
+if /I "%DISPLAY_MODE%"=="simulation" if /I "%IK_MODE%"=="virtual-center" set "LOCAL_ENGINE_312=1"
+if /I "%~1"=="--mujoco311" set "LOCAL_ENGINE_312=0"
+if /I "%~2"=="--mujoco311" set "LOCAL_ENGINE_312=0"
+if /I "%~1"=="--mujoco312" set "LOCAL_ENGINE_312=1"
+if /I "%~2"=="--mujoco312" set "LOCAL_ENGINE_312=1"
+if "%LOCAL_ENGINE_312%"=="1" (
+    if /I not "%DISPLAY_MODE%"=="simulation" (
+        echo [ERROR] MuJoCo 3.12 is local simulation only.
+        goto :failed
+    )
+    if /I not "%IK_MODE%"=="virtual-center" (
+        echo [ERROR] Isolated engine requires the shared controller loop.
+        goto :failed
+    )
+    set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_simulation_312.py"
+)
 
+if defined INITIAL_SEED_ARGS if not "%LOCAL_ENGINE_312%"=="1" (
+    echo [ERROR] LowState seed requires the isolated simulation engine.
+    goto :failed
+)
 echo ========================================
 echo G1 Quest hand tracking to Mink/MuJoCo
 echo ========================================
 echo IK mode: %IK_MODE%
+echo IK solver: %IK_SOLVER%
 echo.
 
 if not exist "%UNITY_EXE%" (
@@ -66,8 +113,19 @@ if not exist "%TELEOP_CONFIG%" (
     goto :failed
 )
 
-py -3.11 -c "import mujoco, numpy, mink, qpsolvers" >nul 2>&1
+if "%LOCAL_ENGINE_312%"=="1" (
+    py -3.11 "%MUJOCO_SCRIPT%" --validate-only --ik-solver %IK_SOLVER% %INITIAL_SEED_ARGS%
+) else (
+    py -3.11 -c "import mujoco, numpy, mink, qpsolvers" >nul 2>&1
+)
 if errorlevel 1 (
+    if "%LOCAL_ENGINE_312%"=="1" (
+        echo [ERROR] Isolated MuJoCo 3.12 validation failed.
+        echo [ACTION] Check the first Python error and restore the isolated engine folder:
+        echo %PROJECT_ROOT%logs\diagnostics\mujoco_versions\3.12.0
+        echo [ACTION] Do not replace the global or WSL installation to fix this launcher.
+        goto :failed
+    )
     echo [ERROR] Python 3.11 Mink/MuJoCo environment is not ready.
     echo [ACTION] Run: py -3.11 -m pip install mujoco mink daqp qpsolvers numpy
     echo [ACTION] Then run this BAT again.
@@ -94,6 +152,14 @@ netstat -ano -p UDP | findstr /R /C:":%UDP_PORT%[ ]" >nul
 if not errorlevel 1 set "UDP_RUNNING=1"
 
 set "GATE7_FEEDBACK_RUNNING=0"
+if "%UDP_RUNNING%"=="1" if "%LOCAL_ENGINE_312%"=="1" (
+    echo [ERROR] Close the existing controller before changing the simulation engine.
+    goto :failed
+)
+if "%UDP_RUNNING%"=="1" if /I "%IK_SOLVER%"=="vanilla" (
+    echo [ERROR] Stop the existing controller before selecting standard Mink.
+    goto :failed
+)
 netstat -ano -p UDP | findstr /R /C:":%GATE7_FEEDBACK_PORT%[ ]" >nul
 if not errorlevel 1 set "GATE7_FEEDBACK_RUNNING=1"
 
@@ -113,12 +179,15 @@ powershell -NoProfile -Command "$u='%UNITY_PROJECT%'.ToLowerInvariant(); $p=Get-
 if not errorlevel 1 set "UNITY_PROJECT_RUNNING=1"
 
 set "G1_CAMERA_AVAILABLE=0"
+set "G1_CAMERA_RUNNING=0"
+if "%CAMERA_REQUESTED%"=="0" goto :camera_checks_done
 powershell -NoProfile -Command "$ip=Get-NetIPAddress -IPAddress '192.168.123.99' -ErrorAction SilentlyContinue; if($ip -and (Test-Connection 192.168.123.164 -Count 1 -Quiet)){exit 0}else{exit 1}" >nul 2>&1
 if not errorlevel 1 set "G1_CAMERA_AVAILABLE=1"
 
 set "G1_CAMERA_RUNNING=0"
 wsl -d Ubuntu -- bash -lc "pgrep -f '[g]1_camera_tcp_bridge.py' >/dev/null" >nul 2>&1
 if not errorlevel 1 set "G1_CAMERA_RUNNING=1"
+:camera_checks_done
 
 if "%CHECK_ONLY%"=="1" (
     echo [OK] Required project files, config, and programs are ready.
@@ -126,6 +195,29 @@ if "%CHECK_ONLY%"=="1" (
     if "%UNITY_PROJECT_RUNNING%"=="1" (echo [STATUS] Unity G1 VR project is already open.) else (echo [STATUS] Unity G1 VR project is not running.)
     if "%G1_CAMERA_AVAILABLE%"=="1" (echo [STATUS] G1 camera API is reachable by Ethernet.) else (echo [STATUS] G1 camera bridge will stay off until G1 Ethernet is connected.)
     exit /b 0
+)
+
+if /I "%DISPLAY_MODE%"=="simulation" if /I "%IK_MODE%"=="virtual-center" if "%EXTERNAL_FEEDBACK%"=="0" (
+    netstat -ano -p UDP | findstr /R /C:":5008[ ]" >nul
+    if not errorlevel 1 (
+        echo [ERROR] UDP 5008 is occupied. Do not reuse an unknown receiver.
+        echo [ACTION] Close the old dry-run or relay before starting this simulation.
+        goto :failed
+    )
+    py -3.11 "%PROJECT_ROOT%hardware\g1_arm_bridge\gate7_live_dry_run.py" --validate-only
+    if errorlevel 1 (
+        echo [ERROR] Regular-return simulation validation failed.
+        echo [ACTION] Fix the first Python error above. No hardware output was started.
+        goto :failed
+    )
+    start "G1 Regular Return - SIMULATION ONLY" /D "%PROJECT_ROOT%" cmd /k py -3.11 hardware\g1_arm_bridge\gate7_live_dry_run.py --measured-source mink --event-log auto --result-json auto
+    timeout /t 4 /nobreak >nul
+    netstat -ano -p UDP | findstr /R /C:":5008[ ]" >nul
+    if errorlevel 1 (
+        echo [ERROR] Regular-return simulator did not bind UDP 5008.
+        echo [ACTION] Read the separate simulation window and fix its first error.
+        goto :failed
+    )
 )
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%PROJECT_ROOT%tools\SET_UNITY_DISPLAY_MODE.ps1" -Mode %DISPLAY_MODE%
@@ -147,9 +239,10 @@ if "%UDP_RUNNING%"=="0" (
     echo [START] Mink/DAQP G1 right-arm controller: %IK_MODE%
     if /I "%IK_MODE%"=="virtual-center" (
         echo [PROFILE] Collision: %COLLISION_PROFILE%
-        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE%
+        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE% --ik-solver %IK_SOLVER% %INITIAL_SEED_ARGS%
     ) else (
-        start "G1 Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%"
+        echo [PROFILE] Collision: %COLLISION_PROFILE%
+        start "G1 Vanilla Mink Right Arm" /D "%CONTROLLER_ROOT%" cmd /k py -3.11 "%MUJOCO_SCRIPT%" --collision-profile %COLLISION_PROFILE%
     )
 ) else (
     echo [KEEP] A UDP controller is already listening on port %UDP_PORT%.
@@ -163,7 +256,8 @@ if "%G1_CAMERA_AVAILABLE%"=="1" (
         echo [KEEP] The read-only G1 camera bridge is already running.
     )
 ) else (
-    echo [INFO] G1 camera bridge skipped: 192.168.123.164 is not reachable.
+    echo [INFO] Camera not started. Optional read-only camera: run this BAT with --camera.
+    echo [INFO] With --camera, Windows 192.168.123.99 and reachable G1 192.168.123.164 are required.
 )
 
 echo.
@@ -171,26 +265,37 @@ echo Ready for the live test:
 echo   1. In Meta Horizon Link, confirm Quest Link is connected.
 echo   2. In Unity, open Assets/Scenes/SampleScene if needed.
 echo   3. Press the Play button at the top of Unity.
-echo      If G1 Ethernet is connected, the head-camera PiP turns green after live JPEG frames arrive.
+echo      With --camera and G1 connected, the PiP turns green after live JPEG frames arrive.
 echo   4. Move the cyan Quest wrist marker to the G1 wrist engagement target.
 echo   5. Hold it inside the target for around 0.55 seconds while it turns yellow.
 echo   6. After the target turns green, move and rotate your right wrist.
 echo   7. Confirm that the Mink/MuJoCo right arm follows the wrist pose.
 echo   8. The inspection stick and panel are currently hidden for camera/arm tests.
-echo   9. After disengagement, Gate 7 simulation feedback on UDP 5012 shows the
-echo      10-second HOLD and Regular-pose return directly in the MuJoCo window.
+echo   9. In the default simulation, pinch requests Regular return;
+echo      tracking-loss HOLD returns after 10 seconds through UDP 5012 feedback.
+echo      Legacy baseline modes do not include this return simulator.
+echo   10. Stop the Regular Return window with Ctrl+C when finished.
+echo       It prints result paths. Close the optional camera window separately.
 echo.
 echo Controller:
 if "%IK_MODE%"=="virtual-center" (
-    echo   Smooth virtual-center: position=right_wrist_roll_link, rotation=right_wrist_yaw_link
+    if /I "%IK_SOLVER%"=="vanilla" (
+        echo   Standard Mink: one 6D task on right_wrist_yaw_link, shared feedback loop
+    ) else (
+        echo   Smooth virtual-center: position=right_wrist_roll_link, rotation=right_wrist_yaw_link
+    )
 ) else (
-    echo   Baseline Mink 6D FrameTask on right_wrist_yaw_link
+    echo   Vanilla Mink comparison: one 6D FrameTask on right_wrist_yaw_link
 )
 echo   DAQP QP solver preferred
 echo   Non-right-arm DOFs frozen
 echo   Joint, velocity, and collision limits enabled
-if /I "%IK_MODE%"=="virtual-center" echo   Collision profile: %COLLISION_PROFILE%
-echo   Gate 7 command provenance: explicit live_mink
+echo   Collision profile: %COLLISION_PROFILE%
+if "%LOCAL_ENGINE_312%"=="1" (
+    echo   Gate 7 command provenance: simulation_only - physical relay rejects it
+) else (
+    echo   Gate 7 command provenance: explicit live_mink
+)
 echo.
 echo Marker colors:
 echo   Cyan   = actual Quest wrist

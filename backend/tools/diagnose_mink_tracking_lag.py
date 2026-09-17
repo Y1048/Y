@@ -156,7 +156,8 @@ def main():
     times, targets = comparison.GetRecordedTargets(goals)
     result = {"robot_command": False, "mujoco_version": comparison.probe.mujoco.__version__,
         "segment": 2, "hashes": hashes, "tool_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        "boundary": "Offline kinematic candidate, fixed dt and unchanged 40/100 deg/s, joint and collision limits. Slowed zero-order-held targets, not original real-time input or a dynamics test. Endpoint search is not a safe path or proof of infeasibility; only targets outside the model-derived chain-length upper bound are proven unreachable.",
+        "limits": comparison.GetLimitMetadata(),
+        "boundary": "Offline kinematic candidate; current dt, velocity and collision limits are recorded in limits. Slowed zero-order-held targets, not original real-time input or a dynamics test. Endpoint search is not a safe path or proof of infeasibility; only targets outside the model-derived chain-length upper bound are proven unreachable.",
         "speeds": [], "freezes": []}
     args.result_json.parent.mkdir(parents=True, exist_ok=True)
 

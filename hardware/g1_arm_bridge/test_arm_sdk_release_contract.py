@@ -114,6 +114,60 @@ class ReleaseContractTests(unittest.TestCase):
         self.assertEqual(1, evidence.release_zero_frames_sent)
         self.assertIn("zero_tail:RuntimeError", evidence.release_fault)
 
+    def test_all_writes_fail_without_claiming_release(self) -> None:
+        clock = FakeClock()
+        attempts = []
+
+        def publish(frame):
+            attempts.append(frame)
+            raise OSError("transport disconnected")
+
+        evidence = execute_release_sequence(
+            start_weight=0.2, ramp_s=0.02, zero_cycles=3, publish_hz=100.0,
+            build_ramp_frame=lambda weight: weight,
+            build_zero_frame=lambda: 0.0, publish_frame=publish,
+            monotonic=clock.monotonic, sleep=clock.sleep,
+            unix_time_ns=clock.time_ns,
+        )
+        self.assertEqual([0.2, 0.0], attempts)
+        self.assertFalse(evidence.release_ramp_completed)
+        self.assertFalse(evidence.zero_release_completed)
+        self.assertEqual(0, evidence.release_zero_frames_sent)
+        self.assertEqual(0.2, evidence.last_successful_weight)
+        self.assertIsNone(evidence.last_successful_write_unix_ns)
+        self.assertTrue(evidence.output_state_unknown)
+        self.assertFalse(evidence.external_authority_handoff_confirmed)
+        self.assertIn("ramp:OSError", evidence.release_fault)
+        self.assertIn("zero_tail:OSError", evidence.release_fault)
+
+    def test_snapshot_loss_during_release_keeps_output_unknown(self) -> None:
+        clock = FakeClock()
+        published = []
+
+        def build_ramp(weight):
+            if published:
+                raise RuntimeError("LowState unavailable during release")
+            return weight
+
+        def build_zero():
+            raise RuntimeError("LowState unavailable during release")
+
+        evidence = execute_release_sequence(
+            start_weight=0.2, ramp_s=0.02, zero_cycles=3, publish_hz=100.0,
+            build_ramp_frame=build_ramp, build_zero_frame=build_zero,
+            publish_frame=published.append,
+            monotonic=clock.monotonic, sleep=clock.sleep,
+            unix_time_ns=clock.time_ns,
+        )
+        self.assertEqual([0.2], published)
+        self.assertEqual(0.2, evidence.last_successful_weight)
+        self.assertIsNotNone(evidence.last_successful_write_unix_ns)
+        self.assertEqual(0, evidence.release_zero_frames_sent)
+        self.assertFalse(evidence.zero_release_completed)
+        self.assertTrue(evidence.output_state_unknown)
+        self.assertFalse(evidence.external_authority_handoff_confirmed)
+        self.assertIn("LowState unavailable", evidence.release_fault)
+
     def test_invalid_arguments_fail_before_any_publish(self) -> None:
         called = False
 

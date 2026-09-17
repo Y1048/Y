@@ -139,19 +139,40 @@ def main():
     parser.add_argument("--variant", choices=("current", "candidate"), required=True)
     parser.add_argument("--result-json", required=True, type=Path)
     args = parser.parse_args()
+    try:
+        return RunInspection(args)
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError, IndexError) as exc:
+        result = {"verdict": {"status": "FAIL"}, "robot_command": False,
+                  "capture": str(args.capture), "error": f"{type(exc).__name__}: {exc}"}
+        print("[ERROR] Return inspection failed:", result["error"])
+        try:
+            args.result_json.parent.mkdir(parents=True, exist_ok=True)
+            args.result_json.write_text(json.dumps(result, indent=2), encoding="utf-8")
+            print("Result saved to:", args.result_json.resolve())
+        except OSError as report_error:
+            print("[ERROR] Failure report was not saved:", report_error)
+            print("[ACTION] Check output write access; any existing report is stale.")
+        print("[ACTION] Check matching capture/reference files and the second active segment before retrying.")
+        return 1
+
+
+def RunInspection(args):
+    """두 번째 연동 구간으로 복귀를 검사한다. CLI는 예외를 FAIL로 보고한다."""
     probe = comparison.probe
     report = json.loads(args.reference_report.read_text(encoding="utf-8"))
-    model_path = Path(probe.base.g1.DEMO_XML)
     digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    if digest(args.capture) != report["capture_sha256"] or digest(model_path) != report["model_xml_sha256"]:
+    model, model_metadata = probe.base.LoadMinkModelWithMetadata()
+    if digest(args.capture) != report["capture_sha256"] or model_metadata["model_xml_sha256"] != report["model_xml_sha256"]:
         raise ValueError("Capture or model does not match reference")
     if args.variant == "candidate" and probe.mujoco.__version__ != report["mujoco_version"]:
         raise ValueError("Candidate engine must match the reference")
     trace_path = args.reference_report.with_name(args.reference_report.stem + "_s2_limit_avoidance.jsonl")
     expected = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
     _, packets = probe._decode_capture(args.capture)
-    reference, goals = comparison.GetActiveSegments(packets)[1]
-    model = probe.mujoco.MjModel.from_xml_path(str(model_path))
+    segments = comparison.GetActiveSegments(packets)
+    if len(segments) < 2:
+        raise ValueError("Return inspection requires a second active segment; capture has fewer than two.")
+    reference, goals = segments[1]
     probe.base._apply_operational_joint_limits(model)
     initial = probe.base._initial_configuration(model)
     addresses = [int(model.jnt_qposadr[probe.base._joint_id(model, n)]) for n in probe.base.g1.G1_29_JOINTS]
@@ -159,13 +180,15 @@ def main():
     args.result_json.parent.mkdir(parents=True, exist_ok=True)
     result = Run(model, initial, goals, expected, args.variant, args.result_json)
     result.update(robot_command=False, settings_modified=False,
-        hashes={"capture": digest(args.capture), "model": digest(model_path), "reference_trace": digest(trace_path),
+        model_metadata=model_metadata,
+        hashes={"capture": digest(args.capture), "model": model_metadata["model_xml_sha256"], "reference_trace": digest(trace_path),
                 "tool": digest(Path(__file__))},
         boundary="Offline kinematic actual/preview endpoints and planner's sampled path checks. No Unity runtime, network, PD/physics, continuous collision proof or physical authorization. Current/candidate engine versions may differ; not a single-variable causal comparison.")
     args.result_json.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
     print(result["verdict"], flush=True)
     print("Result saved to:", args.result_json.resolve())
+    return 0 if result["verdict"]["status"] == "OFFLINE_CRITERIA_MET" else 3
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

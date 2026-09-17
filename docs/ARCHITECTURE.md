@@ -238,9 +238,9 @@ Engagement 순간의 사용자 손 pose와 G1의 현재 손목 pose를 별도 �
 
 ## 5. 오른팔 제어 구조
 
-### 5.1 현재 role-separated 6D task
+### 5.1 현재 wrist-first 계층형 6D task
 
-기본 launcher는 위치와 회전을 두 task로 분리한다.
+기본 launcher는 위치와 회전을 두 단계 QP로 분리한다.
 
 - position: `right_wrist_roll_link`, cost `8.0`
 - orientation: `right_wrist_yaw_link`, cost `2.0`
@@ -252,18 +252,32 @@ Engagement 순간의 사용자 손 pose와 G1의 현재 손목 pose를 별도 �
 실제 G1 손목의 상대 변화만 적용한다. Unity에 보이는 외부 손목 frame은 계속
 `right_wrist_yaw_link`다.
 
+첫 QP는 위치 오차를 줄이며 손목축에 더 큰 유한 damping을 주어 근위 4축을
+우선한다. 두 번째 QP는 같은 현재 자세에서 회전을 풀며,
+`J_position * delta_q_2 = J_position * delta_q_1` 등식으로 첫 QP의
+선형화된 위치 변위를 보존한다. 두 속도를 더하지 않고 두 번째 결과 하나만
+적분한다. 두 QP는 동일한 관절/속도/충돌 제약을 사용하며 QP 밖에서 관절별
+속도를 잘라내지 않는다. 적분 후 실제 FK와 충돌 표본 검사도 수행한다.
+이는 국소적인 작업 우선순위이며 모든 도달 가능한 자세의 전역 탐색 보장은 아니다.
+정상 구간에서는
+근위축 damping `100.0`, 손목축 `0.015`로 손목을 우선한다. 손목 관절 여유가
+28 deg 아래로 줄거나 손목 회전 Jacobian의 최소 특이값이 낮아지면 근위 damping을
+`0.03`까지 연속적으로 낮춘다. 오른팔 내부 관절은 어느 단계에서도 hard freeze하지
+않는다.
+
 ### 5.2 자연스러운 해 선택
 
 `PostureTask`가 engagement 시점 자세를 기준으로 불필요한 관절 이동을 줄인다.
-별도 `DampingTask`는 shoulder/elbow 쪽 비용을 손목보다 크게 두어 단순 손목
-회전에서 팔꿈치가 과도하게 따라오는 해를 억제한다.
+단순 손목 회전에서는 높은 근위 damping이 어깨·팔꿈치 이동을 억제한다. 그러나
+이 값은 유한한 비용이므로 손목 한계, 특이점 또는 hard collision constraint 때문에
+필요하면 근위 관절을 사용할 수 있다.
 
 ### 5.3 QP 제약
 
 각 60 Hz step에서 다음 제약을 함께 푼다.
 
 1. MuJoCo 관절 위치 범위인 `ConfigurationLimit`
-2. 어깨·팔꿈치 40 deg/s, 손목 100 deg/s인 `VelocityLimit`
+2. 현재 공통 0.16 rad/s(약 9.17 deg/s)인 `VelocityLimit`
 3. geometry 간 최소 거리와 감지 거리를 사용하는 `CollisionAvoidanceLimit`
 4. 오른팔 외 모든 DOF 속도를 0으로 만드는 `DofFreezingTask`
 
@@ -273,8 +287,13 @@ Engagement 순간의 사용자 손 pose와 G1의 현재 손목 pose를 별도 �
 ### 5.4 Baseline 비교 경로
 
 현재 메인 launcher는 `run_mink_g1_right_arm_virtual_center_live.py`를 기본으로
-사용한다. `--baseline`을 명시할 때만 `right_wrist_yaw_link` 하나에 위치와 회전을
-모두 둔 이전 단일 6D `FrameTask` 제어기를 실행한다.
+사용한다. 비교할 때는 `START_VR_HAND_TO_MUJOCO_VANILLA_MINK.bat`를 실행한다.
+이 경로는 같은 Unity 입력과 G1 모델을 쓰면서 `right_wrist_yaw_link` 하나에 위치와
+회전을 모두 둔 단일 6D `FrameTask`를 실행한다. 로컬 비교에서는 Mink 기본 충돌
+거리 5/10 mm를 명시하며 G1 publisher나 로봇 명령을 만들지 않는다. 기존
+`--baseline` 인자는 호환성을 위해 같은 제어기로 유지한다. 여기서 vanilla는 IK
+구성이 단일 Mink `FrameTask -> solve_ik -> integrate_inplace`라는 뜻이다. Unity
+입력, clutch, 좌표 변환, 상태 패킷과 MuJoCo 표시는 프로젝트 공통 계층을 재사용한다.
 
 ---
 

@@ -31,6 +31,48 @@ class MinkStepAcceptanceComparisonTests(unittest.TestCase):
         configuration.update(q)
         return configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
 
+    def test_combined_clearance_preserves_boolean_check_and_never_caches(self):
+        planner = BuildPlanner(self.model, self.initial)
+        with patch.object(planner, "GetClearance", side_effect=[0.04, 0.001, 0.04]) as distance:
+            self.assertEqual((True, 0.04), planner.CheckConfigurationWithClearance(self.initial))
+            self.assertFalse(planner.CheckConfiguration(self.initial))
+            self.assertTrue(planner.CheckConfiguration(self.initial))
+            self.assertEqual(3, distance.call_count)
+        for value in (float("nan"), 100.0):
+            q = self.initial.copy()
+            q[self.addresses[3]] = value
+            with patch.object(planner, "GetClearance") as distance:
+                self.assertEqual((False, None), planner.CheckConfigurationWithClearance(q))
+                self.assertFalse(planner.CheckConfiguration(q))
+                distance.assert_not_called()
+
+    def test_single_clearance_matches_double_evaluation_trajectory(self):
+        pose = self.Goal(self.initial)
+        goal = probe.base._matrix_to_se3(pose.rotation().as_matrix(),
+                                        pose.translation() + [0.02, 0.0, 0.01])
+        traces, counts = [], []
+        for double in (True, False):
+            planner = BuildPlanner(self.model, self.initial)
+            original = planner.CheckConfigurationWithClearance
+
+            def DoubleEvaluation(q):
+                valid, clearance = original(q)
+                return (valid, planner.GetClearance(q)) if valid else (valid, clearance)
+
+            if double:
+                planner.CheckConfigurationWithClearance = DoubleEvaluation
+            q, trace = self.initial.copy(), []
+            with patch.object(planner, "GetClearance", wraps=planner.GetClearance) as distance:
+                for _ in range(12):
+                    q, decision = EvaluateLookahead(planner, q, goal)
+                    trace.append((q.copy(), decision))
+                counts.append(distance.call_count)
+            traces.append(trace)
+        for before, after in zip(*traces):
+            np.testing.assert_array_equal(before[0], after[0])
+            self.assertEqual(before[1], after[1])
+        self.assertLess(counts[1], counts[0])
+
     def test_first_step_matches_actual_production_planner(self):
         for delta in ([0, 0, 0], [0.1, 0, 0.05], [0.4, 0.25, 0.3]):
             production = BuildPlanner(self.model, self.initial)
@@ -48,7 +90,7 @@ class MinkStepAcceptanceComparisonTests(unittest.TestCase):
         planner = BuildPlanner(self.model, self.initial)
         goal_q = self.initial.copy()
         goal_q[self.addresses[0]] -= 0.2
-        with patch.object(planner, "CheckConfiguration", side_effect=lambda q: np.array_equal(q, self.initial)):
+        with patch.object(planner, "CheckConfigurationWithClearance", side_effect=lambda q: (np.array_equal(q, self.initial), 0.04)):
             q, decision = EvaluateStep(planner, self.initial, self.Goal(goal_q), False)
         np.testing.assert_array_equal(q, self.initial)
         self.assertEqual("geometry_hold", decision["status"])
@@ -336,12 +378,15 @@ class MinkStepAcceptanceComparisonTests(unittest.TestCase):
 
     def test_limit_avoidance_retains_primary_away_from_limits(self):
         goal_q = self.initial.copy()
-        goal_q[self.addresses[4]] += np.deg2rad(1)
+        planner = BuildPlanner(self.model, self.initial)
+        # Keep this no-limit fixture below the current one-step velocity cap.
+        goal_q[self.addresses[4]] += planner.velocity_caps[4] * probe.base.DT * 0.1
         goal = self.Goal(goal_q)
         expected, _ = EvaluateStep(BuildPlanner(self.model, self.initial), self.initial, goal)
         actual, result = EvaluateStep(BuildPlanner(self.model, self.initial), self.initial, goal,
             center_redundancy=True, limit_margin_rad=np.deg2rad(18))
         np.testing.assert_allclose(actual, expected, atol=1e-12)
+        self.assertEqual(result["redundancy"]["status"], "centered")
         self.assertEqual(result["redundancy"]["active_joint_indices"], [])
         self.assertEqual(result["redundancy"]["step_rad"], 0.0)
 

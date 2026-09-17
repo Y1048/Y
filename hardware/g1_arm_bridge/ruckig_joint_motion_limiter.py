@@ -28,6 +28,9 @@ class RuckigJointMotionLimiter:
         acceleration_limits_rad_s2: Sequence[float],
         jerk_limits_rad_s3: Sequence[float],
         dt_s: float,
+        *,
+        initial_velocity_rad_s: Sequence[float] | None = None,
+        initial_acceleration_rad_s2: Sequence[float] | None = None,
     ) -> None:
         initial = tuple(float(value) for value in initial_q_rad)
         self.size = len(initial)
@@ -58,8 +61,8 @@ class RuckigJointMotionLimiter:
         self._input.current_position = list(
             _finite_vector(initial, self.size, "initial_q_rad")
         )
-        self._input.current_velocity = [0.0] * self.size
-        self._input.current_acceleration = [0.0] * self.size
+        self._input.current_velocity = list(_finite_vector(initial_velocity_rad_s, self.size, "initial_velocity")) if initial_velocity_rad_s is not None else [0.0] * self.size
+        self._input.current_acceleration = list(_finite_vector(initial_acceleration_rad_s2, self.size, "initial_acceleration")) if initial_acceleration_rad_s2 is not None else [0.0] * self.size
         self._input.target_position = list(initial)
         self._input.target_velocity = [0.0] * self.size
         self._input.target_acceleration = [0.0] * self.size

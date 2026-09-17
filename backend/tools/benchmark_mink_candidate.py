@@ -211,19 +211,40 @@ def main():
     args = parser.parse_args()
     if args.repeats < 1 or args.segment < 1:
         parser.error("Positive repeats and segment required")
+    try:
+        return RunReport(args)
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError, IndexError) as exc:
+        failure = {"status": "FAIL", "robot_command": False,
+                   "capture": str(args.capture), "error": f"{type(exc).__name__}: {exc}"}
+        print("[ERROR] Candidate benchmark failed:", failure["error"])
+        try:
+            args.result_json.parent.mkdir(parents=True, exist_ok=True)
+            args.result_json.write_text(json.dumps(failure, indent=2), encoding="utf-8")
+            print("Result saved to:", args.result_json.resolve())
+        except OSError as report_error:
+            print("[ERROR] Failure report was not saved:", report_error)
+            print("[ACTION] Check output write access; any existing report is stale.")
+        print("[ACTION] Check capture, reference hashes/engine, trace and segment before retrying.")
+        return 1
+
+
+def RunReport(args):
+    """기준과 일치하는 캡처의 계산 시간/궤적을 비교하고 결과를 저장한다."""
     probe = comparison.probe
     reference_report = json.loads(args.expected_report.read_text(encoding="utf-8"))
-    model_path = Path(probe.base.g1.DEMO_XML)
+    model, model_metadata = probe.base.LoadMinkModelWithMetadata()
     digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    if reference_report["capture_sha256"] != digest(args.capture) or reference_report["model_xml_sha256"] != digest(model_path):
+    if reference_report["capture_sha256"] != digest(args.capture) or reference_report["model_xml_sha256"] != model_metadata["model_xml_sha256"]:
         raise ValueError("Capture or model does not match reference")
     if reference_report["mujoco_version"] != probe.mujoco.__version__ or reference_report["horizon_steps"] != 3:
         raise ValueError("Engine version or horizon does not match reference")
     trace_path = args.expected_report.with_name(args.expected_report.stem + f"_s{args.segment}_limit_avoidance.jsonl")
     expected = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
     _, packets = probe._decode_capture(args.capture)
-    reference, goals = comparison.GetActiveSegments(packets)[args.segment - 1]
-    model = probe.mujoco.MjModel.from_xml_path(str(model_path))
+    segments = comparison.GetActiveSegments(packets)
+    if args.segment > len(segments):
+        raise ValueError(f"Requested segment {args.segment}, but capture has {len(segments)} active segments")
+    reference, goals = segments[args.segment - 1]
     probe.base._apply_operational_joint_limits(model)
     q = probe.base._initial_configuration(model)
     addresses = [int(model.jnt_qposadr[probe.base._joint_id(model, name)]) for name in probe.base.g1.G1_29_JOINTS]
@@ -231,7 +252,7 @@ def main():
     report = {"robot_command": False, "mujoco_version": probe.mujoco.__version__, "cache_enabled": not args.no_cache,
               "broadphase_enabled": args.broadphase,
               "constraint_cache_enabled": args.constraint_cache,
-              "capture_sha256": digest(args.capture), "model_xml_sha256": digest(model_path),
+              "capture_sha256": digest(args.capture), **model_metadata,
               "expected_trace_sha256": digest(trace_path), "tool_sha256": digest(Path(__file__)), "runs": [],
               "scope": "Planner-only sequential replay with 30 untimed warmup steps per repeat; no rendering, networking, pacing or physical dynamics. Geometry on accepted candidates and all four path samples remains enabled. Flags select exact-state caches and conservative broadphase; rejected-merit diagnostic checks are omitted. Model geometry and collision pairs must remain immutable."}
     for repeat in range(args.repeats):
@@ -245,7 +266,8 @@ def main():
     args.result_json.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     print(report["status"])
     print("Result saved to:", args.result_json.resolve())
-    return 0 if parity else 1
+    return {"PLANNER_ONLY_BUDGET_MET": 0, "PARITY_FAILURE": 1,
+            "DEADLINE_MISSES": 2}[report["status"]]
 
 
 if __name__ == "__main__":

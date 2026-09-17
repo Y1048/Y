@@ -4,6 +4,7 @@ import argparse
 import ctypes
 import json
 import sys
+import tempfile
 from multiprocessing import shared_memory
 from pathlib import Path
 
@@ -39,10 +40,12 @@ from g1_teleop.unitree_image_transport import (  # noqa: E402
     UnitreeImageHeader,
     shared_memory_name,
 )
+from g1_teleop.camera_factory import validate_teleimager_profile
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Validate the simulated G1 D435i path")
+    parser.add_argument("--config-only", action="store_true")
     parser.add_argument(
         "--preview",
         type=Path,
@@ -51,7 +54,7 @@ def parse_args():
     parser.add_argument(
         "--report",
         type=Path,
-        default=PROJECT_ROOT / "logs" / "camera" / "camera_validation_report.json",
+        default=None,
     )
     return parser.parse_args()
 
@@ -119,9 +122,38 @@ def verify_transport(frame):
 
 def main():
     args = parse_args()
+    if args.report is None:
+        filename = "camera_config_validation.json" if args.config_only else "camera_validation_report.json"
+        args.report = PROJECT_ROOT / "logs" / "camera" / filename
+    if args.config_only:
+        report = {"scope": "head_stream_config_only", "status": "FAIL", "checks": []}
+        try:
+            import yaml
+            profile = load_camera_profile(PROFILE_PATH)
+            for source in ("simulation", "real_d435i"):
+                path = PROJECT_ROOT / "config" / f"teleimager_{source}.yaml"
+                try:
+                    settings = yaml.safe_load(path.read_text(encoding="utf-8"))
+                except yaml.YAMLError as exc:
+                    raise ValueError(f"invalid YAML: {path}: {exc}") from exc
+                validate_teleimager_profile(profile, settings, source)
+                report["checks"].append(str(path))
+            report["status"] = "PASS"
+        except (ImportError, ValueError, OSError) as exc:
+            report["error"] = str(exc)
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        args.report.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(f"Camera configuration: {report['status']}")
+        print(f"Result saved to: {args.report.resolve()}")
+        if report["status"] != "PASS":
+            print(f"[ACTION] Check profile/YAML values and PyYAML installation: {report['error']}")
+            raise SystemExit(1)
+        return
     # 카메라 검사는 현행 모델 생성기만 사용하며, 폐기한 DLS 제어기를 실행하지 않는다.
-    g1.make_demo_xml("camera_validation", show_inspection_scene=True)
-    model = mujoco.MjModel.from_xml_path(str(g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_camera_validation_") as directory:
+        model_path = g1.make_demo_xml("camera_validation", show_inspection_scene=True,
+                                      output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     data = mujoco.MjData(model)
     data.qpos[:] = controller._initial_configuration(model)
     mujoco.mj_forward(model, data)

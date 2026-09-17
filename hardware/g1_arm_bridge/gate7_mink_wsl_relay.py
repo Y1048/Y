@@ -55,11 +55,18 @@ def ValidateAndForward(
     target: tuple[str, int],
     *,
     relay_token: str | None = None,
-) -> None:
-    """Validate, canonicalize and forward one live Mink state packet."""
+) -> bool:
+    """Forward validated input; return False for pre-input idle telemetry."""
 
     require_live_candidate_for_relay(payload)
     sample = parse_mink_arm_sample(payload)
+    if (sample.session_id is None and not sample.active
+            and sample.controller_state == "idle"
+            and sample.input_packet_age_s is None
+            and order_guard.session_id is None):
+        # Mink publishes display state before Unity supplies its first session.
+        # Do not invent an input session or forward this as a robot heartbeat.
+        return False
     order_guard.Accept(sample.session_id, sample.sequence)
     # Seven decimal places is sub-microradian resolution and keeps the strict
     # canonical packet below the 1400-byte no-fragmentation budget after adding
@@ -95,6 +102,7 @@ def ValidateAndForward(
         )
     parse_mink_arm_sample(forwarded)
     output_socket.sendto(forwarded, target)
+    return True
 
 
 def _automatic_result_path() -> Path:
@@ -111,6 +119,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--relay-token")
     parser.add_argument("--duration-s", type=float, default=0.0)
     parser.add_argument("--result-json", type=Path)
+    parser.add_argument("--ready-file", type=Path, help="Optional local bind readiness marker")
     parser.add_argument("--validate-only", action="store_true")
     return parser.parse_args()
 
@@ -146,11 +155,24 @@ def main() -> int:
     output_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     order_guard = MinkOrderGuard()
     accepted = 0
+    waiting = 0
     rejected = 0
+    rejection_reasons: dict[str, int] = {}
+
+    def record_rejection(reason: str) -> None:
+        # Bound diagnostics; preserve the first concrete causes without packet contents.
+        key = reason[:200]
+        if key not in rejection_reasons and len(rejection_reasons) >= 16:
+            key = "other_rejection_reasons"
+        rejection_reasons[key] = rejection_reasons.get(key, 0) + 1
+        if rejection_reasons[key] == 1:
+            print("[REJECT] " + json.dumps(key, ensure_ascii=True), flush=True)
     started = time.monotonic()
     try:
         input_socket.bind((args.listen_host, args.listen_port))
         input_socket.settimeout(0.1)
+        if args.ready_file is not None:
+            args.ready_file.write_text("ready", encoding="utf-8")
         while args.duration_s == 0.0 or time.monotonic() - started < args.duration_s:
             try:
                 payload, source = input_socket.recvfrom(MAX_PACKET_BYTES)
@@ -158,15 +180,21 @@ def main() -> int:
                 continue
             if source[0] != "127.0.0.1":
                 rejected += 1
+                record_rejection("unexpected_source")
                 continue
             try:
-                ValidateAndForward(
+                forwarded = ValidateAndForward(
                     payload,
                     order_guard,
                     output_socket,
                     (args.target_host, args.target_port),
                     relay_token=relay_token,
                 )
+                if not forwarded:
+                    waiting += 1
+                    if waiting == 1:
+                        print("[WAIT] No Unity input session yet. Start Unity Play and hand tracking; keep hands disengaged until robot udp_ready. No packet forwarded.", flush=True)
+                    continue
                 accepted += 1
                 if accepted == 1:
                     print(
@@ -180,8 +208,9 @@ def main() -> int:
                         f"rejected={rejected}",
                         flush=True,
                     )
-            except (Gate7ContractError, ValueError, UnicodeDecodeError):
+            except (Gate7ContractError, ValueError, UnicodeDecodeError) as error:
                 rejected += 1
+                record_rejection(type(error).__name__ + ": " + str(error))
     except KeyboardInterrupt:
         print("\n[STOP] Relay stopped by operator.")
     finally:
@@ -192,7 +221,9 @@ def main() -> int:
         "schema": "g1.gate7.mink_wsl_relay.result.v2",
         "passed": accepted > 0,
         "accepted_packets": accepted,
+        "waiting_packets": waiting,
         "rejected_packets": rejected,
+        "rejection_reasons": rejection_reasons,
         "retired_session_count": len(order_guard.retired_sessions),
         "command_provenance": COMMAND_PROVENANCE_LIVE,
         "relay_token_verified": relay_token is not None,

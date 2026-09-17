@@ -1,8 +1,10 @@
 """Numerical checks of the live feasible planner, no sockets or robot SDK."""
 
 import sys
+import tempfile
 import itertools
 import json
+import math
 import unittest
 from contextlib import ExitStack
 from types import SimpleNamespace
@@ -21,8 +23,9 @@ from verify_feasible_target import BuildPlanner
 class FeasibleTargetTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        probe.base._prepare_mink_xml()
-        cls.model = mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = probe.base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            cls.model = mujoco.MjModel.from_xml_path(str(path))
         probe.base._apply_operational_joint_limits(cls.model)
         cls.initial = probe.base._initial_configuration(cls.model)
         cls.qpos = [int(cls.model.jnt_qposadr[probe.base._joint_id(cls.model, name)])
@@ -34,11 +37,16 @@ class FeasibleTargetTest(unittest.TestCase):
         configuration.update(q)
         return configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
 
-    def CheckPlan(self, planner, origin, plan):
+    def CheckPlan(self, planner, origin, plan, position_frame="right_wrist_yaw_link"):
         self.assertTrue(plan.valid, plan.status)
         self.assertTrue(planner.CheckConfiguration(plan.next_q))
         self.assertTrue(planner.CheckConfiguration(plan.target_q))
-        np.testing.assert_allclose(self.Pose(plan.target_q).translation(), plan.target_position, atol=1e-12)
+        configuration = mink.Configuration(self.model)
+        configuration.update(plan.target_q)
+        expected_position = configuration.get_transform_frame_to_world(
+            position_frame, "body"
+        ).translation()
+        np.testing.assert_allclose(expected_position, plan.target_position, atol=1e-12)
         velocity = np.zeros(self.model.nv)
         mujoco.mj_differentiatePos(self.model, velocity, probe.base.DT, origin, plan.next_q)
         self.assertTrue(np.all(np.abs(velocity[planner.right_dofs]) <= planner.velocity_caps + 1e-6))
@@ -84,41 +92,146 @@ class FeasibleTargetTest(unittest.TestCase):
         np.testing.assert_array_equal(plan.next_q, q)
 
     def test_boundary_hold_and_inward_return_do_not_rebase(self):
-        planner = BuildPlanner(self.model, self.initial)
+        for profile in ("mink-default", "hardware-guarded"):
+            with self.subTest(profile=profile):
+                self.CheckBoundaryReturn(profile)
+
+    def CheckBoundaryReturn(self, profile):
+        planner = BuildPlanner(self.model, self.initial, collision_profile=profile)
         original = self.Pose(self.initial)
-        outside = probe.base._matrix_to_se3(original.rotation().as_matrix(),
-                                            original.translation() + [0.35, 0, 0.15])
+        center_configuration = mink.Configuration(self.model)
+        center_configuration.update(self.initial)
+        original_center = center_configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        ).translation().copy()
+        outside_center = original_center + [0.35, 0, 0.15]
+        outside = probe.base._matrix_to_se3(
+            original.rotation().as_matrix(), outside_center
+        )
         saved_goal = outside.as_matrix().copy()
         q = self.initial.copy()
         tail_speed = []
         for index in range(480):
-            plan = planner.Plan(q, outside)
-            self.CheckPlan(planner, q, plan)
+            plan = planner.Plan(q, outside, position_target=outside_center)
+            self.CheckPlan(
+                planner, q, plan, position_frame="right_wrist_roll_link"
+            )
             if index >= 420:
                 tail_speed.append(np.max(np.abs(plan.next_q - q)) / probe.base.DT)
             q = plan.next_q
         self.assertLess(max(tail_speed), np.deg2rad(0.5))
         np.testing.assert_array_equal(outside.as_matrix(), saved_goal)
         for _ in range(360):
-            plan = planner.Plan(q, original)
-            self.CheckPlan(planner, q, plan)
+            plan = planner.Plan(q, original, position_target=original_center)
+            self.CheckPlan(
+                planner, q, plan, position_frame="right_wrist_roll_link"
+            )
             q = plan.next_q
-        self.assertLess(np.linalg.norm(self.Pose(q).translation() - original.translation()), 0.01)
+        center_configuration.update(q)
+        returned_center = center_configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        ).translation()
+        self.assertLess(np.linalg.norm(returned_center - original_center), 0.01)
 
     def test_wrist_only_fk_trajectory_keeps_proximal_joints_quiet(self):
         for index in (4, 5, 6):
             planner = BuildPlanner(self.model, self.initial)
             q = self.initial.copy()
+            center_configuration = mink.Configuration(self.model)
+            center_configuration.update(self.initial)
+            center_target = center_configuration.get_transform_frame_to_world(
+                "right_wrist_roll_link", "body"
+            ).translation().copy()
             excursions = []
             # Same 12-second wrist-only cycle as the existing IK regression.
             for step in range(720):
                 target_q = self.initial.copy()
                 target_q[self.qpos[index]] += np.deg2rad(25) * np.sin(2 * np.pi * step / 720)
-                plan = planner.Plan(q, self.Pose(target_q))
-                self.CheckPlan(planner, q, plan)
+                plan = planner.Plan(
+                    q, self.Pose(target_q), position_target=center_target
+                )
+                self.CheckPlan(
+                    planner, q, plan, position_frame="right_wrist_roll_link"
+                )
                 q = plan.next_q
                 excursions.append(np.max(np.abs(q[self.qpos[:4]] - self.initial[self.qpos[:4]])))
             self.assertLess(max(excursions), np.deg2rad(0.5))
+
+    def test_hierarchical_path_reaches_vanilla_feasible_mixed_pose(self):
+        planner = BuildPlanner(self.model, self.initial)
+        self.assertEqual(planner.position_constraints, planner.constraints)
+        self.assertEqual(planner.orientation_constraints, planner.constraints)
+
+        goal_q = self.initial.copy()
+        goal_q[self.qpos] += np.deg2rad([-25, 8, 20, 15, 55, 35, -50])
+        goal = self.Pose(goal_q)
+        goal_configuration = mink.Configuration(self.model)
+        goal_configuration.update(goal_q)
+        center_target = goal_configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        ).translation().copy()
+
+        q = self.initial.copy()
+        for _ in range(480):
+            plan = planner.Plan(q, goal, position_target=center_target)
+            self.CheckPlan(
+                planner, q, plan, position_frame="right_wrist_roll_link"
+            )
+            q = plan.next_q
+
+        final_configuration = mink.Configuration(self.model)
+        final_configuration.update(q)
+        final_center = final_configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        )
+        final_wrist = final_configuration.get_transform_frame_to_world(
+            "right_wrist_yaw_link", "body"
+        )
+        self.assertLess(
+            np.linalg.norm(final_center.translation() - center_target),
+            0.002,
+        )
+        self.assertLess(
+            np.degrees(probe.base._rotation_error_radians(
+                goal.rotation().as_matrix(),
+                final_wrist.rotation().as_matrix(),
+            )),
+            0.2,
+        )
+
+    def test_wrist_limit_continuously_enables_proximal_orientation_assist(self):
+        q = self.initial.copy()
+        q[self.qpos[4]] = math.radians(-112.0)
+        planner = BuildPlanner(self.model, q)
+        current = self.Pose(q)
+        configuration = mink.Configuration(self.model)
+        configuration.update(q)
+        center_target = configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        ).translation().copy()
+        angle = math.radians(20.0)
+        rotation_delta = np.array([
+            [1.0, 0.0, 0.0],
+            [0.0, math.cos(angle), -math.sin(angle)],
+            [0.0, math.sin(angle), math.cos(angle)],
+        ])
+        goal = probe.base._matrix_to_se3(
+            rotation_delta @ current.rotation().as_matrix(),
+            current.translation(),
+        )
+
+        plan = planner.Plan(q, goal, position_target=center_target)
+        self.CheckPlan(
+            planner, q, plan, position_frame="right_wrist_roll_link"
+        )
+        proximal_delta = np.max(np.abs(
+            plan.next_q[self.qpos[:4]] - q[self.qpos[:4]]
+        ))
+        self.assertGreater(proximal_delta, math.radians(0.05))
+        self.assertGreater(
+            probe.live.VirtualCenterOrientationTask.last_assist_gain,
+            0.95,
+        )
 
     def test_invalid_solver_velocity_cannot_move_the_arm(self):
         planner = BuildPlanner(self.model, self.initial)
@@ -130,6 +243,55 @@ class FeasibleTargetTest(unittest.TestCase):
                 plan = planner.Plan(self.initial, goal)
             self.assertEqual(plan.status, "invalid_velocity")
             np.testing.assert_array_equal(plan.next_q, self.initial)
+
+    def test_hierarchy_preserves_primary_linear_position_progress(self):
+        planner = BuildPlanner(self.model, self.initial)
+        planner.horizon_steps = 1
+        goal_q = self.initial.copy()
+        goal_q[self.qpos] += np.deg2rad([-10, 3, 5, 8, 15, 10, -12])
+        configuration = mink.Configuration(self.model)
+        configuration.update(goal_q)
+        center = configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        ).translation()
+        calls = []
+        solve = mink.solve_ik
+
+        def Solve(configuration, *args, **kwargs):
+            velocity = solve(configuration, *args, **kwargs)
+            calls.append((configuration.q.copy(), velocity.copy(), kwargs))
+            return velocity
+
+        with patch.object(mink, "solve_ik", side_effect=Solve):
+            plan = planner.Plan(self.initial, self.Pose(goal_q), position_target=center)
+        self.assertEqual(len(calls), 2)
+        self.CheckPlan(planner, self.initial, plan, "right_wrist_roll_link")
+        np.testing.assert_array_equal(calls[0][0], calls[1][0])
+        progress = calls[1][2]["constraints"][-1]
+        jacobian = progress.compute_jacobian(configuration)
+        np.testing.assert_allclose(jacobian @ calls[0][1], jacobian @ calls[1][1], atol=1e-8)
+        self.assertIs(calls[0][2]["limits"], calls[1][2]["limits"])
+
+    def test_hierarchy_rejects_invalid_velocity_in_either_stage(self):
+        planner = BuildPlanner(self.model, self.initial)
+        configuration = mink.Configuration(self.model)
+        configuration.update(self.initial)
+        center = configuration.get_transform_frame_to_world(
+            "right_wrist_roll_link", "body"
+        ).translation()
+        for stage in (0, 1):
+            for dof, value in ((planner.right_dofs[0], float("nan")),
+                               (planner.right_dofs[0], float("inf")),
+                               (planner.right_dofs[0], 100.0),
+                               (planner.frozen_dofs[0], 0.01)):
+                with self.subTest(stage=stage, dof=dof, value=value):
+                    invalid = np.zeros(self.model.nv)
+                    invalid[dof] = value
+                    outputs = [np.zeros(self.model.nv)] * stage + [invalid]
+                    with patch.object(mink, "solve_ik", side_effect=outputs):
+                        plan = planner.Plan(self.initial, self.Pose(self.initial), position_target=center)
+                    self.assertEqual(plan.status, "invalid_velocity")
+                    np.testing.assert_array_equal(plan.next_q, self.initial)
 
     def test_nonlinear_clearance_check_rejects_candidate(self):
         planner = BuildPlanner(self.model, self.initial)
@@ -259,7 +421,6 @@ class FeasibleTargetTest(unittest.TestCase):
                 gate7_feedback_port=5012, show_inspection_scene=False,
                 disable_gate7_simulation_feedback=True,
                 collision_profile=live.COLLISION_PROFILE_MINK_DEFAULT)))
-            stack.enter_context(patch.object(base, "_prepare_mink_xml"))
             stack.enter_context(patch.object(base, "_open_udp_socket"))
             stack.enter_context(patch.object(live.socket, "socket"))
             stream = stack.enter_context(patch.object(base, "MinkCommandStream"))
@@ -274,12 +435,17 @@ class FeasibleTargetTest(unittest.TestCase):
             live.main()
         packets = [call.args[1] for call in sent.call_args_list[::2]]
         self.assertEqual(len(packets), 5)
+        self.assertTrue(all(len(p["model_metadata"]["model_xml_sha256"]) == 64 for p in packets))
+        self.assertTrue(all(p["model_metadata"] == packets[0]["model_metadata"] for p in packets))
         self.assertFalse(packets[0]["right_arm"]["feasible_target_valid"])
         self.assertFalse(packets[-1]["right_arm"]["feasible_target_valid"])
         self.assertTrue(packets[2]["right_arm"]["feasible_target_valid"])
         arm = packets[2]["right_arm"]
         self.assertEqual("mink-default", arm["collision_profile"])
-        self.assertEqual("mink_local_detour_checked_v1", arm["feasible_target_policy"])
+        self.assertEqual(
+            "hierarchical_wrist_first_local_detour_v1",
+            arm["feasible_target_policy"],
+        )
         self.assertEqual(0.005, arm["collision_min_distance_m"])
         self.assertEqual(0.010, arm["collision_detection_distance_m"])
         self.assertGreater(np.linalg.norm(np.array(arm["target_position"]) - arm["feasible_target_position"]), 0.1)

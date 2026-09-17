@@ -27,13 +27,43 @@ def GetReachUpperBound(model, shoulder_name="right_shoulder_pitch_link", wrist_n
     return sum(lengths)
 
 
+def SaveInputFailure(args, reason):
+    result = {"quality_status": "FAIL", "robot_command": False,
+              "capture": str(args.capture), "error": reason}
+    try:
+        args.result_json.parent.mkdir(parents=True, exist_ok=True)
+        args.result_json.write_text(json.dumps(result, indent=2), encoding="utf-8")
+    except OSError as exc:
+        print("[ERROR] Failure report could not be saved:", args.result_json.resolve(), exc)
+        print("[ACTION] Check output path and write access. Any existing report is stale; do not use it.")
+        print("[ERROR] Original diagnostic failure:", reason)
+        return 1
+    print("Result saved to:", args.result_json.resolve())
+    print("[ACTION] Check capture contents and matching model/frame before retrying:", reason)
+    return 1
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("capture", type=Path)
     parser.add_argument("--result-json", type=Path, required=True)
     args = parser.parse_args()
-    manifest, packets = probe._decode_capture(args.capture)
-    model = probe.mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    try:
+        return RunDiagnosis(args)
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError) as exc:
+        return SaveInputFailure(args, f"diagnostic failed ({type(exc).__name__}): {exc}")
+
+
+def RunDiagnosis(args):
+    """캡처의 도달 상한을 계산한다. 실패 처리는 CLI 경계에서 보고한다."""
+    try:
+        manifest, packets = probe._decode_capture(args.capture)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        return SaveInputFailure(args, f"capture decode failed: {exc}")
+    segments = replay.GetActiveSegments(packets)
+    if not segments:
+        return SaveInputFailure(args, "capture has no active segment")
+    model = probe.base.LoadMinkModel()
     probe.base._apply_operational_joint_limits(model)
     bound = GetReachUpperBound(model)
     configuration = probe.mink.Configuration(model)
@@ -44,7 +74,7 @@ def main():
         "shoulder_to_yaw_wrist_upper_bound_m": bound,
         "segments": [],
     }
-    for index, (reference, active) in enumerate(replay.GetActiveSegments(packets), 1):
+    for index, (reference, active) in enumerate(segments, 1):
         distances = []
         fk_errors = []
         for packet in active:
@@ -58,7 +88,7 @@ def main():
             distances.append(float(np.linalg.norm(np.array(arm["target_position"]) - shoulder)))
         # 모델/기준 좌표가 일치하지 않으면 도달 불가 판정을 내리지 않는다.
         if max(fk_errors) > 1e-5:
-            raise ValueError("Current model FK does not match recorded wrist positions; do not infer reachability.")
+            return SaveInputFailure(args, "Current model FK does not match recorded wrist positions; do not infer reachability.")
         entry = {
             "segment": index, "active_packets": len(active),
             "provably_outside_packets": sum(d > bound + 1e-6 for d in distances),
@@ -86,7 +116,8 @@ def main():
     args.result_json.parent.mkdir(parents=True, exist_ok=True)
     args.result_json.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
     print("Result saved to:", args.result_json.resolve())
+    return 3
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

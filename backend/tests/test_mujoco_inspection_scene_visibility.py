@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+import ast
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -25,12 +27,23 @@ INSPECTION_GEOMS = (
 
 
 class MujocoInspectionSceneVisibilityTest(unittest.TestCase):
+    def test_backend_tests_always_choose_an_explicit_model_output(self):
+        for source in Path(__file__).parent.glob("test_*.py"):
+            tree = ast.parse(source.read_text(encoding="utf-8-sig"))
+            for node in ast.walk(tree):
+                if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                        and node.func.attr in ("make_demo_xml", "_prepare_mink_xml")):
+                    self.assertTrue(any(k.arg == "output_path" and not (
+                        isinstance(k.value, ast.Constant) and k.value.value is None)
+                        for k in node.keywords), f"Shared model writer: {source.name}:{node.lineno}")
+
     def _alphas(self, show_inspection_scene: bool) -> dict[str, float]:
-        g1.make_demo_xml(
-            "control",
-            show_inspection_scene=show_inspection_scene,
-        )
-        model = mujoco.MjModel.from_xml_path(str(g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = g1.make_demo_xml(
+                "control", show_inspection_scene=show_inspection_scene,
+                output_path=Path(directory) / "model.xml",
+            )
+            model = mujoco.MjModel.from_xml_path(str(path))
         return {
             name: float(model.geom(name).rgba[3])
             for name in INSPECTION_GEOMS
@@ -41,11 +54,21 @@ class MujocoInspectionSceneVisibilityTest(unittest.TestCase):
         self.assertTrue(all(alpha == 0.0 for alpha in alphas.values()))
 
     def test_inspection_scene_can_be_enabled_without_recreating_bodies(self) -> None:
-        try:
-            alphas = self._alphas(show_inspection_scene=True)
-            self.assertTrue(all(alpha > 0.0 for alpha in alphas.values()))
-        finally:
-            g1.make_demo_xml("control", show_inspection_scene=False)
+        alphas = self._alphas(show_inspection_scene=True)
+        self.assertTrue(all(alpha > 0.0 for alpha in alphas.values()))
+
+    def test_isolated_generation_does_not_touch_shared_model(self):
+        import run_mink_g1_right_arm_prototype as base
+
+        before = g1.DEMO_XML.read_bytes() if g1.DEMO_XML.exists() else None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mink.xml"
+            self.assertEqual(base._prepare_mink_xml(output_path=path), path)
+            model = mujoco.MjModel.from_xml_path(str(path))
+            self.assertGreater(model.nq, 0)
+            self.assertGreaterEqual(model.geom(base.RIGHT_HAND_COLLISION_NAME).id, 0)
+        after = g1.DEMO_XML.read_bytes() if g1.DEMO_XML.exists() else None
+        self.assertEqual(before, after)
 
 
 if __name__ == "__main__":

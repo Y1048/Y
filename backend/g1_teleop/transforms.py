@@ -40,6 +40,29 @@ OPENXR_RIGHT_WRIST_TO_G1 = np.array(
 )
 
 
+def validate_rotation_matrix(rotation: np.ndarray, field_name: str = "rotation") -> np.ndarray:
+    """Validate SO(3); reject scale/shear/reflection rather than repairing input."""
+    matrix = np.asarray(rotation, dtype=float)
+    if matrix.shape != (3, 3) or not np.all(np.isfinite(matrix)):
+        raise ValueError(f"{field_name} must be a finite 3x3 rotation")
+    if not np.allclose(matrix.T @ matrix, np.eye(3), rtol=0., atol=1e-6):
+        raise ValueError(f"{field_name} must be orthonormal")
+    if not np.isclose(np.linalg.det(matrix), 1., rtol=0., atol=1e-6):
+        raise ValueError(f"{field_name} determinant must be +1")
+    return matrix.copy()
+
+
+def validate_pose_matrix(pose: np.ndarray, field_name: str = "pose") -> np.ndarray:
+    """Validate finite SE(3) input before transpose-based inversion or mapping."""
+    matrix = np.asarray(pose, dtype=float)
+    if matrix.shape != (4, 4) or not np.all(np.isfinite(matrix)):
+        raise ValueError(f"{field_name} must be a finite 4x4 pose")
+    if not np.allclose(matrix[3], [0., 0., 0., 1.], rtol=0., atol=1e-7):
+        raise ValueError(f"{field_name} has an invalid homogeneous row")
+    validate_rotation_matrix(matrix[:3, :3], f"{field_name}.rotation")
+    return matrix.copy()
+
+
 def normalize_quaternion(quaternion_xyzw: np.ndarray) -> np.ndarray:
     quaternion = np.asarray(quaternion_xyzw, dtype=float)
     if quaternion.shape != (4,) or not np.all(np.isfinite(quaternion)):
@@ -76,9 +99,7 @@ def quaternion_to_matrix(quaternion_xyzw: np.ndarray) -> np.ndarray:
 
 
 def matrix_to_quaternion(rotation: np.ndarray) -> np.ndarray:
-    matrix = np.asarray(rotation, dtype=float)
-    if matrix.shape != (3, 3) or not np.all(np.isfinite(matrix)):
-        raise ValueError("rotation must be a finite 3x3 matrix")
+    matrix = validate_rotation_matrix(rotation)
 
     trace_value = np.trace(matrix)
     if trace_value > 0.0:
@@ -131,6 +152,9 @@ def matrix_to_quaternion(rotation: np.ndarray) -> np.ndarray:
 
 
 def make_pose(position: np.ndarray, quaternion_xyzw: np.ndarray) -> np.ndarray:
+    position = np.asarray(position, dtype=float)
+    if position.shape != (3,) or not np.all(np.isfinite(position)):
+        raise ValueError("position must contain three finite values")
     pose = np.eye(4, dtype=float)
     pose[:3, :3] = quaternion_to_matrix(quaternion_xyzw)
     pose[:3, 3] = np.asarray(position, dtype=float)
@@ -138,14 +162,12 @@ def make_pose(position: np.ndarray, quaternion_xyzw: np.ndarray) -> np.ndarray:
 
 
 def split_pose(pose: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    matrix = np.asarray(pose, dtype=float)
-    if matrix.shape != (4, 4) or not np.all(np.isfinite(matrix)):
-        raise ValueError("pose must be a finite 4x4 matrix")
+    matrix = validate_pose_matrix(pose)
     return matrix[:3, 3].copy(), matrix_to_quaternion(matrix[:3, :3])
 
 
 def invert_pose(pose: np.ndarray) -> np.ndarray:
-    matrix = np.asarray(pose, dtype=float)
+    matrix = validate_pose_matrix(pose)
     result = np.eye(4, dtype=float)
     result[:3, :3] = matrix[:3, :3].T
     result[:3, 3] = -result[:3, :3] @ matrix[:3, 3]
@@ -154,6 +176,7 @@ def invert_pose(pose: np.ndarray) -> np.ndarray:
 
 def convert_unity_ovr_pose_to_openxr(pose_unity: np.ndarray) -> np.ndarray:
     """Convert Unity x-right/y-up/z-forward into OpenXR x-right/y-up/z-back."""
+    pose_unity = validate_pose_matrix(pose_unity)
     pose_openxr = np.eye(4, dtype=float)
     pose_openxr[:3, :3] = UNITY_TO_OPENXR @ pose_unity[:3, :3] @ UNITY_TO_OPENXR
     pose_openxr[:3, 3] = UNITY_TO_OPENXR @ pose_unity[:3, 3]
@@ -162,6 +185,7 @@ def convert_unity_ovr_pose_to_openxr(pose_unity: np.ndarray) -> np.ndarray:
 
 def convert_openxr_pose_to_robot(pose_openxr: np.ndarray) -> np.ndarray:
     """Apply the official TeleVuer OpenXR-to-Unitree basis change."""
+    pose_openxr = validate_pose_matrix(pose_openxr)
     pose_robot = np.eye(4, dtype=float)
     pose_robot[:3, :3] = OPENXR_TO_ROBOT @ pose_openxr[:3, :3] @ OPENXR_TO_ROBOT.T
     pose_robot[:3, 3] = OPENXR_TO_ROBOT @ pose_openxr[:3, 3]
@@ -173,7 +197,7 @@ def convert_unity_ovr_pose_to_robot(pose_unity: np.ndarray) -> np.ndarray:
 
 
 def get_head_yaw_rotation(head_rotation_robot: np.ndarray) -> np.ndarray:
-    head_x_axis = np.asarray(head_rotation_robot, dtype=float)[:, 0].copy()
+    head_x_axis = validate_rotation_matrix(head_rotation_robot)[:, 0].copy()
     head_x_axis[2] = 0.0
     norm = np.linalg.norm(head_x_axis)
     if norm < 1e-6:
@@ -187,6 +211,8 @@ def get_head_yaw_rotation(head_rotation_robot: np.ndarray) -> np.ndarray:
 
 
 def move_pose_to_head_yaw_frame(head_pose_robot: np.ndarray, wrist_pose_robot: np.ndarray) -> np.ndarray:
+    head_pose_robot = validate_pose_matrix(head_pose_robot, "head_pose")
+    wrist_pose_robot = validate_pose_matrix(wrist_pose_robot, "wrist_pose")
     yaw_rotation = get_head_yaw_rotation(head_pose_robot[:3, :3])
     relative_pose = np.eye(4, dtype=float)
     relative_pose[:3, :3] = yaw_rotation.T @ wrist_pose_robot[:3, :3]

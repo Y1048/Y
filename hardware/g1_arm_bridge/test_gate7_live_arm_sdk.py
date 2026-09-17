@@ -9,11 +9,14 @@ import ast
 import socket
 import threading
 import time
+from unittest.mock import patch
+from types import SimpleNamespace
 from dataclasses import replace
 from pathlib import Path
 
 from gate7_live_arm_sdk import (
     AcquireWeight,
+    CommandDiagnosticTrace,
     BuildUnityLowStateTelemetry,
     CreateHardwareTrajectoryController,
     LoadLiveHardwareConfig,
@@ -33,6 +36,72 @@ REGULAR_PATH = PROJECT_ROOT / "config" / "g1_regular_arm_pose.json"
 
 
 class Gate7LiveArmSdkTests(unittest.TestCase):
+    def test_diagnostic_trace_samples_phases_without_mutating_command(self):
+        frame = SimpleNamespace(weight=0.5, motor_q_rad=list(range(35)),
+                                motor_mode=[0] * 35, motor_kp=[0.0] * 35,
+                                motor_kd=[0.0] * 35, motor_dq_rad_s=[0.0] * 35,
+                                motor_tau_nm=[0.0] * 35)
+        snapshot = SimpleNamespace(all_q_rad=list(range(29)), received_monotonic_s=1.0)
+        trace = CommandDiagnosticTrace(maximum_samples=4)
+        for phase, timestamp in [("ACQUIRE", 1.0), ("ACQUIRE", 1.01),
+                                 ("CONTROL", 1.02), ("RELEASE", 1.03),
+                                 ("ZERO_WEIGHT", 1.04), ("ZERO_WEIGHT", 1.2)]:
+            trace.Record(phase, frame, snapshot, 1000, timestamp)
+        self.assertEqual([s["phase"] for s in trace.samples],
+                         ["ACQUIRE", "CONTROL", "RELEASE", "ZERO_WEIGHT"])
+        self.assertEqual(trace.skipped_capacity, 1)
+        self.assertEqual(trace.samples[0]["waist_kp"], [0.0] * 3)
+        self.assertEqual(trace.samples[0]["command_q_rad"], list(range(29)))
+        self.assertEqual(frame.motor_q_rad, list(range(35)))
+        snapshot.all_q_rad[12] = 999
+        self.assertEqual(trace.samples[0]["measured_q_rad"][12], 12)
+
+    def test_diagnostic_failure_does_not_raise_in_release(self):
+        trace = CommandDiagnosticTrace()
+        def broken_snapshot():
+            raise RuntimeError("diagnostic snapshot unavailable")
+        trace.Record("RELEASE", None, broken_snapshot, 1000, 1.0)
+        self.assertEqual(trace.errors, 1)
+        self.assertEqual(trace.samples, [])
+
+    def test_external_preview_keeps_lowstate_checks_without_sending(self):
+        tree = ast.parse((PROJECT_ROOT / "hardware/g1_arm_bridge/gate7_live_arm_sdk.py").read_text(encoding="utf-8"))
+        function = next(node for node in ast.walk(tree)
+                        if isinstance(node, ast.FunctionDef) and node.name == "SendWaitingPreview")
+        function.body = [node for node in function.body if not isinstance(node, ast.Nonlocal)]
+        snapshot = SimpleNamespace(received_monotonic_s=time.monotonic(), mode_pr=0, mode_machine=5)
+        config = SimpleNamespace(lowstate_timeout_s=0.25, expected_mode_pr=0, expected_mode_machine=5)
+        namespace = dict(time=time, buffer=SimpleNamespace(snapshot=lambda: snapshot),
+                         hardware_config=config, unity_socket=None)
+        exec(compile(ast.Module(body=[function], type_ignores=[]), "<preview>", "exec"), namespace)
+        namespace["SendWaitingPreview"]()
+        snapshot.received_monotonic_s -= 1
+        with self.assertRaisesRegex(RuntimeError, "stale"):
+            namespace["SendWaitingPreview"]()
+
+    def test_external_display_flag_is_forwarded(self):
+        standard = (PROJECT_ROOT / "tools/START_G1_GATE7_STANDARD_MINK.bat").read_text()
+        launcher = (PROJECT_ROOT / "tools/START_G1_GATE7_LIVE_HARDWARE.bat").read_text()
+        self.assertIn("--first-live --standard-mink --external-unity-state", standard)
+        self.assertIn("%DISPLAY_ARGUMENT% --enable-hardware-output", launcher)
+        self.assertIn("Get-NetUDPEndpoint -LocalPort 5009", launcher)
+
+    def test_wait_preview_precedes_active_return(self):
+        events = []
+        samples = [None, SimpleNamespace(input_command_mode="active", controller_state="active")]
+        with patch("gate7_live_arm_sdk._ReceiveLatestMink", side_effect=samples), patch("gate7_live_arm_sdk.time.sleep"):
+            value = WaitForFirstActiveMink(None, 1.0, lambda: events.append("preview"))
+        self.assertEqual(events, ["preview", "preview"])
+        self.assertEqual(value.input_command_mode, "active")
+
+    def test_wait_preview_failure_blocks_active_return(self):
+        def stale():
+            raise RuntimeError("stale")
+        with patch("gate7_live_arm_sdk._ReceiveLatestMink") as receive:
+            with self.assertRaisesRegex(RuntimeError, "stale"):
+                WaitForFirstActiveMink(None, 1.0, stale)
+            receive.assert_not_called()
+
     def setUp(self):
         self.config = LoadLiveHardwareConfig(CONFIG_PATH)
 
@@ -195,7 +264,7 @@ class Gate7LiveArmSdkTests(unittest.TestCase):
             condition = ast.unparse(node.test)
             if condition == "elapsed < hardware_config.acquire_ramp_s":
                 elapsed_branch = node
-            if condition == "now >= next_unity_state":
+            if condition == "unity_socket is not None and now >= next_unity_state":
                 unity_branch = node
         self.assertIsNotNone(elapsed_branch)
         self.assertIsNotNone(unity_branch)

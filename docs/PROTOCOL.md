@@ -320,6 +320,11 @@ right_arm.command_state = Mink가 계산한 active/hold/idle/workspace_fault
 right_arm.minimum_clearance_m = 현재 충돌 pair 최소 거리
 ```
 
+활성(`right_arm.active=true`) 패킷의 `minimum_clearance_m`은 필수이며
+유한한 JSON 숫자여야 한다. 누락/null/NaN/Infinity/boolean/숫자 문자열은
+거부한다. 비활성 해제 패킷은 누락/null을 허용한다. 유한한 음수나 0은
+측정값으로 파싱하되 안전거리 통과를 뜻하지 않으며, 제어기 거리 제한이 판단한다.
+
 2026-09-03부터 `right_arm`에 선택적 진단 필드가 추가된다. 기존 수신기는
 이 필드 없이도 동작하며, 실제 모터 명령의 허가나 제한을 바꾸지 않는다.
 

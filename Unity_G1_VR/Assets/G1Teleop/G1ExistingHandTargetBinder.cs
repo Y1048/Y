@@ -54,6 +54,9 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public Vector3 TrackedWristPosition { get; private set; }
     public Vector3 TrackedHandPosition { get; private set; }
     public Quaternion TrackedWristRotation { get; private set; } = Quaternion.identity;
+    public Quaternion SourceWristRotation { get; private set; } = Quaternion.identity;
+    public bool IsAnatomicalRotationUsed { get; private set; }
+    public int EngagementFrameRevision { get; private set; }
     public Vector3 CalibratedWristPosition { get; private set; }
     public Quaternion CalibratedWristRotation { get; private set; } = Quaternion.identity;
     public bool IsUsingSkeletonWrist { get; private set; }
@@ -98,6 +101,9 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     private Vector3 last_accepted_wrist_position;
     private bool accepted_wrist_position_initialized;
     private bool tracked_pose_outlier_latched;
+    // Enabled by the sender only for fresh local simulation-cycle feedback.
+    // Not serialized: normal/physical paths retain their existing latch.
+    public bool RecoverTransientPoseOutlier { get; set; }
     private Quaternion previous_tracked_head_rotation = Quaternion.identity;
     private bool tracked_head_rotation_initialized;
 
@@ -336,6 +342,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         // 고개를 돌려도 이미 engage된 팔 목표가 같이 회전하지 않도록 하는 기준 프레임이다.
         OperatorOrigin = reference_transform == null ? Vector3.zero : reference_transform.position;
         OperatorHeading = GetReferenceYawRotation();
+        EngagementFrameRevision++;
         IsEngagementFrameLocked = true;
         UpdateEngagementTargetPose();
         Debug.Log("G1 engagement frame locked in world coordinates.");
@@ -521,6 +528,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
         Vector3 current_wrist_position = tracked_wrist_transform.position;
         TrackedWristPosition = current_wrist_position;
+        SourceWristRotation = tracked_wrist_transform.rotation;
+        IsAnatomicalRotationUsed = false;
         Quaternion current_wrist_rotation = GetAnatomicalHandRotation(
             tracked_wrist_transform.rotation);
         TrackedWristRotation = current_wrist_rotation;
@@ -647,7 +656,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             last_accepted_wrist_position);
         TrackedWristSpeedMPS = position_step / safe_delta_time;
 
-        if (tracked_pose_outlier_latched)
+        if (tracked_pose_outlier_latched && !RecoverTransientPoseOutlier)
         {
             IsTrackedPosePlausible = false;
             return false;
@@ -670,6 +679,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         last_accepted_wrist_position = current_wrist_position;
+        tracked_pose_outlier_latched = false;
         IsTrackedPosePlausible = true;
         return true;
     }
@@ -739,6 +749,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         // Semantic hand frame: +Z follows the fingers and +Y is the palm normal.
+        IsAnatomicalRotationUsed = true;
         IsAnatomicalFrameValid = true;
         return Quaternion.LookRotation(finger_direction, palm_normal);
     }

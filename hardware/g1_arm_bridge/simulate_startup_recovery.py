@@ -12,6 +12,7 @@ import json
 import math
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import mink
@@ -599,8 +600,9 @@ def main() -> int:
     )
     ready = np.radians(STARTUP_SAFE_READY_DEGREES)
 
-    controller._prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_recovery_") as directory:
+        model_path = controller._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     controller._apply_operational_joint_limits(model)
     configuration = mink.Configuration(model)
     initial_q = controller._initial_configuration(model)

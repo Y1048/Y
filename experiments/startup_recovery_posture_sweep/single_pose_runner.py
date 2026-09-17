@@ -4,8 +4,9 @@
 from __future__ import annotations
 
 import argparse
-import os
+from contextlib import contextmanager
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +25,23 @@ def ParseArguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
+@contextmanager
+def UseIsolatedModel(controller):
+    """Keep legacy recovery model hooks local to this offline process."""
+    original_path = controller.g1.DEMO_XML
+    original_prepare = controller._prepare_mink_xml
+    with tempfile.TemporaryDirectory(prefix="g1_sweep_model_") as directory:
+        model_path = Path(directory) / "scene.xml"
+        original_prepare(output_path=model_path)
+        try:
+            controller.g1.DEMO_XML = model_path
+            controller._prepare_mink_xml = lambda: model_path
+            yield model_path
+        finally:
+            controller.g1.DEMO_XML = original_path
+            controller._prepare_mink_xml = original_prepare
+
+
 def Main() -> int:
     args = ParseArguments()
     sys.path.insert(0, str(SCRIPTS_DIR))
@@ -31,17 +49,13 @@ def Main() -> int:
 
     import run_mink_g1_right_arm_prototype as controller
 
-    if os.environ.get("G1_SWEEP_MODEL_PREPARED") == "1":
-        if not controller.g1.DEMO_XML.exists():
-            raise RuntimeError("Prepared MuJoCo model is missing")
-        controller._prepare_mink_xml = lambda: None
-
     import simulate_startup_recovery as recovery
 
     recovery.STATE_PATH = args.state.resolve()
     recovery.RESULT_PATH = args.result.resolve()
     recovery.ESCAPE_OFFSET_ROBOT_M = np.asarray(args.escape, dtype=float)
-    return int(recovery.main())
+    with UseIsolatedModel(controller):
+        return int(recovery.main())
 
 
 if __name__ == "__main__":

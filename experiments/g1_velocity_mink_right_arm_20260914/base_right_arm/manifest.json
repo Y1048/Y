@@ -1,0 +1,32 @@
+{
+  "destination": "/home/unitree/g1_mink_cycle_compare_20260909",
+  "target": "g1_twist2_mink_cycle_trial",
+  "files": {
+    "twist2_mink_cycle_trial.cpp": "f2b507dd26580aef34893b1754dae7c15f5ae5d2903a50db8fc392b9289f1eeb",
+    "native_state_tick.hpp": "3c81f7a6a02d0baddecda5d70f0583a08d357156f20d4a4fdbbeb21cd132c11d",
+    "native_snapshot_freshness.hpp": "b47a074855be27f5a8eca5fa238be438fd7734f8dee5b3b16443744f0ab7fb56",
+    "pd_gain_options.hpp": "c694f77d8cbffd9c31e986c93a37ca3a86fb8c44b67f09fba16a441708d68ab2",
+    "pd_ready_settle.hpp": "b73055656378f484c49c4d61442b3f5db5479b5c3067105bb7ed1db951c1650f",
+    "pd_reach_trial.hpp": "93cfa189edda1804e34af859ed3cb673fac95920ec332f8bc4b97bea8f6aa8ed",
+    "pd_reach_reference.hpp": "ca0f771ddfd28e31c6277bbf1f4e52d6d34f3ab9dac60a5903324d6f01f2f565",
+    "pd_joint_trial.hpp": "1198d63d09a09a22c6cd29184ffd4016f94c9f9d692a23507bbce825a651798d",
+    "writer_frame.hpp": "edbed2c763cb7eed8812fab3c85e1d287cb1a95b2bdbb582ee388edce33b3f7e",
+    "periodic_csv.hpp": "10755012a8eb29518627669c7450f5578e86592ea360c3f9e56700bc55fa24e5",
+    "mink_live_cycle_target.hpp": "ee6e077727bf8f2996c4bd7cd2dbc4a311401e64cc90614b2d04f014397c4802",
+    "offline_twist2_constants.hpp": "517a651ecfc9677f47cab8a56ab49b92646b1efc4688383848032a9144c66a91",
+    "mink_udp_target.hpp": "3f0439743838471e3c921b6f755097addc323554edd6e531fddb8de33ec938f2",
+    "raw_input_watch_offline.hpp": "bc32db54326bcb0dff645cc17bf72c5c87f40650ffb3108aa09b1b740989729d",
+    "upper_target_offline.hpp": "dea4bfcf7f5f4409ff80ad02bf075fe75329cebed67c9f98500626046a6501db",
+    "validate_input.hpp": "a28785a3f42b8bfdaabf1ed6eb9f764793c77615b64ccad3877288f739bb8f73",
+    "vendor/json.hpp": "aaf127c04cb31c406e5b04a63f1ae89369fccde6d8fa7cdda1ed4f32dfc5de63",
+    "mink_live_cycle_contract.hpp": "0deebddc728a2858962a032f50a9cde7eecc7fa9600c9b330fb5a0524fa6083d",
+    "native_vr_cycle_udp.hpp": "db6f7ede73038e4cee2a2832a696e0a65ba3e4eedabe6d05d9a905671db354ee",
+    "native_relay_contract.hpp": "b3166d425d437a061adc488d57af1de85eb4e1fd8228610afb069f9cb4432f69",
+    "native_vr_policy_adapter.hpp": "951ea95f53f20c992336821dcae98dde63f67bf8401dfc7472969ad38d9371ce",
+    "twist2_common.hpp": "2db4dea94bf469429010563bee36f1cab8005d688c87a2eb8772aca1f51dbba6",
+    "CMakeLists.txt": "8d1944dde0894cac3074d75b5f82aeb93bd54ff29c49e24b04cef3eedcba8c53"
+  },
+  "previous_binary_sha256": "87191a1e4ecc940997b9983b8e3893cdfebdf75eae05e5dcda5e52695be5ff39",
+  "previous_source_sha256": "1e1bfc21daec1a3b646860a993c0183ac046eee6bba59a515d36d9db2dde0ab5",
+  "action": "new-directory source transfer and compilation only; no motor program execution"
+}

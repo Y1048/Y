@@ -54,6 +54,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
     public float PinchDisengageProgress { get; private set; }
     public bool IsCommandValid { get; private set; }
     public string CurrentSessionId => session_id;
+    public string LastSentPacket { get; private set; } = "";
     public bool IsTrackingLossPending { get; private set; }
     public bool IsTrackingLossDisengaged { get; private set; }
     public float TrackingLossProgress { get; private set; }
@@ -112,6 +113,20 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
 
     private void SendTarget()
     {
+        if (hand_binder != null)
+            hand_binder.RecoverTransientPoseOutlier = state_receiver != null
+                && state_receiver.HasRecentState
+                && !string.IsNullOrEmpty(state_receiver.SimulationArmCycleState);
+        // The local return controller owns the arm until it requests a new
+        // active edge. Prevent an early Unity calibration from remaining active
+        // across that boundary. Normal hardware feedback has no cycle marker.
+        if (state_receiver != null && state_receiver.SimulationArmCycleBlocksEngage
+            && hand_binder != null)
+        {
+            hand_binder.ResetCalibration();
+            IsPinchDisengaged = true;
+            live_filter_initialized = false;
+        }
         // 한 주기의 순서: 입력 상태 확인 -> 상대 자세 필터 -> G1 좌표 변환 ->
         // workspace 피드백 반영 -> 명령 상태를 포함한 단일 UDP 패킷 송신.
         UpdatePinchDisengage();
@@ -308,6 +323,7 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
             : command_valid ? "active" : "idle";
         string json_text = BuildPacket(send_position, send_rotation, command_valid, command_state);
         if (!SendPacket(json_text)) return;
+        LastSentPacket = json_text;
         packet_count++;
         if (packet_count % 120 == 0) Debug.Log("G1 Quest hand UDP #" + packet_count + ": " + json_text);
     }

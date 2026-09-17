@@ -231,6 +231,7 @@ def main() -> int:
             step_deg=math.degrees(config.jog.step_rad),
         )
         collision_validator = CollisionPathValidator()
+        result["model_metadata"] = dict(collision_validator.model_metadata)
         for joint_name in selected:
             permit = build_joint_permit(
                 measured,

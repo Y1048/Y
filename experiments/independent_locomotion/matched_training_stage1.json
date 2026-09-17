@@ -1,0 +1,15 @@
+{
+  "schema": "g1.mjlab.matched_training_plan.v1",
+  "stage": "stage1_train_only",
+  "simulation_only": true,
+  "seed": 1509,
+  "num_envs": 256,
+  "iterations_per_model": 500,
+  "steps_per_env_per_iteration": 24,
+  "total_samples_per_model": 3072000,
+  "models": ["fixed", "recorded"],
+  "recorded_split": "train",
+  "validation_execution": false,
+  "checkpoint_interval_iterations": 50,
+  "notes": "Matched preliminary training. No checkpoint from this stage is approved for G1 deployment."
+}

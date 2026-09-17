@@ -20,6 +20,10 @@ from g1_teleop.protocol import (  # noqa: E402
     PosePacketV2,
     ProtocolError,
     StatePacketV2,
+    POSE_SCHEMA,
+    STATE_SCHEMA,
+    PosePacketV1,
+    StatePacketV1,
 )
 
 
@@ -49,6 +53,36 @@ def pose_v2(**overrides: object) -> dict[str, object]:
     }
     packet.update(overrides)
     return packet
+
+
+class ProtocolV1IntegerTest(unittest.TestCase):
+    def test_integer_contracts(self):
+        pose = pose_v2(schema=POSE_SCHEMA)
+        state = {"schema": STATE_SCHEMA, "sequence": 0, "robot_time_ns": 0,
+                 "acknowledged_source_sequence": -1,
+                 "right_arm_q_rad": [0.] * 7, "left_arm_q_rad": [0.] * 7}
+        for parser, packet, fields in (
+            (PosePacketV1, pose, ("sequence", "source_time_ns", "calibration_request")),
+            (StatePacketV1, state, ("sequence", "robot_time_ns", "acknowledged_source_sequence")),
+        ):
+            for field in fields:
+                minimum = -1 if field == "acknowledged_source_sequence" else 0
+                for value in (True, False, "7", 1.9, 1.0, None, minimum - 1):
+                    with self.subTest(parser=parser.__name__, field=field, invalid=value):
+                        with self.assertRaises(ProtocolError):
+                            parser.from_json(json.dumps({**packet, field: value}))
+                for value in (minimum, 7, 2 ** 63):
+                    parsed = parser.from_json(json.dumps({**packet, field: value}))
+                    self.assertEqual(getattr(parser.from_json(parsed.to_json()), field), value)
+            for field in fields:
+                missing = dict(packet)
+                missing.pop(field, None)
+                if field in ("calibration_request", "acknowledged_source_sequence"):
+                    expected = 0 if field == "calibration_request" else -1
+                    self.assertEqual(getattr(parser.from_json(json.dumps(missing)), field), expected)
+                else:
+                    with self.assertRaises(ProtocolError):
+                        parser.from_json(json.dumps(missing))
 
 
 class ProtocolV2Test(unittest.TestCase):

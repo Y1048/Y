@@ -14,6 +14,14 @@ from typing import Any
 LIVE_MINK_PROVENANCE = "live_mink"
 
 
+def mark_simulation_cycle_packet(packet: dict[str, Any]) -> dict[str, Any]:
+    """Downgrade local model feedback so it cannot enter a live relay."""
+    packet["command_provenance"] = "simulation_only"
+    packet["simulation_only"] = True
+    packet["hardware_output_authorized"] = False
+    return packet
+
+
 def mark_live_mink_packet(packet: dict[str, Any]) -> dict[str, Any]:
     """Mark a newly produced live Mink state packet in place and return it."""
 

@@ -56,6 +56,7 @@ def _replace_dual(all_q, dual_q):
 def _decode_capture(path: Path) -> tuple[dict, list[dict]]:
     manifest = None
     packets: list[dict] = []
+    session_models: dict[str, object] = {}
     with path.open(encoding="utf-8") as stream:
         for line_number, line in enumerate(stream, 1):
             if not line.strip():
@@ -73,6 +74,30 @@ def _decode_capture(path: Path) -> tuple[dict, list[dict]]:
                 raise ValueError(f"invalid capture record at line {line_number}")
             payload = base64.b64decode(record["payload_base64"], validate=True)
             sample = parse_mink_arm_sample(payload)
+            value = json.loads(payload.decode("utf-8"))
+            metadata = value.get("model_metadata")
+            if metadata is not None:
+                digest = metadata.get("model_xml_sha256") if isinstance(metadata, dict) else None
+                if (not isinstance(digest, str) or len(digest) != 64
+                        or any(c not in "0123456789abcdef" for c in digest)):
+                    raise ValueError("invalid captured model hash")
+                if "model_assets_sha256" in metadata:
+                    asset_digest = metadata["model_assets_sha256"]
+                    if (not isinstance(asset_digest, str) or len(asset_digest) != 64
+                            or any(c not in "0123456789abcdef" for c in asset_digest)):
+                        raise ValueError("invalid captured model asset hash")
+                if "model_joint_limits_sha256" in metadata:
+                    limit_digest = metadata["model_joint_limits_sha256"]
+                    if (not isinstance(limit_digest, str) or len(limit_digest) != 64
+                            or any(c not in "0123456789abcdef" for c in limit_digest)):
+                        raise ValueError("invalid captured joint limit hash")
+                if "mujoco_version" in metadata:
+                    version = metadata["mujoco_version"]
+                    if not isinstance(version, str) or not version.strip():
+                        raise ValueError("invalid captured engine version")
+            if sample.session_id in session_models and session_models[sample.session_id] != metadata:
+                raise ValueError("captured model identity changed within session")
+            session_models[sample.session_id] = metadata
             if int(record["index"]) != len(packets):
                 raise ValueError(f"capture packet index gap at line {line_number}")
             offset_s = float(record["offset_s"])
@@ -84,7 +109,7 @@ def _decode_capture(path: Path) -> tuple[dict, list[dict]]:
                 {
                     "offset_s": offset_s,
                     "sample": sample,
-                    "value": json.loads(payload.decode("utf-8")),
+                    "value": value,
                 }
             )
     if manifest is None or not packets:

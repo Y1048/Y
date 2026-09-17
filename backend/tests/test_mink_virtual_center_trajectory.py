@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -34,8 +35,9 @@ def rotation_error_degrees(target: np.ndarray, actual: np.ndarray) -> float:
 
 class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
     def test_state_feedback_preserves_all_29_joint_positions(self):
-        base._prepare_mink_xml()
-        model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            model = mujoco.MjModel.from_xml_path(str(path))
         configuration = mink.Configuration(model)
         configuration.update(base._initial_configuration(model))
         all_qpos_ids = np.asarray(
@@ -73,8 +75,9 @@ class MinkVirtualCenterTrajectoryTest(unittest.TestCase):
         )
 
     def test_mixed_wrist_target_converges_within_velocity_limit(self):
-        base._prepare_mink_xml()
-        model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            model = mujoco.MjModel.from_xml_path(str(path))
         base._apply_operational_joint_limits(model)
         configuration = mink.Configuration(model)
         configuration.update(base._initial_configuration(model))

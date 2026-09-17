@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 import mujoco
@@ -29,8 +30,9 @@ def mujoco_to_unity_delta(delta: np.ndarray) -> np.ndarray:
 
 
 def main() -> None:
-    g1.make_demo_xml("control")
-    model = mujoco.MjModel.from_xml_path(str(g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_fk_export_") as directory:
+        model_path = g1.make_demo_xml("control", output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     data = mujoco.MjData(model)
     wrist_body = g1.get_body_id(model, "right_wrist_yaw_link")
 

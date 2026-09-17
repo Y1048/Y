@@ -65,6 +65,37 @@ def _replace_dual(all_q_rad, dual_q_rad) -> tuple[float, ...]:
     return tuple(result)
 
 
+def CheckReplayModelIdentity(packets: list[dict], metadata: dict) -> str:
+    """Compare recorded XML hashes; legacy captures remain explicitly unverified."""
+    expected = metadata["model_xml_sha256"]
+    missing = False
+    assets_missing = False
+    runtime_missing = False
+    for packet in packets:
+        recorded = packet["value"].get("model_metadata")
+        if recorded is None:
+            missing = True
+        elif recorded.get("model_xml_sha256") != expected:
+            raise ValueError(
+                "capture/replay model XML mismatch; use the matching model source "
+                "and inspection-scene option. Replay was not started."
+            )
+        if recorded is None or recorded.get("model_assets_sha256") is None:
+            assets_missing = True
+        elif recorded["model_assets_sha256"] != metadata.get("model_assets_sha256"):
+            raise ValueError("capture/replay model assets mismatch; replay was not started")
+        for field in ("model_joint_limits_sha256", "mujoco_version"):
+            if recorded is None or field not in recorded:
+                runtime_missing = True
+            elif recorded[field] != metadata.get(field):
+                raise ValueError(f"capture/replay {field} mismatch; replay was not started")
+    if missing:
+        return "UNVERIFIED: legacy model metadata missing"
+    result = "XML MATCH ONLY: assets unverified" if assets_missing else "XML AND EXPLICIT ASSETS MATCH"
+    return result + ("; joint limits/engine unverified" if runtime_missing
+                     else "; JOINT LIMITS AND ENGINE MATCH")
+
+
 def BuildExperimentalLimitedFrames(
     packets: list[dict],
     padding_s: float,
@@ -164,7 +195,13 @@ def main() -> int:
             }
             for packet in replay_packets
         ]
-    model, data, _controller = LoadModel(args.show_inspection_scene)
+    model, data, _controller, metadata = LoadModel(
+        args.show_inspection_scene, include_metadata=True)
+    identity = CheckReplayModelIdentity(replay_packets, metadata)
+    print(f"Model identity:   {identity}")
+    print("[INFO] Identity check excludes other runtime settings and does not prove identical dynamics.")
+    if identity.startswith("UNVERIFIED"):
+        print("[WARNING] This replay cannot establish capture/model equivalence.")
     qpos_addresses = ResolveFullBodyQposAddresses(model)
     for frame in replay_frames:
         pose = np.asarray(frame["pose"], dtype=float)
@@ -186,7 +223,7 @@ def main() -> int:
     print("DDS publisher:    NONE")
     print("Robot command:    NONE")
     if args.validate_only:
-        print("[PASS] Capture replay model and active window are valid.")
+        print("[PASS] Replay poses load; this is not collision or model-equivalence approval.")
         return 0
 
     with mujoco.viewer.launch_passive(model, data) as viewer:

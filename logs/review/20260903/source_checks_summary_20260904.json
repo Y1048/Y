@@ -1,8 +1,8 @@
 {
   "schema": "g1.review.source_checks.summary.v2",
   "scope_source": "backend.tools.build_code_index.CollectFiles",
-  "total_current_files": 311,
-  "full_text_review": 311,
+  "total_current_files": 341,
+  "full_text_review": 341,
   "static_only": 0,
   "static_check_failures": 0,
   "delta_promotions_not_in_current_scope": [],

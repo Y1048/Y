@@ -19,6 +19,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     public float minimum_floor_head_height = 0.4f;
     public bool show_head_camera_pip = true;
     public int head_camera_tcp_port = G1HeadCameraPiP.DefaultTcpPort;
+    public bool show_ambient_operator_environment = true;
 
     public bool IsPositionLocked { get; private set; }
     public bool IsInitialAlignmentApplied { get; private set; }
@@ -33,6 +34,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
 
     private float head_tracking_valid_since = -1.0f;
     private G1HeadCameraPiP head_camera_pip;
+    private G1AmbientOperatorEnvironment ambient_operator_environment;
 
     private void OnEnable()
     {
@@ -42,11 +44,20 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         {
             head_camera_pip.gameObject.SetActive(true);
         }
+        if (ambient_operator_environment != null)
+        {
+            ambient_operator_environment.gameObject.SetActive(true);
+        }
         Application.onBeforeRender += ApplyPositionLock;
     }
 
     private void Start()
     {
+        if (show_ambient_operator_environment)
+        {
+            ambient_operator_environment =
+                G1AmbientOperatorEnvironment.Create();
+        }
         if (show_head_camera_pip && xr_center_eye != null)
         {
             head_camera_pip = G1HeadCameraPiP.Create(
@@ -69,6 +80,10 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         if (head_camera_pip != null)
         {
             head_camera_pip.gameObject.SetActive(false);
+        }
+        if (ambient_operator_environment != null)
+        {
+            ambient_operator_environment.gameObject.SetActive(false);
         }
     }
 

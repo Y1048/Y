@@ -5,6 +5,7 @@ The default repository configuration cannot create a publisher. Hardware mode
 requires an explicit flag, two exact confirmations, a separately unlocked
 configuration, a fresh startup precheck, the expected MotionSwitcher mode and
 fresh settled LowState. Unitree publisher imports occur only after these checks.
+Runtime use also requires the guarded gate7_live_arm_sdk_entry.py entrypoint.
 """
 
 from __future__ import annotations
@@ -300,11 +301,13 @@ def _ReceiveLatestMink(sock: socket.socket):
         latest = parse_mink_arm_sample(payload)
 
 
-def WaitForFirstActiveMink(sock: socket.socket, timeout_s: float):
+def WaitForFirstActiveMink(sock: socket.socket, timeout_s: float, on_wait=None):
     """Wait for an engaged command before permitting publisher construction."""
 
     deadline = time.monotonic() + timeout_s
     while time.monotonic() < deadline:
+        if on_wait is not None:
+            on_wait()
         sample = _ReceiveLatestMink(sock)
         if (
             sample is not None
@@ -361,12 +364,58 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--confirm-grounded-regular", default="")
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--pre-publisher-check-only", action="store_true")
+    parser.add_argument("--external-unity-state", action="store_true",
+                        help="Use a separate read-only Unity mirror; keep direct safety LowState.")
     return parser.parse_args()
+
+
+class CommandDiagnosticTrace:
+    """Bounded, sampled evidence; Write return is not firmware acknowledgement."""
+
+    def __init__(self, maximum_samples=10000):
+        self.samples = []
+        self.maximum_samples = maximum_samples
+        self.skipped_capacity = 0
+        self.errors = 0
+        self.next_sample_s = 0.0
+        self.last_phase = None
+
+    def Record(self, phase, frame, snapshot, unix_ns, monotonic_s):
+        # Diagnostics must not interrupt the mandatory release path.
+        try:
+            if phase == self.last_phase and monotonic_s < self.next_sample_s:
+                return
+            if len(self.samples) >= self.maximum_samples:
+                self.skipped_capacity += 1
+                return
+            if callable(snapshot):
+                snapshot = snapshot()
+            sample = {
+                "phase": phase,
+                "write_return_unix_ns": unix_ns,
+                "write_return_monotonic_s": monotonic_s,
+                "weight": frame.weight,
+                "command_q_rad": list(frame.motor_q_rad[:29]),
+                "waist_mode": list(frame.motor_mode[12:15]),
+                "waist_kp": list(frame.motor_kp[12:15]),
+                "waist_kd": list(frame.motor_kd[12:15]),
+                "waist_dq_rad_s": list(frame.motor_dq_rad_s[12:15]),
+                "waist_tau_nm": list(frame.motor_tau_nm[12:15]),
+                "measured_q_rad": list(snapshot.all_q_rad) if snapshot else None,
+                "snapshot_age_s": (monotonic_s - snapshot.received_monotonic_s)
+                if snapshot else None,
+            }
+            self.samples.append(sample)
+            self.last_phase = phase
+            self.next_sample_s = monotonic_s + 0.05
+        except Exception:
+            self.errors += 1
 
 
 def main() -> int:
     args = _parse_args()
     result_path = _result_path()
+    diagnostic_trace = CommandDiagnosticTrace()
     result: dict[str, Any] = {
         "schema": "g1.gate7.live_hardware.result.v1",
         "passed": False,
@@ -439,6 +488,13 @@ def main() -> int:
             print("[PASS] Contracts load; physical output remains locked.")
             return 0
 
+        if globals().get("_supported_gate7_entry_guards_installed") is not True:
+            raise PermissionError(
+                "Gate 7 runtime requires installed safety guards. "
+                "Use gate7_live_arm_sdk_entry.py through the supported launcher; "
+                "direct execution supports --validate-only only."
+            )
+
         if args.pre_publisher_check_only:
             if args.enable_hardware_output:
                 raise ValueError(
@@ -496,6 +552,7 @@ def main() -> int:
                 "SettleConfig",
                 (),
                 {
+                    "hold": hardware_config,
                     "settle_duration_s": hardware_config.settle_duration_s,
                     "minimum_settle_samples": hardware_config.minimum_settle_samples,
                     "maximum_initial_arm_velocity_rad_s": (
@@ -573,12 +630,41 @@ def main() -> int:
             print("Robot command: NONE", flush=True)
             return 0
 
+        if not args.external_unity_state:
+            unity_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        unity_session_id = f"gate7-live-{time.time_ns()}"
+        next_unity_state = 0.0
+
+        def SendWaitingPreview() -> None:
+            nonlocal next_unity_state
+            now = time.monotonic()
+            current = buffer.snapshot()
+            if current is None:
+                raise RuntimeError("LowState disappeared while waiting for engage")
+            age = now - current.received_monotonic_s
+            if not 0.0 <= age <= hardware_config.lowstate_timeout_s:
+                raise RuntimeError("LowState stale while waiting for engage")
+            if (current.mode_pr != hardware_config.expected_mode_pr
+                    or current.mode_machine != hardware_config.expected_mode_machine):
+                raise RuntimeError("LowState mode changed while waiting for engage")
+            if unity_socket is not None and now >= next_unity_state:
+                SendUnityHardwareState(
+                    unity_socket,
+                    BuildUnityLowStateTelemetry(current, unity_session_id),
+                    UNITY_STATE_HOST, UNITY_STATE_PORT,
+                )
+                result["unity_state_packets"] += 1
+                next_unity_state = now + 1.0 / UNITY_STATE_HZ
+
+        print("[MIRROR] External read-only Unity mirror; Gate 7 sends no display packets."
+              if args.external_unity_state else
+              "[MIRROR] Waiting preview: actual LowState -> Unity UDP 5010; no motor publisher.", flush=True)
         print(
             "[WAIT] UDP 5013 is ready; waiting for an ACTIVE relayed Mink "
             "command before publisher creation."
         )
         WaitForFirstActiveMink(
-            mink_socket, hardware_config.mink_startup_timeout_s
+            mink_socket, hardware_config.mink_startup_timeout_s, SendWaitingPreview
         )
 
         precheck = validate_precheck(
@@ -624,13 +710,12 @@ def main() -> int:
         maximum_measured_delta = [0.0] * len(DUAL_ARM_INDICES)
         maximum_tracking_error = [0.0] * len(DUAL_ARM_INDICES)
         next_report = started
-        unity_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        unity_session_id = f"gate7-live-{time.time_ns()}"
         next_unity_state = started
         print("[ACTIVE] Gate 7 publisher created; acquiring measured arm pose.")
         print(
-            f"[MIRROR] Actual 29-joint LowState -> Unity UDP {UNITY_STATE_PORT} "
-            f"at {UNITY_STATE_HZ:.0f} Hz.",
+            "[MIRROR] External read-only mirror remains independent."
+            if args.external_unity_state else
+            f"[MIRROR] Actual 29-joint LowState -> Unity UDP {UNITY_STATE_PORT} at {UNITY_STATE_HZ:.0f} Hz.",
             flush=True,
         )
 
@@ -693,7 +778,7 @@ def main() -> int:
                 frame = tick.frame
                 last_weight = frame.weight
 
-            if now >= next_unity_state:
+            if unity_socket is not None and now >= next_unity_state:
                 SendUnityHardwareState(
                     unity_socket,
                     BuildUnityLowStateTelemetry(current, unity_session_id),
@@ -753,6 +838,10 @@ def main() -> int:
             _apply_frame(command_message, frame)
             command_message.crc = command_crc.Crc(command_message)
             publisher.Write(command_message)
+            diagnostic_trace.Record(
+                "ACQUIRE" if elapsed < hardware_config.acquire_ramp_s else "CONTROL",
+                frame, current, time.time_ns(), time.monotonic(),
+            )
             result["published_frames"] += 1
             last_successful_weight = float(last_weight)
             last_successful_write_unix_ns = time.time_ns()
@@ -817,6 +906,10 @@ def main() -> int:
                     _apply_frame(command_message, frame)
                     command_message.crc = command_crc.Crc(command_message)
                     publisher.Write(command_message)
+                    diagnostic_trace.Record(
+                        "RELEASE" if frame.weight > 0.0 else "ZERO_WEIGHT",
+                        frame, buffer.snapshot, time.time_ns(), time.monotonic(),
+                    )
 
                 try:
                     evidence = execute_release_sequence(
@@ -852,6 +945,15 @@ def main() -> int:
         if unity_socket is not None:
             unity_socket.close()
 
+        result["command_diagnostic_trace"] = {
+            "schema": "g1.gate7.command_diagnostic_trace.v1",
+            "sampling_hz": 20,
+            "phase_changes_sampled_immediately": True,
+            "firmware_acknowledgement": False,
+            "samples": diagnostic_trace.samples,
+            "skipped_capacity": diagnostic_trace.skipped_capacity,
+            "errors": diagnostic_trace.errors,
+        }
         result_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
         print(f"Result saved to: {result_path.resolve()}")
     return 0 if result.get("passed") else 2

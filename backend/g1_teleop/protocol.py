@@ -137,14 +137,9 @@ class PosePacketV1:
         if value.get("frame_id") != POSE_FRAME:
             raise ProtocolError(f"frame_id must be {POSE_FRAME}")
 
-        try:
-            sequence = int(value["sequence"])
-            source_time_ns = int(value["source_time_ns"])
-            calibration_request = int(value.get("calibration_request", 0))
-        except (KeyError, TypeError, ValueError) as error:
-            raise ProtocolError("sequence and source_time_ns must be integers") from error
-        if sequence < 0 or source_time_ns < 0 or calibration_request < 0:
-            raise ProtocolError("sequence, source_time_ns, and calibration_request must be non-negative")
+        sequence = _integer(value.get("sequence"), "sequence")
+        source_time_ns = _integer(value.get("source_time_ns"), "source_time_ns")
+        calibration_request = _integer(value.get("calibration_request", 0), "calibration_request")
 
         return cls(
             sequence=sequence,
@@ -197,14 +192,10 @@ class StatePacketV1:
         if not isinstance(value, dict) or value.get("schema") != STATE_SCHEMA:
             raise ProtocolError(f"schema must be {STATE_SCHEMA}")
 
-        try:
-            sequence = int(value["sequence"])
-            robot_time_ns = int(value["robot_time_ns"])
-            acknowledged = int(value.get("acknowledged_source_sequence", -1))
-        except (KeyError, TypeError, ValueError) as error:
-            raise ProtocolError("state sequence fields must be integers") from error
-        if sequence < 0 or robot_time_ns < 0 or acknowledged < -1:
-            raise ProtocolError("state sequence fields are out of range")
+        sequence = _integer(value.get("sequence"), "sequence")
+        robot_time_ns = _integer(value.get("robot_time_ns"), "robot_time_ns")
+        acknowledged = _integer(value.get("acknowledged_source_sequence", -1),
+                                "acknowledged_source_sequence", minimum=-1)
 
         return cls(
             sequence=sequence,

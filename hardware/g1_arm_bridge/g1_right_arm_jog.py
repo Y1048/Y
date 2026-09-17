@@ -542,6 +542,14 @@ def finalize_joint_tracking_stats(
     return result
 
 
+def validate_snapshot_fresh(snapshot: Any, timeout_s: float) -> None:
+    if snapshot is None:
+        raise RuntimeError("LowState snapshot missing")
+    age_s = time.monotonic() - snapshot.received_monotonic_s
+    if not math.isfinite(age_s) or age_s < 0.0 or age_s > timeout_s:
+        raise RuntimeError(f"LowState stale or invalid timestamp: {age_s:.3f}s")
+
+
 def collect_settled_snapshot(
     buffer: LowStateBuffer,
     config: RuntimeConfig,
@@ -556,6 +564,11 @@ def collect_settled_snapshot(
         if snapshot is None or snapshot.sequence == last_sequence:
             time.sleep(0.001)
             continue
+        validate_snapshot_fresh(snapshot, config.hold.lowstate_timeout_s)
+        if latest is not None:
+            gap_s = snapshot.received_monotonic_s - latest.received_monotonic_s
+            if snapshot.sequence < last_sequence or not 0.0 <= gap_s <= config.hold.lowstate_timeout_s:
+                raise RuntimeError("LowState settle stream has an invalid sequence or packet gap")
         latest = snapshot
         last_sequence = snapshot.sequence
         samples += 1
@@ -572,6 +585,7 @@ def collect_settled_snapshot(
             "initial arm velocity too high: "
             f"{math.degrees(maximum_velocity):.2f} deg/s"
         )
+    validate_snapshot_fresh(latest, config.hold.lowstate_timeout_s)
     return latest, samples, maximum_velocity
 
 
@@ -780,6 +794,14 @@ def main() -> int:
             )
 
         with KeyboardReader() as keyboard:
+            current_start = buffer.snapshot()
+            validate_snapshot_fresh(current_start, config.hold.lowstate_timeout_s)
+            if (current_start.mode_pr != config.expected_mode_pr
+                    or current_start.mode_machine != config.expected_mode_machine):
+                raise RuntimeError("LowState mode changed before publisher creation")
+            validate_snapshot_matches_precheck(current_start, precheck, config.maximum_precheck_pose_delta_rad)
+            if max(abs(current_start.all_dq_rad_s[i]) for i in DUAL_ARM_INDICES) > config.maximum_initial_arm_velocity_rad_s:
+                raise RuntimeError("Arm velocity increased before publisher creation")
             publisher = ChannelPublisher(ARM_SDK_TOPIC, LowCmd_)
             publisher.Init()
             command_message = unitree_hg_msg_dds__LowCmd_()

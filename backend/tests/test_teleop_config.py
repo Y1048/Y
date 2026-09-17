@@ -71,6 +71,31 @@ VALID_CONFIG = {
 
 
 class TeleopConfigTest(unittest.TestCase):
+    def test_workspace_debounce_rejects_invalid_times_without_changing_state(self):
+        from copy import deepcopy
+        from g1_teleop.watchdog import WorkspaceExitDebounce
+
+        for value in (0.0, -1.0, float("nan"), float("inf"), -float("inf"), True):
+            with self.subTest(value=value):
+                payload = deepcopy(VALID_CONFIG)
+                payload["runtime"]["workspace_exit_confirm_s"] = value
+                with self.assertRaises(ValueError):
+                    self._load(payload)
+                with self.assertRaises(ValueError):
+                    WorkspaceExitDebounce(value)
+        debounce = WorkspaceExitDebounce(0.8)
+        self.assertFalse(debounce.update(False, 0.4))
+        for value in (-1.0, float("nan"), float("inf"), -float("inf"), True):
+            for safe in (True, False):
+                with self.subTest(delta=value, safe=safe):
+                    with self.assertRaises(ValueError):
+                        debounce.update(safe, value)
+                    self.assertEqual(debounce.unsafe_duration_s, 0.4)
+        self.assertFalse(debounce.update(False, 0.0))
+        self.assertTrue(debounce.update(False, 0.4))
+        self.assertFalse(debounce.update(True, 0.1))
+        self.assertEqual(debounce.unsafe_duration_s, 0.0)
+
     def _load(self, payload):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)

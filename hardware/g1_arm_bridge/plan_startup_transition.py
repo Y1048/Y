@@ -13,6 +13,7 @@ import json
 import math
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import mujoco
@@ -562,8 +563,9 @@ def main() -> int:
     )
     goal = np.radians(controller.g1.DEFAULT_RIGHT_ARM_READY_DEGREES)
 
-    controller._prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_plan_") as directory:
+        model_path = controller._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     controller._apply_operational_joint_limits(model)
     data = mujoco.MjData(model)
     _, geom_pairs = controller._build_collision_pairs(model)

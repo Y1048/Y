@@ -6,6 +6,7 @@ import math
 import sys
 import unittest
 import uuid
+import tempfile
 from multiprocessing import shared_memory
 from pathlib import Path
 
@@ -24,7 +25,11 @@ from g1_teleop.calibration import (  # noqa: E402
 from g1_teleop.camera import CameraFrame, CameraIntrinsics, RealSenseD435iSource, save_bgr_bmp  # noqa: E402
 from g1_teleop.camera_factory import create_head_camera_source, load_camera_profile  # noqa: E402
 from g1_teleop.protocol import POSE_FRAME, POSE_SCHEMA, PosePacketV1, ProtocolError  # noqa: E402
-from g1_teleop.transforms import make_pose  # noqa: E402
+from g1_teleop.transforms import (  # noqa: E402
+    make_pose, split_pose, invert_pose, matrix_to_quaternion, quaternion_to_matrix,
+    validate_rotation_matrix, validate_pose_matrix, convert_unity_ovr_pose_to_robot,
+    move_pose_to_head_yaw_frame,
+)
 from g1_teleop.unitree_image_transport import (  # noqa: E402
     UnitreeImageHeader,
     UnitreeSimImageWriter,
@@ -37,7 +42,120 @@ from g1_teleop.watchdog import (  # noqa: E402
 )
 
 
+class RigidPoseValidationTest(unittest.TestCase):
+    def test_invalid_rotations_rejected_at_all_matrix_boundaries(self):
+        rotations = [np.diag([2., 1., 1.]), np.diag([-1., 1., 1.]),
+                     np.diag([1e-10, 1., 1.]), np.array([[1., .1, 0.], [0., 1., 0.], [0., 0., 1.]]),
+                     np.full((3, 3), np.nan), np.full((3, 3), np.inf)]
+        calibration = ArmCalibration(np.eye(4), np.eye(4), np.ones(3))
+        for rotation in rotations:
+            pose = np.eye(4)
+            pose[:3, :3] = rotation
+            for operation in (split_pose, invert_pose, convert_unity_ovr_pose_to_robot,
+                              calibration.map_pose,
+                              lambda p: ArmCalibration(p, np.eye(4), np.ones(3)),
+                              lambda p: ArmCalibration(np.eye(4), p, np.ones(3)),
+                              lambda p: move_pose_to_head_yaw_frame(p, np.eye(4)),
+                              lambda p: move_pose_to_head_yaw_frame(np.eye(4), p)):
+                with self.subTest(rotation=rotation.tolist(), operation=operation):
+                    with self.assertRaises(ValueError):
+                        operation(pose)
+            with self.assertRaises(ValueError):
+                matrix_to_quaternion(rotation)
+
+    def test_homogeneous_row_and_position_are_validated(self):
+        for value in (np.zeros((3, 3)), np.ones((4, 4))):
+            for operation in (split_pose, invert_pose, validate_pose_matrix):
+                with self.assertRaises(ValueError):
+                    operation(value)
+        for position in (1., [1., 2.], [0., 0., np.nan]):
+            with self.assertRaises(ValueError):
+                make_pose(position, [0., 0., 0., 1.])
+
+    def test_valid_rotations_round_trip_and_inverse(self):
+        rng = np.random.default_rng(27)
+        quaternions = [*np.eye(4), *rng.normal(size=(50, 4))]
+        for quaternion in quaternions:
+            pose = make_pose([.1, -.2, .3], quaternion)
+            position, result = split_pose(pose)
+            np.testing.assert_allclose(make_pose(position, result), pose, atol=1e-12)
+            np.testing.assert_allclose(invert_pose(pose) @ pose, np.eye(4), atol=1e-12)
+            converted = convert_unity_ovr_pose_to_robot(pose)
+            validate_pose_matrix(converted)
+        near_rotation = np.eye(3)
+        near_rotation[0, 0] += 1e-8
+        validate_rotation_matrix(near_rotation)
+        np.testing.assert_allclose(quaternion_to_matrix(matrix_to_quaternion(near_rotation)), np.eye(3))
+
+    def test_invalid_sample_does_not_partially_append(self):
+        accumulator = NeutralCalibrationAccumulator(minimum_samples=2)
+        bad = np.eye(4)
+        bad[0, 0] = 2
+        with self.assertRaises(ValueError):
+            accumulator.add_sample(np.eye(4), np.eye(4), np.eye(4), bad)
+        for group in (accumulator._human_right, accumulator._robot_right,
+                      accumulator._human_left, accumulator._robot_left):
+            self.assertEqual(len(group), 0)
+        accumulator.add_sample(np.eye(4), np.eye(4))
+        self.assertEqual(accumulator.sample_count, 1)
+
+
 class FoundationTest(unittest.TestCase):
+    def test_camera_config_failure_saves_report_without_rendering(self):
+        from unittest.mock import patch
+        sys.path.insert(0, str(BACKEND_ROOT / "tools"))
+        import verify_camera_simulation as tool
+        for content in ('head_camera: [', 'head_camera: {}'):
+            with self.subTest(content=content), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "config").mkdir()
+                (root / "config/teleimager_simulation.yaml").write_text(content)
+                report = root / "result.json"
+                with patch.object(tool, "PROJECT_ROOT", root), \
+                     patch.object(sys, "argv", ["verify", "--config-only", "--report", str(report)]), \
+                     patch.object(tool.g1, "make_demo_xml", side_effect=AssertionError("model forbidden")), \
+                     patch.object(tool, "verify_transport", side_effect=AssertionError("transport forbidden")):
+                    with self.assertRaises(SystemExit) as error:
+                        tool.main()
+                    self.assertEqual(error.exception.code, 1)
+                self.assertEqual(json.loads(report.read_text())["status"], "FAIL")
+
+    def test_teleimager_head_profile_alignment(self):
+        import copy
+        import yaml
+        from g1_teleop.camera_factory import validate_teleimager_profile
+        root = BACKEND_ROOT.parent / "config"
+        profile = load_camera_profile(root / "camera_profile.json")
+        for source in ("simulation", "real_d435i"):
+            settings = yaml.safe_load((root / f"teleimager_{source}.yaml").read_text())
+            validate_teleimager_profile(profile, settings, source)
+            for field, value in [("fps", 20), ("fps", True), ("fps", "30"),
+                                 ("image_shape", [640, 480]), ("image_shape", [480.0, 640]),
+                                 ("binocular", 0), ("type", "unknown")]:
+                with self.subTest(source=source, field=field, value=value):
+                    changed = copy.deepcopy(settings)
+                    changed["head_camera"][field] = value
+                    with self.assertRaises(ValueError):
+                        validate_teleimager_profile(profile, changed, source)
+
+    def test_camera_profile_rejects_coercion_and_invalid_fov(self):
+        original = json.loads((BACKEND_ROOT.parent / "config" / "camera_profile.json").read_text())
+        invalid = [(field, value) for field in ("width", "height", "fps")
+                   for value in (True, "30", 30.5, 0, -1, None, float("nan"), float("inf"))]
+        invalid += [("vertical_fov_deg", value) for value in
+                    (True, "42.5", 0, 180, -1, None, float("nan"), float("inf"))]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "profile.json"
+            for field, value in invalid:
+                with self.subTest(field=field, value=value):
+                    profile = json.loads(json.dumps(original))
+                    profile["stream"][field] = value
+                    path.write_text(json.dumps(profile), encoding="utf-8")
+                    with self.assertRaises(ValueError):
+                        load_camera_profile(path)
+                    with self.assertRaises(ValueError):
+                        create_head_camera_source(profile)
+
     def test_camera_contract_and_bmp(self):
         intrinsics = CameraIntrinsics.from_vertical_fov(64, 48, 42.5)
         image = np.zeros((48, 64, 3), dtype=np.uint8)

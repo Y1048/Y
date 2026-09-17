@@ -24,6 +24,10 @@ set "GATE7_CONFIG_WSL=/mnt/c/Users/user/Desktop/G1_Teleop_Project/config/g1_gate
 set "HARDWARE_CONFIG_WSL=/mnt/c/Users/user/Desktop/G1_Teleop_Project/config/g1_gate7_live_hardware_output.json"
 set "HARDWARE_CONFIRM=ENABLE_G1_GATE7_LIVE_ARM_SDK"
 set "PROFILE_NAME=standard"
+set "IK_ARGUMENT="
+set "DISPLAY_ARGUMENT="
+if /I "%~3"=="--external-unity-state" set "DISPLAY_ARGUMENT=--external-unity-state"
+if /I "%~2"=="--standard-mink" set "IK_ARGUMENT=--standard-mink"
 if /I "%~1"=="--first-live" (
     set "GATE7_CONFIG=%CD%\config\g1_gate7_first_live_mink_arm_sdk.json"
     set "HARDWARE_CONFIG=%CD%\config\g1_gate7_first_live_hardware_output.json"
@@ -50,6 +54,7 @@ echo G1 GATE 7 LIVE HARDWARE - rt/arm_sdk
 echo   Unity/Mink UDP 5008 ^> token-bound relay ^> WSL UDP 5013
 echo   WSL Gate 7 + direct rt/lowstate ^> rt/arm_sdk
 echo   Profile: %PROFILE_NAME%
+echo   IK option: %IK_ARGUMENT% (empty = hierarchical)
 echo ============================================================
 echo [SAFETY] This path is locked until the bounded shoulder trial is accepted.
 echo [SAFETY] G1 must be grounded in Regular Mode with L2+B ready.
@@ -61,6 +66,29 @@ if /I not "%AUTHORIZED%"=="true" (
     echo [ACTION] Review this exact profile and obtain explicit approval before unlocking it.
     echo [ACTION] Do not bypass this lock merely to test the launcher.
     goto :failed
+)
+
+rem Never reuse a running solver when explicitly selecting standard Mink.
+if defined DISPLAY_ARGUMENT (
+    powershell -NoProfile -Command "$e=Get-NetUDPEndpoint -LocalPort 5009 -ErrorAction SilentlyContinue; foreach($i in $e){$p=Get-CimInstance Win32_Process -Filter ('ProcessId='+$i.OwningProcess); if($p.CommandLine -match 'live_lowstate_mujoco\.py'){exit 0}}; exit 1"
+    if errorlevel 1 (
+        echo [BLOCKED] Independent read-only MuJoCo mirror is not listening on 5009.
+        echo [ACTION] Run tools\START_G1_VR_PREVIEW_READ_ONLY.bat first and verify live state.
+        goto :failed
+    )
+    echo [KEEP] Independent read-only mirror. It will not be stopped by this launcher.
+)
+if defined IK_ARGUMENT (
+    set "IK_INPUT_PORT="
+    for /f %%P in ('py -3.11 -c "import json; print(json.load(open('config/teleop.json'))['network']['udp_port'])"') do set "IK_INPUT_PORT=%%P"
+)
+if defined IK_ARGUMENT if not defined IK_INPUT_PORT goto :failed
+if defined IK_ARGUMENT (
+    netstat -ano -p UDP | findstr /R /C:":%IK_INPUT_PORT%[ ]" >nul
+    if not errorlevel 1 (
+        echo [ERROR] Close the existing IK controller before a standard Mink trial.
+        goto :failed
+    )
 )
 
 wsl -d Ubuntu -- /home/user/.venvs/g1-teleop/bin/python -c "import importlib.metadata as m, mujoco, ruckig, mink, qpsolvers, daqp; assert mujoco.__version__ == '3.11.0'; assert ruckig.__version__ == '0.19.4'; assert m.version('mink') == '1.3.0'; assert m.version('qpsolvers') == '4.13.0'; assert m.version('daqp') == '0.9.1'" >nul 2>&1
@@ -161,11 +189,11 @@ if errorlevel 1 (
     goto :failed
 )
 
-start "G1 VR and Mink" cmd /c call "%CD%\START_VR_HAND_TO_MUJOCO.bat" --hardware-display
+start "G1 VR and Mink" cmd /c call "%CD%\START_VR_HAND_TO_MUJOCO.bat" --hardware-display %IK_ARGUMENT% --camera
 timeout /t 2 /nobreak >nul
 
 if exist "%ADAPTER_READY%" del /q "%ADAPTER_READY%"
-start "G1 Gate 7 rt-arm-sdk PHYSICAL" wsl -d Ubuntu -- env G1_GATE7_ADAPTER_LOG=/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/g1_gate7_adapter_%STAMP%.log bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh --gate7-config %GATE7_CONFIG_WSL% --hardware-config %HARDWARE_CONFIG_WSL% --ready-file %ADAPTER_READY_WSL% --expected-relay-token %GATE7_RELAY_TOKEN% --enable-hardware-output --confirm %HARDWARE_CONFIRM% --confirm-grounded-regular G1_IS_GROUNDED_IN_REGULAR_MODE
+start "G1 Gate 7 rt-arm-sdk PHYSICAL" wsl -d Ubuntu -- env G1_GATE7_ADAPTER_LOG=/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/g1_gate7_adapter_%STAMP%.log bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh --gate7-config %GATE7_CONFIG_WSL% --hardware-config %HARDWARE_CONFIG_WSL% --ready-file %ADAPTER_READY_WSL% --expected-relay-token %GATE7_RELAY_TOKEN% %DISPLAY_ARGUMENT% --enable-hardware-output --confirm %HARDWARE_CONFIRM% --confirm-grounded-regular G1_IS_GROUNDED_IN_REGULAR_MODE
 set "ADAPTER_STARTED=1"
 echo [INFO] WSL adapter log: %ADAPTER_LOG%
 echo [WAIT] Waiting up to 20 seconds for WSL validation and UDP 5013 bind...

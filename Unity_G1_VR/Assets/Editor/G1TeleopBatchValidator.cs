@@ -37,6 +37,7 @@ public static class G1TeleopBatchValidator
         ValidateBaseCoordinateMapping();
         ValidateHeadLockedCamera(camera_lock_value, preview_value);
         ValidateHeadCameraPiP();
+        ValidateAmbientOperatorEnvironment();
         ValidateOfficialRig();
         ValidatePositionOnlyEngagement();
         ValidateTriggerRelativeRotation();
@@ -58,6 +59,22 @@ public static class G1TeleopBatchValidator
         }
 
         return null;
+    }
+
+    private static void ValidateAmbientOperatorEnvironment()
+    {
+        G1AmbientOperatorEnvironment environment =
+            G1AmbientOperatorEnvironment.Create();
+        AssertCondition(
+            environment != null
+                && environment.VisualElementCount
+                    == G1AmbientOperatorEnvironment.ExpectedVisualElementCount,
+            "G1 ambient operator environment is incomplete.");
+        Collider[] colliders = environment.GetComponentsInChildren<Collider>(true);
+        AssertCondition(
+            colliders.Length == 0,
+            "G1 ambient operator environment must remain visual-only.");
+        UnityEngine.Object.DestroyImmediate(environment.gameObject);
     }
 
     private static void ValidateBinder(G1ExistingHandTargetBinder binder_value)
@@ -440,6 +457,20 @@ public static class G1TeleopBatchValidator
                     && pip_value.GetComponent<Canvas>().renderMode
                         == RenderMode.WorldSpace,
                 "G1 head-camera PiP must use a world-space canvas.");
+            RectTransform pip_transform =
+                pip_value.GetComponent<RectTransform>();
+            AssertCondition(
+                pip_transform != null
+                    && Mathf.Approximately(
+                        pip_transform.localScale.x,
+                        G1HeadCameraPiP.DefaultCanvasScale)
+                    && Mathf.Approximately(
+                        pip_transform.localScale.y,
+                        G1HeadCameraPiP.DefaultCanvasScale)
+                    && Mathf.Approximately(
+                        pip_transform.localPosition.y,
+                        G1HeadCameraPiP.DefaultCanvasVerticalOffset),
+                "G1 head-camera PiP transform does not match the enlarged, lowered default.");
             AssertCondition(
                 G1HeadCameraPiP.IsValidLoopbackPort(
                     G1HeadCameraPiP.DefaultTcpPort)

@@ -53,6 +53,7 @@ class MinkCommandStream:
         takeover_after_s: float | None = None,
         allowed_source_hosts: Iterable[str] = ("127.0.0.1",),
         allowed_frame_ids: Iterable[str] = ("quest3s_head_relative",),
+        simulation_return_handshake: bool = False,
     ) -> None:
         if (
             not isinstance(input_timeout_s, (int, float))
@@ -88,6 +89,41 @@ class MinkCommandStream:
         self._latest_source_host: str | None = None
         self.accepted_total = 0
         self.rejected_total = 0
+        # Opt-in local study only; existing hardware entrypoints leave this off.
+        self.simulation_return_handshake = simulation_return_handshake
+        self.return_epoch = 0
+        self.return_state = "ready"
+        self.return_session: str | None = None
+        self._cycle_started = False
+        self.return_fault_reason = ""
+
+    def request_external_return(self, epoch: int, session_id: str) -> bool:
+        """Mirror a G1-initiated recovery in the local checked return planner."""
+        if (not self.simulation_return_handshake or type(epoch) is not int
+                or epoch != self.return_epoch + 1 or not session_id):
+            return False
+        if self.return_state != "ready":
+            return self.return_state == "returning" and epoch == self.return_epoch
+        self.return_epoch = epoch
+        self.return_session = session_id
+        self.return_state = "returning"
+        self._clutch_engaged = False
+        return True
+
+    def acknowledge_simulation_return(self, epoch: int, session_id: str) -> bool:
+        """Called only after the local model has applied and settled at home.
+
+        This acknowledges no robot state and authorizes no physical output.
+        Caller must continue draining input throughout return; a new accepted
+        idle and then active packet are required after this acknowledgement.
+        """
+        if (not self.simulation_return_handshake or self.return_state != "returning"
+                or type(epoch) is not int or epoch != self.return_epoch
+                or session_id != self.return_session):
+            return False
+        self.return_state = "await_idle"
+        self._clutch_engaged = False
+        return True
 
     def poll(
         self,
@@ -174,6 +210,35 @@ class MinkCommandStream:
             and self.runtime_state.state == "active"
             and input_fresh
         )
+        if self.simulation_return_handshake:
+            fresh_event = batch.accepted_count > 0 and input_fresh
+            self._cycle_started = self._cycle_started or command_active
+            fault_reason = (
+                "session_changed" if session_changed and self._cycle_started else
+                "rejected_input" if batch.rejected_count > 0 else
+                self.runtime_state.state if self.runtime_state.state in {"workspace_fault", "shutdown"} else
+                "input_timeout" if self._cycle_started and not input_fresh else "")
+            if fault_reason:
+                if not self.return_fault_reason:
+                    self.return_fault_reason = fault_reason
+                self.return_state = "fault"
+            if (self.return_state == "ready" and self._cycle_started and fresh_event
+                    and self._input_command_mode in {"pinch_disengaged", "tracking_disengaged"}):
+                self.return_epoch += 1
+                self.return_session = current_session_id
+                self.return_state = "returning"
+            elif (self.return_state == "await_idle" and fresh_event
+                    and self._input_command_mode in {"idle", "pinch_disengaged", "tracking_disengaged"}):
+                self.return_state = "await_active"
+            elif (self.return_state == "await_active" and fresh_event
+                    and command_active):
+                self.return_state = "ready"
+                engage_clutch = True
+            if self.return_state != "ready":
+                self._clutch_engaged = False
+                command_active = False
+                engage_clutch = False
+                reset_clutch = True
         workspace_fault = self.runtime_state.state == "workspace_fault"
         if workspace_fault:
             control_state = "workspace_fault"

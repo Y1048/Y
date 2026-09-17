@@ -1,0 +1,23 @@
+{
+  "repository": "https://github.com/unitreerobotics/unitree_sdk2",
+  "commit": "9754cd153af3da471b0fe5f3aa535e426fb11db3",
+  "deployed_robot_match_verified": false,
+  "files": {
+    "LowState_.hpp": {
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/idl/hg/LowState_.hpp",
+      "sha256": "e01be29667100a6f2cd829b3ea8a90f846271b20a0cde96331ceecfb4d46e042"
+    },
+    "MotorState_.hpp": {
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/idl/hg/MotorState_.hpp",
+      "sha256": "9a461ce785c1d56e95c284065178935288d04fd3261090983ab0fd0c2c6d8f0d"
+    },
+    "IMUState_.hpp": {
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/idl/hg/IMUState_.hpp",
+      "sha256": "0b078db5401a35c2421190adb98c0a7e94472ee798b20aa4d1a345513dc88b1b"
+    },
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/LICENSE",
+      "sha256": "3e83dbd580cc82cfb666b0d1db48e2511fc092b4e2666b8f1d1ad5bedad65dbf"
+    }
+  }
+}

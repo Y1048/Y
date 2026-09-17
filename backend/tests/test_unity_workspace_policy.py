@@ -21,6 +21,22 @@ MINK_BASE_CONTROLLER = (
 
 
 class UnityWorkspacePolicyTest(unittest.TestCase):
+    def test_rotation_provenance_is_unique_and_observational(self):
+        trace = (TELEOP_ROOT / "G1LiveTeleopTrace.cs").read_text(encoding="utf-8")
+        binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(encoding="utf-8")
+        sender = (TELEOP_ROOT / "G1ExistingTargetUdpSender.cs").read_text(encoding="utf-8")
+        self.assertIn('"rotation_trace_"', trace)
+        self.assertIn("FileMode.CreateNew", trace)
+        self.assertIn('Guid.NewGuid().ToString("N")', trace)
+        for field in ("SourceWristRotation", "TrackedWristRotation", "OperatorHeading",
+                      "EngagementFrameRevision", "IsAnatomicalRotationUsed", "LastSentPacket"):
+            self.assertIn(field, trace)
+        self.assertLess(sender.index("if (!SendPacket(json_text)) return;"),
+                        sender.index("LastSentPacket = json_text;"))
+        self.assertIn("IsAnatomicalRotationUsed = false;", binder)
+        self.assertIn("IsAnatomicalRotationUsed = true;", binder)
+        self.assertNotIn("SendPacket(", trace)
+
     def test_display_source_selection_is_explicit_and_launchers_choose_modes(self):
         preview = (TELEOP_ROOT / "G1UnityRightArmPreview.cs").read_text(encoding="utf-8")
         receiver = (TELEOP_ROOT / "G1RobotStateUdpReceiver.cs").read_text(encoding="utf-8")
@@ -39,6 +55,27 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
             self.assertIn('SET_UNITY_DISPLAY_MODE.ps1" -Mode ' + mode, content)
         hardware = (PROJECT_ROOT / "tools/START_G1_GATE7_LIVE_HARDWARE.bat").read_text()
         self.assertIn('START_VR_HAND_TO_MUJOCO.bat" --hardware-display', hardware)
+
+    def test_vanilla_mink_comparison_launcher_is_explicit_and_simulation_only(self):
+        root_launcher = (PROJECT_ROOT / "START_VR_HAND_TO_MUJOCO.bat").read_text()
+        vanilla_launcher = (
+            PROJECT_ROOT / "START_VR_HAND_TO_MUJOCO_VANILLA_MINK.bat"
+        ).read_text()
+        prototype = MINK_BASE_CONTROLLER.read_text(encoding="utf-8")
+
+        self.assertIn('"--vanilla-mink"', root_launcher)
+        self.assertIn("run_mink_g1_right_arm_prototype_entry.py", root_launcher)
+        self.assertIn(
+            'START_VR_HAND_TO_MUJOCO.bat" --vanilla-mink --mink-default',
+            vanilla_launcher,
+        )
+        self.assertIn("G1 publisher: NONE / Robot command: NONE", vanilla_launcher)
+        self.assertIn("UDP %UDP_PORT% is already used by another controller", vanilla_launcher)
+        self.assertIn("Close the existing Mink/MuJoCo window", vanilla_launcher)
+        self.assertIn('frame_name="right_wrist_yaw_link"', prototype)
+        self.assertIn("position_cost=POSITION_COST", prototype)
+        self.assertIn("orientation_cost=ORIENTATION_COST", prototype)
+        self.assertIn('"--collision-profile"', prototype)
 
     def test_live_sender_keeps_manual_pinch_and_disables_workspace_disengage(self):
         sender = (TELEOP_ROOT / "G1ExistingTargetUdpSender.cs").read_text(
@@ -193,17 +230,18 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertNotIn("target_accepted", controller)
         self.assertNotIn("commanded_center_position = base.step_position(", controller)
         self.assertNotIn("commanded_target_rotation = base.step_rotation(", controller)
-        self.assertIn("target_center_position = desired_center_position", controller)
+        self.assertIn("target_center_position = operator_target_position.copy()", controller)
         self.assertIn("target_rotation = desired_target_rotation", controller)
-        self.assertIn('clutch_reference["yaw_position"]', controller)
-        self.assertIn("operator_target_position - current_center_to_yaw", controller)
+        self.assertIn('clutch_reference["center_position"]', controller)
+        self.assertNotIn('clutch_reference["yaw_position"]', controller)
         self.assertIn(
             "external_target_position = operator_target_position.copy()",
             controller,
         )
         self.assertNotIn("feasible_target_position = external_target_position.copy()", controller)
         self.assertIn("feasible_target_position = feasible_plan.target_position", controller)
-        self.assertIn("configuration.update(feasible_plan.next_q)", controller)
+        self.assertIn("trajectory.Step(", controller)
+        self.assertIn("configuration.update(trajectory_step.q)", controller)
         self.assertIn('"feasible_target_valid": feasible_target_valid', controller)
         self.assertIn("workspace_limited=False", controller)
         self.assertNotIn("reachability_limited", controller)

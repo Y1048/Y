@@ -17,6 +17,23 @@ public class G1LiveTeleopTrace : MonoBehaviour
     private StreamWriter writer;
     private float next_sample_time;
     private string trace_path;
+    private StreamWriter provenance_writer;
+
+    [Serializable]
+    private class RotationSample
+    {
+        public double time_s;
+        public int frame;
+        public bool tracked;
+        public int engagement_revision;
+        public string engagement_state;
+        public bool anatomical_used;
+        public Quaternion source_wrist;
+        public Quaternion semantic_wrist;
+        public Quaternion heading;
+        public Quaternion head;
+        public string last_sent_packet;
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
@@ -159,6 +176,38 @@ public class G1LiveTeleopTrace : MonoBehaviour
             hand_binder == null ? 0.0f : hand_binder.TrackedHeadAngularSpeedDegrees,
             hand_binder != null && hand_binder.IsHeadMotionHold ? 1 : 0));
         writer.Flush();
+        WriteProvenance();
+    }
+
+    private void WriteProvenance()
+    {
+        if (provenance_writer == null || hand_binder == null) return;
+        try
+        {
+            // Latest packet is a snapshot, not necessarily sent in this Unity frame.
+            RotationSample sample = new RotationSample
+            {
+                time_s = Time.realtimeSinceStartupAsDouble,
+                frame = Time.frameCount,
+                tracked = hand_binder.IsTrackingValid,
+                engagement_revision = hand_binder.EngagementFrameRevision,
+                engagement_state = hand_binder.EngagementState,
+                anatomical_used = hand_binder.IsAnatomicalRotationUsed,
+                source_wrist = hand_binder.SourceWristRotation,
+                semantic_wrist = hand_binder.TrackedWristRotation,
+                heading = hand_binder.OperatorHeading,
+                head = hand_binder.TrackedHeadRotation,
+                last_sent_packet = target_sender == null ? "" : target_sender.LastSentPacket
+            };
+            provenance_writer.WriteLine(JsonUtility.ToJson(sample));
+            provenance_writer.Flush();
+        }
+        catch (Exception exception_value)
+        {
+            Debug.LogWarning("G1 rotation trace stopped: " + exception_value.Message);
+            provenance_writer.Dispose();
+            provenance_writer = null;
+        }
     }
 
     private static float Joint(float[] joints, int index)
@@ -173,6 +222,12 @@ public class G1LiveTeleopTrace : MonoBehaviour
             string project_root = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
             string log_directory = Path.Combine(project_root, "Logs");
             Directory.CreateDirectory(log_directory);
+            string provenance_path = Path.Combine(log_directory,
+                "rotation_trace_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff")
+                + "_" + Guid.NewGuid().ToString("N") + ".jsonl");
+            provenance_writer = new StreamWriter(new FileStream(
+                provenance_path, FileMode.CreateNew, FileAccess.Write, FileShare.Read));
+            Debug.Log("G1 rotation provenance: " + provenance_path);
             trace_path = Path.Combine(log_directory, "live_quest_trace.csv");
             writer = new StreamWriter(trace_path, false, System.Text.Encoding.UTF8);
             writer.WriteLine(
@@ -206,6 +261,11 @@ public class G1LiveTeleopTrace : MonoBehaviour
 
     private void CloseTrace()
     {
+        if (provenance_writer != null)
+        {
+            provenance_writer.Dispose();
+            provenance_writer = null;
+        }
         if (writer != null)
         {
             writer.Flush();

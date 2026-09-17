@@ -7,6 +7,8 @@ import argparse
 import concurrent.futures
 import csv
 import html
+import hashlib
+import importlib.metadata
 import json
 import math
 import os
@@ -14,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import time
+import uuid
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -86,6 +89,61 @@ def LoadPose(path: Path) -> np.ndarray:
     return pose
 
 
+def BuildProvenance(source_state: Path) -> dict[str, Any]:
+    # Conservative source inventory: unrelated edits may also require a new run.
+    files = {source_state.resolve()}
+    for directory, pattern in (
+        (BRIDGE_DIR, "*.py"), (SCRIPTS_DIR, "*.py"),
+        (PROJECT_ROOT / "backend", "*.py"),
+        (Path(__file__).parent, "*.py"),
+        (PROJECT_ROOT / "config", "*.json"),
+        (PROJECT_ROOT / "MuJoCo_G1_Controller" / "external" / "unitree_mujoco" / "unitree_robots" / "g1", "*"),
+    ):
+        if not directory.is_dir():
+            raise RuntimeError(f"provenance input directory missing: {directory}")
+        files.update(p.resolve() for p in directory.rglob(pattern)
+                     if p.is_file() and not p.name.startswith("_generated")
+                     and "__pycache__" not in p.parts)
+    return {
+        "schema": "g1.sweep.provenance.v1",
+        "python": sys.version,
+        "packages": {name: importlib.metadata.version(name)
+                     for name in ("mink", "mujoco", "numpy", "qpsolvers", "daqp")},
+        "sha256": {str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+                   for path in sorted(files)},
+    }
+
+
+def ValidateResumeProvenance(previous: dict[str, Any], current: dict[str, Any]) -> None:
+    if previous.get("provenance") != current:
+        raise ValueError("Resume blocked: missing or changed provenance. Start a new sweep; keep the old map as historical data.")
+
+
+def ValidateRetainedArtifacts(item: dict[str, Any], run_dir: Path) -> None:
+    status = item.get("status")
+    if status not in ("PASS", "FAIL", "SKIPPED"):
+        raise ValueError("Resume blocked: invalid retained status")
+    fields = ("state",) if status == "SKIPPED" else ("state", "result", "log")
+    root = (run_dir / "cases").resolve()
+    for field in fields:
+        path = Path(item.get(f"{field}_path", "")).resolve()
+        if not path.is_relative_to(root) or not path.is_file():
+            raise ValueError(f"Resume blocked: missing or external {field} artifact")
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if item.get(f"{field}_sha256") != digest:
+            raise ValueError(f"Resume blocked: changed or unhashed {field} artifact")
+    state = json.loads(Path(item["state_path"]).read_text(encoding="utf-8"))
+    if state.get("right_arm_q_rad") != item.get("initial_q_rad"):
+        raise ValueError("Resume blocked: initial pose does not match artifact")
+    if status != "SKIPPED":
+        result = json.loads(Path(item["result_path"]).read_text(encoding="utf-8"))
+        if not isinstance(result, dict) or type(result.get("passed")) is not bool:
+            raise ValueError("Resume blocked: invalid result contract")
+        passed = result["passed"] and item.get("process_exit_code") == 0
+        if passed != (status == "PASS") or item.get("passed") is not passed:
+            raise ValueError("Resume blocked: summary contradicts result artifact")
+
+
 def GenerateCases(
     base_pose_rad: np.ndarray,
     pitch_offsets_deg: tuple[float, ...],
@@ -124,14 +182,6 @@ def JointLimitFailure(pose_rad: tuple[float, ...]) -> str | None:
     return None
 
 
-def PrepareModel() -> None:
-    if str(SCRIPTS_DIR) not in sys.path:
-        sys.path.insert(0, str(SCRIPTS_DIR))
-    import run_mink_g1_right_arm_prototype as controller
-
-    controller._prepare_mink_xml()
-
-
 def FailureReason(result: dict[str, Any], exit_code: int) -> str:
     failure = result.get("failure")
     if failure:
@@ -151,8 +201,9 @@ def RunCase(
     source_state: Path,
     timeout_s: float,
 ) -> dict[str, Any]:
-    case_dir = run_dir / "cases" / case.case_id
-    case_dir.mkdir(parents=True, exist_ok=True)
+    # Never consume or overwrite an earlier attempt's evidence on retry.
+    case_dir = run_dir / "cases" / case.case_id / uuid.uuid4().hex
+    case_dir.mkdir(parents=True, exist_ok=False)
     state_path = case_dir / "initial_state.json"
     result_path = case_dir / "result.json"
     log_path = case_dir / "run.log"
@@ -179,6 +230,7 @@ def RunCase(
         "initial_q_rad": list(case.pose_rad),
         "initial_q_deg": pose_deg,
         "state_path": str(state_path.resolve()),
+        "state_sha256": hashlib.sha256(state_path.read_bytes()).hexdigest(),
         "result_path": str(result_path.resolve()),
         "log_path": str(log_path.resolve()),
     }
@@ -200,7 +252,6 @@ def RunCase(
         str(result_path),
     ]
     environment = os.environ.copy()
-    environment["G1_SWEEP_MODEL_PREPARED"] = "1"
     started = time.monotonic()
     try:
         completed = subprocess.run(
@@ -218,8 +269,9 @@ def RunCase(
         log_path.write_text(completed.stdout + completed.stderr, encoding="utf-8")
     except subprocess.TimeoutExpired as exc:
         wall_time_s = time.monotonic() - started
-        output = (exc.stdout or "") + (exc.stderr or "")
-        log_path.write_text(str(output), encoding="utf-8")
+        output = "".join(part.decode("utf-8", errors="replace") if isinstance(part, bytes)
+                         else (part or "") for part in (exc.stdout, exc.stderr))
+        log_path.write_text(output, encoding="utf-8")
         return common | {
             "status": "ERROR",
             "passed": False,
@@ -236,10 +288,24 @@ def RunCase(
             "wall_time_s": wall_time_s,
         }
 
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    try:
+        result_bytes = result_path.read_bytes()
+        result = json.loads(result_bytes)
+        if not isinstance(result, dict) or type(result.get("passed")) is not bool:
+            raise ValueError("result must be an object with a boolean passed field")
+    except (ValueError, OSError) as exc:
+        return common | {
+            "status": "ERROR",
+            "passed": False,
+            "failure": f"invalid_result:{exc}",
+            "process_exit_code": completed.returncode,
+            "wall_time_s": wall_time_s,
+        }
     passed = result.get("passed") is True and completed.returncode == 0
     return common | {
         "status": "PASS" if passed else "FAIL",
+        "result_sha256": hashlib.sha256(result_bytes).hexdigest(),
+        "log_sha256": hashlib.sha256(log_path.read_bytes()).hexdigest(),
         "passed": passed,
         "failure": None if passed else FailureReason(result, completed.returncode),
         "process_exit_code": completed.returncode,
@@ -368,6 +434,17 @@ body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:#f4f6f8;color:#17
 </main></body></html>"""
 
 
+def GetSweepOutcome(results: list[dict[str, Any]]) -> tuple[str, int]:
+    counts = Counter(item.get("status") for item in results)
+    if counts["ERROR"] or any(status not in ("PASS", "FAIL", "SKIPPED") for status in counts):
+        return "INFRASTRUCTURE_ERROR", 2
+    if not counts["PASS"]:
+        return ("NO_EVALUATED_POSES" if not counts["FAIL"] else "NO_SUCCESSFUL_POSES"), 3
+    if counts["FAIL"] or counts["SKIPPED"]:
+        return "COMPLETED_PARTIAL_MAP", 0
+    return "COMPLETED_ALL_SAMPLED_POSES", 0
+
+
 def WriteOutputs(
     run_dir: Path,
     output_root: Path,
@@ -390,6 +467,7 @@ def WriteOutputs(
         "hardware_ready": False,
         "command_output_enabled": False,
         "source_state_path": str(source_state.resolve()),
+        "provenance": args.provenance,
         "base_q_rad": base_pose.tolist(),
         "base_q_deg": np.degrees(base_pose).tolist(),
         "axes": {
@@ -406,6 +484,8 @@ def WriteOutputs(
         "error_count": counts["ERROR"],
         "success_rate_percent": 0.0 if evaluated == 0 else 100.0 * counts["PASS"] / evaluated,
         "status_counts": dict(sorted(counts.items())),
+        "outcome": GetSweepOutcome(results)[0],
+        "exit_code": GetSweepOutcome(results)[1],
         "workers": args.workers,
         "case_timeout_s": args.case_timeout,
         "total_wall_time_s": wall_time_s,
@@ -451,6 +531,8 @@ def Main() -> int:
             raise SystemExit(f"resume summary is missing: {previous_summary_path}")
         previous = json.loads(previous_summary_path.read_text(encoding="utf-8"))
         source_state = Path(previous["source_state_path"]).resolve()
+        args.provenance = BuildProvenance(source_state)
+        ValidateResumeProvenance(previous, args.provenance)
         output_root = run_dir.parents[1]
         run_name = str(previous["run_name"])
         base_pose = np.asarray(previous["base_q_rad"], dtype=float)
@@ -460,6 +542,8 @@ def Main() -> int:
         retained_results = [
             item for item in previous["cases"] if item.get("status") != "ERROR"
         ]
+        for item in retained_results:
+            ValidateRetainedArtifacts(item, run_dir)
         pending_ids = {
             str(item["case_id"])
             for item in previous["cases"]
@@ -477,6 +561,7 @@ def Main() -> int:
             raise SystemExit("resume run has no ERROR cases")
     else:
         source_state = args.state.resolve()
+        args.provenance = BuildProvenance(source_state)
         output_root = args.output_root.resolve()
         base_pose = LoadPose(source_state)
         cases = GenerateCases(
@@ -501,8 +586,7 @@ def Main() -> int:
     print("Map axes:    shoulder roll x elbow, sliced by shoulder pitch")
     print("DDS/network: NONE")
     print("Robot command: NONE")
-    print("Preparing one immutable MuJoCo model for all workers...", flush=True)
-    PrepareModel()
+    print("Each worker uses an isolated temporary MuJoCo model.", flush=True)
 
     started = time.monotonic()
     results: list[dict[str, Any]] = list(retained_results)
@@ -535,6 +619,8 @@ def Main() -> int:
                 flush=True,
             )
 
+    if BuildProvenance(source_state) != args.provenance:
+        raise RuntimeError("Sweep inputs changed during execution. Results were not promoted; start a new run.")
     summary = WriteOutputs(
         run_dir,
         output_root,
@@ -547,7 +633,7 @@ def Main() -> int:
     )
     print()
     print(
-        f"[PASS] Sweep completed: {summary['passed_count']}/{summary['evaluated_count']} "
+        f"[{summary['outcome']}] Sweep completed: {summary['passed_count']}/{summary['evaluated_count']} "
         "evaluated poses recovered."
     )
     print(f"Map saved to:     {summary['map_path']}")
@@ -558,7 +644,9 @@ def Main() -> int:
         print(f"[ERROR] {summary['error_count']} cases had infrastructure errors.")
         print("[ACTION] Inspect those case logs and rerun the sweep before using the map.")
         return 2
-    return 0
+    if summary["exit_code"] == 3:
+        print("[ACTION] No successful pose was established. Inspect FAIL/SKIPPED cases; do not treat this map as a recovery pass.")
+    return summary["exit_code"]
 
 
 if __name__ == "__main__":

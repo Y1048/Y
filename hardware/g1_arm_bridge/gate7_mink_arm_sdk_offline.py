@@ -75,12 +75,9 @@ class CollisionPathValidator:
         import run_mink_g1_right_arm_prototype as controller
         from diagnose_initial_pose_collision import _nearby_pairs
 
-        controller._prepare_mink_xml()
         self.controller = controller
         self.nearby_pairs = _nearby_pairs
-        self.model = mujoco.MjModel.from_xml_path(
-            str(controller.g1.DEMO_XML)
-        )
+        self.model, self.model_metadata = controller.LoadMinkModelWithMetadata()
         controller._apply_operational_joint_limits(self.model)
         self.data = mujoco.MjData(self.model)
         dual_arm_bodies = (

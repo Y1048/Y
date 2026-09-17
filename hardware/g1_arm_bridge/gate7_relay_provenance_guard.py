@@ -75,6 +75,10 @@ def require_live_candidate_for_relay(payload: bytes | str) -> None:
     """
 
     value = _payload_object(payload, label="Gate 7 candidate")
+    if (value.get("simulation_only") is True
+            or value.get("hardware_output_authorized") is False
+            or "simulation_arm_cycle" in value):
+        raise Gate7ContractError("simulation_only_not_allowed_on_live_relay")
     provenance = value.get("command_provenance")
     if provenance is None:
         raise Gate7ContractError("live_mink_provenance_required")

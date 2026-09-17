@@ -16,6 +16,7 @@ import os
 import socket
 import sys
 import time
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
@@ -273,8 +274,9 @@ def evaluate_collision_window(packets: list[TimedPacket]) -> dict[str, object]:
     import run_mink_g1_right_arm_prototype as controller
     from diagnose_initial_pose_collision import _nearby_pairs
 
-    controller._prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_precheck_") as directory:
+        model_path = controller._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     controller._apply_operational_joint_limits(model)
     data = mujoco.MjData(model)
     dual_arm_body_names = (

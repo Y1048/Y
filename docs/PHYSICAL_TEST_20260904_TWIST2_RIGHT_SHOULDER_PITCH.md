@@ -134,5 +134,6 @@ experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat
 이 실행 파일은 위 CSV의 실측 `q_0..q_28`을 canonical G1 motor order 그대로
 MuJoCo에 재생한다. Unitree SDK, DDS, 네트워크 소켓 및 로봇 명령을 사용하지 않는다.
 CSV 1,538행의 형식·유한값·시간 순서와 MuJoCo 29관절 주소 적용은 자동 검사에서
-통과했다. 실제 G1에서 본 Q=뒤쪽, Z=앞쪽 방향이 MuJoCo에서도 같은지는 사람이
-재생 화면을 보고 판정해야 하며 아직 자동 검증 결과로 기록하지 않는다.
+통과했다. 2026-09-04 재생 화면을 실제 G1 동작과 비교해 Q=뒤쪽, Z=앞쪽 방향이
+동일한 것을 확인했다. 이는 오른쪽 shoulder pitch 한 축의 실측 부호 일치만
+확인한 결과이며, 나머지 6축과 다축 조합의 물리 응답을 의미하지 않는다.

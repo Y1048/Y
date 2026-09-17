@@ -197,7 +197,7 @@ def load_teleop_config(path: str | Path) -> TeleopConfig:
         ),
         runtime=RuntimeConfig(
             input_timeout_s=_number(runtime.get("input_timeout_s"), "runtime.input_timeout_s", positive=True),
-            workspace_exit_confirm_s=_number(runtime.get("workspace_exit_confirm_s"), "runtime.workspace_exit_confirm_s", nonnegative=True),
+            workspace_exit_confirm_s=_number(runtime.get("workspace_exit_confirm_s"), "runtime.workspace_exit_confirm_s", positive=True),
             status_hz=_number(runtime.get("status_hz"), "runtime.status_hz", positive=True),
             head_camera_fps=_number(runtime.get("head_camera_fps"), "runtime.head_camera_fps", positive=True),
             neutral_solve_iterations=_integer(runtime.get("neutral_solve_iterations"), "runtime.neutral_solve_iterations", minimum=1),

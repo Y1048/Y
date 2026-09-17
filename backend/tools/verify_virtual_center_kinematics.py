@@ -68,8 +68,15 @@ def CheckJacobian(model, initial_q):
     }
 
 
+def GetStepCount(duration_s):
+    if not math.isfinite(duration_s) or duration_s < base.DT:
+        raise ValueError(f"duration must be finite and at least {base.DT} seconds")
+    return round(duration_s / base.DT)
+
+
 def RunCase(model, initial_q, target, mode, duration_s, target_function=None, clearance_stride=10,
             trajectory_duration_s=None, position_frame=None, posture_scale=1.0):
+    step_count = GetStepCount(duration_s)
     configuration = mink.Configuration(model)
     configuration.update(initial_q)
     dofs = base._right_arm_dof_indices(model)
@@ -109,6 +116,7 @@ def RunCase(model, initial_q, target, mode, duration_s, target_function=None, cl
     constraints = [mink.DofFreezingTask(model, dof_indices=base._frozen_dof_indices(model, dofs))]
     maximum_velocity = np.zeros(7)
     minimum_clearance = float("inf")
+    minimum_clearance_sample = None
     position_errors = []
     rotation_errors = []
     maximum_proximal_excursion = 0.0
@@ -116,7 +124,7 @@ def RunCase(model, initial_q, target, mode, duration_s, target_function=None, cl
     maximum_frozen_drift = 0.0
     qpos = [int(model.jnt_qposadr[base._joint_id(model, name)]) for name in base.g1.RIGHT_ARM_JOINTS]
     solver = base._select_solver()
-    for step in range(round(duration_s / base.DT)):
+    for step in range(step_count):
         if target_function is not None:
             target = target_function(step * base.DT)
         orientation.set_target(target)
@@ -155,8 +163,14 @@ def RunCase(model, initial_q, target, mode, duration_s, target_function=None, cl
                 maximum_joint_limit_violation = max(maximum_joint_limit_violation, float(low - value), float(value - high))
         if step % clearance_stride == 0:
             nearest = base._nearest_pair_distance(model, configuration.data, geom_pairs)
-            if nearest:
-                minimum_clearance = min(minimum_clearance, nearest[0])
+            if nearest and nearest[0] < minimum_clearance:
+                minimum_clearance = nearest[0]
+                minimum_clearance_sample = {
+                    "step": step, "time_s": (step + 1) * base.DT,
+                    "geom_names": [mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, gid)
+                                   for gid in nearest[1:]],
+                    "qpos": configuration.q.tolist(),
+                }
     actual = configuration.get_transform_frame_to_world("right_wrist_yaw_link", "body")
     qpos = [int(model.jnt_qposadr[base._joint_id(model, name)]) for name in base.g1.RIGHT_ARM_JOINTS]
     result = {
@@ -165,6 +179,7 @@ def RunCase(model, initial_q, target, mode, duration_s, target_function=None, cl
             target.rotation().as_matrix(), actual.rotation().as_matrix()
         )),
         "sampled_minimum_clearance_mm": float(minimum_clearance * 1000),
+        "minimum_clearance_sample": minimum_clearance_sample,
         "maximum_joint_velocity_deg_s": np.rad2deg(maximum_velocity).tolist(),
         "final_joint_delta_deg": np.rad2deg(configuration.q[qpos] - initial_q[qpos]).tolist(),
         "position_error_p95_cm": float(np.percentile(position_errors, 95)),
@@ -197,13 +212,17 @@ def main():
     parser.add_argument("--result-json", type=Path, required=True)
     parser.add_argument("--duration", type=float, default=6.0)
     args = parser.parse_args()
-    if not 0 < args.duration <= 30:
-        parser.error("duration must be in (0, 30]")
+    try:
+        GetStepCount(args.duration)
+        if args.duration > 30.0:
+            raise ValueError("CLI duration must be at most 30 seconds")
+    except ValueError as error:
+        parser.error(str(error))
     manifest, packets = _decode_capture(args.capture)
     active = [p for p in packets if p["sample"].active and p["sample"].input_command_mode == "active"]
     if not active:
         raise ValueError("capture contains no active samples")
-    model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
+    model = base.LoadMinkModel()
     base._apply_operational_joint_limits(model)
     qpos = [int(model.jnt_qposadr[base._joint_id(model, name)]) for name in base.g1.G1_29_JOINTS]
     initial_q = base._initial_configuration(model)

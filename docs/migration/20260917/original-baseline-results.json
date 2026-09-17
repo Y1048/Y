@@ -1,0 +1,10 @@
+[
+  {
+    "test": "test_mink_feasible_target.py",
+    "original_exit_code": 1
+  },
+  {
+    "test": "test_virtual_center_kinematics_regression.py",
+    "original_exit_code": 1
+  }
+]

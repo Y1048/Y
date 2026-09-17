@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import socket
 import unittest
+from unittest.mock import Mock
 from pathlib import Path
 
 from arm_sdk_teleop_contract import Gate7ContractError, load_regular_arm_pose
@@ -63,6 +64,83 @@ def _packet(
 
 
 class Gate7MinkWslRelayTests(unittest.TestCase):
+    def test_preinput_idle_waits_without_forwarding_then_accepts_session(self):
+        packet = json.loads(_packet(0))
+        packet.update(session_id=None, input_packet_age_s=None, input_command_mode="idle")
+        packet["right_arm"].update(active=False, command_state="idle")
+        sender, guard = Mock(), MinkOrderGuard()
+        self.assertFalse(ValidateAndForward(json.dumps(packet).encode(), guard,
+            sender, ("127.0.0.1", 5013), relay_token=RELAY_TOKEN))
+        sender.sendto.assert_not_called()
+        self.assertIsNone(guard.session_id)
+        self.assertTrue(ValidateAndForward(_packet(1), guard, sender,
+            ("127.0.0.1", 5013), relay_token=RELAY_TOKEN))
+        sender.sendto.assert_called_once()
+        # A subsequent missing session is an error, not a new startup wait.
+        with self.assertRaises(Gate7ContractError):
+            ValidateAndForward(json.dumps(packet).encode(), guard, sender,
+                ("127.0.0.1", 5013), relay_token=RELAY_TOKEN)
+        self.assertEqual(sender.sendto.call_count, 1)
+
+    def test_active_without_session_remains_rejected(self):
+        packet = json.loads(_packet(1))
+        packet["session_id"] = None
+        sender = Mock()
+        with self.assertRaises(Gate7ContractError):
+            ValidateAndForward(json.dumps(packet).encode(), MinkOrderGuard(),
+                sender, ("127.0.0.1", 5013), relay_token=RELAY_TOKEN)
+        sender.sendto.assert_not_called()
+
+    def test_main_records_rejection_reason_without_forwarding(self):
+        import argparse
+        import tempfile
+        from unittest.mock import patch
+        import gate7_mink_wsl_relay as relay
+        incoming, outgoing = Mock(), Mock()
+        incoming.recvfrom.side_effect = [
+            (_packet(1, command_provenance=None), ("127.0.0.1", 12345)),
+            KeyboardInterrupt(),
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            result = Path(directory) / "result.json"
+            args = argparse.Namespace(listen_host="127.0.0.1", listen_port=5008,
+                target_host="127.0.0.1", target_port=5013, relay_token=RELAY_TOKEN,
+                duration_s=0, result_json=result, ready_file=None, validate_only=False)
+            with patch.object(relay, "_parse_args", return_value=args), \
+                 patch.object(relay.socket, "socket", side_effect=[incoming, outgoing]):
+                self.assertEqual(relay.main(), 2)
+            report = json.loads(result.read_text())
+            self.assertEqual(report["rejection_reasons"],
+                {"Gate7ContractError: live_mink_provenance_required": 1})
+            self.assertEqual(report["accepted_packets"], 0)
+            outgoing.sendto.assert_not_called()
+
+    def test_mock_sender_rejects_missing_active_clearance_before_forward(self):
+        packet = json.loads(_packet(1))
+        packet["right_arm"].pop("minimum_clearance_m")
+        sender = Mock()
+        guard = MinkOrderGuard()
+        with self.assertRaisesRegex(Gate7ContractError, "minimum_clearance_m"):
+            ValidateAndForward(json.dumps(packet).encode(), guard, sender,
+                               ("127.0.0.1", 5013), relay_token=RELAY_TOKEN)
+        sender.sendto.assert_not_called()
+        # Rejected input must not consume this sequence number.
+        ValidateAndForward(_packet(1), guard, sender,
+                           ("127.0.0.1", 5013), relay_token=RELAY_TOKEN)
+        sender.sendto.assert_called_once()
+
+    def test_mock_sender_preserves_inactive_release_without_clearance(self):
+        packet = json.loads(_packet(1))
+        packet["right_arm"].update(active=False, command_state="idle")
+        packet["right_arm"].pop("minimum_clearance_m")
+        packet["input_command_mode"] = "pinch_disengaged"
+        sender = Mock()
+        ValidateAndForward(json.dumps(packet).encode(), MinkOrderGuard(), sender,
+                           ("127.0.0.1", 5013), relay_token=RELAY_TOKEN)
+        forwarded = json.loads(sender.sendto.call_args.args[0])
+        self.assertEqual("pinch_disengaged", forwarded["input_command_mode"])
+        self.assertIsNone(forwarded["right_arm"]["minimum_clearance_m"])
+
     def test_endpoint_is_localhost_only(self):
         ValidateRelayEndpoint("127.0.0.1", "127.0.0.1", 5013)
         ValidateRelayEndpoint("127.0.0.1", "172.30.0.2", 5013)

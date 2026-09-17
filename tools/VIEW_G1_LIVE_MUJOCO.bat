@@ -22,7 +22,8 @@ if errorlevel 1 (
 echo.
 
 echo [STEP 1] Starting the read-only joint/base-state forwarder...
-start "G1 Live LowState Forwarder" wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --forward-host 127.0.0.1 --forward-port 5009 --forward-hz 30 --record-jsonl auto
+rem Keep startup errors visible after WSL exits.
+start "G1 Live LowState Forwarder" cmd /k wsl -d Ubuntu -- bash /mnt/c/Users/user/Desktop/G1_Teleop_Project/hardware/g1_arm_bridge/start_read_only_wsl.sh --forward-host 127.0.0.1 --forward-port 5009 --forward-hz 30 --record-jsonl auto
 timeout /t 3 /nobreak >nul
 
 echo [STEP 2] Starting the continuously updated MuJoCo Viewer...

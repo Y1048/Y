@@ -39,7 +39,7 @@ if errorlevel 1 (
 )
 
 echo [START] Unity + Mink/MuJoCo VR path...
-call START_VR_HAND_TO_MUJOCO.bat
+call START_VR_HAND_TO_MUJOCO.bat --external-feedback %*
 set "RC=%ERRORLEVEL%"
 
 echo.

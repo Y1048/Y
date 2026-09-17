@@ -1,0 +1,89 @@
+{
+  "schema": "g1.mjlab.mink_trajectory_bank.v1",
+  "status": "prepared",
+  "data_file": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/experiments/independent_locomotion/data/mink_command_trajectories_v1.npz",
+  "data_sha256": "d38531933a17d3604c2a019d6c3377451726858385020b8a6d15f0ce719975f5",
+  "right_joint_names": [
+    "right_shoulder_pitch_joint",
+    "right_shoulder_roll_joint",
+    "right_shoulder_yaw_joint",
+    "right_elbow_joint",
+    "right_wrist_roll_joint",
+    "right_wrist_pitch_joint",
+    "right_wrist_yaw_joint"
+  ],
+  "representation": "right joint command offset from first active sample, rad",
+  "validation_frozen_before_training": true,
+  "episodes": [
+    {
+      "episode_id": "train_000",
+      "split": "train",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260909_172802_4706973.jsonl",
+      "source_sha256": "70e479605ed9454c07789728bf71adc1acf5bcf30480677795ee1eb5b57ddfe5",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 743,
+      "duration_s": 49.46666666666666
+    },
+    {
+      "episode_id": "train_001",
+      "split": "train",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260909_173528_4861648.jsonl",
+      "source_sha256": "355a359b8adf63e7bf9bcbfffaf77efcd0a243105a05e93d5d803413eb1efb56",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 867,
+      "duration_s": 57.73333333333333
+    },
+    {
+      "episode_id": "train_002",
+      "split": "train",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260910_093608_4827814.jsonl",
+      "source_sha256": "fe65eeedfae6799d40a9d2437f9eeec6c0368aed181f7ab03cf482c3c2df2ea0",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 329,
+      "duration_s": 21.866666666666667
+    },
+    {
+      "episode_id": "train_003",
+      "split": "train",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260910_101529_1211725.jsonl",
+      "source_sha256": "6ed856e7fc1b6130e38d8970e62fc8650ea05b4524c119a9930e9fdcb5cbe38a",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 292,
+      "duration_s": 22.733333333333334
+    },
+    {
+      "episode_id": "train_004",
+      "split": "train",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260910_101834_6439046.jsonl",
+      "source_sha256": "52f677446a66a1c34452ffeb4bedab24200a51004fd999d87a2fdea2a9e245fb",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 770,
+      "duration_s": 51.266666666666666
+    },
+    {
+      "episode_id": "validation_000",
+      "split": "validation",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260910_134342_5029522.jsonl",
+      "source_sha256": "ab7173bbaefc578b8e7db0e6492159de1275e4600edd9ac3b1eac5f7e84ea87f",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 257,
+      "duration_s": 17.066666666666666
+    },
+    {
+      "episode_id": "validation_001",
+      "split": "validation",
+      "source_path": "/mnt/c/Users/user/Desktop/G1_Teleop_Project/logs/test_results/cycle_packets_20260910_145047_5043584.jsonl",
+      "source_sha256": "2783cc33d202a905ef71a72b08be9427ed1911ffbff727a0c1df9657e83e05e6",
+      "source_kind": "recorded_pc_mink_command",
+      "measured_g1_data": false,
+      "sample_count": 81,
+      "duration_s": 5.333333333333333
+    }
+  ]
+}

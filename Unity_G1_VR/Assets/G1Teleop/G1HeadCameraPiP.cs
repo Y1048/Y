@@ -17,6 +17,9 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
     public const int FrameHeaderSize = 24;
     public const int FrameVersion = 1;
     public const int MaximumJpegBytes = 4 * 1024 * 1024;
+    private const int FrameAssemblyTimeoutMs = 2000;
+    public const float DefaultCanvasScale = 0.00180f;
+    public const float DefaultCanvasVerticalOffset = -0.04f;
     public const string ObjectName = "G1_Head_Camera_PiP";
 
     public RawImage video_image;
@@ -91,9 +94,12 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         RectTransform canvas_transform =
             canvas_object.GetComponent<RectTransform>();
         canvas_transform.SetParent(center_eye, false);
-        canvas_transform.localPosition = new Vector3(0.0f, 0.0f, 0.80f);
+        canvas_transform.localPosition = new Vector3(
+            0.0f,
+            DefaultCanvasVerticalOffset,
+            0.80f);
         canvas_transform.localRotation = Quaternion.identity;
-        canvas_transform.localScale = Vector3.one * 0.00075f;
+        canvas_transform.localScale = Vector3.one * DefaultCanvasScale;
         canvas_transform.sizeDelta = new Vector2(320.0f, 240.0f);
 
         Canvas canvas_value = canvas_object.GetComponent<Canvas>();
@@ -316,11 +322,14 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         byte[] header = new byte[FrameHeaderSize];
         while (!cancellation_token.IsCancellationRequested)
         {
+            long frame_deadline = System.Diagnostics.Stopwatch.GetTimestamp()
+                + System.Diagnostics.Stopwatch.Frequency * FrameAssemblyTimeoutMs / 1000;
             if (!ReadExactly(
                 stream_value,
                 header,
                 header.Length,
-                cancellation_token))
+                cancellation_token,
+                frame_deadline))
             {
                 return;
             }
@@ -340,7 +349,8 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
                 stream_value,
                 jpeg_payload,
                 payload_size,
-                cancellation_token))
+                cancellation_token,
+                frame_deadline))
             {
                 return;
             }
@@ -362,14 +372,23 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
     }
 
     private static bool ReadExactly(
-        NetworkStream stream_value,
+        Stream stream_value,
         byte[] destination,
         int length,
-        CancellationToken cancellation_token)
+        CancellationToken cancellation_token,
+        long frame_deadline)
     {
         int offset = 0;
         while (offset < length && !cancellation_token.IsCancellationRequested)
         {
+            double remaining_ms = (frame_deadline - System.Diagnostics.Stopwatch.GetTimestamp())
+                * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (remaining_ms <= 0)
+            {
+                throw new IOException("G1 camera frame assembly timed out");
+            }
+            // One deadline spans header and payload; partial reads cannot extend it.
+            stream_value.ReadTimeout = Math.Max(1, (int)Math.Ceiling(remaining_ms));
             int read_count = stream_value.Read(
                 destination,
                 offset,
@@ -379,6 +398,10 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
                 return false;
             }
             offset += read_count;
+        }
+        if (System.Diagnostics.Stopwatch.GetTimestamp() > frame_deadline)
+        {
+            throw new IOException("G1 camera frame assembly timed out");
         }
         return offset == length;
     }

@@ -2,15 +2,45 @@
 
 import sys
 import unittest
+import json
+import tempfile
+from unittest.mock import patch
 from pathlib import Path
 
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from inspect_feasible_target_return import InterpolateGoal, GetVerdict, SummarizePreview, comparison
+import inspect_feasible_target_return as tool
 
 
 class ReturnTests(unittest.TestCase):
+    def test_cli_failures_replace_previous_result(self):
+        for error in (ValueError("invalid reference"), RuntimeError("render failed")):
+            with self.subTest(error=error), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "result.json"
+                output.write_text('{"verdict":{"status":"OFFLINE_CRITERIA_MET"}}')
+                with patch.object(sys, "argv", ["inspect", "capture", "reference", "--variant", "current",
+                                                "--result-json", str(output)]), \
+                     patch.object(tool, "RunInspection", side_effect=error):
+                    self.assertEqual(tool.main(), 1)
+                result = json.loads(output.read_text())
+                self.assertEqual(result["verdict"]["status"], "FAIL")
+                self.assertFalse(result["robot_command"])
+                self.assertIn(str(error), result["error"])
+
+    def test_missing_reference_and_unwritable_report(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "result.json"
+            with patch.object(sys, "argv", ["inspect", "capture", str(Path(directory) / "missing"),
+                                            "--variant", "current", "--result-json", str(output)]), \
+                 patch.object(Path, "write_text", side_effect=PermissionError("denied")), \
+                 patch("builtins.print") as printer:
+                self.assertEqual(tool.main(), 1)
+            messages = " ".join(str(call) for call in printer.call_args_list)
+            self.assertIn("existing report is stale", messages)
+            self.assertNotIn("Result saved to:", messages)
+
     def test_interpolation_preserves_endpoints_and_input(self):
         base = comparison.probe.base
         a = base._matrix_to_se3(np.eye(3), np.array([.5, 0, 1]))

@@ -39,5 +39,15 @@ class UnityDisplayModeLauncherTests(unittest.TestCase):
             self.assertEqual(previous, target.read_bytes())
 
 
+class ReadOnlyPreviewLauncherTests(unittest.TestCase):
+    def test_preview_only_delegates_to_read_only_launchers(self):
+        source = (PROJECT_ROOT / "tools/START_G1_VR_PREVIEW_READ_ONLY.bat").read_text()
+        self.assertIn('call "%~dp0VIEW_G1_LIVE_MUJOCO.bat"', source)
+        self.assertIn('call "%~dp0START_G1_CAMERA_TO_UNITY.bat"', source)
+        for forbidden in ("--enable-hardware-output", "START_G1_GATE7", "START_VR_HAND_TO_MUJOCO", "hardware_output_authorized", "SelectMode"):
+            self.assertNotIn(forbidden, source)
+        self.assertLess(source.index(":5013"), source.index('start "G1 Read-only Camera"'))
+
+
 if __name__ == "__main__":
     unittest.main()

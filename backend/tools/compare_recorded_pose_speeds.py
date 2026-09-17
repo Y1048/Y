@@ -68,7 +68,7 @@ def main():
     segments = GetActiveSegments(packets)
     if not segments:
         parser.error("capture contains no active segment")
-    model = probe.mujoco.MjModel.from_xml_path(str(probe.base.g1.DEMO_XML))
+    model = probe.base.LoadMinkModel()
     probe.base._apply_operational_joint_limits(model)
     qpos = [int(model.jnt_qposadr[probe.base._joint_id(model, name)]) for name in probe.base.g1.G1_29_JOINTS]
     result = {
@@ -109,7 +109,8 @@ def main():
     args.result_json.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
     print("Result saved to:", args.result_json.resolve())
     print("Quality:", result["quality_status"], "(never physical authorization)")
+    return 0 if result["quality_status"] == "OFFLINE_CRITERIA_MET" else 3
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

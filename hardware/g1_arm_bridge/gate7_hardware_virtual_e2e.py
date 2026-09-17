@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import uuid
 from pathlib import Path
 from typing import Final
 
@@ -35,6 +36,7 @@ from gate7_live_arm_sdk import (
 )
 from gate7_live_dry_run import Gate7LiveDryRunSession
 from gate7_mink_arm_sdk_offline import CollisionPathValidator
+from gate7_relay_provenance_guard import require_relay_token
 
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 BRIDGE_ROOT: Final[Path] = Path(__file__).resolve().parent
@@ -70,6 +72,7 @@ def _packet(
         "schema": "g1.mink.right_arm.state.v1",
         "sequence": sequence,
         "state_source": "mink_simulation",
+        "command_provenance": "live_mink",
         "all_joint_names": list(G1_29_JOINT_NAMES),
         "all_joint_q_rad": list(all_q),
         "right_arm": {
@@ -143,6 +146,10 @@ def main() -> int:
         "127.0.0.1",
         "--target-port",
         str(args.adapter_port),
+        "--relay-token",
+        (relay_token := uuid.uuid4().hex),
+        "--ready-file",
+        str(relay_ready := relay_result.with_suffix(".ready")),
         "--duration-s",
         "1.5",
         "--result-json",
@@ -158,7 +165,11 @@ def main() -> int:
     sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     forwarded_payloads: list[bytes] = []
     try:
-        time.sleep(0.25)
+        deadline = time.monotonic() + 5.0
+        while not relay_ready.exists():
+            if relay.poll() is not None or time.monotonic() >= deadline:
+                raise RuntimeError("virtual relay did not report bind readiness")
+            time.sleep(0.01)
         for sequence in range(8):
             payload = _packet(regular, sequence, motion_scale=motion_scale)
             sender.sendto(payload, ("127.0.0.1", args.relay_port))
@@ -180,11 +191,14 @@ def main() -> int:
         if relay.poll() is None:
             relay.terminate()
             relay.wait(timeout=2.0)
+        relay_ready.unlink(missing_ok=True)
 
     if relay.returncode != 0:
         raise RuntimeError("relay process failed:\n" + relay_output)
     relay_summary = json.loads(relay_result.read_text(encoding="utf-8"))
     relay_result.unlink(missing_ok=True)
+    for payload in forwarded_payloads:
+        require_relay_token(payload, relay_token)
     samples = [parse_mink_arm_sample(payload) for payload in forwarded_payloads]
     if len(samples) != 8:
         raise RuntimeError(f"forwarded packet count {len(samples)} != 8")

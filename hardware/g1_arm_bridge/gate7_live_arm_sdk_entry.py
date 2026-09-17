@@ -125,13 +125,15 @@ def install_supported_path_guards(
     original_acquire_weight = live.AcquireWeight
     original_receive_latest = live._ReceiveLatestMink
 
-    def guarded_wait_for_active(sock, timeout_s):
-        first_sample = original_wait_for_active(sock, timeout_s)
+    def guarded_wait_for_active(sock, timeout_s, on_wait=None):
+        first_sample = original_wait_for_active(sock, timeout_s, on_wait)
         acquisition_guard.seed(first_sample)
         guarded_wait_for_active.socket = sock
 
         confirmation_deadline = time.monotonic() + acquisition_timeout_s
         while time.monotonic() < confirmation_deadline:
+            if on_wait is not None:
+                on_wait()
             sample = original_receive_latest(sock)
             if sample is not None:
                 acquisition_guard.observe(sample)

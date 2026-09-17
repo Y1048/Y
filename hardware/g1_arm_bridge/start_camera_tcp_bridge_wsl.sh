@@ -20,8 +20,7 @@ then
 fi
 
 cd "${project_root}"
-exec "${python_path}" hardware/g1_arm_bridge/g1_camera_tcp_bridge.py \
+exec flock -n /tmp/g1_camera_to_unity_5011.lock "${python_path}" hardware/g1_arm_bridge/g1_camera_tcp_bridge.py \
     "${network_interface}" \
     --host 127.0.0.1 \
-    --port 5011 \
-    --fps 20
+    --port 5011

@@ -1,0 +1,17 @@
+{
+  "product": "Virtuix Omni Connect",
+  "version": "1.2.93.0",
+  "installer": "C:\\Users\\user\\Downloads\\OmniConnectSetup.exe",
+  "sha256": "e78f9e2ced0edd1abdb28e33c2bfe8fb31fe143344d973ba9d41b8c187cd8c08",
+  "official_source": "https://virtuix.com/pc",
+  "signature": "Valid: Virtuix Inc.",
+  "status": "installed_launch_verified",
+  "robot_modified": false,
+  "unity_sdk_installed": false,
+  "installed_version": "1.2.93",
+  "install_directory": "C:\\Program Files\\Virtuix\\Omni Connect",
+  "steamvr_installed": true,
+  "launch_screen": "Welcome to omni connect / Get Started",
+  "device_pairing_verified": false,
+  "account_login_completed": false
+}

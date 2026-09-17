@@ -24,12 +24,12 @@ from g1_camera_tcp_bridge import (
     ConnectUnity,
     DEFAULT_HOST,
     DEFAULT_PORT,
+    DEFAULT_FPS,
 )
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RESULT_DIRECTORY = PROJECT_ROOT / "logs" / "camera"
-DEFAULT_FPS = 20.0
 DEFAULT_WIDTH = 640
 DEFAULT_HEIGHT = 480
 DEFAULT_QUALITY = 82
@@ -164,6 +164,10 @@ def ParseArguments() -> argparse.Namespace:
 
 
 def ValidateArguments(args: argparse.Namespace) -> None:
+    for field in ("fps", "duration", "connect_timeout", "reconnect_delay"):
+        value = getattr(args, field)
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise SystemExit(f"--{field.replace('_', '-')} must be a finite number")
     if args.host not in ("127.0.0.1", "localhost"):
         raise SystemExit("offline replay output is restricted to loopback")
     if args.port < 1 or args.port > 65535:

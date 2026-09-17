@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import math
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from arm_sdk_hold_contract import DUAL_ARM_INDICES
@@ -98,6 +99,56 @@ class ArmSdkTeleopContractTests(unittest.TestCase):
             10.0,
             self.config.unintended_hold_before_regular_return_s,
         )
+
+    def ClearancePacket(self, active=True):
+        sample = _sample(self.regular, 0, "active" if active else "pinch_disengaged")
+        return {
+            "schema": "g1.mink.right_arm.state.v1", "sequence": 0,
+            "state_source": "mink_simulation", "session_id": sample.session_id,
+            "input_command_mode": sample.input_command_mode,
+            "input_packet_age_s": 0.0, "timestamp": 1.0,
+            "all_joint_names": list(G1_29_JOINT_NAMES),
+            "all_joint_q_rad": list(sample.all_joint_q_rad),
+            "right_arm": {
+                "joints": list(sample.right_arm_q_rad), "active": active,
+                "command_state": "active" if active else "idle",
+                "workspace_limited": False, "collision_limited": False,
+            },
+        }
+
+    def test_active_clearance_is_required_even_without_collision_flag(self):
+        for value in (None, float("nan"), float("inf"), -float("inf"), True, "0.04"):
+            with self.subTest(value=value):
+                packet = self.ClearancePacket()
+                packet["right_arm"]["minimum_clearance_m"] = value
+                with self.assertRaises(Gate7ContractError):
+                    parse_mink_arm_sample(json.dumps(packet))
+        with self.assertRaisesRegex(Gate7ContractError, "minimum_clearance_m"):
+            parse_mink_arm_sample(json.dumps(self.ClearancePacket()))
+
+    def test_inactive_missing_clearance_remains_valid(self):
+        packet = self.ClearancePacket(active=False)
+        self.assertIsNone(parse_mink_arm_sample(json.dumps(packet)).minimum_clearance_m)
+        packet["right_arm"]["minimum_clearance_m"] = None
+        self.assertIsNone(parse_mink_arm_sample(json.dumps(packet)).minimum_clearance_m)
+
+    def test_finite_clearance_is_parsed_without_claiming_safe_distance(self):
+        for value in (-0.001, 0.0, 0.040):
+            with self.subTest(value=value):
+                packet = self.ClearancePacket()
+                packet["right_arm"]["minimum_clearance_m"] = value
+                self.assertEqual(value, parse_mink_arm_sample(json.dumps(packet)).minimum_clearance_m)
+
+    def test_direct_active_sample_without_clearance_holds(self):
+        for value in (None, float("nan"), float("inf"), True, "0.04"):
+            with self.subTest(value=value):
+                controller = self._controller()
+                self._engage(controller)
+                sample = replace(_sample(self.regular, 2, "active", right_offset_deg=2.0),
+                                 minimum_clearance_m=value, collision_limited=False)
+                decision = controller.step(sample, self.measured, 0.01)
+                self.assertEqual("SAFETY_HOLD", decision.state)
+                self.assertEqual("collision_state_incomplete_hold", decision.reason)
 
     def test_packet_rejects_mismatched_right_arm_vector(self):
         sample = _sample(self.regular, 0, "active")

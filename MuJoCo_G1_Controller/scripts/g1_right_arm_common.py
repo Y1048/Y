@@ -182,7 +182,9 @@ def find_body(element: ET.Element, name: str) -> ET.Element | None:
 def make_demo_xml(
     scene_name: str = "control",
     show_inspection_scene: bool = False,
-) -> None:
+    *,
+    output_path: Path | None = None,
+) -> Path:
     """Generate the fixed-base G1 simulation model used by teleoperation."""
     if scene_name not in SCENES:
         raise ValueError(f"unknown scene: {scene_name}")
@@ -339,7 +341,17 @@ def make_demo_xml(
             },
         )
 
-    tree.write(DEMO_XML, encoding="unicode")
+    destination = DEMO_XML if output_path is None else Path(output_path)
+    if destination.resolve().parent != G1_DIR.resolve():
+        compiler = root.find("compiler")
+        if compiler is None:
+            compiler = ET.SubElement(root, "compiler")
+        for attribute in ("meshdir", "texturedir"):
+            asset_directory = Path(compiler.get(attribute, "."))
+            if not asset_directory.is_absolute():
+                compiler.set(attribute, str((G1_DIR / asset_directory).resolve()))
+    tree.write(destination, encoding="unicode")
+    return destination
 
 
 def joint_qpos_addr(model: mujoco.MjModel, joint_name: str) -> int:

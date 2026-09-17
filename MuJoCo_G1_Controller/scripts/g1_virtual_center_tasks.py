@@ -12,14 +12,28 @@ from mink.tasks.task import Task
 import run_mink_g1_right_arm_prototype as base
 
 
-# static stand 키보드 기본 1배 속도: 모든 팔 관절에 0.08 rad/s.
-PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = math.degrees(0.08)
-WRIST_MAX_JOINT_VELOCITY_DEG_S = math.degrees(0.08)
+# 공개 심볼 호환성은 유지하되 값은 공통 프로토타입에서 한 번만 정의한다.
+PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = math.degrees(
+    base.RIGHT_ARM_MAX_VELOCITY_RAD_S
+)
+WRIST_MAX_JOINT_VELOCITY_DEG_S = math.degrees(base.RIGHT_ARM_MAX_VELOCITY_RAD_S)
+JOINT_MAX_ACCELERATION_RAD_S2 = base.RIGHT_ARM_MAX_ACCELERATION_RAD_S2
+JOINT_MAX_JERK_RAD_S3 = base.RIGHT_ARM_MAX_JERK_RAD_S3
 
 # 관절 이동 비용과 자세 복원 비용을 구분한다. 모터 감쇠 게인과는 별개다.
 VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03
 VIRTUAL_CENTER_WRIST_DAMPING_COST = 0.015
 VIRTUAL_CENTER_WRIST_POSTURE_COST_SCALE = 0.05
+
+# 계층형 QP에서 위치는 근위축, 회전은 손목축을 우선하도록 만드는 유한 비용이다.
+# hard freeze가 아니므로 충돌/관절 한계 때문에 필요하면 다른 축도 계속 사용할 수 있다.
+POSITION_WRIST_DAMPING_COST = 0.50
+# Orientation cost 2.0보다 충분히 크게 두어 정상 구간에서 손목 해를 우선한다.
+# 100.0은 혼합 6D 도달성과 25도 wrist-only 회귀를 함께 통과한 현재 기준값이다.
+ORIENTATION_PROXIMAL_DAMPING_MAX = 100.0
+ORIENTATION_PROXIMAL_DAMPING_MIN = VIRTUAL_CENTER_PROXIMAL_DAMPING_COST
+WRIST_SINGULARITY_ASSIST_START = 0.35
+WRIST_SINGULARITY_ASSIST_FULL = 0.08
 
 ASSIST_ENTER_MARGIN_DEG = 18.0
 ASSIST_RELEASE_MARGIN_DEG = 28.0
@@ -66,40 +80,61 @@ def virtual_center_velocity_limits() -> dict[str, float]:
     }
 
 
+def hierarchical_position_damping_costs(model: mujoco.MjModel) -> np.ndarray:
+    """위치 단계에서는 어깨/팔꿈치를 손목보다 우선한다."""
+    costs = np.zeros(int(model.nv), dtype=float)
+    for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS):
+        dof = int(model.jnt_dofadr[base._joint_id(model, name)])
+        costs[dof] = (
+            VIRTUAL_CENTER_PROXIMAL_DAMPING_COST
+            if index < 4
+            else POSITION_WRIST_DAMPING_COST
+        )
+    return costs
+
+
+def hierarchical_orientation_damping_costs(
+    model: mujoco.MjModel,
+    assist_gain: float,
+) -> np.ndarray:
+    """회전 단계의 근위축 비용을 assist 0..1에 따라 연속적으로 낮춘다."""
+    assist = float(np.clip(assist_gain, 0.0, 1.0))
+    proximal_cost = (
+        ORIENTATION_PROXIMAL_DAMPING_MAX * (1.0 - assist)
+        + ORIENTATION_PROXIMAL_DAMPING_MIN * assist
+    )
+    costs = np.zeros(int(model.nv), dtype=float)
+    for index, name in enumerate(base.g1.RIGHT_ARM_JOINTS):
+        dof = int(model.jnt_dofadr[base._joint_id(model, name)])
+        costs[dof] = (
+            proximal_cost if index < 4 else VIRTUAL_CENTER_WRIST_DAMPING_COST
+        )
+    return costs
+
+
+def _smooth_pressure(value: float, start: float, full: float) -> float:
+    if start <= full:
+        raise ValueError("assist start must be greater than full threshold")
+    normalized = float(np.clip((start - value) / (start - full), 0.0, 1.0))
+    return normalized * normalized * (3.0 - 2.0 * normalized)
+
+
 def orientation_limit_policy(
     min_margin_deg: float,
     assist_latched: bool,
 ) -> tuple[bool, float, float, float]:
-    """손목 한계 여유로 보조 상태 표시값과 회전 비용/오차 상한을 정한다."""
-    if assist_latched:
-        assist_latched = min_margin_deg < ASSIST_RELEASE_MARGIN_DEG
-    elif min_margin_deg <= ASSIST_ENTER_MARGIN_DEG:
-        assist_latched = True
-
-    if not assist_latched:
-        return False, 0.0, 1.0, ORIENTATION_ERROR_NORMAL_MAX_DEG
-
-    span = ASSIST_ENTER_MARGIN_DEG - ASSIST_FULL_MARGIN_DEG
-    normalized = np.clip(
-        (ASSIST_ENTER_MARGIN_DEG - min_margin_deg) / span,
-        0.0,
-        1.0,
-    )
-    pressure = float(normalized * normalized * (3.0 - 2.0 * normalized))
-    assist_gain = ASSIST_LATCH_FLOOR + pressure * (
-        ASSIST_MAX - ASSIST_LATCH_FLOOR
-    )
-    orientation_cost_scale = 1.0 - pressure * (
-        1.0 - ORIENTATION_COST_MIN_SCALE
-    )
-    orientation_error_max_deg = ORIENTATION_ERROR_NORMAL_MAX_DEG - pressure * (
-        ORIENTATION_ERROR_NORMAL_MAX_DEG - ORIENTATION_ERROR_LIMIT_MAX_DEG
+    """손목 한계에 가까워질수록 근위축 허용량을 0..1로 연속 증가시킨다."""
+    del assist_latched  # 서명 호환성만 유지하며 불연속 latch는 사용하지 않는다.
+    pressure = _smooth_pressure(
+        min_margin_deg,
+        ASSIST_RELEASE_MARGIN_DEG,
+        ASSIST_FULL_MARGIN_DEG,
     )
     return (
-        True,
-        float(assist_gain),
-        float(orientation_cost_scale),
-        float(orientation_error_max_deg),
+        pressure > 0.0,
+        float(pressure * ASSIST_MAX),
+        1.0,
+        ORIENTATION_ERROR_NORMAL_MAX_DEG,
     )
 
 
@@ -111,6 +146,7 @@ class VirtualCenterOrientationTask(Task):
     last_orientation_cost_scale = 1.0
     last_orientation_error_cap_deg = ORIENTATION_ERROR_NORMAL_MAX_DEG
     last_unclipped_orientation_error_deg = 0.0
+    last_wrist_jacobian_sigma_min = 1.0
     assist_latched = False
 
     def __init__(self, model) -> None:
@@ -126,6 +162,10 @@ class VirtualCenterOrientationTask(Task):
         self.proximal_dofs = [
             int(model.jnt_dofadr[base._joint_id(model, name)])
             for name in base.g1.RIGHT_ARM_JOINTS[:4]
+        ]
+        self.wrist_dofs = [
+            int(model.jnt_dofadr[base._joint_id(model, name)])
+            for name in base.g1.RIGHT_ARM_JOINTS[4:]
         ]
         self.wrist_joint_ids = [
             base._joint_id(model, name)
@@ -185,15 +225,31 @@ class VirtualCenterOrientationTask(Task):
         min_margin = min(margins) if margins else float("inf")
         VirtualCenterOrientationTask.last_min_wrist_margin_deg = min_margin
 
-        latched, assist, cost_scale, error_cap_deg = orientation_limit_policy(
+        latched, limit_assist, cost_scale, error_cap_deg = orientation_limit_policy(
             min_margin,
             VirtualCenterOrientationTask.assist_latched,
         )
+        rotation_jacobian = self.inner.compute_jacobian(configuration)[3:6]
+        wrist_jacobian = rotation_jacobian[:, self.wrist_dofs]
+        singular_values = np.linalg.svd(wrist_jacobian, compute_uv=False)
+        sigma_min = float(np.min(singular_values)) if singular_values.size else 0.0
+        singularity_assist = _smooth_pressure(
+            sigma_min,
+            WRIST_SINGULARITY_ASSIST_START,
+            WRIST_SINGULARITY_ASSIST_FULL,
+        )
+        assist = 1.0 - (1.0 - limit_assist) * (1.0 - singularity_assist)
         VirtualCenterOrientationTask.assist_latched = latched
         VirtualCenterOrientationTask.last_assist_gain = assist
+        VirtualCenterOrientationTask.last_wrist_jacobian_sigma_min = sigma_min
         VirtualCenterOrientationTask.last_orientation_cost_scale = cost_scale
         VirtualCenterOrientationTask.last_orientation_error_cap_deg = error_cap_deg
         self.cost[3:6] = base.ORIENTATION_COST * cost_scale
+
+    def UpdatePolicy(self, configuration) -> float:
+        """현재 자세의 연속 assist를 갱신하고 0..1 값을 반환한다."""
+        self._update_limit_policy(configuration)
+        return VirtualCenterOrientationTask.last_assist_gain
 
     def compute_qp_objective(self, configuration):
         self._update_limit_policy(configuration)

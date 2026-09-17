@@ -1,0 +1,9 @@
+{
+  "remote_only_files_preserved": 395,
+  "local_source_files_verified": 553,
+  "errors": [],
+  "remote_only_files_preserved_exactly": 394,
+  "deliberate_changes": {
+    ".gitignore": "Original rules preserved; Unity .utmp exclusion appended and BOM/line endings normalized."
+  }
+}

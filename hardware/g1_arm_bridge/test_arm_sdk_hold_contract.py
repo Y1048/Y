@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import math
 import unittest
+from types import SimpleNamespace
+from gate6_arm_sdk_hold import _apply_frame
 
 from arm_sdk_hold_contract import (
     ARM_SDK_WEIGHT_INDEX,
@@ -35,6 +37,25 @@ def _safe_all_q() -> tuple[float, ...]:
 
 
 class ArmSdkHoldContractTests(unittest.TestCase):
+    def test_message_copy_preserves_indices_and_clears_stale_fields(self):
+        measured = _safe_all_q()
+        target = list(dual_arm_from_all_joints(measured))
+        target[7] += math.radians(1.0)
+        message = SimpleNamespace(motor_cmd=[SimpleNamespace(
+            mode=99, q=99.0, dq=99.0, tau=99.0, kp=99.0, kd=99.0)
+            for _ in range(MOTOR_COMMAND_COUNT)])
+        for weight in (0.0, 0.5, 1.0, 0.0):
+            frame = build_measured_hold_frame(measured, target, mode_pr=0,
+                                              mode_machine=5, weight=weight)
+            _apply_frame(message, frame)
+            for i in range(15):
+                command = message.motor_cmd[i]
+                self.assertEqual((command.mode, command.kp, command.kd, command.dq, command.tau), (0, 0, 0, 0, 0))
+                self.assertEqual(command.q, measured[i])
+            for j, i in enumerate(DUAL_ARM_INDICES):
+                self.assertEqual(message.motor_cmd[i].q, target[j])
+            self.assertEqual(message.motor_cmd[29].q, weight)
+
     def test_measured_dual_arm_hold_is_accepted(self) -> None:
         measured = _safe_all_q()
         target = dual_arm_from_all_joints(measured)

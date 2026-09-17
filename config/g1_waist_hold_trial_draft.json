@@ -1,0 +1,45 @@
+{
+  "schema": "g1.waist_hold.trial_draft.v1",
+  "purpose": "Review only; not accepted by physical launchers",
+  "hardware_output_authorized": false,
+  "physical_runner": null,
+  "command_topic_under_review": "rt/arm_sdk",
+  "target_policy": {
+    "source": "fresh_settled_lowstate_at_trial_start",
+    "fixed_indices": [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+    "vr_input_enabled": false,
+    "saved_pose_as_command_allowed": false,
+    "automatic_recalibration_allowed": false,
+    "leg_command_changes_allowed": false
+  },
+  "waist_parameters_pending_review": {
+    "motor_mode": null,
+    "kp": null,
+    "kd": null
+  },
+  "proposed_schedule_not_authorized": {
+    "maximum_weight": 0.2,
+    "publish_hz": 250,
+    "acquire_s": 3,
+    "hold_s": 3,
+    "release_s": 3,
+    "zero_tail_frames": 25,
+    "automatic_retry": false,
+    "automatic_weight_escalation": false
+  },
+  "stop_parameters_pending_review": {
+    "waist_angle_deviation_deg": null,
+    "waist_speed_deg_s": null,
+    "imu_tilt_deviation_deg": null,
+    "torque_limit_nm": null,
+    "fault_release_strategy": null
+  },
+  "required_before_any_physical_runner": [
+    "Review firmware waist mode and shared weight interpretation",
+    "Review waist gains and limits; published examples are not calibration",
+    "Review fault release behavior and balance risk",
+    "Implement live monitoring and offline fault tests for that exact profile",
+    "Fresh mode, whole-body state, collision and control-owner checks",
+    "Explicit approval for the exact bounded physical action"
+  ]
+}

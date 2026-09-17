@@ -13,6 +13,7 @@ import json
 import math
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import mink
@@ -44,8 +45,9 @@ def main() -> int:
     import run_mink_g1_right_arm_prototype as controller
 
     expected = _load_captured_pose()
-    controller._prepare_mink_xml()
-    model = mujoco.MjModel.from_xml_path(str(controller.g1.DEMO_XML))
+    with tempfile.TemporaryDirectory(prefix="g1_pose_sync_") as directory:
+        model_path = controller._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+        model = mujoco.MjModel.from_xml_path(str(model_path))
     controller._apply_operational_joint_limits(model)
 
     initial_qpos = controller._initial_configuration(model)

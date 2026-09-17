@@ -10,19 +10,14 @@ from typing import Iterable
 
 import numpy as np
 
-from .transforms import average_quaternions, make_pose, split_pose
+from .transforms import average_quaternions, make_pose, split_pose, validate_pose_matrix
 
 
 CALIBRATION_SCHEMA = "g1.teleop.calibration.v1"
 
 
 def _pose_matrix(value: np.ndarray, field_name: str) -> np.ndarray:
-    pose = np.asarray(value, dtype=float)
-    if pose.shape != (4, 4) or not np.all(np.isfinite(pose)):
-        raise ValueError(f"{field_name} must be a finite 4x4 pose")
-    if not np.allclose(pose[3], [0.0, 0.0, 0.0, 1.0], atol=1e-7):
-        raise ValueError(f"{field_name} has an invalid homogeneous row")
-    return pose.copy()
+    return validate_pose_matrix(value, field_name)
 
 
 def _scale_vector(value: float | Iterable[float]) -> np.ndarray:
@@ -214,11 +209,17 @@ class NeutralCalibrationAccumulator:
     ) -> None:
         if (human_left is None) != (robot_left is None):
             raise ValueError("human_left and robot_left must be provided together")
-        self._human_right.append(_pose_matrix(human_right, "human_right"))
-        self._robot_right.append(_pose_matrix(robot_right, "robot_right"))
+        human_right = _pose_matrix(human_right, "human_right")
+        robot_right = _pose_matrix(robot_right, "robot_right")
         if human_left is not None and robot_left is not None:
-            self._human_left.append(_pose_matrix(human_left, "human_left"))
-            self._robot_left.append(_pose_matrix(robot_left, "robot_left"))
+            human_left = _pose_matrix(human_left, "human_left")
+            robot_left = _pose_matrix(robot_left, "robot_left")
+        # Append only after the entire sample passes validation.
+        self._human_right.append(human_right)
+        self._robot_right.append(robot_right)
+        if human_left is not None and robot_left is not None:
+            self._human_left.append(human_left)
+            self._robot_left.append(robot_left)
 
     def _check_stability(self, poses: list[np.ndarray], field_name: str) -> None:
         position_rms, orientation_rms = _stability_metrics(poses)

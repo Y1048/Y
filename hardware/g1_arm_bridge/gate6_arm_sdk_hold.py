@@ -260,6 +260,7 @@ def _status_details(
     schedule_phase: str,
     published_frames: int,
     reason: str,
+    command_frame: ArmSdkCommandFrame | None = None,
 ) -> dict[str, Any]:
     age_s = None
     if snapshot is not None:
@@ -271,6 +272,20 @@ def _status_details(
         "motion_mode": {"form": mode_form, "name": mode_name},
         "lowstate_sequence": snapshot.sequence if snapshot else None,
         "lowstate_age_s": age_s,
+        "lowstate_received_unix_ns": snapshot.received_unix_ns if snapshot else None,
+        "measured_all_q_rad": list(snapshot.all_q_rad) if snapshot else None,
+        "measured_all_dq_rad_s": list(snapshot.all_dq_rad_s) if snapshot else None,
+        # These are outgoing fields, not proof of firmware ownership or acceptance.
+        "sampled_command": {
+            "q_rad": list(command_frame.motor_q_rad[:BODY_JOINT_COUNT]),
+            "waist_mode": list(command_frame.motor_mode[12:15]),
+            "waist_kp": list(command_frame.motor_kp[12:15]),
+            "waist_kd": list(command_frame.motor_kd[12:15]),
+            "waist_dq_rad_s": list(command_frame.motor_dq_rad_s[12:15]),
+            "waist_tau_nm": list(command_frame.motor_tau_nm[12:15]),
+            "weight": command_frame.weight,
+            "firmware_acknowledgement": False,
+        } if command_frame else None,
         "mode_pr": snapshot.mode_pr if snapshot else None,
         "mode_machine": snapshot.mode_machine if snapshot else None,
         "target_dual_arm_q_rad": (
@@ -725,6 +740,7 @@ def main() -> int:
                     schedule_phase=schedule_phase,
                     published_frames=published_frames,
                     reason="active measured-pose HOLD",
+                    command_frame=frame,
                 )
                 details["last_successful_write_unix_ns"] = last_successful_write_unix_ns
                 _write_runtime_status(

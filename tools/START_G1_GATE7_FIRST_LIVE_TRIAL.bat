@@ -5,7 +5,7 @@ cd /d "%~dp0.."
 echo ============================================================
 echo G1 GATE 7 FIRST LIVE VR TRIAL - PHYSICAL OUTPUT
 echo   Separate profile: weight 1.0, 3 degree start-relative limit
-echo   10/25 deg/s joint velocity, 20 second maximum duration
+echo   All arm joints: 0.08 rad/s maximum, 20 second maximum duration
 echo ============================================================
 echo [SAFETY] This launcher remains locked until its two config files are
 echo [SAFETY] explicitly reviewed and authorized for one physical run.

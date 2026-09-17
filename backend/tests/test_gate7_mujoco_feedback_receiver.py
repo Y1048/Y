@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import socket
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -75,8 +76,9 @@ class Gate7MujocoFeedbackReceiverTest(unittest.TestCase):
             sender.close()
 
     def test_apply_changes_only_dual_arm_qpos(self) -> None:
-        base._prepare_mink_xml()
-        model = mujoco.MjModel.from_xml_path(str(base.g1.DEMO_XML))
+        with tempfile.TemporaryDirectory() as directory:
+            path = base._prepare_mink_xml(output_path=Path(directory) / "model.xml")
+            model = mujoco.MjModel.from_xml_path(str(path))
         configuration = mink.Configuration(model)
         initial = base._initial_configuration(model)
         configuration.update(initial)

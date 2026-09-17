@@ -29,11 +29,14 @@ def main() -> int:
 
     def write_with_provenance(path: Path, payload: dict) -> None:
         if payload.get("passed") is True:
-            payload["provenance"] = build_jog_permit_provenance(config_path)
+            payload["provenance"] = build_jog_permit_provenance(config_path, payload.get("model_metadata"))
         original_write_json(path, payload)
 
     permit.write_json = write_with_provenance
-    return permit.main()
+    try:
+        return permit.main()
+    finally:
+        permit.write_json = original_write_json
 
 
 if __name__ == "__main__":

@@ -45,6 +45,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public float body_translation_residual_tolerance = 0.012f;
 
     public bool IsTrackingValid { get; private set; }
+    public bool IsRawTrackingAvailable { get; private set; }
     public bool IsCalibrated { get; private set; }
     public Vector3 OperatorTargetDelta { get; private set; }
     public Quaternion OperatorHandRotation { get; private set; } = Quaternion.identity;
@@ -119,6 +120,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     {
         if (source_hand == null || target_transform == null)
         {
+            IsRawTrackingAvailable = false;
             IsTrackingValid = false;
             EngagementState = "missing-reference";
             return;
@@ -134,7 +136,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             UpdateEngagementTargetPose();
         }
 
-        IsTrackingValid = GetHandTracked();
+        IsRawTrackingAvailable = GetHandTracked();
+        IsTrackingValid = IsRawTrackingAvailable;
         UpdateHeadMotionDiagnostics();
         if (IsTrackingValid)
         {

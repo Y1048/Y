@@ -8,6 +8,11 @@ Last updated: 2026-09-17
   thumb-index pinch before emitting `pinch_disengaged` (previously 0.5 s).
   This follows a recorded false/accidental sustained-pinch disconnect; it does
   not alter tracking-loss handling or any G1 output path.
+- Raw Quest tracking loss is now distinct from a wrist-pose speed outlier.
+  A pose outlier holds the last valid target without clearing calibration or
+  starting the return cycle; a real loss of tracked/high-confidence input for
+  0.35 s still emits `tracking_disengaged`. This addresses a recorded run where
+  raw tracking stayed valid but computed wrist speed jumped to 9.18-12.01 m/s.
 
 ## 2026-09-17 IK/Omni time-series capture
 

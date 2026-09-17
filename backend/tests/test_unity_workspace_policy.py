@@ -155,10 +155,13 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
 
         self.assertIn("tracked_wrist_max_speed_mps = 1.10f", binder)
         self.assertIn("tracked_pose_outlier_latched = true", binder)
+        self.assertIn("IsRawTrackingAvailable = GetHandTracked();", binder)
         self.assertNotIn("neutral_wrist_position += tracking_jump", binder)
         self.assertNotIn("RebaseCalibrationPreservingCurrentTarget", binder)
         self.assertIn("disengage_on_tracking_loss = true", sender)
         self.assertIn("tracking_loss_confirm_seconds = 0.35f", sender)
+        self.assertIn("!raw_tracking_available", sender)
+        self.assertNotIn("&& !tracking_valid;", sender)
         self.assertIn('IsTrackingLossDisengaged ? "tracking_disengaged"', sender)
         self.assertIn("hand_binder.ResetCalibration();", sender)
 

@@ -156,9 +156,11 @@ public class G1ExistingTargetUdpSender : MonoBehaviour
         }
 
         bool tracking_valid = hand_binder == null || hand_binder.IsTrackingValid;
+        bool raw_tracking_available = hand_binder == null
+            || hand_binder.IsRawTrackingAvailable;
         bool tracking_loss_candidate = disengage_on_tracking_loss
             && calibrated
-            && !tracking_valid;
+            && !raw_tracking_available;
         tracking_loss_duration = UpdateWorkspaceExitDuration(
             tracking_loss_candidate,
             tracking_loss_duration,

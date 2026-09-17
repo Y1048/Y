@@ -22,6 +22,11 @@ Last updated: 2026-09-17
   position-priority state now ramps orientation cost to zero instead of 25%;
   its original rotation goal is retained and restored after positional
   recovery. Runtime packets now record the priority flag and scale.
+- The next replayed live run exposed a separate hysteresis gap: position error
+  settled near 33 mm with elbow 25 at its 5-degree limit, below the old 80 mm
+  entry threshold, so position priority never activated. Entry is now 25 mm
+  while constrained, and full orientation cost returns only below 10 mm or
+  after leaving the constrained region.
 
 ## 2026-09-17 IK/Omni time-series capture
 

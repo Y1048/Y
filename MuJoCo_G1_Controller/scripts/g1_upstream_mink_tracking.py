@@ -122,14 +122,27 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         lower, upper = p.model.jnt_range[p.joint_ids].T
         arm = current_q[p.qpos_ids]
         margin = float(np.min(np.minimum(arm-lower, upper-arm)))
-        constrained = clearance < .012 or margin < np.deg2rad(5.)
+        collision_constrained = clearance < .012
+        joint_constrained = margin < np.deg2rad(5.)
+        elbow_extension_constrained = (
+            arm[3] - lower[3] < np.deg2rad(5.)
+        )
+        constrained = collision_constrained or joint_constrained
         if not self.orientation_priority_enabled:
             self._reset_orientation_priority()
             return
+        # Torso projection already replaces the raw orientation with the
+        # current wrist orientation. Keep that stabilizing orientation cost;
+        # dropping it as well can let the redundant wrist solution drift into
+        # a collision during the later return.
+        if self.target_projected:
+            self._reset_orientation_priority()
+            return
         if not self.position_priority_active:
-            condition = error > .08 and constrained
+            condition = ((error > .025 and elbow_extension_constrained)
+                         or (error > .08 and constrained))
         else:
-            condition = error < .03 or (clearance > .025 and margin > np.deg2rad(8.))
+            condition = error < .01 or (clearance > .025 and margin > np.deg2rad(8.))
         self._priority_dwell = self._priority_dwell+self.dt_s if condition else 0.
         if self._priority_dwell >= .3:
             self.position_priority_active = not self.position_priority_active

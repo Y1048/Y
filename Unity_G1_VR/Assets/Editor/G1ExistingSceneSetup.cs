@@ -94,7 +94,7 @@ public static class G1ExistingSceneSetup
         binder_value.engagement_position_stability = 0.015f;
         binder_value.engagement_rotation_stability_degrees = 10.0f;
         binder_value.engagement_frame_initialization_delay = 0.25f;
-        binder_value.tracked_wrist_max_speed_mps = 1.10f;
+        binder_value.tracked_wrist_max_speed_mps = 5.00f;
         binder_value.tracked_wrist_min_step_allowance = 0.020f;
         sender_value.hand_binder = binder_value;
         sender_value.disengage_on_tracking_loss = true;

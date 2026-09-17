@@ -153,7 +153,9 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("tracked_wrist_max_speed_mps = 1.10f", binder)
+        self.assertIn("tracked_wrist_max_speed_mps = 5.00f", binder)
+        self.assertIn("previous_observed_wrist_position", binder)
+        self.assertIn("previous_observed_wrist_position = current_wrist_position", binder)
         self.assertIn("tracked_pose_outlier_latched = true", binder)
         self.assertIn("IsRawTrackingAvailable = GetHandTracked();", binder)
         self.assertNotIn("neutral_wrist_position += tracking_jump", binder)

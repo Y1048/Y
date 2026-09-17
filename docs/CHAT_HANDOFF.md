@@ -13,6 +13,10 @@ Last updated: 2026-09-17
   starting the return cycle; a real loss of tracked/high-confidence input for
   0.35 s still emits `tracking_disengaged`. This addresses a recorded run where
   raw tracking stayed valid but computed wrist speed jumped to 9.18-12.01 m/s.
+- User clarification established that the triggering motion was intentional and
+  fast. The wrist input gate is therefore 5.0 m/s instead of 1.1 m/s, and its
+  diagnostic speed uses consecutive observed frames instead of distance from
+  the last accepted frame. Joint velocity/acceleration limits remain unchanged.
 
 ## 2026-09-17 IK/Omni time-series capture
 

@@ -363,7 +363,7 @@ MonoBehaviour:
   engagement_position_stability: 0.015
   engagement_rotation_stability_degrees: 10
   engagement_frame_initialization_delay: 0.25
-  tracked_wrist_max_speed_mps: 1.1
+  tracked_wrist_max_speed_mps: 5
   tracked_wrist_min_step_allowance: 0.02
   body_translation_minimum_step: 0.0005
   body_translation_direction_cosine: 0.85

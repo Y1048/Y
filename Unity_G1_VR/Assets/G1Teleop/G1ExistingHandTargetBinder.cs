@@ -37,7 +37,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public float engagement_position_stability = 0.025f;
     public float engagement_rotation_stability_degrees = 16.0f;
     public float engagement_frame_initialization_delay = 0.25f;
-    public float tracked_wrist_max_speed_mps = 1.10f;
+    public float tracked_wrist_max_speed_mps = 5.00f;
     public float tracked_wrist_min_step_allowance = 0.020f;
     public float body_translation_minimum_step = 0.0005f;
     public float body_translation_direction_cosine = 0.85f;
@@ -101,6 +101,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     private bool body_tracking_initialized;
     private Vector3 last_accepted_wrist_position;
     private bool accepted_wrist_position_initialized;
+    private Vector3 previous_observed_wrist_position;
+    private bool observed_wrist_position_initialized;
     private bool tracked_pose_outlier_latched;
     // Enabled by the sender only for fresh local simulation-cycle feedback.
     // Not serialized: normal/physical paths retain their existing latch.
@@ -265,6 +267,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         alignment_reference_initialized = false;
         body_tracking_initialized = false;
         accepted_wrist_position_initialized = false;
+        observed_wrist_position_initialized = false;
         tracked_pose_outlier_latched = false;
         ResetHeadMotionDiagnostics();
         IsTrackedPosePlausible = true;
@@ -643,10 +646,14 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     private bool UpdateTrackedPosePlausibility()
     {
         Vector3 current_wrist_position = TrackedWristPosition;
-        if (!accepted_wrist_position_initialized || !IsCalibrated)
+        if (!accepted_wrist_position_initialized
+            || !observed_wrist_position_initialized
+            || !IsCalibrated)
         {
             last_accepted_wrist_position = current_wrist_position;
             accepted_wrist_position_initialized = true;
+            previous_observed_wrist_position = current_wrist_position;
+            observed_wrist_position_initialized = true;
             tracked_pose_outlier_latched = false;
             IsTrackedPosePlausible = true;
             TrackedWristSpeedMPS = 0.0f;
@@ -656,8 +663,10 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         float safe_delta_time = Mathf.Max(Time.unscaledDeltaTime, 1.0f / 120.0f);
         float position_step = Vector3.Distance(
             current_wrist_position,
-            last_accepted_wrist_position);
+            previous_observed_wrist_position);
         TrackedWristSpeedMPS = position_step / safe_delta_time;
+        Vector3 previous_observed = previous_observed_wrist_position;
+        previous_observed_wrist_position = current_wrist_position;
 
         if (tracked_pose_outlier_latched && !RecoverTransientPoseOutlier)
         {
@@ -667,7 +676,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
         if (!IsTrackedWristStepPlausible(
             current_wrist_position,
-            last_accepted_wrist_position,
+            previous_observed,
             safe_delta_time,
             tracked_wrist_max_speed_mps,
             tracked_wrist_min_step_allowance))
@@ -691,6 +700,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     {
         last_accepted_wrist_position = TrackedWristPosition;
         accepted_wrist_position_initialized = true;
+        previous_observed_wrist_position = TrackedWristPosition;
+        observed_wrist_position_initialized = true;
         tracked_pose_outlier_latched = false;
         IsTrackedPosePlausible = true;
         TrackedWristSpeedMPS = 0.0f;

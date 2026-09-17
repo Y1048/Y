@@ -63,6 +63,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         ]
         self.wrist_target_radius_m = max(wrist_collision_radii)
         self.target_projected = False
+        self.collision_orientation_relaxed = False
         self.raw_target_position = np.zeros(3)
         self.effective_target_position = np.zeros(3)
         self.target_projection_distance_m = 0.
@@ -180,11 +181,15 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
         self.last_acceleration.fill(0)
         self.elbow_assist_active = False
         self.target_projected = False
+        self.collision_orientation_relaxed = False
         self.target_projection_distance_m = 0.
 
     def BeginReturn(self, current_q):
         self._reset_orientation_priority()
         self.elbow_assist_active = False
+        self.target_projected = False
+        self.collision_orientation_relaxed = False
+        self.target_projection_distance_m = 0.
         self.limiter = RuckigJointMotionLimiter(current_q[self.right_qpos_ids],
             self.velocity_limits, self.acceleration_limits, self.jerk_limits, self.dt_s,
             initial_velocity_rad_s=self.acceleration_bound.previous,
@@ -282,13 +287,26 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             p.posture_task.set_target(p.posture_reference)
         current_pose = p.configuration.get_transform_frame_to_world(
             'right_wrist_yaw_link', 'body')
-        effective_goal, self.target_projected = self._project_target_outside_torso(
+        projected_goal, self.target_projected = self._project_target_outside_torso(
             goal, current_pose.translation())
+        if self.target_projected:
+            # Continue sliding the position goal around the model-derived torso
+            # boundary, but do not chase an infeasible wrist orientation while
+            # the raw hand goal is inside the body. Requiring both at once can
+            # drive a redundant shoulder solution toward a joint limit.
+            effective_goal = base._matrix_to_se3(
+                current_pose.rotation().as_matrix(),
+                projected_goal.translation().copy(),
+            )
+            self.collision_orientation_relaxed = True
+        else:
+            effective_goal = goal
+            self.collision_orientation_relaxed = False
         self.raw_target_position = np.asarray(goal.translation(), dtype=float).copy()
         self.effective_target_position = np.asarray(
             effective_goal.translation(), dtype=float).copy()
         self.target_projection_distance_m = float(np.linalg.norm(
-            self.effective_target_position - self.raw_target_position))
+            np.asarray(projected_goal.translation()) - self.raw_target_position))
         p.wrist_task.set_target(effective_goal)
         clearance = p.GetClearance(current_q)
         self._update_orientation_priority(current_q, effective_goal, clearance)

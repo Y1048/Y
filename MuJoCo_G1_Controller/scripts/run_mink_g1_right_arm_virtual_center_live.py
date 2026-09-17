@@ -849,6 +849,8 @@ def main() -> None:
                         ),
                         "collision_target_projected": bool(getattr(
                             trajectory, "target_projected", False)),
+                        "collision_orientation_relaxed": bool(getattr(
+                            trajectory, "collision_orientation_relaxed", False)),
                         "collision_target_projection_distance_m": float(getattr(
                             trajectory, "target_projection_distance_m", 0.0)),
                         "collision_effective_target_position": np.asarray(getattr(
@@ -979,6 +981,7 @@ def main() -> None:
                             "orientation_priority_scale": float(getattr(trajectory, "orientation_priority_scale", 1.)),
                             "elbow_reconfiguration_active": bool(getattr(trajectory, "elbow_assist_active", False)),
                             "collision_target_projected": bool(getattr(trajectory, "target_projected", False)),
+                            "collision_orientation_relaxed": bool(getattr(trajectory, "collision_orientation_relaxed", False)),
                             "collision_target_projection_distance_m": float(getattr(trajectory, "target_projection_distance_m", 0.)),
                             "collision_effective_target_position": np.asarray(getattr(trajectory, "effective_target_position", target_center_position)).tolist(),
                             "corrected_zero_distance_pairs": int(getattr(trajectory, "corrected_zero_distances", 0)),

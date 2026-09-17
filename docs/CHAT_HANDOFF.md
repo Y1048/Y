@@ -16,10 +16,15 @@ Last updated: 2026-09-17
   separates the raw Quest wrist target from a model-derived collision-effective
   target. A wrist target inside the torso exclusion volume is projected to the
   nearest outside face using the torso mesh bounds, wrist collision radius and
-  configured clearance. Elbow reconfiguration is disabled while projection is
-  active, so the arm does not keep lifting its elbow to chase an unreachable
-  inside-body target. Raw/effective positions and projection distance remain in
-  runtime and raw-JSON CSV diagnostics. This is MuJoCo/offline validation only.
+  configured clearance. While projection is active, position continues moving
+  along that outside boundary so an operator can route the hand around the
+  torso; the infeasible raw wrist orientation is temporarily replaced by the
+  current wrist orientation. Elbow reconfiguration is also disabled. When the
+  raw target leaves the exclusion volume, normal position and orientation
+  tracking resume. Raw/effective positions, projection distance and the
+  orientation-relaxed flag remain in runtime and raw-JSON CSV diagnostics.
+  Recorded-problem regression coverage bounds elbow lift below 3 cm. This is
+  MuJoCo/offline validation only.
 
 ## Laptop migration checkpoint
 

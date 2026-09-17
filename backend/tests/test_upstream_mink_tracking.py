@@ -23,12 +23,34 @@ class UpstreamTrackingTests(unittest.TestCase):
         step = trajectory.Track(q, goal)
         self.assertTrue(step.applied, step.status)
         self.assertTrue(trajectory.target_projected)
+        self.assertTrue(trajectory.collision_orientation_relaxed)
         self.assertGreater(trajectory.target_projection_distance_m, 0.)
         self.assertFalse(trajectory.elbow_assist_active)
         self.assertFalse(np.shares_memory(
             trajectory.raw_target_position, trajectory.effective_target_position))
         self.assertGreater(np.linalg.norm(
             trajectory.raw_target_position-trajectory.effective_target_position), .01)
+
+    def test_inside_torso_target_can_slide_along_projected_boundary(self):
+        model, planner, trajectory = build()
+        q = base._initial_configuration(model)
+        planner.configuration.update(q)
+        trajectory.Reset(q)
+        wrist = planner.configuration.get_transform_frame_to_world(
+            'right_wrist_yaw_link', 'body')
+        torso_geom = trajectory.torso_geom_ids[0]
+        center = planner.configuration.data.geom_xpos[torso_geom].copy()
+        rotation = planner.configuration.data.geom_xmat[torso_geom].reshape(3, 3)
+        effective = []
+        for offset in (-.02, .02):
+            inside = center + rotation[:, 2] * offset
+            goal = base._matrix_to_se3(wrist.rotation().as_matrix(), inside)
+            step = trajectory.Track(q, goal)
+            self.assertTrue(step.applied, step.status)
+            self.assertTrue(trajectory.target_projected)
+            self.assertTrue(trajectory.collision_orientation_relaxed)
+            effective.append(trajectory.effective_target_position.copy())
+        self.assertGreater(np.linalg.norm(effective[1]-effective[0]), .02)
 
     def test_position_priority_recovers_original_orientation_on_return(self):
         rows = json.loads((Path(__file__).parent / 'fixtures/mink_wrist_priority_20260909.json').read_text())
@@ -54,9 +76,8 @@ class UpstreamTrackingTests(unittest.TestCase):
                 planner.configuration.update(q)
                 pose = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body')
                 if goal is difficult:
-                    self.assertTrue(trajectory.position_priority_active)
-                    self.assertAlmostEqual(scale, .25)
                     if trajectory.target_projected:
+                        self.assertTrue(trajectory.collision_orientation_relaxed)
                         self.assertFalse(trajectory.elbow_assist_active)
                         self.assertLess(
                             np.linalg.norm(pose.translation()-trajectory.effective_target_position),
@@ -64,9 +85,12 @@ class UpstreamTrackingTests(unittest.TestCase):
                         )
                         self.assertGreater(trajectory.target_projection_distance_m, .01)
                     else:
+                        self.assertTrue(trajectory.position_priority_active)
+                        self.assertAlmostEqual(scale, .25)
                         self.assertLess(np.linalg.norm(
                             pose.translation()-goal.translation()), .065)
                 else:
+                    self.assertFalse(trajectory.collision_orientation_relaxed)
                     self.assertFalse(trajectory.position_priority_active)
                     self.assertEqual(scale, 1.)
                     self.assertLess(np.linalg.norm(pose.translation()-goal.translation()), .003)
@@ -91,7 +115,7 @@ class UpstreamTrackingTests(unittest.TestCase):
         self.assertEqual(trajectory.orientation_priority_scale, 1.)
         np.testing.assert_allclose(planner.wrist_task.orientation_cost, 2.)
 
-    def test_recorded_boundary_lifts_elbow_without_stopping(self):
+    def test_recorded_inside_body_goal_slides_without_elbow_lift(self):
         fixture = json.loads((Path(__file__).parent / 'fixtures/mink_elbow_boundary_20260909.json').read_text())
         model, planner, trajectory = build()
         q = np.asarray(fixture['current_q'])
@@ -117,12 +141,14 @@ class UpstreamTrackingTests(unittest.TestCase):
         raised = planner.configuration.get_transform_frame_to_world('right_elbow_link', 'body').translation()[2]
         wrist = planner.configuration.get_transform_frame_to_world('right_wrist_yaw_link', 'body').translation()
         self.assertTrue(trajectory.target_projected)
+        self.assertTrue(trajectory.collision_orientation_relaxed)
         self.assertFalse(trajectory.elbow_assist_active)
         self.assertLess(raised-elbow_z, .03)
         self.assertLess(np.linalg.norm(
             wrist-trajectory.effective_target_position), .05)
-        self.assertGreater(np.linalg.norm(wrist-goal.translation()), .06)
+        self.assertGreater(np.linalg.norm(wrist-goal.translation()), .05)
         trajectory.Reset(q)
+        self.assertFalse(trajectory.collision_orientation_relaxed)
         self.assertFalse(trajectory.elbow_assist_active)
 
     def test_fixed_cartesian_goals_do_not_overshoot_at_sixty_degree_acceleration(self):

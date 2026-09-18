@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>Opt-in paired wrist input. Fixed loopback destination, simulation schema only.</summary>
 [DefaultExecutionOrder(-20000)]
@@ -96,7 +97,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private string backendState = "waiting";
     private GameObject leftMarker, rightMarker;
     private GameObject leftTrackedMarker;
-    private TextMesh label;
+    private RectTransform statusBar;
+    private Text leftStatus, rightStatus, cycleStatus;
+    private Font statusFont;
+    private G1HeadCameraPiP statusCamera;
+    private double nextCameraSearch;
 
     private void Awake()
     {
@@ -148,10 +153,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             leftTrackedMarker.transform.localScale = Vector3.one * TrackedMarkerDiameter;
         }
         if (!useExistingScene) rightMarker = MakeMarker("Right engage zone");
-        label = new GameObject("Bimanual simulation status").AddComponent<TextMesh>();
-        label.fontSize = 48;
-        label.characterSize = .006f;
-        label.anchor = TextAnchor.MiddleCenter;
+        CreateStatusBar();
     }
 
     private GameObject MakeMarker(string name)
@@ -361,9 +363,96 @@ public class G1BimanualSimulationSender : MonoBehaviour
             Status += string.Format("\nL: {0} {1:F1}cm {2:P0} | R: {3} {4:F1}cm {5:P0}",
                 leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
                 rightBinder.EngagementState, rightBinder.AlignmentPositionError*100, rightBinder.EngagementProgress);
-        label.text = "BIMANUAL SIMULATION ONLY\n" + Status;
-        label.transform.position = head.position + head.forward * .8f + Vector3.down * .1f;
-        label.transform.rotation = head.rotation;
+        UpdateStatusBar(fresh, pinch);
+    }
+
+    private void CreateStatusBar()
+    {
+        statusBar = new GameObject("Bimanual camera status bar", typeof(RectTransform),
+            typeof(Canvas), typeof(CanvasScaler), typeof(Image)).GetComponent<RectTransform>();
+        var canvas = statusBar.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = 101; // Camera canvas uses 100; UI remains above the video.
+        canvas.worldCamera = head.GetComponent<Camera>();
+        statusBar.GetComponent<CanvasScaler>().dynamicPixelsPerUnit = 10;
+        var background = statusBar.GetComponent<Image>();
+        background.color = new Color(.025f, .03f, .04f, .97f);
+        background.raycastTarget = false;
+        statusFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 28);
+        leftStatus = CreateStatusText("Left", new Vector2(0, .45f), new Vector2(.5f, 1), 15);
+        rightStatus = CreateStatusText("Right", new Vector2(.5f, .45f), new Vector2(1, 1), 15);
+        cycleStatus = CreateStatusText("Cycle", Vector2.zero, new Vector2(1, .45f), 12);
+        nextCameraSearch = 0;
+    }
+
+    private Text CreateStatusText(string name, Vector2 minimum, Vector2 maximum, int size)
+    {
+        var text = new GameObject(name, typeof(RectTransform), typeof(Text)).GetComponent<Text>();
+        text.transform.SetParent(statusBar, false);
+        text.rectTransform.anchorMin = minimum;
+        text.rectTransform.anchorMax = maximum;
+        text.rectTransform.offsetMin = new Vector2(4, 1);
+        text.rectTransform.offsetMax = new Vector2(-4, -1);
+        text.font = statusFont;
+        text.fontSize = size;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.raycastTarget = false;
+        text.supportRichText = false;
+        return text;
+    }
+
+    private void UpdateHandStatus(Text text, string side, G1ExistingHandTargetBinder binder, bool tracked)
+    {
+        bool aligned = binder != null && binder.IsAlignmentReady;
+        bool ready = aligned && binder.EngagementProgress >= 1;
+        string state = !tracked ? "추적 없음" : active ? "조작 중" : ready ? "준비 완료"
+            : aligned ? string.Format("정렬 {0:P0}", binder.EngagementProgress) : "위치 맞추기";
+        text.text = side + " | " + state;
+        text.color = !tracked ? new Color(1, .65f, .3f) : active || ready ? Color.green
+            : aligned ? Color.yellow : Color.white;
+    }
+
+    private void UpdateStatusBar(bool fresh, bool pinch)
+    {
+        // Search after the camera's Start has created the PiP. Never create a
+        // camera receiver as a side effect of showing engagement instructions.
+        if (statusCamera == null && Time.realtimeSinceStartupAsDouble >= nextCameraSearch)
+        {
+            statusCamera = head.GetComponentInChildren<G1HeadCameraPiP>();
+            nextCameraSearch = Time.realtimeSinceStartupAsDouble + 1;
+        }
+        var cameraRect = statusCamera == null ? null : statusCamera.transform as RectTransform;
+        if (cameraRect != null)
+        {
+            if (statusBar.parent != cameraRect) statusBar.SetParent(cameraRect, false);
+            statusBar.anchorMin = new Vector2(0, 0);
+            statusBar.anchorMax = new Vector2(1, 0);
+            statusBar.pivot = new Vector2(.5f, 1);
+            statusBar.sizeDelta = new Vector2(0, 48);
+            statusBar.anchoredPosition3D = new Vector3(0, -6, -1);
+            statusBar.localRotation = Quaternion.identity;
+            statusBar.localScale = Vector3.one;
+            statusBar.GetComponent<Canvas>().sortingOrder = statusCamera.GetComponent<Canvas>().sortingOrder + 1;
+        }
+        else
+        {
+            // Same placement when video is disabled/unavailable; no central text.
+            if (statusBar.parent != head) statusBar.SetParent(head, false);
+            statusBar.anchorMin = statusBar.anchorMax = new Vector2(.5f, .5f);
+            statusBar.pivot = new Vector2(.5f, 1);
+            statusBar.sizeDelta = new Vector2(320, 48);
+            statusBar.localScale = Vector3.one * G1HeadCameraPiP.DefaultCanvasScale;
+            statusBar.localRotation = Quaternion.identity;
+            statusBar.localPosition = new Vector3(0, G1HeadCameraPiP.DefaultCanvasVerticalOffset
+                - 126 * G1HeadCameraPiP.DefaultCanvasScale, .7982f);
+        }
+        UpdateHandStatus(leftStatus, "왼손", leftBinder, packet.left.tracked);
+        UpdateHandStatus(rightStatus, "오른손", rightBinder, packet.right.tracked);
+        cycleStatus.text = !fresh ? "시뮬레이션 수신 대기" : backendState == "blocked" ? "중단: PC 로그 확인"
+            : backendState == "returning" || returnPending ? "초기자세 복귀 중"
+            : active ? "양팔 조작 중 · pinch로 복귀" : mustLeaveZones ? "손을 목표 밖으로 옮겨 재준비"
+            : pinch ? "pinch를 풀어 주세요" : "양손을 목표 구에 맞춰 유지 · 시뮬레이션";
     }
 
     private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL SIMULATION ONLY | " + Status); }
@@ -387,6 +476,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (leftMarker != null) Destroy(leftMarker);
         if (leftTrackedMarker != null) Destroy(leftTrackedMarker);
         if (rightMarker != null) Destroy(rightMarker);
-        if (label != null) Destroy(label.gameObject);
+        if (statusBar != null) Destroy(statusBar.gameObject);
+        if (statusFont != null) Destroy(statusFont);
     }
 }

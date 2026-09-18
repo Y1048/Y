@@ -1,5 +1,21 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 camera-attached bimanual status strip
+
+- Replaced paired sender floating TextMesh with a world-space UI strip attached
+  to the existing camera PiP bottom edge: 6 canvas-unit gap, 48-unit height.
+  Two columns show Korean left/right tracking/alignment/progress/ready status;
+  lower row shows concise cycle state. No detailed distances in headset UI.
+- Child canvas sorting order is camera order + 1; text is rendered after
+  background. No overlap with video rectangle. Headset-relative fallback uses
+  camera default geometry if PiP is absent, without creating a camera receiver.
+- Hide duplicate preview TextMesh in bimanual mode. Original right-arm mode
+  keeps existing display. Engage logic, initial pose and robot paths unchanged.
+- Actual Unity/Meta-reference C# compilation PASS; diff whitespace check PASS.
+  Installed into original project with selective backup. Quest visual readability
+  and occlusion verification remain pending. Stop Play and restart after compile.
+
+
 ## 2026-09-18 marker parity and engage audit (Quest success NOT verified)
 
 - Previous repair was compile-verified only. User reports engage still fails.

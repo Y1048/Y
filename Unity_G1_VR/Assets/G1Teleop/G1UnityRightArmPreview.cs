@@ -559,6 +559,14 @@ public class G1UnityRightArmPreview : MonoBehaviour
             Debug.Log("G1 DISPLAY: " + DisplayStatus);
             previous_display_status = DisplayStatus;
         }
+        // The paired sender owns the camera-attached status strip. Avoid
+        // a second floating label overlapping the video in bimanual mode.
+        if (UsesBimanualSimulation)
+        {
+            if (display_status_text != null) display_status_text.gameObject.SetActive(false);
+            return;
+        }
+        if (display_status_text != null) display_status_text.gameObject.SetActive(true);
         if (display_status_text == null && head_camera_alignment != null
             && head_camera_alignment.xr_center_eye != null)
         {

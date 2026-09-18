@@ -1,6 +1,6 @@
 # G1 VR Teleoperation
 
-> **2026-09-17 desktop continuation:** Until this checkpoint is reviewed and
+> **2026-09-18 laptop continuation:** Until this checkpoint is reviewed and
 > merged, clone branch `codex/g1-laptop-sync-20260917` and read
 > [`docs/migration/20260917/README.md`](docs/migration/20260917/README.md) and
 > [`docs/CHAT_HANDOFF.md`](docs/CHAT_HANDOFF.md) first. The lower-body policy is
@@ -8,6 +8,12 @@
 > locomotion experiments as evidence but does not continue or physically test
 > that policy. Future work is integration of the external lower-body policy with
 > the existing Unity/Mink upper-body and single-LowCmd-owner boundary.
+>
+> **Current bimanual work:** Read
+> [`docs/GPT_BIMANUAL_HANDOFF_20260918.md`](docs/GPT_BIMANUAL_HANDOFF_20260918.md) first.
+> All work to date has remained on the same laptop; no additional development
+> on a separate desktop PC has started (user clarification, 2026-09-18).
+> `C:/Users/user/Desktop/...` is the laptop's Windows Desktop folder, not another computer.
 
 처음 읽는 순서: [코드 연결·주요 함수·Mink 해설](docs/CODE_GUIDE.md)
  -> [파일 색인과 검토 범위](docs/CODE_INDEX.md).

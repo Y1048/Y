@@ -3,6 +3,19 @@
 **최신 GPT 인계 요약: [GPT_BIMANUAL_HANDOFF_20260918.md](GPT_BIMANUAL_HANDOFF_20260918.md).**
 아래 기록은 역순 작업 이력이며, 과거의 미해결 표시는 이후 수정 결과와 구분한다.
 
+## 2026-09-18 environment clarification and runtime checkpoint
+
+- User clarification: all work from the beginning through now has remained on
+  the same laptop. No additional development on a separate desktop PC has started.
+- `C:/Users/user/Desktop/G1_Teleop_Project` is the laptop's Windows Desktop-folder
+  runtime project. The clean source worktree under `Documents/Codex/.../g1-integration`
+  is on the same laptop. Folder names and device hostnames do not establish a PC migration.
+- Runtime engine parity fix `d52c2aa` and its 29/29 offline test record are in the
+  source worktree; that fix has not been copied into the laptop's runtime folder.
+  See [runtime validation](BIMANUAL_RUNTIME_VALIDATION_20260918.md).
+- Latest Quest feel remains unverified. Historical desktop-migration instructions
+  below are plans/reference material, not evidence that desktop development occurred.
+
 ## 2026-09-18 coupled IK checked braking (offline verified)
 
 - Fix previous next-step-only planning: each accepted joint velocity now has
@@ -118,10 +131,10 @@
 - See `docs/BIMANUAL_SAME_SCENE_20260918.md`. Local source installation is backed
   up; menu/Quest Play is not auto-executed. No physical G1 action.
 
-## 2026-09-18 original Desktop project: bimanual simulation installed
+## 2026-09-18 original laptop Desktop-folder project: bimanual simulation installed
 
 - Selectively copied the paired Unity/MuJoCo simulation files from source commit
-  `0a83dc3` into the existing Desktop project at the user request.
+  `0a83dc3` into the laptop's existing Desktop-folder project at the user request.
 - Backup: `logs/backups/bimanual_install_20260918_090952/`: tracked dirty diff,
   pre-install copies of affected existing files, original SampleScene, hashes.
 - Keypad Install/Awake received only the two simulation-scene guards; no broad
@@ -455,7 +468,8 @@ This integration branch combines the latest published continuation with the lapt
 
 ### 2026-09-17 scope change and last locomotion evidence
 
-- GitHub-to-desktop continuation is the current priority.
+- GitHub-to-desktop continuation was the 2026-09-17 migration plan; see the
+  2026-09-18 clarification above. Current work remains on the laptop.
 - Lower-body policy development in this repository is stopped. Another developer will provide that policy; later work only integrates it with the Unity/Mink upper-body target and the single LowCmd owner.
 - Do not repeat the preserved velocity 12DoF physical trial. In the last `+vx=0.05` axis trial, the policy transition reached approximately roll `-0.19 rad` and pitch `+0.34 rad`, then the controller stopped on `RuntimeError: IMU roll/pitch limit` and retained the last valid full-body position command.
 - The robot was reported stable in its support rig after that event. This observation is not policy validation.
@@ -466,7 +480,7 @@ This integration branch combines the latest published continuation with the lapt
 
 For every new project conversation:
 
-1. For this desktop migration, use `codex/g1-laptop-sync-20260917`. `main` remains the canonical branch after review and merge.
+1. For current laptop bimanual work and any later desktop migration, use `codex/g1-laptop-sync-20260917`. `main` remains the canonical branch after review and merge.
 2. Read this file, [`ARCHITECTURE.md`](ARCHITECTURE.md), and [`REVIEW_LATEST.md`](REVIEW_LATEST.md).
 3. Read the relevant review/remediation log before changing a reviewed defect.
 4. Read [`CODE_GUIDE.md`](CODE_GUIDE.md) before changing a control path.

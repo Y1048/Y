@@ -66,7 +66,7 @@ def load_engine(engine_root=None):
 def runtime_metadata(input_kind):
     engine = require_validated_engine()
     packages = {}
-    for name in ('mink', 'qpsolvers', 'daqp', 'numpy'):
+    for name in ('mink', 'qpsolvers', 'daqp', 'numpy', 'ruckig'):
         try:
             packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -74,7 +74,7 @@ def runtime_metadata(input_kind):
     scripts = Path(__file__).resolve().parent
     sources = {name: hashlib.sha256((scripts/name).read_bytes()).hexdigest()
                for name in ('g1_bimanual_runtime.py', 'g1_bimanual_sim.py', 'g1_bimanual_unity_sim.py',
-                            'g1_bimanual_motion_policy.py')}
+                            'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py')}
     return dict(schema='g1.bimanual.sim.run.v1', simulation_only=True,
                 hardware_output_authorized=False, input_kind=input_kind,
                 started_utc=datetime.now(timezone.utc).isoformat(),

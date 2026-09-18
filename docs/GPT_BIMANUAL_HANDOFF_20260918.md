@@ -11,7 +11,23 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
-## 최신: 추적 손실/예외/재시작 경계 보강 (2026-09-18)
+## 최신: 기존 단일팔 방식의 단계형 복귀 복원 (2026-09-18)
+
+[복귀 방식/속도 비교와 검증](BIMANUAL_RETURN_PARITY_20260918.md)을 우선 읽는다.
+사용자가 경계 보강 버전을 실행하고 복귀 방식/속도 차이를 보고했다.
+기존 양팔의 posture-only 직접 복귀를 중간 자세 → home → 0속도 0.5초 정착의
+Ruckig 복귀로 변경했다. 오른팔 waypoint와 jerk 프로파일을 재사용하고 왼팔에 미러링했다.
+추종 공동 14축 QP/ArmMotionPolicy와 bilateral clearance/checked stop tail은 유지한다.
+속도 90/180도/s, 가속도 60도/s² 상한은 올리지 않았다.
+
+소스/노트북 실행 폴더에서 각각 68/68 PASS, 실제 BAT 기동 PASS.
+같은 두 시작 상태의 60Hz 복귀 시간은 10.733→5.933초, 9.833→5.350초였다.
+최신 로그 prefix 전체 재생도 복귀/재engage를 완료했다. 이는 새 Quest 검증이 아니다.
+노트북 실행 폴더에 7개 파일을 선택 설치했고 363개 보호 파일은 유지했다.
+기존 Python/Unity는 재시작하지 않았다. Play 중지 후 Python을 정상 종료하고
+BAT부터 다시 실행한다. 새 run 행의 `return_policy=bimanual_staged_return_v1`을 확인한다.
+
+## 이전: 추적 손실/예외/재시작 경계 보강 (2026-09-18)
 
 [경계 보강과 검증](BIMANUAL_BOUNDARY_HARDENING_20260918.md)을 우선 읽는다.
 `99202f5` 검토에서 발견한 손실 중 급정지를 검사 tail 감속으로 변경했다.

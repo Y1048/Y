@@ -1,5 +1,19 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 staged bimanual return restored on the same laptop
+
+Read [return parity and validation](BIMANUAL_RETURN_PARITY_20260918.md).
+The reported return regression was a different return implementation, not reduced
+speed caps in the preceding boundary fix. Tracking retains the shared QP and
+motion policies. Return now uses the original right-arm Ruckig profile/waypoint,
+mirrored to the left, then home and 0.5s at zero speed before READY. Every output
+keeps bilateral geometry and checked stopping-tail validation.
+Source/runtime suites: 68/68 each. Same-start 60Hz durations: 10.733 -> 5.933s,
+9.833 -> 5.350s. Latest recorded prefix replay and actual BAT startup passed.
+Seven files installed with backup, 363 protected files unchanged. No Unity/C#
+edit, user process restart or physical G1 control. New return Quest feel remains
+unverified. Restart the Python simulation; identify return_policy=bimanual_staged_return_v1.
+
 ## 2026-09-18 bimanual boundary fixes installed (simulation only)
 
 Read [boundary fixes and verification](BIMANUAL_BOUNDARY_HARDENING_20260918.md).

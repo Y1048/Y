@@ -247,6 +247,7 @@ class UnityCycle:
             result.update(ik_state=self.sim.state, ik_reason=self.sim.reason,
                 braking_steps_total=self.sim.braking_steps,
                 solver_error=self.sim.last_solver_error,
+                return_motion=self.sim.return_motion.diagnostics(),
                 checked_tail_steps_remaining=len(self.sim.brake_plan),
                 motion={s:p.diagnostics() for s,p in self.sim.motion.items()}
                     if self.last_tick_action == 'tracking' else None)
@@ -292,6 +293,12 @@ def main():
                 sock.ioctl(socket.SIO_UDP_CONNRESET, False)
             log.write(json.dumps(dict(kind='run', simulation_dt_s=sim.dt,
                 motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
+                return_policy=sim.return_motion.policy,
+                return_profile=dict(waypoint_rad=sim.return_motion.waypoint.tolist(),
+                    velocity_rad_s=sim.caps.tolist(),
+                    acceleration_rad_s2=sim.return_motion.acceleration_limits.tolist(),
+                    jerk_rad_s3=sim.return_motion.jerk_limits.tolist(),
+                    settle_s=sim.return_motion.settle_s),
                 backend_id=cycle.backend_id, backend_started_ns=cycle.backend_started_ns,
                 input_filter_time_constants_s=[.060, .050],
                 **runtime_metadata('unity_loopback')), allow_nan=False)+'\n')

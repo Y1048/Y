@@ -14,6 +14,7 @@ from qpsolvers.exceptions import SolverError
 import run_mink_g1_right_arm_prototype as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
+from g1_bimanual_return import BimanualReturnMotion
 
 
 class BimanualSimulation:
@@ -60,8 +61,6 @@ class BimanualSimulation:
                      lm_damping=1e-5) for side in ("left", "right")}
         self.home_targets = {s: self.config.get_transform_frame_to_world(
             s + "_wrist_yaw_link", "body") for s in self.tasks}
-        self.posture = mink.PostureTask(self.model, cost=.04, gain=.01)
-        self.posture.set_target(self.home)
         self.caps = np.tile(np.radians([90]*4 + [180]*3), 2)
         self.limits = [mink.ConfigurationLimit(self.model),
             mink.VelocityLimit(self.model, dict(zip(self.names, self.caps))),
@@ -86,6 +85,8 @@ class BimanualSimulation:
         self.braking_steps = 0
         self.last_solver_error = None
         self.velocity = np.zeros(self.model.nv)
+        self.acceleration = np.zeros(self.model.nv)
+        self.return_motion = BimanualReturnMotion(self)
         self.state = "ready"
         self.reason = ""
         if self.clearance(self.home) < self.clearance_m:
@@ -112,7 +113,7 @@ class BimanualSimulation:
         return .2 if nearest is None else nearest[0]
 
     def step(self, targets=None, *, returning=False):
-        """Both wrist poses in robot frame; return is constrained joint home motion.
+        """Both wrist poses in robot frame; return is a checked staged joint trajectory.
 
         Accept steps only with a checked stopping tail. Infeasible/unsafe QP
         results follow the previous tail; no valid tail latches blocked.
@@ -120,31 +121,29 @@ class BimanualSimulation:
         """
         if self.state == "blocked":
             return False
-        if not returning:
-            if not isinstance(targets, dict) or set(targets) != {"left", "right"}:
-                raise ValueError("Both left and right targets are required")
-            for target in targets.values():
-                if not np.isfinite(target.as_matrix()).all():
-                    raise ValueError("Nonfinite target")
-        if returning and np.max(np.abs(self.config.q[self.qids]-self.home[self.qids])) < .002 and np.max(np.abs(self.velocity)) < .01:
-            # Publish the checked zero-speed endpoint before declaring READY.
-            self._motion_returning = True
-            return self.brake('return_settling', returning=True)
         if returning:
-            tasks = [self.posture]  # Preserve the established checked joint-home return.
-        else:
-            if self._motion_returning:
-                for policy in self.motion.values():
-                    policy.reset(self.config.q)
-            tasks = []
-            for side, policy in self.motion.items():
-                nearest = base._nearest_pair_distance(self.model, self.config.data, self.policy_pairs[side])
-                clearance = .2 if nearest is None else nearest[0]
-                if not np.isfinite(clearance):
-                    self.state, self.reason = 'blocked', 'nonfinite_policy_clearance'
-                    return False
-                tasks.extend(policy.prepare(targets[side], clearance))
-        self._motion_returning = returning
+            if not self._motion_returning:
+                self.return_motion.reset()
+            self._motion_returning = True
+            return self.return_motion.step()
+        if not isinstance(targets, dict) or set(targets) != {"left", "right"}:
+            raise ValueError("Both left and right targets are required")
+        for target in targets.values():
+            if not np.isfinite(target.as_matrix()).all():
+                raise ValueError("Nonfinite target")
+        if self._motion_returning:
+            for policy in self.motion.values():
+                policy.reset(self.config.q)
+            self.return_motion.reset()
+        tasks = []
+        for side, policy in self.motion.items():
+            nearest = base._nearest_pair_distance(self.model, self.config.data, self.policy_pairs[side])
+            clearance = .2 if nearest is None else nearest[0]
+            if not np.isfinite(clearance):
+                self.state, self.reason = 'blocked', 'nonfinite_policy_clearance'
+                return False
+            tasks.extend(policy.prepare(targets[side], clearance))
+        self._motion_returning = False
         problem = mink.build_ik(self.config, tasks, self.dt, damping=1e-6,
                                 limits=self.limits[:2], constraints=[])
         collision = self.limits[2]
@@ -249,11 +248,10 @@ class BimanualSimulation:
         return self._apply_command(candidate, velocity, returning=returning)
 
     def _apply_command(self, candidate, velocity, *, returning=False):
+        self.acceleration = (velocity-self.velocity)/self.dt
         self.config.update(candidate)
         self.velocity = velocity
         self.state = "returning" if returning else "tracking"
-        if returning and np.max(np.abs(candidate[self.qids]-self.home[self.qids])) < .002 and not np.any(velocity):
-            self.state = "ready"
         return True
 
     def brake(self, reason='tracking_unavailable', *, returning=False):

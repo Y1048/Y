@@ -5,14 +5,27 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>Opt-in paired wrist input. Fixed loopback destination, simulation schema only.</summary>
+[DefaultExecutionOrder(-20000)]
 public class G1BimanualSimulationSender : MonoBehaviour
 {
+    public enum ArmMode { RightArm, BimanualSimulation }
+    public bool useExistingScene;
+    public ArmMode armMode = ArmMode.BimanualSimulation;
+    public G1ExistingHandTargetBinder rightBinder;
+    public G1ExistingHandTargetBinder leftBinder;
+    public G1ExistingTargetUdpSender existingSender;
+    public bool UsesExistingScene => useExistingScene && armMode == ArmMode.BimanualSimulation;
+    public bool IsTracking => active && backendState == "tracking";
+    public float[] LatestJoints { get; private set; }
+    public string[] LatestJointNames { get; private set; }
+    public bool HasFreshJoints => LatestJoints != null && Time.realtimeSinceStartupAsDouble-lastFeedback < .75;
+
     public static bool IsSimulationSceneLoaded()
     {
         // BeforeSceneLoad sees deserialized scene objects before their Awake.
         // Include inactive objects so disabling the UI cannot enable locomotion.
         foreach (var sender in Resources.FindObjectsOfTypeAll<G1BimanualSimulationSender>())
-            if (sender.gameObject.scene.IsValid()) return true;
+            if (sender.gameObject.scene.IsValid() && (!sender.useExistingScene || sender.UsesExistingScene)) return true;
         return false;
     }
 
@@ -50,6 +63,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
         public long sequence;
         public string state;
         public string reason;
+        public string[] joint_names;
+        public float[] q_rad;
     }
 
     private UdpClient client;
@@ -70,8 +85,21 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private GameObject leftMarker, rightMarker;
     private TextMesh label;
 
+    private void Awake()
+    {
+        if (!useExistingScene) return;
+        if (leftBinder != null) leftBinder.enabled = UsesExistingScene;
+        if (UsesExistingScene)
+        {
+            if (existingSender != null) existingSender.enabled = false;
+            if (rightBinder != null) rightBinder.auto_calibrate_on_first_track = false;
+            if (leftBinder != null) leftBinder.auto_calibrate_on_first_track = false;
+        }
+    }
+
     private void OnEnable()
     {
+        if (useExistingScene && !UsesExistingScene) return;
         if (head == null || leftHand == null || rightHand == null ||
             leftSkeleton == null || rightSkeleton == null)
         {
@@ -91,8 +119,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
         // Suppress Windows UDP ICMP reset when Python is not running yet.
         if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
             client.Client.IOControl((IOControlCode)(-1744830452), new byte[] { 0 }, null);
-        leftMarker = MakeMarker("Left engage zone");
-        rightMarker = MakeMarker("Right engage zone");
+        leftMarker = MakeMarker("Left engage / raw target");
+        if (!useExistingScene) rightMarker = MakeMarker("Right engage zone");
         label = new GameObject("Bimanual simulation status").AddComponent<TextMesh>();
         label.fontSize = 48;
         label.characterSize = .006f;
@@ -128,6 +156,35 @@ public class G1BimanualSimulationSender : MonoBehaviour
         return true;
     }
 
+    private bool ReadBinder(G1ExistingHandTargetBinder binder, HandPacket output)
+    {
+        output.tracked = binder != null && binder.IsTrackingValid;
+        if (!output.tracked) return false;
+        Vector3 p = binder.OperatorTargetDelta;
+        Quaternion q = Quaternion.Inverse(binder.OperatorHeading) * binder.TrackedWristRotation;
+        output.position_m = new[] { p.x, p.y, p.z };
+        output.quaternion_wxyz = new[] { q.w, q.x, q.y, q.z };
+        return true;
+    }
+
+    private void ResetBinders()
+    {
+        if (!useExistingScene) return;
+        if (rightBinder != null && rightBinder.IsCalibrated) rightBinder.ResetCalibration();
+        if (leftBinder != null && leftBinder.IsCalibrated) leftBinder.ResetCalibration();
+    }
+
+    private bool ValidJoints(Feedback feedback)
+    {
+        string[] suffix = { "shoulder_pitch", "shoulder_roll", "shoulder_yaw", "elbow", "wrist_roll", "wrist_pitch", "wrist_yaw" };
+        if (feedback.q_rad == null || feedback.q_rad.Length != 14 ||
+            feedback.joint_names == null || feedback.joint_names.Length != 14) return false;
+        for (int i=0; i<14; ++i)
+            if (feedback.joint_names[i] != (i<7 ? "left_" : "right_") + suffix[i%7] + "_joint"
+                || float.IsNaN(feedback.q_rad[i]) || float.IsInfinity(feedback.q_rad[i])) return false;
+        return true;
+    }
+
     private void LateUpdate()
     {
         if (client == null) return;
@@ -143,6 +200,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 if (feedback == null || feedback.schema != "g1.bimanual.unity.sim.state.v1" ||
                     !feedback.simulation_only || feedback.session != packet.session ||
                     feedback.sequence < feedbackSequence || feedback.sequence >= packet.sequence) continue;
+                if (useExistingScene && !ValidJoints(feedback)) continue;
+                if (ValidJoints(feedback)) { LatestJoints = feedback.q_rad; LatestJointNames = feedback.joint_names; }
                 backendState = feedback.state;
                 feedbackSequence = feedback.sequence;
                 lastFeedback = now;
@@ -152,6 +211,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     mustLeaveZones = true;
                     returnPending = false;
                     returnSequence = -1;
+                    ResetBinders();
                 }
                 // If already at home Python may acknowledge ready in one tick,
                 // without an observable returning frame.
@@ -175,12 +235,14 @@ public class G1BimanualSimulationSender : MonoBehaviour
         // Fixed headset-heading frame; no live head motion injected into wrist goals.
         Vector3 leftZone = origin + heading * new Vector3(-.22f, -.24f, .38f);
         Vector3 rightZone = origin + heading * new Vector3(.22f, -.24f, .38f);
-        leftMarker.transform.position = leftZone;
-        rightMarker.transform.position = rightZone;
-        bool tracked = ReadHand(leftHand, leftWrist, packet.left);
-        tracked = ReadHand(rightHand, rightWrist, packet.right) && tracked;
-        bool inZones = tracked && Vector3.Distance(leftWrist.position, leftZone) < .07f
-            && Vector3.Distance(rightWrist.position, rightZone) < .07f;
+        leftMarker.transform.position = useExistingScene && leftBinder != null
+            ? (active ? leftBinder.target_transform.position : leftBinder.EngagementTargetPosition) : leftZone;
+        if (rightMarker != null) rightMarker.transform.position = rightZone;
+        bool tracked = useExistingScene ? ReadBinder(leftBinder, packet.left) : ReadHand(leftHand, leftWrist, packet.left);
+        tracked = (useExistingScene ? ReadBinder(rightBinder, packet.right) : ReadHand(rightHand, rightWrist, packet.right)) && tracked;
+        bool inZones = useExistingScene
+            ? tracked && leftBinder.IsAlignmentReady && rightBinder.IsAlignmentReady
+            : tracked && Vector3.Distance(leftWrist.position, leftZone) < .07f && Vector3.Distance(rightWrist.position, rightZone) < .07f;
         bool pinch = (packet.left.tracked && leftHand.GetFingerIsPinching(OVRHand.HandFinger.Index))
             || (packet.right.tracked && rightHand.GetFingerIsPinching(OVRHand.HandFinger.Index));
         bool fresh = now - lastFeedback < .75;
@@ -189,6 +251,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             active = false;
             returnPending = true;
             mustLeaveZones = true;
+            ResetBinders();
         }
         if (mustLeaveZones && backendState == "ready" && tracked && !inZones && !pinch)
             mustLeaveZones = false;
@@ -196,8 +259,16 @@ public class G1BimanualSimulationSender : MonoBehaviour
         {
             alignmentTime = fresh && backendState == "ready" && inZones && !pinch && !mustLeaveZones
                 ? alignmentTime + Time.unscaledDeltaTime : 0;
-            if (alignmentTime >= .35f)
+            if (alignmentTime >= .35f && (!useExistingScene ||
+                (leftBinder.EngagementProgress >= 1 && rightBinder.EngagementProgress >= 1)))
             {
+                if (useExistingScene)
+                {
+                    leftBinder.Calibrate();
+                    rightBinder.Calibrate();
+                    ReadBinder(leftBinder, packet.left);
+                    ReadBinder(rightBinder, packet.right);
+                }
                 active = true;
                 returnPending = false;
                 returnSequence = -1;
@@ -212,6 +283,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 active = false;
                 returnPending = true;
                 mustLeaveZones = true;
+                ResetBinders();
             }
         }
         packet.engage = active;

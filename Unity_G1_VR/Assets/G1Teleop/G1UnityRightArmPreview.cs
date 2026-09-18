@@ -25,6 +25,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private TextMesh display_status_text;
     private string previous_display_status;
     public G1ExistingHandTargetBinder hand_binder;
+    public G1BimanualSimulationSender bimanual_simulation;
+    private Transform left_wrist_reference;
+    private bool UsesBimanualSimulation => bimanual_simulation != null && bimanual_simulation.UsesExistingScene;
     public G1ExistingTargetUdpSender target_sender;
     public G1RobotStateUdpReceiver state_receiver;
     public G1RobotStateUdpReceiver hardware_state_receiver;
@@ -119,6 +122,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
             Application.dataPath, "../../logs/runtime/unity_display_mode.json"));
         ActiveDisplayMode = ReadDisplayMode();
         CreatePreview();
+        if (UsesBimanualSimulation && official_g1_rig != null)
+            foreach (var node in official_g1_rig.GetComponentsInChildren<G1JointNode>(true))
+                if (node.joint_name == "left_wrist_yaw_joint") left_wrist_reference = node.transform;
     }
 
     private void LateUpdate()
@@ -155,6 +161,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
         }
 
         UpdateCalibrationReference(robot_position_reference);
+        if (UsesBimanualSimulation && robot_anchored && left_wrist_reference != null &&
+            bimanual_simulation.leftBinder != null && !bimanual_simulation.leftBinder.IsCalibrated)
+            bimanual_simulation.leftBinder.SetEngagementTargetPose(left_wrist_reference.position, left_wrist_reference.rotation);
         UpdateTrackingMarkers();
         UpdateInspectionDemo();
     }
@@ -353,6 +362,14 @@ public class G1UnityRightArmPreview : MonoBehaviour
             return;
         }
 
+        if (UsesBimanualSimulation)
+        {
+            if (bimanual_simulation.HasFreshJoints)
+                for (int i=0; i<14; ++i)
+                    official_g1_rig.ApplyJointPosition(bimanual_simulation.LatestJointNames[i], bimanual_simulation.LatestJoints[i]);
+            return; // Never mix old UDP/hardware state into this simulation.
+        }
+
         G1RobotStateUdpReceiver display_receiver = GetDisplayStateReceiver();
         bool robot_state_available = display_receiver != null
             && display_receiver.HasRecentState;
@@ -532,6 +549,11 @@ public class G1UnityRightArmPreview : MonoBehaviour
             : ActiveDisplayMode == DisplayMode.Recorded
                 ? (recent ? "RECORDED G1 - NOT LIVE" : "REPLAY STATE LOST - POSE FROZEN")
             : "DISPLAY MODE MISSING - RUN LAUNCHER";
+        if (UsesBimanualSimulation)
+        {
+            recent = bimanual_simulation.HasFreshJoints;
+            DisplayStatus = "BIMANUAL SIMULATION - " + bimanual_simulation.Status;
+        }
         if (DisplayStatus != previous_display_status)
         {
             Debug.Log("G1 DISPLAY: " + DisplayStatus);
@@ -619,6 +641,11 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateTrackingMarkers()
     {
+        if (UsesBimanualSimulation)
+        {
+            UpdateBimanualTrackingMarkers();
+            return;
+        }
         // cyan: 실제 Quest 손목, magenta: 선택한 표시 모드의 G1 손목,
         // green: 로봇이 추종 중인 제한된 목표. 표식과 선은 진단 전용이다.
         bool target_visible = show_tracking_markers
@@ -753,6 +780,23 @@ public class G1UnityRightArmPreview : MonoBehaviour
         robot_wrist_marker.gameObject.SetActive(robot_active);
         target_hand_marker.gameObject.SetActive(target_active);
         target_hand_axes.gameObject.SetActive(show_orientation_axes && target_active);
+    }
+
+    private void UpdateBimanualTrackingMarkers()
+    {
+        bool visible = show_tracking_markers && robot_anchored && hand_binder != null;
+        SetActualTrackingObjectsActive(visible, false);
+        SetTargetTrackingObjectsActive(visible, visible);
+        if (!visible) return;
+        tracked_hand_marker.position = hand_binder.TrackedWristPosition;
+        tracked_hand_marker.rotation = hand_binder.TrackedWristRotation;
+        bool active = bimanual_simulation.IsTracking;
+        target_hand_marker.position = active ? hand_binder.target_transform.position : hand_binder.EngagementTargetPosition;
+        target_hand_marker.rotation = active ? hand_binder.MappedHandRotation : hand_binder.EngagementTargetRotation;
+        // Cyan is the requested target; do not label it a checked feasible target.
+        target_hand_renderer.sharedMaterial = tracked_hand_material;
+        var wrist = GetRobotPositionReference();
+        if (wrist != null) robot_wrist_marker.SetPositionAndRotation(wrist.position, wrist.rotation);
     }
 
     private Transform GetRobotPositionReference()

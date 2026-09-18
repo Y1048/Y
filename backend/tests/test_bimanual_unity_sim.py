@@ -133,7 +133,12 @@ class CycleTests(unittest.TestCase):
                     sender.sendto(json.dumps(p).encode(), ('127.0.0.1', port))
                     try:
                         raw, _ = sender.recvfrom(4096)
-                        states.add(json.loads(raw)['state'])
+                        feedback = json.loads(raw)
+                        states.add(feedback['state'])
+                        self.assertEqual(len(feedback['q_rad']), 14)
+                        self.assertEqual(feedback['joint_names'][0], 'left_shoulder_pitch_joint')
+                        self.assertEqual(feedback['joint_names'][7], 'right_shoulder_pitch_joint')
+                        self.assertTrue(np.isfinite(feedback['q_rad']).all())
                     except (socket.timeout, ConnectionResetError):
                         pass
                     sequence += 1

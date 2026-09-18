@@ -1,5 +1,19 @@
 # G1 Teleop Project Chat Handoff
 
+## Same-scene bimanual extension (2026-09-18, current)
+
+- User rejected the separate-scene workflow. Use existing SampleScene menu
+  `G1 Teleop/Arms/Use Both Arms (Simulation)` or `Use Original Right Arm` with
+  Play stopped, then save. No separate project/scene is needed.
+- Current right-hand binder settings are reused; left binder clones them.
+  Existing preview/head alignment/camera remain. Paired joint feedback now
+  drives both arms of the existing official rig, not just a PC MuJoCo window.
+- Original right-arm mode bypasses all new preview/input branches. The coupled
+  14-axis IK remains a candidate: original one-arm elbow/torso/orientation
+  refinements have NOT all been generalized. Do not claim identical IK behavior.
+- See `docs/BIMANUAL_SAME_SCENE_20260918.md`. Local source installation is backed
+  up; menu/Quest Play is not auto-executed. No physical G1 action.
+
 ## 2026-09-18 original Desktop project: bimanual simulation installed
 
 - Selectively copied the paired Unity/MuJoCo simulation files from source commit

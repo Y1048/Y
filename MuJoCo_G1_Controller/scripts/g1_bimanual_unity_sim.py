@@ -135,8 +135,12 @@ class UnityCycle:
             self.reason = self.sim.reason
 
     def feedback(self):
-        return dict(schema='g1.bimanual.unity.sim.state.v1', simulation_only=True,
+        result = dict(schema='g1.bimanual.unity.sim.state.v1', simulation_only=True,
                     session=self.session, sequence=self.sequence, state=self.state, reason=self.reason)
+        if isinstance(self.sim, BimanualSimulation):
+            result.update(joint_names=self.sim.names,
+                          q_rad=self.sim.config.q[self.sim.qids].tolist())
+        return result
 
 
 def main():
@@ -198,7 +202,7 @@ def main():
                     except (ConnectionResetError, BlockingIOError):
                         pass
                 log.write(json.dumps(dict(kind='state', monotonic_s=now,
-                    **feedback, joint_names=sim.names, q_rad=sim.config.q[sim.qids].tolist()), allow_nan=False)+'\n')
+                    **feedback), allow_nan=False)+'\n')
                 if cycle.state != previous_state:
                     print(f'[BIMANUAL SIM] {cycle.state}: {cycle.reason}', flush=True)
                     previous_state = cycle.state

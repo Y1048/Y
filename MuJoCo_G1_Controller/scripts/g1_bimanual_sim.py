@@ -11,6 +11,7 @@ import mujoco
 import mink
 import qpsolvers
 import run_mink_g1_right_arm_prototype as base
+from g1_bimanual_runtime import require_validated_engine
 
 
 class BimanualSimulation:
@@ -18,6 +19,7 @@ class BimanualSimulation:
     clearance_m = 0.005
 
     def __init__(self):
+        require_validated_engine()
         # Generate privately; never rewrite the shared/right-arm model.
         with tempfile.TemporaryDirectory(prefix="g1_bimanual_") as directory:
             path = base._prepare_mink_xml(output_path=Path(directory) / "model.xml")

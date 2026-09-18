@@ -2,12 +2,28 @@
 
 기준일: 2026-09-18. 아래 내용은 같은 날짜의 이전 작업 기록보다 우선한다.
 
+## 후속 작업: 실행 엔진 일치 (2026-09-18, 이 절 우선)
+
+[실행 엔진 수정과 검증 기록](BIMANUAL_RUNTIME_VALIDATION_20260918.md)을 함께 읽는다.
+최초 인계 `758684f` 뒤에 검증/실행 환경 불일치를 수정했다. 새 셸에서 기존 BAT는
+기본 MuJoCo 3.11.0을 사용했지만 최초 17개 테스트는 격리 3.12.0을 사용했다.
+3.11.0에서는 기존 교차 동작 clearance 회귀 검사가 실패했다.
+
+양팔 전용 `g1_bimanual_runtime.py`와 두 BAT를 연결하고, 모델 생성에도
+MuJoCo 패키지/native **3.12.0** 검사를 추가했다. 추가 12개를 포함해 **29/29 PASS**.
+IK 감속/순차 engage/UI/오른팔 수식은 바꾸지 않았다. 최신 Quest 사용감은 여전히 미확인이다.
+
+**후속 수정은 깨끗한 소스 작업본에만 적용했으며 Desktop 실행 프로젝트에는 복사하지 않았다.**
+소스 작업본의 새 BAT에 `--engine-root`로 노트북의 격리 엔진을 지정하는 실행 방법은
+위 문서에 있다. 이전 Desktop BAT를 실행해 이번 수정이 반영됐다고 가정하지 않는다.
+과거 전체 JSONL/Editor.log는 이번 후속 작업에서 분석하지 않았다.
+
 ## 저장소와 기준
 
 - 저장소: `Y1048/Y`
 - **작업 브랜치: `codex/g1-laptop-sync-20260917`**
-- 최신 기능 커밋: `3d54e5052d4ba3e25acc51ac7907c0e7c5d4067b`
-- 이 인계 문서 커밋은 위 기능 커밋 뒤에 있다. 작업 시작 때 브랜치 HEAD를 fetch하여 확인한다.
+- IK 감속 기능 기준 커밋: `3d54e5052d4ba3e25acc51ac7907c0e7c5d4067b`
+- 최초 인계 커밋은 `758684f6ab16fefab55d08afe0a5e161c97871c9`이다. 후속 변경이 있으므로 작업 시작 때 브랜치 HEAD를 fetch하여 확인한다.
 - `main`의 확인된 HEAD는 `0da866f7833c21ee1898c3e3ccf7932cdb401475`이며 이번 양팔 수정 기준이 아니다.
 - 오래된 `codex/g1-regular-handoff-20260910`도 이번 작업 기준으로 쓰지 않는다.
 
@@ -77,7 +93,7 @@
 - `backend/tests/BimanualEngageGateTest.cs`: 컴파일된 C# gate 조건 검사.
 - `backend/tests/fixtures/bimanual_recorded_engage_20260918.jsonl` 및 동명 설명 문서.
 
-## 실제 수행한 검증
+## 최초 인계 시 실제 수행한 검증 (후속 검증은 상단 문서)
 
 - `py -3.11 -m unittest discover -s backend/tests -p "test_bimanual*.py"`: **17개 PASS**.
 - MuJoCo 3.12.0 격리 엔진으로 검사. 노트북 PYTHONPATH:

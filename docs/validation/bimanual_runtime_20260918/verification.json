@@ -1,0 +1,172 @@
+{
+  "schema": "g1.bimanual.runtime.validation.v1",
+  "simulation_only": true,
+  "source_base_commit": "758684f6ab16fefab55d08afe0a5e161c97871c9",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "quest_verified": false,
+  "hardware_executed": false,
+  "execution_project_modified": false,
+  "environment": {
+    "schema": "g1.bimanual.sim.run.v1",
+    "simulation_only": true,
+    "hardware_output_authorized": false,
+    "input_kind": "validation_only",
+    "started_utc": "2026-09-18T01:41:44.347191+00:00",
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "mujoco_version": "3.12.0",
+    "mujoco_native_version": "3.12.0",
+    "mujoco_module": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0\\mujoco\\__init__.py",
+    "packages": {
+      "mink": "1.3.0",
+      "qpsolvers": "4.13.0",
+      "daqp": "0.9.1",
+      "numpy": "2.4.6"
+    },
+    "source_sha256": {
+      "g1_bimanual_runtime.py": "c2db69f05f302f490ed5e532d7de906ebe4b0b7199b04c6525d43f7386850eff",
+      "g1_bimanual_sim.py": "08745274b3bf47866a4fb3267b8a47ad97c19d5a682dade607eb26b622065cc0",
+      "g1_bimanual_unity_sim.py": "382f221a1db1d144a0bd61dc041282931b6415713ff4ca088f6c057d944f0a89"
+    }
+  },
+  "checks": [
+    {
+      "name": "wrong_default_engine_rejected",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--validate-only"
+      ],
+      "expected_returncode": 1,
+      "returncode": 1,
+      "verified": true,
+      "duration_s": 0.455
+    },
+    {
+      "name": "missing_explicit_engine_rejected",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--engine-root",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\docs\\validation\\bimanual_runtime_20260918\\absent",
+        "--validate-only"
+      ],
+      "expected_returncode": 1,
+      "returncode": 1,
+      "verified": true,
+      "duration_s": 0.103
+    },
+    {
+      "name": "explicit_engine_validation",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--engine-root",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0",
+        "--validate-only"
+      ],
+      "expected_returncode": 0,
+      "returncode": 0,
+      "verified": true,
+      "duration_s": 0.502
+    },
+    {
+      "name": "environment_engine_validation",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--validate-only"
+      ],
+      "expected_returncode": 0,
+      "returncode": 0,
+      "verified": true,
+      "duration_s": 0.265
+    },
+    {
+      "name": "direct_constructor_wrong_engine_rejected",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "-c",
+        "import sys; sys.path.insert(0,'MuJoCo_G1_Controller/scripts'); from g1_bimanual_sim import BimanualSimulation; BimanualSimulation()"
+      ],
+      "expected_returncode": 1,
+      "returncode": 1,
+      "verified": true,
+      "duration_s": 0.711
+    },
+    {
+      "name": "bimanual_unittest_suite",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--engine-root",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0",
+        "--mode",
+        "test"
+      ],
+      "expected_returncode": 0,
+      "returncode": 0,
+      "verified": true,
+      "duration_s": 14.483
+    },
+    {
+      "name": "wrapper_headless_loopback",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--engine-root",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0",
+        "--mode",
+        "unity",
+        "--headless",
+        "--seconds",
+        "0.25",
+        "--port",
+        "52800",
+        "--output",
+        "C:\\Users\\user\\AppData\\Local\\Temp\\g1_bimanual_runtime_check_4dal0b2p\\unity.jsonl"
+      ],
+      "expected_returncode": 0,
+      "returncode": 0,
+      "verified": true,
+      "duration_s": 0.972,
+      "synthetic_idle_state_rows": 14
+    },
+    {
+      "name": "wrapper_offline_demo",
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+        "--engine-root",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0",
+        "--mode",
+        "demo",
+        "--input",
+        "C:\\Users\\user\\AppData\\Local\\Temp\\g1_bimanual_runtime_check_4dal0b2p\\demo_input.jsonl",
+        "--output",
+        "C:\\Users\\user\\AppData\\Local\\Temp\\g1_bimanual_runtime_check_4dal0b2p\\demo.jsonl"
+      ],
+      "expected_returncode": 0,
+      "returncode": 0,
+      "verified": true,
+      "duration_s": 0.749,
+      "synthetic_demo_rows": 3
+    }
+  ],
+  "all_checks_passed": true,
+  "unittest_count": 29,
+  "preserved_paths": [
+    "Unity_G1_VR",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+    "backend/tests/test_bimanual_sim.py",
+    "backend/tests/test_bimanual_unity_sim.py",
+    "backend/tests/fixtures"
+  ],
+  "recorded_replay": {
+    "ticks": 209,
+    "braking_ticks": 24,
+    "p95_ms": 14.09,
+    "max_ms": 16.82
+  },
+  "scope": "Offline and synthetic loopback only; not a real-time or collision-proof guarantee."
+}

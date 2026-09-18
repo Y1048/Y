@@ -91,7 +91,7 @@ fixture는 gzip으로 압축한 JSON이며 실행 코드는 포함하지 않는�
 
 ```powershell
 .\START_VR_HAND_TO_MUJOCO.bat --check-unity-path
-.	ools\BUILD_AND_INSTALL_VR_APK.bat --check-unity-path
+.\tools\BUILD_AND_INSTALL_VR_APK.bat --check-unity-path
 ```
 
 실제 손 추적의 주관적 사용감, pinch 후 복귀·재engage, 빠른 backend 재시작을 포함한

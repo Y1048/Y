@@ -88,11 +88,11 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--engine-root', type=Path,
                         help='Directory containing the validated mujoco package; no auto-install.')
-    parser.add_argument('--mode', choices=('unity', 'demo', 'test'), default='unity')
+    parser.add_argument('--mode', choices=('unity', 'demo', 'test', 'report'), default='unity')
     parser.add_argument('--validate-only', action='store_true')
     args, forwarded = parser.parse_known_args(argv)
     if (args.validate_only or args.mode == 'test') and forwarded:
-        parser.error('Runtime arguments are only accepted for unity/demo execution.')
+        parser.error('Runtime arguments are only accepted for unity/demo/report execution.')
     startup_stage('engine_begin')
     engine = load_engine(args.engine_root)
     startup_stage('engine_ready')
@@ -106,15 +106,17 @@ def main(argv=None):
         result = unittest.TextTestRunner(verbosity=2).run(suite)
         return 0 if result.wasSuccessful() else 1
     startup_stage('controller_import_begin')
-    module = importlib.import_module('g1_bimanual_unity_sim' if args.mode == 'unity' else 'g1_bimanual_sim')
+    module = importlib.import_module('g1_bimanual_unity_sim' if args.mode == 'unity' else
+                                     'g1_bimanual_session_report' if args.mode == 'report' else
+                                     'g1_bimanual_sim')
     startup_stage('controller_import_ready')
     previous = sys.argv
     try:
         sys.argv = [module.__file__] + forwarded
-        module.main()
+        result = module.main()
     finally:
         sys.argv = previous
-    return 0
+    return 0 if result is None else int(result)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,48 @@
+{
+  "schema": "g1.bimanual.session-report.validation.v1",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "base_commit": "9c2b46594a733fb8b5fe414b2415bab27ccbc1a1",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "targeted_suite": {
+    "count": 21,
+    "passed": 21,
+    "exit_code": 0
+  },
+  "full_suite_before_return_v2": {
+    "count": 86,
+    "passed": 86,
+    "seconds": 93.319,
+    "exit_code": 0
+  },
+  "quest_fixture_static_strict_exit": 0,
+  "quest_fixture_replay_strict_exit": 0,
+  "quest_fixture_replay": {
+    "state_ticks": 2927,
+    "input_rows": 2016,
+    "maximum_logged_q_difference_rad": 0.0,
+    "minimum_sampled_clearance_mm": 5.032381,
+    "max_output_acceleration_deg_s2": 60.0,
+    "final_state": "ready"
+  },
+  "malformed_synthetic_strict_exit": 1,
+  "fixes": [
+    "report runner exit code propagated through g1_bimanual_runtime",
+    "latest operator scan reaches EOF and skips malformed rows",
+    "reason-only changes do not create fake tracking/return starts",
+    "malformed JSON rows are counted and fail strict without aborting summary"
+  ],
+  "launcher_read_only": true,
+  "source_sha256": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py": "98ddef138fe03bc59f7e1719ee966949d1e1f3125739825d9983b92c0245530b",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py": "720fd14ddcdb7eb0599c2e82012338d4241071950721bd483d404f1a0b86a32e",
+    "backend/tests/test_bimanual_runtime.py": "8f4986f807c93b007b21b9d7d522d645695462d05efd5cacfb73971a9c059a81",
+    "backend/tests/test_bimanual_session_report.py": "6f993abcef80ab50d1a3ae06d26ca72111bde072d6234b53bedca81fb1da4e32",
+    "tools/REPORT_LATEST_BIMANUAL_SESSION.bat": "9f2dcc428c8d80c8f7e622eeaf123243890c9c3965aafc4730fc632611fa6655"
+  },
+  "limits": [
+    "Report analysis/replay is simulation-only.",
+    "Static fixed-dt q differences are not physical motor measurements.",
+    "Replay is fixed-base sampled geometry, not physical G1 braking or continuous collision proof."
+  ]
+}

@@ -1,0 +1,54 @@
+py : test_cli_writes_machine_and_human_reports_without_replay (backend.tests.test_bimanual_session_report.SessionReport
+Tests.test_cli_writes_machine_and_human_reports_without_replay) ... ok
+위치 줄:1 문자:682
++ ... ns\3.12.0'; py -3.11 -B -m unittest backend.tests.test_bimanual_sessi ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_cli_writes..._replay) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+test_confirmed_quest_fixture_static_summary (backend.tests.test_bimanual_session_report.SessionReportTests.test_confirm
+ed_quest_fixture_static_summary) ... ok
+test_latest_finds_operator_input_after_more_than_5000_rows (backend.tests.test_bimanual_session_report.SessionReportTes
+ts.test_latest_finds_operator_input_after_more_than_5000_rows) ... ok
+test_latest_requires_project_relative_session_and_launcher_is_read_only (backend.tests.test_bimanual_session_report.Ses
+sionReportTests.test_latest_requires_project_relative_session_and_launcher_is_read_only) ... ok
+test_latest_skips_newer_headless_log_without_operator_input (backend.tests.test_bimanual_session_report.SessionReportTe
+sts.test_latest_skips_newer_headless_log_without_operator_input) ... ok
+test_malformed_json_row_is_reported_without_aborting_summary (backend.tests.test_bimanual_session_report.SessionReportT
+ests.test_malformed_json_row_is_reported_without_aborting_summary) ... ok
+test_reason_changes_do_not_create_fake_reengage_or_restart_return (backend.tests.test_bimanual_session_report.SessionRe
+portTests.test_reason_changes_do_not_create_fake_reengage_or_restart_return) ... ok
+test_both_launchers_use_validated_runtime (backend.tests.test_bimanual_runtime.RuntimeTests.test_both_launchers_use_val
+idated_runtime) ... ok
+test_cannot_switch_preloaded_engine (backend.tests.test_bimanual_runtime.RuntimeTests.test_cannot_switch_preloaded_engi
+ne) ... ok
+test_core_guard_precedes_model_preparation (backend.tests.test_bimanual_runtime.RuntimeTests.test_core_guard_precedes_m
+odel_preparation) ... ok
+test_default_project_engine_is_selected (backend.tests.test_bimanual_runtime.RuntimeTests.test_default_project_engine_i
+s_selected) ... ok
+test_environment_missing_engine_has_no_fallback (backend.tests.test_bimanual_runtime.RuntimeTests.test_environment_miss
+ing_engine_has_no_fallback) ... ok
+test_explicit_engine_wins_and_children_inherit_it (backend.tests.test_bimanual_runtime.RuntimeTests.test_explicit_engin
+e_wins_and_children_inherit_it) ... ok
+test_explicit_missing_engine_has_no_fallback (backend.tests.test_bimanual_runtime.RuntimeTests.test_explicit_missing_en
+gine_has_no_fallback) ... ok
+test_installed_validated_engine_needs_no_local_root (backend.tests.test_bimanual_runtime.RuntimeTests.test_installed_va
+lidated_engine_needs_no_local_root) ... ok
+test_matching_package_and_native_are_required (backend.tests.test_bimanual_runtime.RuntimeTests.test_matching_package_a
+nd_native_are_required) ... ok
+test_metadata_is_simulation_only_and_hashes_source (backend.tests.test_bimanual_runtime.RuntimeTests.test_metadata_is_s
+imulation_only_and_hashes_source) ... ok
+test_report_launcher_uses_validated_runtime_without_sim_launcher (backend.tests.test_bimanual_runtime.RuntimeTests.test
+_report_launcher_uses_validated_runtime_without_sim_launcher) ... ok
+test_report_mode_propagates_runner_exit_code (backend.tests.test_bimanual_runtime.RuntimeTests.test_report_mode_propaga
+tes_runner_exit_code) ... ok
+[BIMANUAL STARTUP] engine_begin perf_counter_ns=6271596513300
+test_startup_failure_does_not_import_runner (backend.tests.test_bimanual_runtime.RuntimeTests.test_startup_failure_does
+_not_import_runner) ... ok
+test_validation_does_not_import_runner (backend.tests.test_bimanual_runtime.RuntimeTests.test_validation_does_not_impor
+t_runner) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.995s
+
+OK

@@ -134,6 +134,21 @@ class RuntimeTests(unittest.TestCase):
             self.assertIn('%*', text)
             self.assertNotIn('pip install', text)
 
+    def test_report_mode_propagates_runner_exit_code(self):
+        engine = fake_engine(Path('/validated'))
+        module = SimpleNamespace(__file__='report.py', main=lambda: 7)
+        with patch.object(runtime, 'load_engine', return_value=engine):
+            with patch.object(runtime.importlib, 'import_module', return_value=module) as imports:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(runtime.main(['--mode', 'report', '--strict']), 7)
+        imports.assert_called_once_with('g1_bimanual_session_report')
+
+    def test_report_launcher_uses_validated_runtime_without_sim_launcher(self):
+        text = (ROOT/'tools/REPORT_LATEST_BIMANUAL_SESSION.bat').read_text()
+        self.assertIn('g1_bimanual_runtime.py --mode report --latest', text)
+        self.assertIn('%*', text)
+        self.assertNotIn('START_BIMANUAL_UNITY_SIM', text)
+
 
 if __name__ == '__main__':
     unittest.main()

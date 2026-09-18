@@ -11,6 +11,16 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## Latest: Quest pinch/re-engage confirmed (2026-09-18)
+
+Read [BIMANUAL_QUEST_CONFIRMED_20260918.md](BIMANUAL_QUEST_CONFIRMED_20260918.md) first.
+The user confirmed the latest Quest session works. The same log records two staged
+pinch returns with one successful re-engage between them. A compact fixture replays
+2,927 state ticks with 0 rad maximum logged-joint difference, 5.032 mm minimum
+sampled clearance, and the 60 deg/s^2 output acceleration bound. Source and laptop
+runtime bimanual suites both pass 73/73. This is Quest simulation confirmation,
+not physical G1 validation or a guarantee of continuous host-side 60 Hz timing.
+
 ## 최신: pinch 재engage와 startup 후속 검증 (2026-09-18)
 
 [재engage/startup 검증](BIMANUAL_REENGAGE_STARTUP_20260918.md)을 우선 읽는다.

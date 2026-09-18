@@ -1,0 +1,82 @@
+{
+  "schema": "g1.bimanual.quest-confirmed.validation.v1",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "user_reported_quest_success": true,
+  "source_base_commit": "45146f43c31b88c142627845cc46b78460f6b696",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "source_suite": {
+    "count": 73,
+    "passed": 73,
+    "seconds": 115.56,
+    "exit_code": 0
+  },
+  "source_log": {
+    "file": "unity_20260918_144806_4738178.jsonl",
+    "sha256": "cd9f1af99c2c1000035d5c277fbe0cde55e487db92c4c91c36588b3f0ab204d3",
+    "bytes": 9289214,
+    "state_rows": 4400,
+    "input_rows": 2571,
+    "reject_rows": 0
+  },
+  "observed_transitions": [
+    "ready",
+    "tracking",
+    "returning:pinch",
+    "ready:pinch",
+    "tracking",
+    "returning:pinch",
+    "ready:pinch"
+  ],
+  "observed_returns": [
+    {
+      "wall_s": 5.78099999999904,
+      "internal_simulation_s": 5.383333333333333,
+      "replans": 0
+    },
+    {
+      "wall_s": 5.437000000001717,
+      "internal_simulation_s": 5.216666666666667,
+      "replans": 0
+    }
+  ],
+  "observed_tick_ms": {
+    "p50": 4.899549998299335,
+    "p95": 20.291625001118533,
+    "max": 33.94469999693683
+  },
+  "fixture": {
+    "path": "backend/tests/fixtures/bimanual_quest_reengage_20260918.json.gz",
+    "sha256": "1f05d7f921768955e64515d3486f7f2c975db9653a4ebaa1945e5915f5b26814",
+    "bytes": 766234,
+    "rows": 4944,
+    "input_rows": 2016,
+    "state_rows": 2927
+  },
+  "fixture_replay": {
+    "passed": true,
+    "state_ticks": 2927,
+    "input_rows": 2016,
+    "minimum_clearance_mm": 5.032381333078582,
+    "max_output_acceleration_deg_s2": 60.00000000006306,
+    "maximum_logged_q_difference_rad": 0.0
+  },
+  "limits": [
+    "Quest user confirmation is subjective usability evidence, not physical G1 validation.",
+    "The session did not include backend restart.",
+    "Host loop timing was not continuously below the 16.67 ms nominal 60 Hz period."
+  ],
+  "runtime_suite": {
+    "count": 73,
+    "passed": 73,
+    "seconds": 108.485,
+    "exit_code": 0
+  },
+  "runtime_test_artifacts_installed": [
+    "backend/tests/test_bimanual_return.py",
+    "backend/tests/test_bimanual_quest_reengage.py",
+    "backend/tests/fixtures/bimanual_quest_reengage_20260918.json.gz",
+    "backend/tests/fixtures/bimanual_quest_reengage_20260918.md"
+  ],
+  "runtime_execution_code_changed_in_this_step": false
+}

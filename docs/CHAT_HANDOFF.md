@@ -1,5 +1,15 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 Quest pinch/re-engage confirmed
+
+Read [Quest confirmation and replay](BIMANUAL_QUEST_CONFIRMED_20260918.md).
+The user confirmed the current Quest behavior works. The same session log shows
+two pinch staged returns with one successful re-engage between them. A compact
+recorded fixture replays 2,927 state ticks with 0 rad max logged-q difference,
+5.032 mm minimum sampled clearance and the 60 deg/s^2 output acceleration bound.
+Source and runtime bimanual suites: 73/73 PASS each. This is Quest simulation confirmation,
+not physical G1 validation or a claim of continuous host-side 60 Hz timing.
+
 ## 2026-09-18 pinch re-engage and startup follow-up
 
 Read [re-engage/startup validation](BIMANUAL_REENGAGE_STARTUP_20260918.md).

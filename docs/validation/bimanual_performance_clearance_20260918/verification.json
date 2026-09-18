@@ -1,0 +1,90 @@
+{
+  "schema": "g1.bimanual.performance-clearance.validation.v1",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "quest_retested_after_optimization": false,
+  "source_base_commit": "a65495f2ea54a015c09dbda22d1861f4f5bdb340",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "change": {
+    "clearance_position_stage": "mujoco.mj_fwdPosition",
+    "previous": "mujoco.mj_forward",
+    "hard_clearance_m": 0.005,
+    "checked_tail_sampling_changed": false,
+    "motion_policy_changed": false,
+    "speed_limits_changed": false
+  },
+  "profile": {
+    "checked_stop_plan_calls": 2717,
+    "checked_stop_plan_total_ms": 16697.1782,
+    "checked_stop_plan_p95_ms": 15.22562,
+    "clearance_calls": 162727,
+    "clearance_total_ms": 14160.7466,
+    "mj_forward_calls": 162732,
+    "mj_forward_total_ms": 3924.9027,
+    "qp_solver_total_ms": 91.3881
+  },
+  "ab_benchmark": {
+    "old": {
+      "elapsed_s": 21.732227499996952,
+      "p50_ms": 6.5141,
+      "p95_ms": 16.4156,
+      "p99_ms": 19.611982,
+      "max_ms": 26.0349
+    },
+    "optimized": {
+      "elapsed_s": 19.788669199999276,
+      "p50_ms": 5.9238,
+      "p95_ms": 14.62691,
+      "p99_ms": 18.534938,
+      "max_ms": 24.3849
+    },
+    "maximum_logged_q_difference_rad": 0.0,
+    "minimum_clearance_mm": 5.032381333078582
+  },
+  "random_equivalence": {
+    "samples": 500,
+    "max_distance_difference_m": 0.0,
+    "nearest_pair_mismatch": 0,
+    "contact_count_mismatch": 0,
+    "finite_mismatch": 0
+  },
+  "clearance_distribution": {
+    "tracking_states": 2081,
+    "minimum_mm": 5.032381333078582,
+    "under_5_1mm": 5,
+    "under_6mm": 267,
+    "under_7mm": 589,
+    "under_10mm": 672,
+    "under_6mm_percent": 12.83,
+    "under_7mm_percent": 28.3,
+    "closest_sequence": 1575,
+    "closest_pair": [
+      "mink_collision_left_wrist_yaw_link_0_29",
+      "mink_right_rubber_hand_collision"
+    ],
+    "wrist_body_center_distance_m": 0.07960815373410356
+  },
+  "source_suite": {
+    "count": 74,
+    "passed": 74,
+    "seconds": 89.33,
+    "exit_code": 0
+  },
+  "runtime_suite": {
+    "count": 74,
+    "passed": 74,
+    "seconds": 96.558,
+    "exit_code": 0
+  },
+  "runtime_installed": true,
+  "backup_directory": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_perf_20260918_154241",
+  "source_sha256": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": "9f9e88a5204978818f67131643933f385d8713fb49ab4929fe58e35e7e27fe8f",
+    "backend/tests/test_bimanual_sim.py": "be118edb2a8b9eb49a2edde25e2c204b45ba07a2e07a1e8bedd2f8770fe20e42"
+  },
+  "limitations": [
+    "The 5 mm sampled clearance is unchanged and is not a physical G1 safety guarantee.",
+    "Timing benchmarks are host measurements and not hard real-time guarantees.",
+    "The running user Python process was not restarted; the installed optimization takes effect on next start."
+  ]
+}

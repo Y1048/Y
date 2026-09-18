@@ -94,7 +94,9 @@ class BimanualSimulation:
 
     def clearance(self, q, threshold=None):
         self.check_data.qpos[:] = q
-        mujoco.mj_forward(self.model, self.check_data)
+        # Clearance only needs position-dependent kinematics/contact geometry.
+        # Avoid velocity/actuation/acceleration stages from full mj_forward.
+        mujoco.mj_fwdPosition(self.model, self.check_data)
         pairs = self.pairs
         if threshold is not None:
             # World AABBs enclose each rotated local geom AABB. Their separation

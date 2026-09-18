@@ -1,0 +1,4 @@
+Laptop runtime bimanual suite
+Ran 74 tests in 96.558s
+OK
+Recorded simulation replay: ticks=209 braking=0 p95_ms=6.69 max_ms=7.63

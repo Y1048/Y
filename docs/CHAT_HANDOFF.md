@@ -1,5 +1,16 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 clearance performance optimization
+
+Read [performance/clearance validation](BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md).
+Profiling the confirmed Quest replay showed checked stopping-tail clearance checks
+were the main tracking cost; QP solve itself averaged about 0.044 ms. Clearance now
+uses `mj_fwdPosition` instead of full `mj_forward`, without changing collision samples,
+5 mm hard clearance, motion/return policies, or speed/acceleration bounds.
+500 random poses matched full-forward distance/pair/contact results exactly. Quest replay
+q remained identical. Direct old/new p95: about 16.42 -> 14.63 ms; source/runtime 74/74 PASS.
+The user process was left running; the installed optimization loads on next Python start.
+
 ## 2026-09-18 Quest pinch/re-engage confirmed
 
 Read [Quest confirmation and replay](BIMANUAL_QUEST_CONFIRMED_20260918.md).

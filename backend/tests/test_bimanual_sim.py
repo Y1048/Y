@@ -109,6 +109,27 @@ class BimanualTests(unittest.TestCase):
             fast = self.s.clearance(q, threshold=.005)
             self.assertEqual(exact < .005, fast < .005)
 
+    def test_position_only_clearance_matches_full_forward(self):
+        rng = np.random.default_rng(20260918)
+        data = mujoco.MjData(self.s.model)
+        for _ in range(120):
+            q = self.s.home.copy()
+            fraction = rng.uniform(.05, .95, len(self.s.qids))
+            q[self.s.qids] = (self.s.ranges[:,0]
+                + fraction*(self.s.ranges[:,1]-self.s.ranges[:,0]))
+            data.qpos[:] = q
+            mujoco.mj_forward(self.s.model, data)
+            expected = module.base._nearest_pair_distance(
+                self.s.model, data, self.s.pairs)
+            expected_distance = .2 if expected is None else expected[0]
+            actual_distance = self.s.clearance(q)
+            actual = module.base._nearest_pair_distance(
+                self.s.model, self.s.check_data, self.s.pairs)
+            self.assertEqual(int(data.ncon), int(self.s.check_data.ncon))
+            self.assertEqual(None if expected is None else expected[1:],
+                             None if actual is None else actual[1:])
+            self.assertEqual(expected_distance, actual_distance)
+
     def test_nonfinite_clearance_rejects_new_plan(self):
         with patch.object(self.s, 'clearance', return_value=float('nan')):
             self.assertFalse(self.s.step(self.s.home_targets))

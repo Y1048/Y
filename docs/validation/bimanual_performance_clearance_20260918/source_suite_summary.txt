@@ -1,0 +1,4 @@
+Source bimanual suite
+Ran 74 tests in 89.330s
+OK
+Recorded simulation replay: ticks=209 braking=0 p95_ms=6.34 max_ms=11.31

@@ -11,6 +11,23 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## Latest: clearance performance optimization (2026-09-18)
+
+Read [BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md](BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md) first.
+The Quest-confirmed replay showed that checked stopping-tail collision validation,
+not the QP solver, dominated tracking time. `clearance()` now uses MuJoCo's
+position/contact stage `mj_fwdPosition` instead of full `mj_forward`; sample count,
+5 mm hard clearance, IK/motion/return policies and all speed/acceleration limits are unchanged.
+
+A 500-pose equivalence check had 0 distance/pair/contact mismatches. The confirmed
+Quest fixture remained bit-for-bit identical in joint output (0 rad max difference).
+Direct old/new replay reduced p95 from about 16.42 ms to 14.63 ms and total replay
+from 21.73 s to 19.79 s in one controlled pair. Source/runtime suites: 74/74 PASS each.
+The hard 5 mm boundary remains unchanged because 28.3% of recorded tracking states
+were below 7 mm; increasing it would materially change the already-confirmed feel.
+Installed Python/test files are backed up under runtime logs/backups/bimanual_perf_20260918_154241.
+The user's already-running Python process was not restarted; optimization loads next start.
+
 ## Latest: Quest pinch/re-engage confirmed (2026-09-18)
 
 Read [BIMANUAL_QUEST_CONFIRMED_20260918.md](BIMANUAL_QUEST_CONFIRMED_20260918.md) first.

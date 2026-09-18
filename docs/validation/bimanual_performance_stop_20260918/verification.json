@@ -1,0 +1,107 @@
+{
+  "schema": "g1.bimanual.performance.stop-point.v1",
+  "simulation_only": true,
+  "production_commit": "1e285973819c482684945107c960d7837046aead",
+  "production_changed": false,
+  "decision": "Keep conservative sphere broadphase from 1e28597; reject further low-risk micro-optimizations.",
+  "squared_mask": {
+    "recorded_pair_masks": 1284953,
+    "recorded_mismatches": 0,
+    "random_pair_masks": 1317000,
+    "random_mismatches": 0,
+    "microbenchmark_us": {
+      "norm_median": 10.326386,
+      "squared_median": 5.32291
+    },
+    "isolated_replay_ab": {
+      "total_s": {
+        "baseline_mean": 21.203380200000083,
+        "candidate_mean": 21.308866249999937,
+        "candidate_change_percent": 0.4974963850332391
+      },
+      "p50_ms": {
+        "baseline_mean": 6.2401,
+        "candidate_mean": 6.145,
+        "candidate_change_percent": -1.5240140382365732
+      },
+      "p95_ms": {
+        "baseline_mean": 14.60556999999999,
+        "candidate_mean": 14.687194999999992,
+        "candidate_change_percent": 0.55886213273431
+      },
+      "p99_ms": {
+        "baseline_mean": 18.05051699999999,
+        "candidate_mean": 18.424166999999997,
+        "candidate_change_percent": 2.070023811506389
+      }
+    },
+    "isolated_candidate_suite": {
+      "count": 78,
+      "passed": 78,
+      "seconds": 118.083,
+      "exit_code": 0
+    },
+    "applied": false,
+    "reason": "full replay improvement did not reproduce; total and p95 were slightly worse on isolated rerun"
+  },
+  "hybrid_aabb": {
+    "ab": {
+      "total_s": {
+        "baseline_mean": 15.632965050000053,
+        "candidate_mean": 16.041905550000024,
+        "candidate_change_percent": 2.615885717725507
+      },
+      "p50_ms": {
+        "baseline_mean": 4.55855,
+        "candidate_mean": 4.6767,
+        "candidate_change_percent": 2.5918329293305975
+      },
+      "p95_ms": {
+        "baseline_mean": 10.971354999999999,
+        "candidate_mean": 11.184079999999998,
+        "candidate_change_percent": 1.9389127414070455
+      },
+      "p99_ms": {
+        "baseline_mean": 14.129185999999995,
+        "candidate_mean": 16.039454999999993,
+        "candidate_change_percent": 13.520021606340226
+      }
+    },
+    "applied": false,
+    "reason": "second-stage AABB overhead exceeded exact-pair savings"
+  },
+  "distmax_cap": {
+    "tested_pair_samples": 219500,
+    "inside_cutoff_value_mismatches": 0,
+    "applied": false,
+    "reason": "full replay timing was slower/inconsistent"
+  },
+  "early_exit": {
+    "threshold_calls": 162722,
+    "candidate_pairs": 1282088,
+    "checked_pairs": 1281917,
+    "unsafe_calls": 47,
+    "saved_pairs": 171,
+    "pair_call_reduction_percent": 0.013337618010620176,
+    "applied": false,
+    "reason": "only 0.0133 percent of exact pair calls are avoided"
+  },
+  "current_exact_candidates_per_threshold_call": 7.879008370103612,
+  "next_performance_gate": [
+    "do not reduce stopping-tail sample times",
+    "do not relax 5 mm hard clearance or 0.25 degree substep",
+    "do not approximate survivor exact geometry distance",
+    "preserve robust zero-distance/contact path",
+    "require 0 rad Quest fixture replay difference",
+    "require reproducible clean-worktree A/B improvement"
+  ],
+  "concurrent_work_preserved": [
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py",
+    "backend/tests/test_bimanual_runtime.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py",
+    "backend/tests/test_bimanual_session_report.py",
+    "backend/tests/fixtures/bimanual_return_near_hands_20260918.json",
+    "docs/BIMANUAL_SESSION_REPORT_20260918.md",
+    "tools/REPORT_LATEST_BIMANUAL_SESSION.bat"
+  ]
+}

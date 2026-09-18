@@ -1,5 +1,8 @@
 # 양팔 clearance bounding-sphere broadphase — 2026-09-18
 
+> ?? ????? ?? ?? ?? ??? ????? ??.
+> [BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md](BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md)? ?? ???.
+
 기준 브랜치: `codex/g1-laptop-sync-20260917`, 출발 커밋 `31a68d4`.
 직전 `mj_kinematics` 최적화 이후에도 checked stopping-tail의 반복 clearance가 주 병목으로 남았다.
 이번 변경은 broadphase 계산만 바꾸며 실제 exact geometry 거리 계산과 안전 한계는 유지한다.

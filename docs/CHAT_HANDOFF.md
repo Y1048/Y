@@ -1,5 +1,14 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 performance micro-optimization stop point
+
+Read [performance stop point](BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md).
+No code after `1e28597` was accepted. Squared sphere masking had zero decision mismatches but
+no reproducible full-replay gain; hybrid AABB and small-distmax variants were slower/inconsistent.
+Early unsafe-pair exit saved just 0.0133% of exact pair calls. Keep the current sphere broadphase
+and safety sampling unchanged. Future performance work must be architectural and independently
+prove identical sampled decisions, zero-distance handling, Quest replay and reproducible A/B gain.
+
 ## 2026-09-18 conservative sphere broadphase
 
 Read [sphere broadphase validation](BIMANUAL_PERFORMANCE_SPHERE_20260918.md).

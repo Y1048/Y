@@ -11,6 +11,20 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## Latest: performance micro-optimization stop point (2026-09-18)
+
+Read [BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md](BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md) first.
+After `1e28597`, further low-risk micro-optimizations were evaluated and rejected. Squared-distance
+sphere masking was bit-equivalent but did not reproduce a full-replay speedup in an isolated rerun;
+a second AABB stage and smaller `mj_geomDistance` distmax were slower/inconsistent. Unsafe-pair
+early exit saved only 171 of 1,282,088 exact pair calls (0.0133%).
+
+Therefore production remains `1e28597`. Do not relax 5 mm clearance, 0.25 deg sweep samples,
+exact survivor geometry distance, or zero-distance/contact handling for performance. Any next
+performance step must be architectural (for example independently validated batch/parallel checks),
+retain the identical sampled trajectory and 0-rad Quest replay, and show reproducible clean A/B gains.
+Concurrent session-report work was preserved and not committed by this analysis.
+
 ## Latest: conservative sphere broadphase (2026-09-18)
 
 Read [BIMANUAL_PERFORMANCE_SPHERE_20260918.md](BIMANUAL_PERFORMANCE_SPHERE_20260918.md) first.

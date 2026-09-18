@@ -50,6 +50,7 @@ class BimanualSimulation:
             if bodies != {"left_elbow_link", "left_wrist_yaw_link"}:
                 keep.append(i)
         self.pairs = [geom_ids[i] for i in keep]
+        self.pair_array = np.asarray(self.pairs, dtype=int)
         self.tasks = {side: mink.FrameTask(side + "_wrist_yaw_link", "body",
                      position_cost=8., orientation_cost=2., gain=.35,
                      lm_damping=1e-5) for side in ("left", "right")}
@@ -66,23 +67,41 @@ class BimanualSimulation:
                 collision_detection_distance=.15, gain=.85)]
         frozen = sorted(set(range(self.model.nv)) - set(self.dofs))
         self.constraints = [mink.DofFreezingTask(self.model, dof_indices=frozen)]
+        self.ranges = self.model.jnt_range[ids].copy()
+        self.brake_plan = []
+        self.braking_steps = 0
         self.velocity = np.zeros(self.model.nv)
         self.state = "ready"
         self.reason = ""
         if self.clearance(self.home) < self.clearance_m:
             raise ValueError("Initial bilateral model violates clearance")
 
-    def clearance(self, q):
+    def clearance(self, q, threshold=None):
         self.check_data.qpos[:] = q
         mujoco.mj_forward(self.model, self.check_data)
-        nearest = base._nearest_pair_distance(self.model, self.check_data, self.pairs)
+        pairs = self.pairs
+        if threshold is not None:
+            # World AABBs enclose each rotated local geom AABB. Their separation
+            # is a lower bound, so only certainly distant pairs are excluded.
+            rotation = self.check_data.geom_xmat.reshape(-1, 3, 3)
+            bounds = self.model.geom_aabb
+            center = self.check_data.geom_xpos + np.einsum('nij,nj->ni', rotation, bounds[:, :3])
+            extent = np.einsum('nij,nj->ni', np.abs(rotation), bounds[:, 3:])
+            a, b = self.pair_array.T
+            gap = np.maximum(0, np.abs(center[a]-center[b])-extent[a]-extent[b])
+            lower = np.linalg.norm(gap, axis=1)
+            if not np.isfinite(lower).all():
+                return float('nan')
+            pairs = self.pair_array[lower <= threshold + 1e-8]
+        nearest = base._nearest_pair_distance(self.model, self.check_data, pairs)
         return .2 if nearest is None else nearest[0]
 
     def step(self, targets=None, *, returning=False):
         """Both wrist poses in robot frame; return is constrained joint home motion.
 
-        Infeasible/unsafe steps latch a simulation hold. Reset requires a new
-        simulation; this is deliberately not a physical stopping controller.
+        Accept steps only with a checked stopping tail. Infeasible/unsafe QP
+        results follow the previous tail; no valid tail latches blocked.
+        This is deliberately not a physical stopping controller.
         """
         if self.state == "blocked":
             return False
@@ -137,32 +156,28 @@ class BimanualSimulation:
         reduced = qpsolvers.Problem(problem.P[np.ix_(self.dofs, self.dofs)],
             problem.q[self.dofs], problem.G[finite][:, self.dofs], problem.h[finite])
         result = qpsolvers.solve_problem(reduced, solver=base._select_solver())
-        if not result.found or result.x is None or not np.isfinite(result.x).all():
+        reason = "qp_infeasible"
+        plan = None
+        if result.found and result.x is not None and np.isfinite(result.x).all():
+            velocity = np.zeros(self.model.nv)
+            velocity[self.dofs] = result.x / self.dt
+            plan, reason = self.checked_stop_plan(velocity)
+        if plan is not None:
+            candidate, velocity = plan.pop(0)
+            self.brake_plan = plan
+            self.reason = ""
+        elif self.brake_plan:
+            # This tail was checked before the previous command was accepted.
+            # The fixed-base kinematic scene has no moving external obstacles.
+            # Follow it without dropping acceleration/collision/range limits.
+            candidate, velocity = self.brake_plan[0]
+            if len(self.brake_plan) > 1:
+                self.brake_plan.pop(0)
+            self.braking_steps += 1
+            self.reason = "checked_braking:" + reason
+        else:
             self.state = "blocked"
-            self.reason = "qp_infeasible"
-            return False
-        before = self.config.q.copy()
-        velocity = np.zeros(self.model.nv)
-        velocity[self.dofs] = result.x / self.dt
-        candidate = before.copy()
-        mujoco.mj_integratePos(self.model, candidate, velocity, self.dt)
-        frozen = np.ones(self.model.nq, dtype=bool)
-        frozen[self.qids] = False
-        candidate[frozen] = self.home[frozen]
-        n = max(2, int(np.ceil(np.max(np.abs(result.x)) / np.radians(.25))))
-        # Sample the interpolated joint path, including its endpoint.
-        for fraction in np.linspace(0, 1, n + 1)[1:]:
-            q = before + fraction * (candidate - before)
-            if self.clearance(q) < self.clearance_m:
-                self.state = "blocked"
-                self.reason = "swept_clearance"
-                return False
-        jid = [base._joint_id(self.model, name) for name in self.names]
-        ranges = self.model.jnt_range[jid]
-        if np.any(candidate[self.qids] < ranges[:, 0] - 1e-8) or np.any(
-                candidate[self.qids] > ranges[:, 1] + 1e-8):
-            self.state = "blocked"
-            self.reason = "joint_range"
+            self.reason = reason
             return False
         self.config.update(candidate)
         self.velocity = velocity
@@ -170,6 +185,44 @@ class BimanualSimulation:
         if returning and np.max(np.abs(candidate[self.qids] - self.home[self.qids])) < .002 and np.max(np.abs(velocity)) < .01:
             self.state = "ready"
         return True
+
+    def checked_stop_plan(self, first_velocity):
+        """Discrete acceleration-bounded stopping tail, sampled geometry only.
+
+        Validate every dt and at most .25 degree substeps. This is not a
+        continuous collision proof or a physical robot braking model.
+        """
+        dv = np.radians(60) * self.dt
+        if (not np.isfinite(first_velocity).all()
+                or np.any(np.abs(first_velocity[self.dofs]) > self.caps + 1e-6)
+                or np.any(np.abs(first_velocity-self.velocity) > dv + 1e-6)):
+            return None, "velocity_acceleration"
+        q = self.config.q.copy()
+        velocity = first_velocity.copy()
+        plan = []
+        frozen = np.ones(self.model.nq, dtype=bool)
+        frozen[self.qids] = False
+        for _ in range(int(np.ceil(np.max(self.caps)/dv)) + 2):
+            candidate = q.copy()
+            mujoco.mj_integratePos(self.model, candidate, velocity, self.dt)
+            candidate[frozen] = self.home[frozen]
+            if (np.any(candidate[self.qids] < self.ranges[:, 0] - 1e-8)
+                    or np.any(candidate[self.qids] > self.ranges[:, 1] + 1e-8)):
+                return None, "joint_range"
+            n = max(2, int(np.ceil(np.max(np.abs(candidate-q)) / np.radians(.25))))
+            for fraction in np.linspace(0, 1, n + 1)[1:]:
+                clearance = self.clearance(q + fraction*(candidate-q), threshold=self.clearance_m)
+                if not np.isfinite(clearance) or clearance < self.clearance_m:
+                    return None, "swept_clearance"
+            plan.append((candidate.copy(), velocity.copy()))
+            if not np.any(velocity):
+                # Keep a checked stationary tail available even at rest.
+                if len(plan) == 1:
+                    plan.append((candidate.copy(), velocity.copy()))
+                return plan, ""
+            q = candidate
+            velocity = np.sign(velocity) * np.maximum(0, np.abs(velocity)-dv)
+        return None, "braking_horizon"
 
 
 def targets_from_json(record):

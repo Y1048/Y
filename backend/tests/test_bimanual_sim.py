@@ -1,5 +1,8 @@
 """Generated kinematic fixtures only; no hardware or Unity evidence."""
 import ast
+import json
+import time
+from types import SimpleNamespace
 import sys
 import unittest
 from pathlib import Path
@@ -80,6 +83,67 @@ class BimanualTests(unittest.TestCase):
 
     def test_crossed_targets_keep_sampled_clearance(self):
         self.run_motion(True)
+
+    def test_checked_tail_stops_on_infeasible_qp_without_reset(self):
+        targets = {}
+        for side, home in self.s.home_targets.items():
+            targets[side] = mink.SE3.from_rotation_and_translation(home.rotation(), home.translation()+[.05, 0, .03])
+        for _ in range(20):
+            self.assertTrue(self.s.step(targets))
+        self.assertGreater(np.max(np.abs(self.s.velocity)), .01)
+        with patch.object(module.qpsolvers, 'solve_problem', return_value=SimpleNamespace(found=False, x=None)):
+            for _ in range(100):
+                previous = self.s.velocity.copy()
+                self.assertTrue(self.s.step(targets))
+                self.assertLessEqual(np.max(np.abs(self.s.velocity-previous)), np.radians(60)*self.s.dt+1e-6)
+                self.assertGreaterEqual(self.s.clearance(self.s.config.q), .005)
+        self.assertEqual(np.max(np.abs(self.s.velocity)), 0)
+        self.assertTrue(self.s.step(targets))
+
+    def test_broadphase_matches_full_clearance_decision(self):
+        rng = np.random.default_rng(1809)
+        for _ in range(120):
+            q = self.s.home.copy()
+            q[self.s.qids] = rng.uniform(self.s.ranges[:,0], self.s.ranges[:,1])
+            exact = self.s.clearance(q)
+            fast = self.s.clearance(q, threshold=.005)
+            self.assertEqual(exact < .005, fast < .005)
+
+    def test_nonfinite_clearance_rejects_new_plan(self):
+        with patch.object(self.s, 'clearance', return_value=float('nan')):
+            self.assertFalse(self.s.step(self.s.home_targets))
+        self.assertEqual(self.s.state, 'blocked')
+
+    def test_recorded_unity_failure_replay(self):
+        # Recorded Quest/Unity simulation input; NOT measured G1 data.
+        from g1_bimanual_unity_sim import UnityCycle
+        cycle = UnityCycle(self.s)
+        timing = []
+        reached_old_failure = False
+        states = set()
+        fixture = Path(__file__).parent/'fixtures/bimanual_recorded_engage_20260918.jsonl'
+        for line in fixture.read_text().splitlines():
+            row = json.loads(line)
+            if row['kind'] == 'input':
+                cycle.receive(json.loads(row['raw_json_text']), row['receive_monotonic_s'])
+            else:
+                old_v = self.s.velocity.copy()
+                start = time.perf_counter()
+                cycle.tick(row['monotonic_s'])
+                timing.append((time.perf_counter()-start)*1000)
+                states.add(cycle.state)
+                self.assertNotEqual(cycle.state, 'blocked', cycle.reason)
+                self.assertLessEqual(np.max(np.abs(self.s.velocity-old_v)), np.radians(60)*self.s.dt+1e-6)
+                self.assertTrue(np.all(np.abs(self.s.velocity[self.s.dofs]) <= self.s.caps+1e-6))
+                self.assertTrue(np.all(self.s.config.q[self.s.qids] >= self.s.ranges[:,0]-1e-8))
+                self.assertTrue(np.all(self.s.config.q[self.s.qids] <= self.s.ranges[:,1]+1e-8))
+                self.assertGreaterEqual(self.s.clearance(self.s.config.q), .005)
+                reached_old_failure |= row['sequence'] == 607
+        self.assertTrue(reached_old_failure)
+        self.assertIn('tracking', states)
+        self.assertGreater(self.s.braking_steps, 0)
+        print('Recorded simulation replay: ticks=%d braking=%d p95_ms=%.2f max_ms=%.2f' %
+              (len(timing), self.s.braking_steps, np.percentile(timing,95), max(timing)))
 
     def test_reach_return_reengage(self):
         s = self.run_motion(False)

@@ -1,5 +1,31 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 coupled IK checked braking (offline verified)
+
+- Fix previous next-step-only planning: each accepted joint velocity now has
+  a discrete stopping tail checked before committing the step. Every tail
+  step respects the existing 60 deg/s^2 acceleration, 90/180 deg/s speed,
+  joint ranges, frozen non-arm pose, and >=5mm sampled clearance.
+- If a subsequent QP is infeasible or its stopping tail invalid, follow the
+  previously checked tail instead of resetting velocity or latching BLOCKED.
+  At zero velocity retain its checked hold and retry tracking on later input.
+  No valid cached tail still fails closed. This assumes fixed kinematic
+  geometry; it is NOT a physical braking controller or continuous collision proof.
+- World-AABB separation excludes only certainly distant collision pairs;
+  remaining pairs still use the existing robust geometry distance. 120 seeded
+  poses match the full collision decision. No XML/mesh limits were changed.
+- Recorded Quest/Unity fixture committed with provenance: original sequence
+  607 QP failure (+2.188s) now passes. 209 ticks, 24 checked-braking ticks;
+  joint range/speed/acceleration/clearance checked throughout. This is NOT
+  measured G1 data. Original laptop source JSONL preserved.
+- Executed: `py -3.11 -m unittest discover -s backend/tests -p "test_bimanual*.py"`
+  with isolated MuJoCo 3.12.0 PYTHONPATH: 17 PASS, 13.213s total.
+  Replay tick p95 13.34ms / max16.14ms on this run, not a hard real-time guarantee.
+- Original project installed selectively with backup. Current Python process
+  retains old code: stop simulation/Unity Play and reopen START_BIMANUAL_UNITY_SIM.bat,
+  then Play. Quest feel remains unverified. No G1/SSH/DDS/motor execution.
+
+
 ## 2026-09-18 sequential engagement and recorded IK failure
 
 - User finds simultaneous stable hand alignment uncomfortable. Each hand now

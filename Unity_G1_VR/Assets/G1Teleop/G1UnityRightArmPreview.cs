@@ -793,8 +793,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
         bool active = bimanual_simulation.IsTracking;
         target_hand_marker.position = active ? hand_binder.target_transform.position : hand_binder.EngagementTargetPosition;
         target_hand_marker.rotation = active ? hand_binder.MappedHandRotation : hand_binder.EngagementTargetRotation;
-        // Cyan is the requested target; do not label it a checked feasible target.
-        target_hand_renderer.sharedMaterial = tracked_hand_material;
+        tracked_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TrackedMarkerDiameter;
+        target_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TargetMarkerDiameter;
+        target_hand_renderer.material.color = G1BimanualSimulationSender.AlignmentColor(active, hand_binder.IsAlignmentReady);
         var wrist = GetRobotPositionReference();
         if (wrist != null) robot_wrist_marker.SetPositionAndRotation(wrist.position, wrist.rotation);
     }

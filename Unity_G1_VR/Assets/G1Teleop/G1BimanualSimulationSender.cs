@@ -8,6 +8,17 @@ using UnityEngine;
 [DefaultExecutionOrder(-20000)]
 public class G1BimanualSimulationSender : MonoBehaviour
 {
+    public const float TrackedMarkerDiameter = .060f;
+    public const float TargetMarkerDiameter = .055f;
+    public static readonly Color TrackedMarkerColor = new Color(0, .90f, 1, 1);
+    public static Color AlignmentColor(bool active, bool aligned)
+        => active ? Color.green : aligned ? Color.yellow : Color.white;
+
+    public static bool CanEngage(bool fresh, bool ready, bool tracked, bool inZones,
+        bool pinch, bool mustLeave, float leftProgress, float rightProgress)
+        => fresh && ready && tracked && inZones && !pinch && !mustLeave
+            && leftProgress >= 1 && rightProgress >= 1;
+
     public enum ArmMode { RightArm, BimanualSimulation }
     public bool useExistingScene;
     public ArmMode armMode = ArmMode.BimanualSimulation;
@@ -80,6 +91,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private double lastFeedback = double.NegativeInfinity;
     private long feedbackSequence = -1;
     private float alignmentTime;
+    private double lastDiagnostic;
     private float pinchTime;
     private string backendState = "waiting";
     private GameObject leftMarker, rightMarker;
@@ -132,8 +144,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (useExistingScene)
         {
             leftTrackedMarker = MakeMarker("Left tracked wrist");
-            leftTrackedMarker.GetComponent<Renderer>().material.color = Color.cyan;
-            leftTrackedMarker.transform.localScale = Vector3.one * .025f;
+            leftTrackedMarker.GetComponent<Renderer>().material.color = TrackedMarkerColor;
+            leftTrackedMarker.transform.localScale = Vector3.one * TrackedMarkerDiameter;
         }
         if (!useExistingScene) rightMarker = MakeMarker("Right engage zone");
         label = new GameObject("Bimanual simulation status").AddComponent<TextMesh>();
@@ -146,7 +158,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         var marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         marker.name = name;
-        marker.transform.localScale = Vector3.one * .045f;
+        marker.transform.localScale = Vector3.one * TargetMarkerDiameter;
+        var shader = Shader.Find("Unlit/Color");
+        if (shader != null) marker.GetComponent<Renderer>().material = new Material(shader);
         Destroy(marker.GetComponent<Collider>());
         return marker;
     }
@@ -280,8 +294,13 @@ public class G1BimanualSimulationSender : MonoBehaviour
         {
             alignmentTime = fresh && backendState == "ready" && inZones && !pinch && !mustLeaveZones
                 ? alignmentTime + Time.unscaledDeltaTime : 0;
-            if (alignmentTime >= .35f && (!useExistingScene ||
-                (leftBinder.EngagementProgress >= 1 && rightBinder.EngagementProgress >= 1)))
+            // Binders already enforce the configured stable hold. Do not add
+            // another simultaneous dwell gate on top of the two hand timers.
+            bool engageReady = useExistingScene
+                ? CanEngage(fresh, backendState == "ready", tracked, inZones, pinch, mustLeaveZones,
+                    leftBinder.EngagementProgress, rightBinder.EngagementProgress)
+                : alignmentTime >= .35f;
+            if (engageReady)
             {
                 if (useExistingScene)
                 {
@@ -307,6 +326,19 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 ResetBinders();
             }
         }
+        if (useExistingScene)
+        {
+            leftMarker.transform.localScale = Vector3.one * TargetMarkerDiameter;
+            leftMarker.GetComponent<Renderer>().material.color = AlignmentColor(active, leftBinder.IsAlignmentReady);
+            if (now-lastDiagnostic >= 1)
+            {
+                Debug.Log(string.Format("[BIMANUAL ENGAGE] backend={0} fresh={1} active={2} pinch={3} leave={4} L={5}/{6:F1}cm/{7:P0} R={8}/{9:F1}cm/{10:P0}",
+                    backendState, fresh, active, pinch, mustLeaveZones,
+                    leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
+                    rightBinder.EngagementState, rightBinder.AlignmentPositionError*100, rightBinder.EngagementProgress));
+                lastDiagnostic = now;
+            }
+        }
         packet.engage = active;
         packet.return_home = returnPending;
         if (now-lastSend >= 1.0/60)
@@ -323,7 +355,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
             ? "BLOCKED: restart simulation" : backendState == "returning" || returnPending
             ? "RETURNING: wait" : active ? "TRACKING | pinch 0.5s to return"
             : mustLeaveZones ? "READY: move out of zones, release pinch"
-            : "READY: align both wrists with spheres";
+            : pinch ? "READY: release pinch before engage"
+            : "READY: cyan wrists into white/yellow targets; hold BOTH";
         if (useExistingScene && !active && backendState == "ready" && fresh)
             Status += string.Format("\nL: {0} {1:F1}cm {2:P0} | R: {3} {4:F1}cm {5:P0}",
                 leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,

@@ -1,5 +1,26 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 marker parity and engage audit (Quest success NOT verified)
+
+- Previous repair was compile-verified only. User reports engage still fails.
+- Confirmed cyan wrist diameter mismatch: right .060m, left .025m. Right
+  requested target was also cyan, unlike left green. Now both tracked markers
+  use .060m and targets .055m, with white/yellow alignment and green active.
+- Latest runtime capture unity_20260918_094323_0712614.jsonl and Editor.log
+  show tracked hands but no demonstrated simultaneous completed alignment.
+  Do not claim a proven single cause for failed engage or a successful fix.
+- Remove extra simultaneous .35s timer in existing-scene mode; both binders
+  still require their configured stable hold, valid tracking and alignment.
+  Fresh ready feedback, released pinch, and rearm conditions remain required.
+- Add per-second combined [BIMANUAL ENGAGE] diagnostics for backend freshness,
+  pinch, rearm and both alignment errors/progress. Explicit pinch instruction.
+- Actual Unity/Meta reference compilation PASS; compiled sender CanEngage
+  executed under Mono: 576 boolean/progress combinations PASS. Shared marker
+  diameter check PASS. This is not Unity Play/Quest end-to-end verification.
+- Installed two C# changes selectively in original project with backup.
+  No robot, SSH, SDK/DDS or motor execution.
+
+
 ## 2026-09-18 same-scene engage/left-marker repair
 
 - User capture `unity_20260918_093446_2442044.jsonl`: 800 inputs; 625 had

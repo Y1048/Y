@@ -1,5 +1,24 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 bimanual boundary fixes installed (simulation only)
+
+Read [boundary fixes and verification](BIMANUAL_BOUNDARY_HARDENING_20260918.md).
+Short tracking loss now consumes checked braking commands, with output qpos
+continuity and zero-speed READY checks. Known solver errors use the tail or
+BLOCKED; malformed JSON is rejected before updating the cycle. Engage origins
+use the filter's normalized quaternion. New backend identity/start ordering and
+feedback sequence reset the C# calibration and reject delayed/old feedback.
+
+Source and installed-runtime suites: 58/58 PASS each. C# compilation with actual
+references, 17 backend-order cases and 576 engage combinations passed. Nine
+files installed with backup; 604 protected files and the scene/right-arm policy
+unchanged. Stop Play and the old Python normally, then restart both together;
+check boundary_policy=bimanual_boundary_v1 in the new run log.
+
+Intermittent engine-import delay remains unexplained; stage timestamps are now
+logged. A stopped auxiliary test is not counted as passed. Quest feel, full
+Unity Play restart and physical G1 behavior have not been tested.
+
 **최신 GPT 인계 요약: [GPT_BIMANUAL_HANDOFF_20260918.md](GPT_BIMANUAL_HANDOFF_20260918.md).**
 아래 기록은 역순 작업 이력이며, 과거의 미해결 표시는 이후 수정 결과와 구분한다.
 

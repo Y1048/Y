@@ -4,12 +4,13 @@ import json
 import math
 import socket
 import time
+import uuid
 from pathlib import Path
 
 import numpy as np
 import mink
 from g1_bimanual_sim import BimanualSimulation
-from g1_bimanual_runtime import runtime_metadata
+from g1_bimanual_runtime import runtime_metadata, startup_stage
 
 SCHEMA = 'g1.bimanual.unity.sim.v1'
 BASIS = np.array([[0., 0., 1.], [-1., 0., 0.], [0., 1., 0.]])
@@ -25,7 +26,44 @@ def decode(raw):
                 raise ValueError('duplicate_key')
             result[key] = value
         return result
-    x = json.loads(raw, object_pairs_hook=unique)
+    # Bound work before JSON constructs large integers or deep containers.
+    text = raw.decode('utf-8') if isinstance(raw, (bytes, bytearray)) else raw
+    depth = 0
+    quoted = escaped = False
+    for char in text:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == '\\':
+                escaped = True
+            elif char == '"':
+                quoted = False
+        elif char == '"':
+            quoted = True
+        elif char in '[{':
+            depth += 1
+            if depth > 8:
+                raise ValueError('json_depth')
+        elif char in ']}':
+            depth -= 1
+    def integer(value):
+        if len(value.lstrip('-')) > 18:
+            raise ValueError('integer_range')
+        return int(value)
+    def floating(value):
+        if len(value) > 64:
+            raise ValueError('number_length')
+        result = float(value)
+        if not math.isfinite(result):
+            raise ValueError('nonfinite_number')
+        return result
+    def constant(value):
+        raise ValueError('nonfinite_number')
+    try:
+        x = json.loads(text, object_pairs_hook=unique, parse_int=integer,
+                       parse_float=floating, parse_constant=constant)
+    except (RecursionError, OverflowError) as error:
+        raise ValueError('json_numeric_or_depth') from error
     if not isinstance(x, dict) or x.get('schema') != SCHEMA or x.get('simulation_only') is not True:
         raise ValueError('provenance')
     if not isinstance(x.get('session'), str) or not 1 <= len(x['session']) <= 64:
@@ -103,6 +141,11 @@ class UnityCycle:
     """Receipt freshness is local monotonic time, never a cross-host subtraction."""
     def __init__(self, sim):
         self.sim = sim
+        self.backend_id = uuid.uuid4().hex
+        # Ordering only among Python processes on this loopback host. Never
+        # subtract from Unity's clock or use it as cross-host input freshness.
+        self.backend_started_ns = time.perf_counter_ns()
+        self.feedback_sequence = 0
         self.state = 'ready'
         self.session = None
         self.sequence = -1
@@ -137,9 +180,10 @@ class UnityCycle:
             if not packet['engage']:
                 self.armed = True
             elif self.armed and not packet['return_home'] and all(packet[s]['tracked'] for s in ('left', 'right')):
-                self.origins = {s: (np.array(packet[s]['position_m']),
-                    mink.SO3(np.array(packet[s]['quaternion_wxyz'])).as_matrix()) for s in ('left', 'right')}
                 self.pose_filter.reset(packet)
+                self.origins = {s: (hand['position_m'].copy(),
+                    mink.SO3(hand['quaternion_wxyz']).as_matrix())
+                    for s, hand in self.pose_filter.hands.items()}
                 self.armed = False
                 self.state = 'tracking'
                 self.reason = ''
@@ -168,8 +212,8 @@ class UnityCycle:
                 if now - self.loss_since >= .35:
                     self.start_return('tracking_lost')
                 else:
-                    self.last_tick_action = 'tracking_hold'
-                    return  # Simulation pose hold during transient tracking loss.
+                    self.last_tick_action = 'tracking_braking'
+                    self.sim.brake('tracking_unavailable')
             else:
                 self.loss_since = None
                 goals = {}
@@ -202,6 +246,7 @@ class UnityCycle:
         if isinstance(self.sim, BimanualSimulation):
             result.update(ik_state=self.sim.state, ik_reason=self.sim.reason,
                 braking_steps_total=self.sim.braking_steps,
+                solver_error=self.sim.last_solver_error,
                 checked_tail_steps_remaining=len(self.sim.brake_plan),
                 motion={s:p.diagnostics() for s,p in self.sim.motion.items()}
                     if self.last_tick_action == 'tracking' else None)
@@ -209,7 +254,10 @@ class UnityCycle:
 
     def feedback(self):
         result = dict(schema='g1.bimanual.unity.sim.state.v1', simulation_only=True,
+                    backend_id=self.backend_id, backend_started_ns=self.backend_started_ns,
+                    feedback_sequence=self.feedback_sequence,
                     session=self.session, sequence=self.sequence, state=self.state, reason=self.reason)
+        self.feedback_sequence += 1
         if isinstance(self.sim, BimanualSimulation):
             result.update(joint_names=self.sim.names,
                           q_rad=self.sim.config.q[self.sim.qids].tolist())
@@ -226,7 +274,9 @@ def main():
     if not 1024 <= args.port <= 65535 or not math.isfinite(args.seconds) or args.seconds < 0:
         parser.error('Invalid port/duration')
     args.output.parent.mkdir(parents=True, exist_ok=True)
+    startup_stage('model_begin')
     sim = BimanualSimulation()
+    startup_stage('model_ready')
     cycle = UnityCycle(sim)
     viewer = None
     if not args.headless:
@@ -241,14 +291,18 @@ def main():
             if hasattr(socket, 'SIO_UDP_CONNRESET'):
                 sock.ioctl(socket.SIO_UDP_CONNRESET, False)
             log.write(json.dumps(dict(kind='run', simulation_dt_s=sim.dt,
-                motion_policy='bimanual_motion_v1', input_filter_time_constants_s=[.060, .050],
+                motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
+                backend_id=cycle.backend_id, backend_started_ns=cycle.backend_started_ns,
+                input_filter_time_constants_s=[.060, .050],
                 **runtime_metadata('unity_loopback')), allow_nan=False)+'\n')
             log.flush()
+            startup_stage('listener_ready')
             print(f'SIMULATION ONLY: Unity -> 127.0.0.1:{args.port}; no G1 output', flush=True)
             start = time.monotonic()
             peer = None
             previous_state = None
             previous_tick = None
+            first_feedback = True
             while not viewer or viewer.is_running():
                 now = time.monotonic()
                 if args.seconds and now - start >= args.seconds:
@@ -279,6 +333,9 @@ def main():
                 if peer:
                     try:
                         sock.sendto(json.dumps(feedback).encode(), peer)
+                        if first_feedback:
+                            startup_stage('first_feedback')
+                            first_feedback = False
                     except (ConnectionResetError, BlockingIOError):
                         pass
                 log.write(json.dumps(dict(kind='state', monotonic_s=now,
@@ -293,6 +350,10 @@ def main():
                 if viewer:
                     viewer.sync()
                 time.sleep(max(0, sim.dt - (time.monotonic()-now)))
+            log.write(json.dumps(dict(kind='shutdown', simulation_only=True,
+                backend_id=cycle.backend_id, state=cycle.state))+'\n')
+            log.flush()
+            startup_stage('normal_exit')
     except KeyboardInterrupt:
         print('Simulation closed; no hardware owner exists here.')
     finally:

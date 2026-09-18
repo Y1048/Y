@@ -116,62 +116,95 @@ class CycleTests(unittest.TestCase):
 
     def test_real_loopback_synthetic_sender(self):
         with tempfile.TemporaryDirectory() as directory, socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
-            # Ephemeral test listener port; no G1 address or SDK.
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
                 probe.bind(('127.0.0.1', 0))
                 port = probe.getsockname()[1]
             sender.bind(('127.0.0.1', 0))
             sender.settimeout(.1)
-            output = Path(directory) / 'loopback.jsonl'
-            process = subprocess.Popen([sys.executable, str(ROOT / 'MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py'),
-                '--headless', '--seconds', '4', '--port', str(port), '--output', str(output)],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            try:
-                sequence = 0
-                deadline = time.monotonic() + 30  # Import/startup budget, not a 60Hz performance claim.
-                feedback_started = False
-                states = set()
-                while process.poll() is None and time.monotonic() < deadline:
-                    # Remain inactive until ready feedback, then calibrate stationary wrists.
-                    p = packet(sequence, engage='ready' in states)
-                    sender.sendto(json.dumps(p).encode(), ('127.0.0.1', port))
-                    try:
-                        raw, _ = sender.recvfrom(4096)
-                        feedback = json.loads(raw)
-                        if not feedback_started:
-                            deadline = time.monotonic() + 8
-                            feedback_started = True
-                        states.add(feedback['state'])
-                        self.assertEqual(len(feedback['q_rad']), 14)
-                        self.assertEqual(feedback['joint_names'][0], 'left_shoulder_pitch_joint')
-                        self.assertEqual(feedback['joint_names'][7], 'right_shoulder_pitch_joint')
-                        self.assertTrue(np.isfinite(feedback['q_rad']).all())
-                    except (socket.timeout, ConnectionResetError):
-                        pass
-                    sequence += 1
-                    time.sleep(.015)
+            output = Path(directory)/'loopback.jsonl'
+            stdout_path, stderr_path = Path(directory)/'stdout.txt', Path(directory)/'stderr.txt'
+            # Files cannot fill an unread stdout/stderr pipe. Startup stages
+            # identify import/model/listener/exit delays without extending budgets.
+            with stdout_path.open('w', encoding='utf-8') as out_file, stderr_path.open('w', encoding='utf-8') as err_file:
+                process = subprocess.Popen([sys.executable, '-B',
+                    str(ROOT/'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py'),
+                    '--engine-root', str(Path(sys.modules['mujoco'].__file__).resolve().parent.parent),
+                    '--mode', 'unity', '--headless', '--seconds', '4',
+                    '--port', str(port), '--output', str(output)],
+                    stdout=out_file, stderr=err_file)
                 try:
-                    out, err = process.communicate(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    out, err = process.communicate(timeout=5)
-                    self.fail('Loopback process did not exit after its bounded run: '+out+err)
-                self.assertEqual(process.returncode, 0, out + err)
-                self.assertIn('tracking', states)
-                rows = [json.loads(x) for x in output.read_text().splitlines()]
-                self.assertEqual(rows[0]['kind'], 'run')
-                self.assertEqual(rows[0]['motion_policy'], 'bimanual_motion_v1')
-                self.assertEqual(rows[0]['mujoco_version'], '3.12.0')
-                self.assertIn('g1_bimanual_motion_policy.py', rows[0]['source_sha256'])
-                states_in_log = [r for r in rows if r['kind'] == 'state']
-                self.assertTrue(all(r['control_tick_ms'] >= 0 for r in states_in_log))
-                self.assertTrue(all('ik_reason' in r and 'checked_braking_applied' in r for r in states_in_log))
-                self.assertTrue(any(r['kind'] == 'input' and r['accepted'] for r in rows))
-                self.assertTrue(all(r['simulation_only'] for r in rows if r['kind'] == 'state'))
-            finally:
-                if process.poll() is None:
-                    process.kill()
-                    process.communicate()
+                    sequence = 0
+                    deadline = time.monotonic()+30
+                    feedback_started = False
+                    states, backend_ids = set(), set()
+                    bad_sent = False
+                    previous_feedback_sequence = -1
+                    while process.poll() is None and time.monotonic() < deadline:
+                        p = packet(sequence, engage='ready' in states)
+                        sender.sendto(json.dumps(p).encode(), ('127.0.0.1', port))
+                        try:
+                            raw, _ = sender.recvfrom(4096)
+                            feedback = json.loads(raw)
+                            if not feedback_started:
+                                deadline = time.monotonic()+8
+                                feedback_started = True
+                            states.add(feedback['state'])
+                            backend_ids.add(feedback['backend_id'])
+                            self.assertGreater(feedback['feedback_sequence'],previous_feedback_sequence)
+                            previous_feedback_sequence=feedback['feedback_sequence']
+                            self.assertGreater(feedback['backend_started_ns'],0)
+                            self.assertEqual(len(feedback['q_rad']),14)
+                            self.assertEqual(feedback['joint_names'][0],'left_shoulder_pitch_joint')
+                            self.assertEqual(feedback['joint_names'][7],'right_shoulder_pitch_joint')
+                            self.assertTrue(np.isfinite(feedback['q_rad']).all())
+                            if not bad_sent:
+                                bad = packet()
+                                bad['sender_time_s']=10**400
+                                deep=json.dumps(packet())[:-1]+',"extra":'+'['*1100+'0'+']'*1100+'}'
+                                for malformed in (json.dumps(bad).encode(),deep.encode(),b'{"x":1,"x":2}',b'\xff'):
+                                    sender.sendto(malformed,('127.0.0.1',port))
+                                bad_sent=True
+                        except (socket.timeout,ConnectionResetError):
+                            pass
+                        sequence+=1
+                        time.sleep(.015)
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=5)
+                        self.fail('Loopback did not exit. '+stdout_path.read_text(encoding='utf-8')+stderr_path.read_text(encoding='utf-8'))
+                    out,err=stdout_path.read_text(encoding='utf-8'),stderr_path.read_text(encoding='utf-8')
+                    self.assertEqual(process.returncode,0,out+err)
+                    self.assertIn('tracking',states)
+                    self.assertEqual(len(backend_ids),1)
+                    for stage in ('engine_begin','engine_ready','controller_import_begin','controller_import_ready','model_begin','model_ready','listener_ready','first_feedback','normal_exit'):
+                        self.assertIn(stage,out)
+                    rows=[json.loads(x) for x in output.read_text(encoding='utf-8').splitlines()]
+                    self.assertEqual(rows[0]['kind'],'run')
+                    self.assertEqual(rows[0]['motion_policy'],'bimanual_motion_v1')
+                    self.assertEqual(rows[0]['boundary_policy'],'bimanual_boundary_v1')
+                    self.assertEqual(rows[0]['mujoco_version'],'3.12.0')
+                    self.assertIn('g1_bimanual_motion_policy.py',rows[0]['source_sha256'])
+                    states_in_log=[r for r in rows if r['kind']=='state']
+                    self.assertTrue(all(r['control_tick_ms']>=0 for r in states_in_log))
+                    self.assertTrue(all('ik_reason' in r and 'solver_error' in r for r in states_in_log))
+                    self.assertTrue(all(r['simulation_only'] for r in states_in_log))
+                    self.assertEqual(sum(r['kind']=='reject' for r in rows),4)
+                    self.assertEqual(rows[-1]['kind'],'shutdown')
+                except Exception:
+                    # Keep the exact failed subprocess evidence beyond Temp cleanup.
+                    destination=ROOT/'logs/test_results'/('bimanual_loopback_failure_'+str(time.time_ns()))
+                    destination.mkdir(parents=True,exist_ok=False)
+                    for path in (stdout_path,stderr_path,output):
+                        if path.exists():
+                            (destination/path.name).write_bytes(path.read_bytes())
+                    print('LOOPBACK_FAILURE_ARTIFACTS',destination,flush=True)
+                    raise
+                finally:
+                    if process.poll() is None:
+                        process.kill()
+                        process.wait(timeout=5)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,132 @@
+{
+  "schema": "g1.bimanual.boundary.validation.v1",
+  "source_base_commit": "99202f5dfb7b338696b3a649d7f414b35a829cc8",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "quest_verified": false,
+  "unity_play_tested": false,
+  "source_suite": {
+    "count": 58,
+    "passed": 58,
+    "seconds": 55.741,
+    "exit_code": 0
+  },
+  "runtime_suite": {
+    "count": 58,
+    "passed": 58,
+    "seconds": 56.334,
+    "exit_code": 0
+  },
+  "csharp_compile": {
+    "exit_code": 0,
+    "warning_count": 81,
+    "warning_codes": [
+      "CS0169",
+      "CS0618",
+      "CS0649",
+      "CS1701"
+    ]
+  },
+  "csharp_tests": [
+    {
+      "name": "FeedbackGate",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "output": "PASS: 17 backend generation/order checks\r\n"
+    },
+    {
+      "name": "EngageGate",
+      "compile_exit": 0,
+      "run_exit": 0,
+      "output": "PASS: readiness memory, invalidation, expiration and final position gate\r\nPASS: 576 engage gate cases; shared marker dimensions\r\n"
+    }
+  ],
+  "output_continuity": {
+    "max_acceleration_deg_s2": 60.0000000000268,
+    "test_loss_ticks": [
+      1,
+      6,
+      20,
+      30
+    ],
+    "ready_requires_zero_speed": true,
+    "checks_output_difference_against_internal_velocity": true
+  },
+  "recorded_replay": {
+    "ticks": 1404,
+    "tracking_reasons": {
+      "tracking": 666,
+      "checked_braking:qp_infeasible": 1
+    },
+    "states": [
+      "ready",
+      "returning",
+      "tracking"
+    ],
+    "braking_total": 2,
+    "minimum_clearance_mm": 19.694884058626737,
+    "p95_ms": 10.751400000117426,
+    "max_ms": 20.019400000819587,
+    "extra_return_ticks": 0
+  },
+  "bat_smoke": {
+    "exit_code": 0,
+    "port": 59205,
+    "state_rows": 58,
+    "boundary_policy": "bimanual_boundary_v1",
+    "shutdown_record": true
+  },
+  "runtime_installed": true,
+  "backup_directory": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_boundary_20260918_123607",
+  "protected_files_checked": 604,
+  "source_hashes": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": "5c4ec2b6d143e2802114e06d0f5cf18a0084a98fbcd9f08ea607cfe5add0b5ed",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py": "80c2dc4d1bdb2e3dc799b1ba2fb5aa135f68a1f26a8ddc8e054615394f8e6521",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py": "296707579dbe1ca723817ffb30db8844903694df87599f2c8da1d1915547da12",
+    "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs": "8016d794b09c092792e96de16610a3edd96cc7e5843e7d2274681ec83d1d4031",
+    "Unity_G1_VR/Assets/G1Teleop/G1BimanualFeedbackGate.cs": "b9e12ce1162f4a2bec0dc4501a5ddef0e7fd46cc0720d91dbb8838b60555355e",
+    "Unity_G1_VR/Assets/G1Teleop/G1BimanualFeedbackGate.cs.meta": "1792ffa5e414955d1183f18a8a64bd42dcc9adf39463e31a8c27d8f174a2ba68",
+    "backend/tests/test_bimanual_unity_sim.py": "b6f2f2aaeadbbad415f8a22971bf009c39497249b5cfa0cb082988a662a54ce0",
+    "backend/tests/test_bimanual_boundaries.py": "da4b7c765950550031775d5ae441d4ba455765edffda7854482d6ae5ded19321",
+    "backend/tests/BimanualFeedbackGateTest.cs": "3c00a1369e898fc7994dce3a2aeab0b25e7d5cc4148d3108b952fd5c3f1a1d86"
+  },
+  "engine": {
+    "kind": "run",
+    "simulation_dt_s": 0.016666666666666666,
+    "motion_policy": "bimanual_motion_v1",
+    "boundary_policy": "bimanual_boundary_v1",
+    "backend_id": "be52239f38de46b7af911ca6c95271f4",
+    "backend_started_ns": 14268805254900,
+    "input_filter_time_constants_s": [
+      0.06,
+      0.05
+    ],
+    "schema": "g1.bimanual.sim.run.v1",
+    "simulation_only": true,
+    "hardware_output_authorized": false,
+    "input_kind": "unity_loopback",
+    "started_utc": "2026-09-18T03:40:49.041732+00:00",
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "mujoco_version": "3.12.0",
+    "mujoco_native_version": "3.12.0",
+    "mujoco_module": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0\\mujoco\\__init__.py",
+    "packages": {
+      "mink": "1.3.0",
+      "qpsolvers": "4.13.0",
+      "daqp": "0.9.1",
+      "numpy": "2.4.6"
+    },
+    "source_sha256": {
+      "g1_bimanual_runtime.py": "296707579dbe1ca723817ffb30db8844903694df87599f2c8da1d1915547da12",
+      "g1_bimanual_sim.py": "5c4ec2b6d143e2802114e06d0f5cf18a0084a98fbcd9f08ea607cfe5add0b5ed",
+      "g1_bimanual_unity_sim.py": "80c2dc4d1bdb2e3dc799b1ba2fb5aa135f68a1f26a8ddc8e054615394f8e6521",
+      "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe"
+    }
+  },
+  "unresolved": [
+    "One auxiliary child launch spent about 50.65s importing MuJoCo and was stopped later; root cause not established. The direct engine probe and completed source/runtime suites passed.",
+    "Full Unity/Quest fast-restart and hand tracking feel not exercised; C# logic tests and real assembly compilation are separate evidence."
+  ]
+}

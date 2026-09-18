@@ -10,6 +10,7 @@ import numpy as np
 import mujoco
 import mink
 import qpsolvers
+from qpsolvers.exceptions import SolverError
 import run_mink_g1_right_arm_prototype as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
@@ -83,6 +84,7 @@ class BimanualSimulation:
                                  int(self.model.geom_bodyid[g])) in bodies for g in pair)]
         self.brake_plan = []
         self.braking_steps = 0
+        self.last_solver_error = None
         self.velocity = np.zeros(self.model.nv)
         self.state = "ready"
         self.reason = ""
@@ -124,6 +126,10 @@ class BimanualSimulation:
             for target in targets.values():
                 if not np.isfinite(target.as_matrix()).all():
                     raise ValueError("Nonfinite target")
+        if returning and np.max(np.abs(self.config.q[self.qids]-self.home[self.qids])) < .002 and np.max(np.abs(self.velocity)) < .01:
+            # Publish the checked zero-speed endpoint before declaring READY.
+            self._motion_returning = True
+            return self.brake('return_settling', returning=True)
         if returning:
             tasks = [self.posture]  # Preserve the established checked joint-home return.
         else:
@@ -214,8 +220,17 @@ class BimanualSimulation:
         scale = max(float(np.max(np.abs(hessian))), 1e-12)
         reduced = qpsolvers.Problem(hessian/scale, linear/scale,
                                     g[keep]/norms[keep, None], h[keep]/norms[keep])
-        result = None if inconsistent else qpsolvers.solve_problem(reduced, solver=base._select_solver())
+        self.last_solver_error = None
+        result = None
         reason = "qp_infeasible"
+        if not inconsistent:
+            try:
+                result = qpsolvers.solve_problem(reduced, solver=base._select_solver())
+            except SolverError as error:
+                # Numerical solver failure is recoverable; configuration and
+                # programming errors are not silently classified as no solution.
+                self.last_solver_error = dict(type=type(error).__name__, message=str(error)[:240])
+                reason = "solver_error:" + type(error).__name__
         plan = None
         if result is not None and result.found and result.x is not None and np.isfinite(result.x).all():
             velocity = np.zeros(self.model.nv)
@@ -226,24 +241,44 @@ class BimanualSimulation:
             self.brake_plan = plan
             self.reason = ""
         elif self.brake_plan:
-            # This tail was checked before the previous command was accepted.
-            # The fixed-base kinematic scene has no moving external obstacles.
-            # Follow it without dropping acceleration/collision/range limits.
-            candidate, velocity = self.brake_plan[0]
-            if len(self.brake_plan) > 1:
-                self.brake_plan.pop(0)
-            self.braking_steps += 1
-            self.reason = "checked_braking:" + reason
+            return self.brake(reason, returning=returning)
         else:
             self.state = "blocked"
             self.reason = reason
             return False
+        return self._apply_command(candidate, velocity, returning=returning)
+
+    def _apply_command(self, candidate, velocity, *, returning=False):
         self.config.update(candidate)
         self.velocity = velocity
         self.state = "returning" if returning else "tracking"
-        if returning and np.max(np.abs(candidate[self.qids] - self.home[self.qids])) < .002 and np.max(np.abs(velocity)) < .01:
+        if returning and np.max(np.abs(candidate[self.qids]-self.home[self.qids])) < .002 and not np.any(velocity):
             self.state = "ready"
         return True
+
+    def brake(self, reason='tracking_unavailable', *, returning=False):
+        """Advance one already checked stopping command; do not freeze q at speed.
+
+        The fixed-base scene has no moving external obstacles. A stationary
+        initial hold may be checked here, but a missing moving tail is a fault.
+        """
+        if self.state == 'blocked':
+            return False
+        if not self.brake_plan:
+            if np.any(self.velocity):
+                self.state, self.reason = 'blocked', 'missing_checked_tail:' + reason
+                return False
+            plan, rejected = self.checked_stop_plan(np.zeros(self.model.nv))
+            if plan is None:
+                self.state, self.reason = 'blocked', rejected
+                return False
+            self.brake_plan = plan
+        candidate, velocity = self.brake_plan[0]
+        if len(self.brake_plan) > 1:
+            self.brake_plan.pop(0)
+        self.braking_steps += 1
+        self.reason = 'checked_braking:' + reason
+        return self._apply_command(candidate, velocity, returning=returning)
 
     def checked_stop_plan(self, first_velocity):
         """Discrete acceleration-bounded stopping tail, sampled geometry only.

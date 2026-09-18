@@ -79,6 +79,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         public string schema;
         public bool simulation_only;
+        public string backend_id;
+        public long backend_started_ns;
+        public long feedback_sequence;
         public string session;
         public long sequence;
         public string state;
@@ -99,6 +102,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private double lastSend;
     private double lastFeedback = double.NegativeInfinity;
     private long feedbackSequence = -1;
+    private G1BimanualFeedbackGate feedbackGate = new G1BimanualFeedbackGate();
     private float alignmentTime;
     private double lastDiagnostic;
     private float pinchTime;
@@ -146,6 +150,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         backendState = "waiting";
         lastFeedback = double.NegativeInfinity;
         feedbackSequence = -1;
+        feedbackGate = new G1BimanualFeedbackGate();
+        LatestJoints = null;
+        LatestJointNames = null;
         returnSequence = -1;
         leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
         client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0));
@@ -239,9 +246,25 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 if (!IPAddress.IsLoopback(remote.Address) || remote.Port != port || data.Length > 4096) continue;
                 var feedback = JsonUtility.FromJson<Feedback>(Encoding.UTF8.GetString(data));
                 if (feedback == null || feedback.schema != "g1.bimanual.unity.sim.state.v1" ||
-                    !feedback.simulation_only || feedback.session != packet.session ||
-                    feedback.sequence < feedbackSequence || feedback.sequence >= packet.sequence) continue;
+                    !feedback.simulation_only || feedback.session != packet.session) continue;
+                if (feedback.state != "ready" && feedback.state != "tracking" &&
+                    feedback.state != "returning" && feedback.state != "blocked") continue;
                 if (useExistingScene && !ValidJoints(feedback)) continue;
+                bool restarted;
+                if (!feedbackGate.Accept(feedback.backend_id, feedback.backend_started_ns,
+                    feedback.feedback_sequence, feedback.sequence, packet.sequence, out restarted)) continue;
+                if (restarted)
+                {
+                    // A new backend must receive inactive input before any new
+                    // engage. Never carry old calibration across a process restart.
+                    active = false;
+                    returnPending = false;
+                    returnSequence = -1;
+                    mustLeaveZones = true;
+                    alignmentTime = pinchTime = 0;
+                    ResetBinders();
+                    Debug.Log("[BIMANUAL SIM] backend restarted; fresh alignment required.");
+                }
                 if (ValidJoints(feedback)) { LatestJoints = feedback.q_rad; LatestJointNames = feedback.joint_names; }
                 backendState = feedback.state;
                 feedbackSequence = feedback.sequence;

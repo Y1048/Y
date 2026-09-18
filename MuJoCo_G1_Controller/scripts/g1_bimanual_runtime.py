@@ -11,12 +11,17 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[2]
 VALIDATED_MUJOCO = '3.12.0'
 ENGINE_ENV = 'G1_BIMANUAL_ENGINE_ROOT'
 DEFAULT_ENGINE_ROOT = ROOT / 'logs/diagnostics/mujoco_versions' / VALIDATED_MUJOCO
+
+
+def startup_stage(stage):
+    print(f'[BIMANUAL STARTUP] {stage} perf_counter_ns={time.perf_counter_ns()}', flush=True)
 
 
 def require_validated_engine():
@@ -88,7 +93,9 @@ def main(argv=None):
     args, forwarded = parser.parse_known_args(argv)
     if (args.validate_only or args.mode == 'test') and forwarded:
         parser.error('Runtime arguments are only accepted for unity/demo execution.')
+    startup_stage('engine_begin')
     engine = load_engine(args.engine_root)
+    startup_stage('engine_ready')
     print(f'SIMULATION ONLY | MuJoCo {engine.__version__} | {engine.__file__}', flush=True)
     if args.validate_only:
         print(json.dumps(runtime_metadata('validation_only'), allow_nan=False), flush=True)
@@ -98,7 +105,9 @@ def main(argv=None):
         suite = unittest.defaultTestLoader.discover(str(ROOT/'backend/tests'), pattern='test_bimanual*.py')
         result = unittest.TextTestRunner(verbosity=2).run(suite)
         return 0 if result.wasSuccessful() else 1
+    startup_stage('controller_import_begin')
     module = importlib.import_module('g1_bimanual_unity_sim' if args.mode == 'unity' else 'g1_bimanual_sim')
+    startup_stage('controller_import_ready')
     previous = sys.argv
     try:
         sys.argv = [module.__file__] + forwarded

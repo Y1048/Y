@@ -49,6 +49,7 @@ public sealed class G1KeypadLocomotionUdpSender : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Install()
     {
+        if (G1BimanualSimulationSender.IsSimulationSceneLoaded()) return;
         if (FindObjectOfType<G1KeypadLocomotionUdpSender>() != null) return;
         GameObject sender = new GameObject("G1KeypadLocomotionUdpSender");
         DontDestroyOnLoad(sender);
@@ -57,6 +58,7 @@ public sealed class G1KeypadLocomotionUdpSender : MonoBehaviour
 
     private void Awake()
     {
+        if (G1BimanualSimulationSender.IsSimulationSceneLoaded()) { enabled = false; return; }
         udp = new UdpClient();
         endpoint = new IPEndPoint(IPAddress.Loopback, Port);
         session = Guid.NewGuid().ToString("N");

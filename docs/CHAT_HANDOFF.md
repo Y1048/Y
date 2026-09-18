@@ -2,7 +2,24 @@
 
 > **Absolute G1 mutation rule:** Never create, delete, rename, move, or modify any file on the G1; never run a program that can create a log, publish a command, change a service or mode, or otherwise mutate G1 state without the user's explicit approval for that exact action. Inspect source before running diagnostics. Remote-to-local copy is allowed only when it reads existing G1 files and writes exclusively to the Windows project.
 
-Last updated: 2026-09-17
+Last updated: 2026-09-18
+
+## Unity paired-hand simulation input (2026-09-18)
+
+- Laptop work in clean sync checkout: added `G1BimanualSimulationSender`,
+  separate-scene editor menu, `g1_bimanual_unity_sim.py`, and
+  `tools/START_BIMANUAL_UNITY_SIM.bat`. See `docs/BIMANUAL_UNITY_SIM_20260918.md`.
+- Fixed localhost UDP 5020 by default; distinct simulation-only schema. Both
+  hands engage together; either-hand pinch for 0.5s returns both; fresh ready
+  and a new inactive/active edge permit re-engage. No G1 connection.
+- Added an opt-in scene marker guard to keypad Install/Awake, because the
+  existing automatic UDP 5016 sender would otherwise run even in the new scene.
+  Existing right-arm IK, original scene, physical paths and dirty runtime stay untouched.
+- MuJoCo 3.12.0: 13 generated/unit/loopback tests passed. C# compiled against
+  installed Unity/Meta assemblies. Full Unity import/scene generation/Play,
+  actual Quest input and runtime bootstrap suppression still need verification.
+- The new scene is generated through the menu, not checked in. Logs are PC-local.
+  Do not describe this source-level connection as a completed Quest/G1 trial.
 
 ## Bimanual simulation candidate (not Unity or G1 connected)
 

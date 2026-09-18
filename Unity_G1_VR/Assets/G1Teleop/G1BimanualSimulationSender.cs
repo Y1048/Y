@@ -1,0 +1,261 @@
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using UnityEngine;
+
+/// <summary>Opt-in paired wrist input. Fixed loopback destination, simulation schema only.</summary>
+public class G1BimanualSimulationSender : MonoBehaviour
+{
+    public static bool IsSimulationSceneLoaded()
+    {
+        // BeforeSceneLoad sees deserialized scene objects before their Awake.
+        // Include inactive objects so disabling the UI cannot enable locomotion.
+        foreach (var sender in Resources.FindObjectsOfTypeAll<G1BimanualSimulationSender>())
+            if (sender.gameObject.scene.IsValid()) return true;
+        return false;
+    }
+
+    public Transform head;
+    public OVRHand leftHand;
+    public OVRHand rightHand;
+    public OVRSkeleton leftSkeleton;
+    public OVRSkeleton rightSkeleton;
+    public int port = 5020;
+    public string Status { get; private set; } = "WAIT: start Python simulation";
+
+    [Serializable] private class HandPacket
+    {
+        public bool tracked;
+        public float[] position_m = new float[3];
+        public float[] quaternion_wxyz = new float[] { 1, 0, 0, 0 };
+    }
+    [Serializable] private class Packet
+    {
+        public string schema = "g1.bimanual.unity.sim.v1";
+        public bool simulation_only = true;
+        public string session;
+        public long sequence;
+        public double sender_time_s;
+        public bool engage;
+        public bool return_home;
+        public HandPacket left = new HandPacket();
+        public HandPacket right = new HandPacket();
+    }
+    [Serializable] private class Feedback
+    {
+        public string schema;
+        public bool simulation_only;
+        public string session;
+        public long sequence;
+        public string state;
+        public string reason;
+    }
+
+    private UdpClient client;
+    private Packet packet;
+    private Quaternion heading;
+    private Vector3 origin;
+    private bool frameSet;
+    private bool active;
+    private bool mustLeaveZones;
+    private bool returnPending;
+    private long returnSequence = -1;
+    private double lastSend;
+    private double lastFeedback = double.NegativeInfinity;
+    private long feedbackSequence = -1;
+    private float alignmentTime;
+    private float pinchTime;
+    private string backendState = "waiting";
+    private GameObject leftMarker, rightMarker;
+    private TextMesh label;
+
+    private void OnEnable()
+    {
+        if (head == null || leftHand == null || rightHand == null ||
+            leftSkeleton == null || rightSkeleton == null)
+        {
+            Debug.LogError("Bimanual simulation requires headset and both OVR hand/skeleton references.");
+            enabled = false;
+            return;
+        }
+        packet = new Packet { session = Guid.NewGuid().ToString("N") };
+        frameSet = active = returnPending = mustLeaveZones = false;
+        alignmentTime = pinchTime = 0;
+        backendState = "waiting";
+        lastFeedback = double.NegativeInfinity;
+        feedbackSequence = -1;
+        returnSequence = -1;
+        client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0));
+        client.Client.Blocking = false;
+        // Suppress Windows UDP ICMP reset when Python is not running yet.
+        if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+            client.Client.IOControl((IOControlCode)(-1744830452), new byte[] { 0 }, null);
+        leftMarker = MakeMarker("Left engage zone");
+        rightMarker = MakeMarker("Right engage zone");
+        label = new GameObject("Bimanual simulation status").AddComponent<TextMesh>();
+        label.fontSize = 48;
+        label.characterSize = .006f;
+        label.anchor = TextAnchor.MiddleCenter;
+    }
+
+    private GameObject MakeMarker(string name)
+    {
+        var marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        marker.name = name;
+        marker.transform.localScale = Vector3.one * .045f;
+        Destroy(marker.GetComponent<Collider>());
+        return marker;
+    }
+
+    private Transform Wrist(OVRSkeleton skeleton)
+    {
+        if (skeleton.Bones != null)
+            foreach (OVRBone bone in skeleton.Bones)
+                if (bone != null && bone.Id == OVRSkeleton.BoneId.Hand_WristRoot)
+                    return bone.Transform;
+        return null; // Never switch to a different pose source while tracking.
+    }
+
+    private bool ReadHand(OVRHand hand, Transform wrist, HandPacket output)
+    {
+        output.tracked = wrist != null && hand.IsTracked && hand.IsDataHighConfidence;
+        if (!output.tracked) return false;
+        Vector3 p = Quaternion.Inverse(heading) * (wrist.position - origin);
+        Quaternion q = Quaternion.Inverse(heading) * wrist.rotation;
+        output.position_m = new[] { p.x, p.y, p.z };
+        output.quaternion_wxyz = new[] { q.w, q.x, q.y, q.z };
+        return true;
+    }
+
+    private void LateUpdate()
+    {
+        if (client == null) return;
+        double now = Time.realtimeSinceStartupAsDouble;
+        for (int i = 0; i < 64 && client.Available > 0; ++i)
+        {
+            try
+            {
+                IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);
+                byte[] data = client.Receive(ref remote);
+                if (!IPAddress.IsLoopback(remote.Address) || remote.Port != port || data.Length > 4096) continue;
+                var feedback = JsonUtility.FromJson<Feedback>(Encoding.UTF8.GetString(data));
+                if (feedback == null || feedback.schema != "g1.bimanual.unity.sim.state.v1" ||
+                    !feedback.simulation_only || feedback.session != packet.session ||
+                    feedback.sequence < feedbackSequence || feedback.sequence >= packet.sequence) continue;
+                backendState = feedback.state;
+                feedbackSequence = feedback.sequence;
+                lastFeedback = now;
+                if (backendState == "returning" || backendState == "blocked")
+                {
+                    active = false;
+                    mustLeaveZones = true;
+                    returnPending = false;
+                    returnSequence = -1;
+                }
+                // If already at home Python may acknowledge ready in one tick,
+                // without an observable returning frame.
+                if (backendState == "ready" && returnPending && returnSequence >= 0 &&
+                    feedback.sequence >= returnSequence)
+                {
+                    returnPending = false;
+                    returnSequence = -1;
+                }
+            }
+            catch (SocketException) { break; }
+            catch (ArgumentException) { /* Ignore malformed feedback. */ }
+        }
+        Transform leftWrist = Wrist(leftSkeleton), rightWrist = Wrist(rightSkeleton);
+        if (!frameSet)
+        {
+            origin = head.position;
+            heading = Quaternion.Euler(0, head.eulerAngles.y, 0);
+            frameSet = leftWrist != null && rightWrist != null && leftHand.IsTracked && rightHand.IsTracked;
+        }
+        // Fixed headset-heading frame; no live head motion injected into wrist goals.
+        Vector3 leftZone = origin + heading * new Vector3(-.22f, -.24f, .38f);
+        Vector3 rightZone = origin + heading * new Vector3(.22f, -.24f, .38f);
+        leftMarker.transform.position = leftZone;
+        rightMarker.transform.position = rightZone;
+        bool tracked = ReadHand(leftHand, leftWrist, packet.left);
+        tracked = ReadHand(rightHand, rightWrist, packet.right) && tracked;
+        bool inZones = tracked && Vector3.Distance(leftWrist.position, leftZone) < .07f
+            && Vector3.Distance(rightWrist.position, rightZone) < .07f;
+        bool pinch = (packet.left.tracked && leftHand.GetFingerIsPinching(OVRHand.HandFinger.Index))
+            || (packet.right.tracked && rightHand.GetFingerIsPinching(OVRHand.HandFinger.Index));
+        bool fresh = now - lastFeedback < .75;
+        if (!fresh && active)
+        {
+            active = false;
+            returnPending = true;
+            mustLeaveZones = true;
+        }
+        if (mustLeaveZones && backendState == "ready" && tracked && !inZones && !pinch)
+            mustLeaveZones = false;
+        if (!active)
+        {
+            alignmentTime = fresh && backendState == "ready" && inZones && !pinch && !mustLeaveZones
+                ? alignmentTime + Time.unscaledDeltaTime : 0;
+            if (alignmentTime >= .35f)
+            {
+                active = true;
+                returnPending = false;
+                returnSequence = -1;
+                pinchTime = 0;
+            }
+        }
+        else
+        {
+            pinchTime = pinch ? pinchTime + Time.unscaledDeltaTime : 0;
+            if (pinchTime >= .5f)
+            {
+                active = false;
+                returnPending = true;
+                mustLeaveZones = true;
+            }
+        }
+        packet.engage = active;
+        packet.return_home = returnPending;
+        if (now-lastSend >= 1.0/60)
+        {
+            if (returnPending && returnSequence < 0) returnSequence = packet.sequence;
+            packet.sender_time_s = now;
+            byte[] data = Encoding.UTF8.GetBytes(JsonUtility.ToJson(packet));
+            try { client.Send(data, data.Length, new IPEndPoint(IPAddress.Loopback, port)); }
+            catch (SocketException) { /* Missing receiver is shown as WAIT. */ }
+            ++packet.sequence;
+            lastSend = now;
+        }
+        Status = !fresh ? "WAIT: start Python simulation" : backendState == "blocked"
+            ? "BLOCKED: restart simulation" : backendState == "returning" || returnPending
+            ? "RETURNING: wait" : active ? "TRACKING | pinch 0.5s to return"
+            : mustLeaveZones ? "READY: move out of zones, release pinch"
+            : "READY: align both wrists with spheres";
+        label.text = "BIMANUAL SIMULATION ONLY\n" + Status;
+        label.transform.position = head.position + head.forward * .8f + Vector3.down * .1f;
+        label.transform.rotation = head.rotation;
+    }
+
+    private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL SIMULATION ONLY | " + Status); }
+
+    private void OnDisable()
+    {
+        if (client != null)
+        {
+            if (packet != null)
+            {
+                packet.engage = false;
+                packet.return_home = true;
+                packet.sender_time_s = Time.realtimeSinceStartupAsDouble;
+                byte[] data = Encoding.UTF8.GetBytes(JsonUtility.ToJson(packet));
+                try { client.Send(data, data.Length, new IPEndPoint(IPAddress.Loopback, port)); }
+                catch (SocketException) { }
+            }
+            client.Close();
+            client = null;
+        }
+        if (leftMarker != null) Destroy(leftMarker);
+        if (rightMarker != null) Destroy(rightMarker);
+        if (label != null) Destroy(label.gameObject);
+    }
+}

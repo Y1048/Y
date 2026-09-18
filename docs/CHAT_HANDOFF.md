@@ -3,6 +3,22 @@
 **최신 GPT 인계 요약: [GPT_BIMANUAL_HANDOFF_20260918.md](GPT_BIMANUAL_HANDOFF_20260918.md).**
 아래 기록은 역순 작업 이력이며, 과거의 미해결 표시는 이후 수정 결과와 구분한다.
 
+## 2026-09-18 bimanual motion corrections installed on the same laptop
+
+Read [motion correction validation](BIMANUAL_MOTION_CORRECTION_20260918.md).
+Per-arm motion preferences now restore target-approach braking, wrist priority,
+shoulder comfort, torso projection, elbow assistance and reversible orientation
+priority inside the shared 14-DOF QP. The original single-right-arm controllers,
+Unity scene/C# and exact checked stopping-tail function remain unchanged.
+Paired input filtering and log-only runtime/policy diagnostics were added.
+
+Final installed-runtime suite: 45/45 PASS. Actual BAT headless idle smoke: PASS.
+Selected reported-motion replay: 1,404 ticks, 667 tracking ticks, one checked
+braking tick, >=19.69mm sampled clearance, return to ready. No Quest verification
+of the corrected behavior yet; no physical G1 control. Old user Unity/Python
+processes were not restarted: stop/restart normally before comparing behavior.
+Backup: laptop runtime logs/backups/bimanual_motion_install_20260918_114658/.
+
 ## 2026-09-18 environment clarification and runtime checkpoint
 
 - User clarification: all work from the beginning through now has remained on

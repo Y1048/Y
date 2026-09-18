@@ -121,7 +121,9 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse(metadata['hardware_output_authorized'])
         self.assertEqual(metadata['mujoco_version'], '3.12.0')
         self.assertEqual(metadata['mujoco_native_version'], '3.12.0')
-        self.assertEqual(len(metadata['source_sha256']), 3)
+        self.assertEqual(set(metadata['source_sha256']), {
+            'g1_bimanual_runtime.py', 'g1_bimanual_sim.py', 'g1_bimanual_unity_sim.py',
+            'g1_bimanual_motion_policy.py'})
         self.assertTrue(all(len(value) == 64 for value in metadata['source_sha256'].values()))
         json.dumps(metadata, allow_nan=False)
 

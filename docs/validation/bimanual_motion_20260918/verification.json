@@ -1,0 +1,331 @@
+{
+  "schema": "g1.bimanual.motion.validation.v1",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "quest_verified": false,
+  "source_base_commit": "d16b208f0774e4ccde1245a5e97f054833dd5b07",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "device_role": "same_laptop",
+  "runtime_directory": "C:\\Users\\user\\Desktop\\G1_Teleop_Project",
+  "runtime_installed": true,
+  "backup_directory": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_motion_install_20260918_114658",
+  "runtime_unittest": {
+    "count": 45,
+    "passed": 45,
+    "exit_code": 0,
+    "duration_s": 53.988,
+    "command": "py -3.11 -B -u MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py --mode test"
+  },
+  "actual_bat_smoke": {
+    "exit_code": 0,
+    "port": 55503,
+    "state_rows": 58,
+    "input_kind": "synthetic_idle_no_quest"
+  },
+  "runtime_metadata": {
+    "kind": "run",
+    "simulation_dt_s": 0.016666666666666666,
+    "motion_policy": "bimanual_motion_v1",
+    "input_filter_time_constants_s": [
+      0.06,
+      0.05
+    ],
+    "schema": "g1.bimanual.sim.run.v1",
+    "simulation_only": true,
+    "hardware_output_authorized": false,
+    "input_kind": "unity_loopback",
+    "started_utc": "2026-09-18T02:49:36.705906+00:00",
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "mujoco_version": "3.12.0",
+    "mujoco_native_version": "3.12.0",
+    "mujoco_module": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0\\mujoco\\__init__.py",
+    "packages": {
+      "mink": "1.3.0",
+      "qpsolvers": "4.13.0",
+      "daqp": "0.9.1",
+      "numpy": "2.4.6"
+    },
+    "source_sha256": {
+      "g1_bimanual_runtime.py": "bb6228dbe91baaf6f2b97a3a9e70dbd50c47625927e3acd03b9d6889d178f24c",
+      "g1_bimanual_sim.py": "9093b71dbf296f29e29eabf95f1725f0421641b6fb500bc0668ef1886fabcc62",
+      "g1_bimanual_unity_sim.py": "b52083db210fa1485d0444ceb7d312705c8a7d1599708542fd0c5d536ccf22ca",
+      "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe"
+    }
+  },
+  "quality_metrics": [
+    {
+      "side": "left",
+      "axis": 0,
+      "distance": 0.02,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        5.022320201461253,
+        0.1282827879991701,
+        0.06486457687391761,
+        3.7689345704961603,
+        0.5279105362514093,
+        1.741496264044632,
+        0.19701343277559932
+      ],
+      "peak_position_error_mm": 19.855364462325,
+      "overshoot_mm": 0.0,
+      "final_position_error_mm": 0.22068457159289226,
+      "final_rotation_error_deg": 0.0005937906720072671,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "left",
+      "axis": 0,
+      "distance": 0.05,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        14.409820956151174,
+        0.404421610706333,
+        0.2990905730038509,
+        14.20018727795951,
+        1.6835680810828526,
+        3.4467221735149933,
+        0.4414388676797766
+      ],
+      "peak_position_error_mm": 49.84864024372968,
+      "overshoot_mm": 0.0,
+      "final_position_error_mm": 1.6791437275444852,
+      "final_rotation_error_deg": 0.011134434947814244,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "right",
+      "axis": 0,
+      "distance": 0.02,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        5.022320201462034,
+        0.12828278799897927,
+        0.06486457687393414,
+        3.7689345704983994,
+        0.5279105362513193,
+        1.7414962640460858,
+        0.19701343277575795
+      ],
+      "peak_position_error_mm": 19.855364462325,
+      "overshoot_mm": 0.0,
+      "final_position_error_mm": 0.22068457159184213,
+      "final_rotation_error_deg": 0.0005937906720082477,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "right",
+      "axis": 0,
+      "distance": 0.05,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        14.409820956170668,
+        0.40442161070607535,
+        0.2990905730054046,
+        14.200187278005881,
+        1.6835680810858513,
+        3.446722173516752,
+        0.44143886767908086
+      ],
+      "peak_position_error_mm": 49.84864024372968,
+      "overshoot_mm": 0.0,
+      "final_position_error_mm": 1.6791437275305097,
+      "final_rotation_error_deg": 0.011134434948185156,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "left",
+      "axis": 0,
+      "distance": null,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        0.24682992659262692,
+        2.718256887757961,
+        8.715349845242738,
+        0.1335889552537788,
+        42.87271305624945,
+        1.9168718453554672,
+        1.9747111139161633
+      ],
+      "peak_position_error_mm": 2.3110719101719535,
+      "overshoot_mm": 0.0,
+      "final_position_error_mm": 0.05951264278159617,
+      "final_rotation_error_deg": 0.045140972973274046,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "right",
+      "axis": 0,
+      "distance": null,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        0.14248380777132333,
+        2.713864296083101,
+        8.662023197485107,
+        0.6684150477675118,
+        42.866211255177156,
+        2.272862527993013,
+        1.7268680072371367
+      ],
+      "peak_position_error_mm": 2.3037160934465097,
+      "overshoot_mm": 0.5650850256386231,
+      "final_position_error_mm": 0.1828287950552835,
+      "final_rotation_error_deg": 0.045292850795724184,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "left",
+      "axis": 2,
+      "distance": null,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        0.06149529518049231,
+        1.3944390145251426,
+        4.2507073408918465,
+        0.2538615475632413,
+        4.272891768225557,
+        0.13516691697560496,
+        43.822883317947635
+      ],
+      "peak_position_error_mm": 7.742142972043725,
+      "overshoot_mm": 0.3927737769372705,
+      "final_position_error_mm": 0.15478758946186663,
+      "final_rotation_error_deg": 0.052571147845505574,
+      "reasons": {
+        "tracking": 600
+      }
+    },
+    {
+      "side": "right",
+      "axis": 2,
+      "distance": null,
+      "ticks": 600,
+      "peak_joint_excursion_deg": [
+        0.18128863356201655,
+        1.4743094740159297,
+        4.5360455072129495,
+        0.2629331996186191,
+        4.55032579256366,
+        0.17182069096761288,
+        43.73109354499758
+      ],
+      "peak_position_error_mm": 7.761326924773851,
+      "overshoot_mm": 0.0,
+      "final_position_error_mm": 0.17940006195165004,
+      "final_rotation_error_deg": 0.05255656159986094,
+      "reasons": {
+        "tracking": 600
+      }
+    }
+  ],
+  "recorded_replay": {
+    "ticks": 1404,
+    "tracking_reasons": {
+      "tracking": 666,
+      "checked_braking:qp_infeasible": 1
+    },
+    "states": [
+      "ready",
+      "returning",
+      "tracking"
+    ],
+    "braking_total": 1,
+    "minimum_clearance_mm": 19.69488260937616,
+    "p95_ms": 11.87590500076112,
+    "max_ms": 31.475800000407617,
+    "extra_return_ticks": 0
+  },
+  "installed_files": [
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py",
+      "existed": true,
+      "before_sha256": "c2db69f05f302f490ed5e532d7de906ebe4b0b7199b04c6525d43f7386850eff",
+      "after_sha256": "bb6228dbe91baaf6f2b97a3a9e70dbd50c47625927e3acd03b9d6889d178f24c"
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py",
+      "existed": true,
+      "before_sha256": "08745274b3bf47866a4fb3267b8a47ad97c19d5a682dade607eb26b622065cc0",
+      "after_sha256": "9093b71dbf296f29e29eabf95f1725f0421641b6fb500bc0668ef1886fabcc62"
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+      "existed": true,
+      "before_sha256": "382f221a1db1d144a0bd61dc041282931b6415713ff4ca088f6c057d944f0a89",
+      "after_sha256": "b52083db210fa1485d0444ceb7d312705c8a7d1599708542fd0c5d536ccf22ca"
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py",
+      "existed": false,
+      "before_sha256": null,
+      "after_sha256": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe"
+    },
+    {
+      "path": "backend/tests/test_bimanual_runtime.py",
+      "existed": true,
+      "before_sha256": "1e9f2f18d37a798ddd0a88e544af6ac71ef6367145df38484571dce9a675fb08",
+      "after_sha256": "00d39e7908e600d6aae05bcc9e5a19a9bdce394649061c6dc5cfa533f202c5b9"
+    },
+    {
+      "path": "backend/tests/test_bimanual_sim.py",
+      "existed": true,
+      "before_sha256": "8ce8919043dede4a4e50454f8fa95d10ee87e4552f99aa7d92b5224cfd12815a",
+      "after_sha256": "234179626c37183d3e47f6a6d739b7761a8d9fd88eb083a32f2e229b7500052f"
+    },
+    {
+      "path": "backend/tests/test_bimanual_unity_sim.py",
+      "existed": true,
+      "before_sha256": "2949dc5282f265a26f6480e61fa15ca0e66048af6f48645ee566d6cf2f470d50",
+      "after_sha256": "40561ccdf16a1c0bfd17c5029d6404893f38dc13c915db297ba64c35ff19f195"
+    },
+    {
+      "path": "backend/tests/test_bimanual_motion_quality.py",
+      "existed": false,
+      "before_sha256": null,
+      "after_sha256": "e466325ba19ba38b3bde7fc0d91f1cbc0da72fe23d0acbd3fbb5a20242a0788a"
+    },
+    {
+      "path": "backend/tests/fixtures/bimanual_motion_regression_20260918.jsonl",
+      "existed": false,
+      "before_sha256": null,
+      "after_sha256": "9f80c03f4d0d3c83bda4ea344a0f022967d5d8e22b4da58c49fab8665801d1b1"
+    },
+    {
+      "path": "backend/tests/fixtures/bimanual_motion_regression_20260918.md",
+      "existed": false,
+      "before_sha256": null,
+      "after_sha256": "8df282de2e6ef4702c08aa0ee78965770dbda2eefd1b871b80bea6bd07ed312a"
+    }
+  ],
+  "protected_file_count": 205,
+  "original_right_arm_unchanged": true,
+  "checked_stop_plan_and_clearance_unchanged": true,
+  "source_unique_tests_also_verified": 45,
+  "limits": {
+    "sampled_clearance_m": 0.005,
+    "qp_clearance_m": 0.006,
+    "proximal_speed_deg_s": 90,
+    "wrist_speed_deg_s": 180,
+    "acceleration_deg_s2": 60
+  },
+  "notes": [
+    "Final runtime suite passed all 45 tests in one fresh process.",
+    "Earlier combined run timed out waiting for the synthetic-loopback child; startup and post-feedback test deadlines are now separated.",
+    "An additional interactive-spawned verification process stalled before test discovery and was terminated; a trace probe was inconclusive. These earlier attempts are not counted as passing.",
+    "The existing user simulation and Unity were not stopped/restarted; next normal launch loads these installed files.",
+    "This is discrete kinematic simulation validation, not continuous collision proof or physical G1 validation."
+  ]
+}

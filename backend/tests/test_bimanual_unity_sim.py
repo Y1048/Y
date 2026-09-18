@@ -13,7 +13,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
-from g1_bimanual_unity_sim import UnityCycle, decode, BASIS, SCHEMA, mink
+from g1_bimanual_unity_sim import UnityCycle, PairedHandFilter, decode, BASIS, SCHEMA, mink
 
 
 def packet(sequence=0, engage=False, session='test', tracked=True, returning=False):
@@ -69,8 +69,11 @@ class CycleTests(unittest.TestCase):
         self.cycle.tick(.04)
         goals = self.sim.step.call_args.args[0]
         for goal in goals.values():
-            np.testing.assert_allclose(goal.translation(), [.03, -.01, .02])
-            np.testing.assert_allclose(goal.rotation().as_matrix(), BASIS @ rotation.as_matrix() @ BASIS.T)
+            position_alpha = -np.expm1(-(2/60-1/60)/.060)
+            rotation_alpha = -np.expm1(-(2/60-1/60)/.050)
+            np.testing.assert_allclose(goal.translation(), position_alpha*np.array([.03, -.01, .02]))
+            filtered_rotation = mink.SO3.exp(rotation_alpha*np.array([.1, -.2, .3]))
+            np.testing.assert_allclose(goal.rotation().as_matrix(), BASIS @ filtered_rotation.as_matrix() @ BASIS.T)
 
     def test_pinch_return_ignores_early_engage_then_rearms(self):
         self.engage()
@@ -125,7 +128,8 @@ class CycleTests(unittest.TestCase):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             try:
                 sequence = 0
-                deadline = time.monotonic() + 8
+                deadline = time.monotonic() + 30  # Import/startup budget, not a 60Hz performance claim.
+                feedback_started = False
                 states = set()
                 while process.poll() is None and time.monotonic() < deadline:
                     # Remain inactive until ready feedback, then calibrate stationary wrists.
@@ -134,6 +138,9 @@ class CycleTests(unittest.TestCase):
                     try:
                         raw, _ = sender.recvfrom(4096)
                         feedback = json.loads(raw)
+                        if not feedback_started:
+                            deadline = time.monotonic() + 8
+                            feedback_started = True
                         states.add(feedback['state'])
                         self.assertEqual(len(feedback['q_rad']), 14)
                         self.assertEqual(feedback['joint_names'][0], 'left_shoulder_pitch_joint')
@@ -143,10 +150,22 @@ class CycleTests(unittest.TestCase):
                         pass
                     sequence += 1
                     time.sleep(.015)
-                out, err = process.communicate(timeout=3)
+                try:
+                    out, err = process.communicate(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    out, err = process.communicate(timeout=5)
+                    self.fail('Loopback process did not exit after its bounded run: '+out+err)
                 self.assertEqual(process.returncode, 0, out + err)
                 self.assertIn('tracking', states)
                 rows = [json.loads(x) for x in output.read_text().splitlines()]
+                self.assertEqual(rows[0]['kind'], 'run')
+                self.assertEqual(rows[0]['motion_policy'], 'bimanual_motion_v1')
+                self.assertEqual(rows[0]['mujoco_version'], '3.12.0')
+                self.assertIn('g1_bimanual_motion_policy.py', rows[0]['source_sha256'])
+                states_in_log = [r for r in rows if r['kind'] == 'state']
+                self.assertTrue(all(r['control_tick_ms'] >= 0 for r in states_in_log))
+                self.assertTrue(all('ik_reason' in r and 'checked_braking_applied' in r for r in states_in_log))
                 self.assertTrue(any(r['kind'] == 'input' and r['accepted'] for r in rows))
                 self.assertTrue(all(r['simulation_only'] for r in rows if r['kind'] == 'state'))
             finally:

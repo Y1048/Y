@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import mink
 from g1_bimanual_sim import BimanualSimulation
+from g1_bimanual_runtime import runtime_metadata
 
 SCHEMA = 'g1.bimanual.unity.sim.v1'
 BASIS = np.array([[0., 0., 1.], [-1., 0., 0.], [0., 1., 0.]])
@@ -52,6 +53,52 @@ def decode(raw):
     return x
 
 
+class PairedHandFilter:
+    """Calibrated per-hand pose filtering; never turns invalid input into tracking.
+
+    The old right-arm sender used 60ms position / 50ms rotation constants.
+    Here filtering lives in Python so both arms share tested reset behavior;
+    Unity raw input and validity bits remain unchanged in the input log.
+    """
+    position_tau_s = .060
+    rotation_tau_s = .050
+
+    def __init__(self):
+        self.hands = None
+        self.sender_time = None
+
+    def reset(self, packet):
+        self.hands = {side: dict(position_m=np.array(packet[side]['position_m'], dtype=float),
+            quaternion_wxyz=np.array(packet[side]['quaternion_wxyz'], dtype=float))
+            for side in ('left', 'right')}
+        for hand in self.hands.values():
+            hand['quaternion_wxyz'] /= np.linalg.norm(hand['quaternion_wxyz'])
+        self.sender_time = packet['sender_time_s']
+
+    def update(self, packet):
+        if self.hands is None:
+            self.reset(packet)
+            return
+        dt = packet['sender_time_s']-self.sender_time
+        if dt <= 0:
+            return
+        self.sender_time = packet['sender_time_s']
+        if not all(packet[side]['tracked'] for side in ('left', 'right')):
+            return
+        # A tracking/packet gap must not bypass smoothing with alpha almost 1.
+        dt = min(dt, .10)
+        position_alpha = -math.expm1(-dt/self.position_tau_s)
+        rotation_alpha = -math.expm1(-dt/self.rotation_tau_s)
+        for side, filtered in self.hands.items():
+            hand = packet[side]
+            filtered['position_m'] += position_alpha*(np.asarray(hand['position_m'])-filtered['position_m'])
+            previous = mink.SO3(filtered['quaternion_wxyz'])
+            raw_q = np.asarray(hand['quaternion_wxyz'], dtype=float)
+            desired = mink.SO3(raw_q/np.linalg.norm(raw_q))
+            filtered['quaternion_wxyz'] = (previous @ mink.SO3.exp(
+                rotation_alpha*(previous.inverse() @ desired).log())).wxyz.copy()
+
+
 class UnityCycle:
     """Receipt freshness is local monotonic time, never a cross-host subtraction."""
     def __init__(self, sim):
@@ -66,6 +113,9 @@ class UnityCycle:
         self.origins = None
         self.loss_since = None
         self.reason = ''
+        self.pose_filter = PairedHandFilter()
+        self.last_tick_action = 'idle'
+        self.checked_braking_applied = False
 
     def receive(self, packet, now):
         if packet['session'] != self.session:
@@ -89,9 +139,12 @@ class UnityCycle:
             elif self.armed and not packet['return_home'] and all(packet[s]['tracked'] for s in ('left', 'right')):
                 self.origins = {s: (np.array(packet[s]['position_m']),
                     mink.SO3(np.array(packet[s]['quaternion_wxyz'])).as_matrix()) for s in ('left', 'right')}
+                self.pose_filter.reset(packet)
                 self.armed = False
                 self.state = 'tracking'
                 self.reason = ''
+        if self.state == 'tracking':
+            self.pose_filter.update(packet)
         return True
 
     def start_return(self, reason):
@@ -101,6 +154,9 @@ class UnityCycle:
         self.loss_since = None
 
     def tick(self, now):
+        self.last_tick_action = 'idle'
+        self.checked_braking_applied = False
+        braking_before = getattr(self.sim, 'braking_steps', 0)
         if self.state == 'tracking':
             if self.received is None or now - self.received > .75:
                 self.start_return('input_timeout')
@@ -112,27 +168,44 @@ class UnityCycle:
                 if now - self.loss_since >= .35:
                     self.start_return('tracking_lost')
                 else:
+                    self.last_tick_action = 'tracking_hold'
                     return  # Simulation pose hold during transient tracking loss.
             else:
                 self.loss_since = None
                 goals = {}
                 for side in ('left', 'right'):
                     origin_p, origin_r = self.origins[side]
-                    hand = self.packet[side]
+                    hand = self.pose_filter.hands[side]
                     home = self.sim.home_targets[side]
                     delta_r = mink.SO3(np.array(hand['quaternion_wxyz'])).as_matrix() @ origin_r.T
                     robot_r = BASIS @ delta_r @ BASIS.T @ home.rotation().as_matrix()
                     position = home.translation() + BASIS @ (np.array(hand['position_m']) - origin_p)
                     goals[side] = mink.SE3.from_rotation_and_translation(mink.SO3.from_matrix(robot_r), position)
+                self.last_tick_action = 'tracking'
                 self.sim.step(goals)
         if self.state == 'returning':
+            self.last_tick_action = 'returning'
             self.sim.step(returning=True)
             if self.sim.state == 'ready':
                 self.state = 'ready'
                 self.armed = False  # Require a new inactive packet, then engage.
+        if isinstance(self.sim, BimanualSimulation):
+            self.checked_braking_applied = self.sim.braking_steps > braking_before
         if self.sim.state == 'blocked':
             self.state = 'blocked'
             self.reason = self.sim.reason
+
+    def diagnostics(self, now):
+        result = dict(tick_action=self.last_tick_action,
+            input_age_s=None if self.received is None else max(0., now-self.received),
+            checked_braking_applied=self.checked_braking_applied)
+        if isinstance(self.sim, BimanualSimulation):
+            result.update(ik_state=self.sim.state, ik_reason=self.sim.reason,
+                braking_steps_total=self.sim.braking_steps,
+                checked_tail_steps_remaining=len(self.sim.brake_plan),
+                motion={s:p.diagnostics() for s,p in self.sim.motion.items()}
+                    if self.last_tick_action == 'tracking' else None)
+        return result
 
     def feedback(self):
         result = dict(schema='g1.bimanual.unity.sim.state.v1', simulation_only=True,
@@ -167,10 +240,15 @@ def main():
             sock.setblocking(False)
             if hasattr(socket, 'SIO_UDP_CONNRESET'):
                 sock.ioctl(socket.SIO_UDP_CONNRESET, False)
+            log.write(json.dumps(dict(kind='run', simulation_dt_s=sim.dt,
+                motion_policy='bimanual_motion_v1', input_filter_time_constants_s=[.060, .050],
+                **runtime_metadata('unity_loopback')), allow_nan=False)+'\n')
+            log.flush()
             print(f'SIMULATION ONLY: Unity -> 127.0.0.1:{args.port}; no G1 output', flush=True)
             start = time.monotonic()
             peer = None
             previous_state = None
+            previous_tick = None
             while not viewer or viewer.is_running():
                 now = time.monotonic()
                 if args.seconds and now - start >= args.seconds:
@@ -194,7 +272,9 @@ def main():
                             accepted=accepted, raw_json_text=raw.decode('utf-8')), allow_nan=False)+'\n')
                     except (ValueError, KeyError, TypeError, UnicodeError) as error:
                         log.write(json.dumps(dict(kind='reject', receive_monotonic_s=now, reason=str(error)))+'\n')
+                tick_started = time.perf_counter()
                 cycle.tick(now)
+                control_tick_ms = (time.perf_counter()-tick_started)*1000
                 feedback = cycle.feedback()
                 if peer:
                     try:
@@ -202,7 +282,10 @@ def main():
                     except (ConnectionResetError, BlockingIOError):
                         pass
                 log.write(json.dumps(dict(kind='state', monotonic_s=now,
-                    **feedback), allow_nan=False)+'\n')
+                    control_tick_ms=control_tick_ms,
+                    loop_period_ms=None if previous_tick is None else (now-previous_tick)*1000,
+                    **feedback, **cycle.diagnostics(now)), allow_nan=False)+'\n')
+                previous_tick = now
                 if cycle.state != previous_state:
                     print(f'[BIMANUAL SIM] {cycle.state}: {cycle.reason}', flush=True)
                     previous_state = cycle.state

@@ -12,6 +12,7 @@ import mink
 import qpsolvers
 import run_mink_g1_right_arm_prototype as base
 from g1_bimanual_runtime import require_validated_engine
+from g1_bimanual_motion_policy import ArmMotionPolicy
 
 
 class BimanualSimulation:
@@ -70,6 +71,16 @@ class BimanualSimulation:
         frozen = sorted(set(range(self.model.nv)) - set(self.dofs))
         self.constraints = [mink.DofFreezingTask(self.model, dof_indices=frozen)]
         self.ranges = self.model.jnt_range[ids].copy()
+        self.motion = {side: ArmMotionPolicy(self.model, self.config, side,
+                       self.home, self.dt, self.clearance_m) for side in ('left', 'right')}
+        self.tasks = {side: policy.wrist_task for side, policy in self.motion.items()}
+        self._motion_returning = False
+        self.policy_pairs = {}
+        for side in self.motion:
+            bodies = getattr(base.g1, side.upper() + '_ARM_BODY_NAMES')
+            self.policy_pairs[side] = [pair for pair in self.pairs if any(
+                mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_BODY,
+                                 int(self.model.geom_bodyid[g])) in bodies for g in pair)]
         self.brake_plan = []
         self.braking_steps = 0
         self.velocity = np.zeros(self.model.nv)
@@ -110,12 +121,25 @@ class BimanualSimulation:
         if not returning:
             if not isinstance(targets, dict) or set(targets) != {"left", "right"}:
                 raise ValueError("Both left and right targets are required")
-            for side, target in targets.items():
+            for target in targets.values():
                 if not np.isfinite(target.as_matrix()).all():
                     raise ValueError("Nonfinite target")
-                self.tasks[side].set_target(target)
-        tasks = [self.posture] if returning else list(self.tasks.values()) + [self.posture]
-        problem = mink.build_ik(self.config, tasks, self.dt, damping=1e-7,
+        if returning:
+            tasks = [self.posture]  # Preserve the established checked joint-home return.
+        else:
+            if self._motion_returning:
+                for policy in self.motion.values():
+                    policy.reset(self.config.q)
+            tasks = []
+            for side, policy in self.motion.items():
+                nearest = base._nearest_pair_distance(self.model, self.config.data, self.policy_pairs[side])
+                clearance = .2 if nearest is None else nearest[0]
+                if not np.isfinite(clearance):
+                    self.state, self.reason = 'blocked', 'nonfinite_policy_clearance'
+                    return False
+                tasks.extend(policy.prepare(targets[side], clearance))
+        self._motion_returning = returning
+        problem = mink.build_ik(self.config, tasks, self.dt, damping=1e-6,
                                 limits=self.limits[:2], constraints=[])
         collision = self.limits[2]
         bound = collision.compute_qp_inequalities(self.config, self.dt)
@@ -145,8 +169,19 @@ class BimanualSimulation:
                 minus[address] -= 1e-5
                 cg[i, dof] = -(distance(plus) - distance(minus)) / 2e-5
             ch[i] = collision.gain * max(0., corrected - .006) / self.dt
+        collision_h = ch*self.dt
+        if not returning:
+            # Shared relative-distance braking headroom from the single-arm
+            # policy. For an inter-arm row, both arms contribute acceleration.
+            normal_acceleration = .25*(np.abs(cg[:, self.dofs]) @ np.full(len(self.dofs), np.radians(60.)))
+            remaining = np.maximum(0., np.where(np.isfinite(ch),
+                (ch-collision.bound_relaxation)*self.dt/collision.gain, 0.))
+            stopping_speed = .5*(np.sqrt((normal_acceleration*self.dt)**2 +
+                2*normal_acceleration*remaining)-normal_acceleration*self.dt)
+            finite_stop = np.isfinite(ch) & np.isfinite(stopping_speed)
+            collision_h[finite_stop] = np.minimum(collision_h[finite_stop], stopping_speed[finite_stop]*self.dt)
         problem.G = np.vstack([problem.G, cg])
-        problem.h = np.r_[problem.h, ch * self.dt]
+        problem.h = np.r_[problem.h, collision_h]
         # Mink solves joint displacement, not velocity.
         eye = np.eye(self.model.nv)[self.dofs]
         dv = np.radians(60) * self.dt
@@ -154,15 +189,37 @@ class BimanualSimulation:
         lo = (self.velocity[self.dofs] - dv) * self.dt
         problem.G = np.vstack([problem.G, eye, -eye])
         problem.h = np.concatenate([problem.h, hi, -lo])
-        finite = np.isfinite(problem.h)
-        reduced = qpsolvers.Problem(problem.P[np.ix_(self.dofs, self.dofs)],
-            problem.q[self.dofs], problem.G[finite][:, self.dofs], problem.h[finite])
-        result = qpsolvers.solve_problem(reduced, solver=base._select_solver())
+        if not returning:
+            # Approach hard joint limits with braking headroom, not nonzero speed.
+            a = np.radians(60.)
+            q = self.config.q[self.qids]
+            speed = lambda d: .8*(np.sqrt((a*self.dt)**2 + 2*a*np.maximum(0., d))-a*self.dt)
+            problem.G = np.vstack([problem.G, eye, -eye])
+            problem.h = np.r_[problem.h, speed(self.ranges[:, 1]-q)*self.dt,
+                              speed(q-self.ranges[:, 0])*self.dt]
+            for policy in self.motion.values():
+                rows, bounds = policy.yaw_velocity_bounds()
+                problem.G = np.vstack([problem.G, rows])
+                problem.h = np.r_[problem.h, bounds*self.dt]
+        # Solve in rad/s, normalize constraint rows and objective like the
+        # established single-arm path. All original delta-q bounds stay intact.
+        g = problem.G[:, self.dofs]*self.dt
+        h = problem.h
+        norms = np.linalg.norm(g, axis=1)
+        finite = np.isfinite(h)
+        inconsistent = np.any(finite & (norms < 1e-12) & (h < -1e-10))
+        keep = finite & (norms >= 1e-12)
+        hessian = problem.P[np.ix_(self.dofs, self.dofs)]*self.dt**2
+        linear = problem.q[self.dofs]*self.dt
+        scale = max(float(np.max(np.abs(hessian))), 1e-12)
+        reduced = qpsolvers.Problem(hessian/scale, linear/scale,
+                                    g[keep]/norms[keep, None], h[keep]/norms[keep])
+        result = None if inconsistent else qpsolvers.solve_problem(reduced, solver=base._select_solver())
         reason = "qp_infeasible"
         plan = None
-        if result.found and result.x is not None and np.isfinite(result.x).all():
+        if result is not None and result.found and result.x is not None and np.isfinite(result.x).all():
             velocity = np.zeros(self.model.nv)
-            velocity[self.dofs] = result.x / self.dt
+            velocity[self.dofs] = result.x
             plan, reason = self.checked_stop_plan(velocity)
         if plan is not None:
             candidate, velocity = plan.pop(0)

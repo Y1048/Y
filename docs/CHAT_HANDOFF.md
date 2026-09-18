@@ -15,6 +15,12 @@ Final isolated-source and installed-runtime suites both pass 89/89. A trigger-sp
 keeps near-hands disabled at 6.769 mm global / 85.631 mm inter-arm clearance. Runtime backup:
 `logs/backups/bimanual_near_hands_return_20260918_210946/`; 385 protected files were unchanged.
 The headless BAT smoke used loopback port 57287, not production port 5020.
+Follow-up retry/fail-closed coverage brings source/runtime suites to 91/91. The recorded fixture's
+zero-speed separation probes are left 5.788 mm and right 4.573 mm: if the checked left route is
+injected as swept-clearance rejected, the right probe remains below the 5 mm hard limit and the
+return fails closed without publishing it. A state-machine test also verifies switching to right
+when an opposite candidate is explicitly probe-safe. Runtime test-only backup:
+`logs/backups/bimanual_near_hands_retry_20260918_214512/`; 391 protected files unchanged.
 
 ## 2026-09-18 performance micro-optimization stop point
 

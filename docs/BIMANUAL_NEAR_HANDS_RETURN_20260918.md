@@ -98,6 +98,15 @@ Unity G1Teleop/Editor/tools 보호 파일 385개는 SHA-256 변경 0개였다.
 exit 0과 normal exit를 확인했다. 사용자의 기존 Python/Unity 프로세스는 종료하거나
 재시작하지 않았으므로 파일 변경은 다음 새 simulation process부터 로드된다.
 
+추가로 separation 실제 sampled path가 probe 이후 `swept_clearance`로 거부되는 경계를
+회귀검사했다. 원본 fixture의 zero-speed probe는 left 약 5.787594mm, right 약
+4.573178mm이므로 left가 실제 path에서 거부되면 right도 5mm hard clearance를 만족하지
+못해 BLOCKED가 맞다. 반대 후보가 probe 기준 안전하다고 가정한 state-machine 검사에서는
+checked stop 후 `separate_right`로 전환되는 것도 고정했다. unsafe right 후보는 publish하지 않는다.
+이 후속 테스트를 포함한 source/runtime 전체 suite는 각각 91/91 PASS였다.
+실행 폴더에는 테스트 파일 하나만 추가 동기화했고 백업은
+`logs/backups/bimanual_near_hands_retry_20260918_214512/`, 보호 파일 391개 변경은 0개였다.
+
 ## 범위
 
 5mm hard clearance, 0.25도 swept sampling, joint/velocity/acceleration limit,

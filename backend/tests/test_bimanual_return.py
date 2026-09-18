@@ -173,6 +173,99 @@ class StagedReturnTests(unittest.TestCase):
         self.assertLess((tick+1)*sim.dt, 10.)
         np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
 
+    def _near_hands_fixture_sim(self):
+        fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_near_hands_20260918.json').read_text())
+        sim = BimanualSimulation()
+        q = sim.home.copy()
+        q[sim.qids] = fixture['q14']
+        sim.config.update(q)
+        sim.velocity[:] = 0.
+        sim.velocity[sim.dofs] = fixture['velocity14']
+        sim.acceleration[:] = 0.
+        sim.acceleration[sim.dofs] = fixture['acceleration14']
+        sim.brake_plan = []
+        for item in fixture['brake_plan']:
+            candidate = sim.home.copy()
+            candidate[sim.qids] = item['q14']
+            velocity = np.zeros(sim.model.nv)
+            velocity[sim.dofs] = item['velocity14']
+            sim.brake_plan.append((candidate, velocity))
+        return sim
+
+    def test_near_hands_checked_sweep_rejection_can_switch_to_opposite_candidate(self):
+        sim = self._near_hands_fixture_sim()
+        original_checked_stop_plan = sim.checked_stop_plan
+        original_probe = sim.return_motion._probe_separation_side
+        rejected = []
+        minimum = sim.clearance(sim.config.q)
+
+        def probe_with_safe_retry(side):
+            if side == 'right' and sim.return_motion.tried_separation_sides == ['left']:
+                return sim.clearance_m + .001
+            return original_probe(side)
+
+        def reject_first_left_separation(velocity):
+            if sim.return_motion.stage == 'separate_left' and not rejected:
+                rejected.append('left')
+                return None, 'swept_clearance'
+            return original_checked_stop_plan(velocity)
+
+        with patch.object(sim.return_motion, '_probe_separation_side',
+                          side_effect=probe_with_safe_retry), \
+                patch.object(sim, 'checked_stop_plan',
+                             side_effect=reject_first_left_separation):
+            for _ in range(120):
+                before = sim.config.q.copy()
+                previous = sim.velocity[sim.dofs].copy()
+                applied = sim.step(returning=True)
+                _, _, clearance = assert_output(sim, before, previous)
+                minimum = min(minimum, clearance)
+                self.assertTrue(applied, sim.reason)
+                if sim.return_motion.stage == 'separate_right':
+                    break
+
+        self.assertEqual(rejected, ['left'])
+        self.assertEqual(sim.return_motion.stage, 'separate_right')
+        self.assertEqual(sim.return_motion.tried_separation_sides, ['left', 'right'])
+        self.assertEqual(sim.return_motion.separation_side, 'right')
+        self.assertGreaterEqual(sim.return_motion.separation_probe_clearance_m['right'],
+                                sim.clearance_m)
+        self.assertGreaterEqual(minimum, sim.clearance_m)
+
+    def test_near_hands_rejected_left_fails_closed_when_right_probe_is_unsafe(self):
+        sim = self._near_hands_fixture_sim()
+        original_checked_stop_plan = sim.checked_stop_plan
+        rejected = []
+        minimum = sim.clearance(sim.config.q)
+
+        def reject_first_left_separation(velocity):
+            if sim.return_motion.stage == 'separate_left' and not rejected:
+                rejected.append('left')
+                return None, 'swept_clearance'
+            return original_checked_stop_plan(velocity)
+
+        with patch.object(sim, 'checked_stop_plan', side_effect=reject_first_left_separation):
+            for _ in range(120):
+                before = sim.config.q.copy()
+                previous = sim.velocity[sim.dofs].copy()
+                applied = sim.step(returning=True)
+                _, _, clearance = assert_output(sim, before, previous)
+                minimum = min(minimum, clearance)
+                if not applied:
+                    break
+
+        self.assertFalse(applied)
+        self.assertEqual(rejected, ['left'])
+        self.assertEqual(sim.return_motion.tried_separation_sides, ['left'])
+        self.assertIn('right', sim.return_motion.separation_probe_clearance_m)
+        self.assertLess(sim.return_motion.separation_probe_clearance_m['right'],
+                        sim.clearance_m)
+        self.assertEqual(sim.state, 'blocked')
+        self.assertEqual(sim.return_motion.stage, 'fault')
+        self.assertEqual(sim.reason, 'return_path_blocked:near_hands_no_separation_route')
+        self.assertEqual(np.max(np.abs(sim.velocity)), 0.)
+        self.assertGreaterEqual(minimum, sim.clearance_m)
+
     def test_near_hands_trigger_uses_inter_arm_clearance_only(self):
         q14 = np.array([
             0.37877105997466565, 0.5018709993910249, 1.3869880803444947,

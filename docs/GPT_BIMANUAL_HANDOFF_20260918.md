@@ -36,6 +36,13 @@ isolated MuJoCo 3.12.0. The trigger-specificity regression keeps recovery off fo
 6.769 mm global but 85.631 mm inter-arm clearance. Runtime backup is
 `logs/backups/bimanual_near_hands_return_20260918_210946/`; 385 protected files were unchanged.
 Headless BAT smoke passed on loopback port 57287 without using production port 5020.
+Follow-up retry/fail-closed regression brings source/runtime suites to 91/91. In the recorded
+near-hands fixture, zero-speed probes are left 5.788 mm and right 4.573 mm; therefore an injected
+checked swept-clearance rejection of the left route correctly re-probes right and then BLOCKS
+because right is below the unchanged 5 mm hard limit. A state-machine-only test also confirms the
+transition to `separate_right` when the opposite candidate is explicitly probe-safe. No production
+motion code changed in this follow-up. Runtime test-only backup:
+`logs/backups/bimanual_near_hands_retry_20260918_214512/`; 391 protected files unchanged.
 
 ## Latest: performance micro-optimization stop point (2026-09-18)
 

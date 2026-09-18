@@ -1,5 +1,21 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 session report and near-hands return v2
+
+Read [near-hands return v2](BIMANUAL_NEAR_HANDS_RETURN_20260918.md) and
+[session reporting](BIMANUAL_SESSION_REPORT_20260918.md). The report tool selected the latest
+real operator log behind newer headless smokes and exposed a historical return BLOCKED at seq 697.
+The preserved fixture now triggers a v2 path: checked stop -> one-arm separation -> existing safe
+waypoint -> home -> settle. Original/mirrored cases choose left/right respectively and both finish
+in 510 ticks with >=5.696 mm sampled clearance. Existing normal returns keep the old direct route.
+Report strict exit propagation, EOF latest scan, malformed-row handling and state/reason counting
+are regression-tested. Current new logs must show return_policy=bimanual_staged_return_v2.
+Simulation only; 5 mm hard clearance/0.25-degree swept checking remain unchanged.
+Final isolated-source and installed-runtime suites both pass 89/89. A trigger-specificity regression
+keeps near-hands disabled at 6.769 mm global / 85.631 mm inter-arm clearance. Runtime backup:
+`logs/backups/bimanual_near_hands_return_20260918_210946/`; 385 protected files were unchanged.
+The headless BAT smoke used loopback port 57287, not production port 5020.
+
 ## 2026-09-18 performance micro-optimization stop point
 
 Read [performance stop point](BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md).
@@ -94,7 +110,7 @@ Source/runtime suites: 68/68 each. Same-start 60Hz durations: 10.733 -> 5.933s,
 9.833 -> 5.350s. Latest recorded prefix replay and actual BAT startup passed.
 Seven files installed with backup, 363 protected files unchanged. No Unity/C#
 edit, user process restart or physical G1 control. New return Quest feel remains
-unverified. Restart the Python simulation; identify return_policy=bimanual_staged_return_v1.
+unverified. This is historical v1 parity evidence. Current restarted Python should report return_policy=bimanual_staged_return_v2.
 
 ## 2026-09-18 bimanual boundary fixes installed (simulation only)
 

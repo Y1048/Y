@@ -63,12 +63,25 @@ Quest 성공 fixture에 대한 `--replay --strict`는 PASS했다.
 
 이 replay는 fixed-base sampled geometry 검증이며 물리 G1 제동/연속시간 충돌 증명이 아니다.
 
-## ??? ??
+## 상태 전이 집계와 검증
 
-???? ??? transition? `(state, reason)` ???? ?????, tracking ??/?engage?
-return ?? ??? **state ??? ?? ??** ??. ?? TRACKING/RETURNING ????
-reason ???? ???? ? engage/return?? ?? ?? ???? ?? ???? ???.
+상태 전이는 `(state, reason)` 조합이 아니라 **state 자체가 실제로 바뀔 때만** 집계한다.
+따라서 TRACKING 중 reason만 바뀌어도 재engage로 세지 않고, RETURNING 중 reason만
+바뀌어도 새 return을 시작한 것으로 세지 않는다.
 
-??: report/runtime ?? 21/21 PASS, ?? ?? bimanual suite 86/86 PASS.
-Quest ?? fixture? static strict? replay strict? exit 0, malformed synthetic session?
-validated runtime ?? strict?? exit 1? ????.
+세션-report/runtime 타깃 테스트는 21/21 PASS였고, 당시 전체 bimanual suite는 86/86 PASS였다.
+Quest 성공 fixture의 static `--strict`와 replay `--strict`는 exit 0, malformed synthetic session의
+validated-runtime strict 실행은 exit 1을 확인했다.
+
+## 최신 operator 세션에서 발견한 복귀 실패
+
+리포트 도구는 더 최신인 headless smoke들을 건너뛰고
+`unity_20260918_155812_5222579.jsonl`을 실제 operator 세션으로 선택했다.
+이 세션은 sequence 697의 tracking loss 뒤
+`return_path_blocked:return_swept_clearance`로 BLOCKED가 되었고 strict report는 exit 1이었다.
+이 실패는 [near-hands return v2](BIMANUAL_NEAR_HANDS_RETURN_20260918.md)의 회귀 fixture로 보존했다.
+
+과거 v1 전체 세션을 v2에 그대로 대입해 state 일치를 강제하는 대신, 실패 시점의
+q/velocity/acceleration과 기존 checked brake tail을 작은 fixture로 고정해 v2 return을 검증한다.
+현재 실행 폴더에는 session-report 후속 수정과 near-hands v2를 함께 반영했다.
+새로 시작하는 simulation 로그는 `return_policy=bimanual_staged_return_v2`를 기록해야 한다.

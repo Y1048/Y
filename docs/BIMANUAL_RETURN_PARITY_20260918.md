@@ -1,5 +1,10 @@
 # 양팔 초기자세 복귀: 기존 단계와 속도 프로파일 복원
 
+> 후속 near-hands 복귀가 추가되어 현재 return policy는 `bimanual_staged_return_v2`다.
+> 최신 상태는 [BIMANUAL_NEAR_HANDS_RETURN_20260918.md](BIMANUAL_NEAR_HANDS_RETURN_20260918.md)를 우선 참고한다.
+> 이 문서는 기존 v1 staged-return parity와 정상 경로 기준을 보존하는 역사적 검증 기록이다.
+
+
 기준 브랜치: `codex/g1-laptop-sync-20260917`. 출발 커밋: `b692d2a`.
 같은 노트북의 소스 작업본과 바탕화면 실행 폴더에서 작업했다.
 실제 G1 제어, DDS/SSH, Unity 씬/C# 변경 또는 사용자 Play 조작은 하지 않았다.

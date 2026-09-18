@@ -81,8 +81,122 @@ class StagedReturnTests(unittest.TestCase):
         np.testing.assert_allclose(policy.acceleration_limits, np.deg2rad(60.))
         np.testing.assert_allclose(sim.caps, np.tile(np.deg2rad([90]*4+[180]*3),2))
         self.assertEqual(policy.settle_s, .5)
+        self.assertEqual(policy.policy, 'bimanual_staged_return_v2')
+        self.assertEqual(policy.near_hands_threshold_m, .012)
         self.assertEqual(len(sim.dofs), 14)
         self.assertEqual(sim.clearance_m, .005)
+
+    def test_near_hands_return_stops_separates_and_finishes(self):
+        fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_near_hands_20260918.json').read_text())
+        self.assertTrue(fixture['simulation_only'])
+        self.assertEqual(fixture['source_sequence'], 697)
+        sim = BimanualSimulation()
+        q = sim.home.copy()
+        q[sim.qids] = fixture['q14']
+        sim.config.update(q)
+        sim.velocity[:] = 0.
+        sim.velocity[sim.dofs] = fixture['velocity14']
+        sim.acceleration[:] = 0.
+        sim.acceleration[sim.dofs] = fixture['acceleration14']
+        sim.brake_plan = []
+        for item in fixture['brake_plan']:
+            candidate = sim.home.copy()
+            candidate[sim.qids] = item['q14']
+            velocity = np.zeros(sim.model.nv)
+            velocity[sim.dofs] = item['velocity14']
+            sim.brake_plan.append((candidate, velocity))
+        start_clearance = sim.clearance(sim.config.q)
+        self.assertGreaterEqual(start_clearance, sim.clearance_m)
+        self.assertLess(start_clearance, sim.return_motion.near_hands_threshold_m)
+        stages = []
+        minimum = start_clearance
+        max_acceleration = 0.
+        for tick in range(900):
+            before = sim.config.q.copy()
+            previous = sim.velocity[sim.dofs].copy()
+            self.assertTrue(sim.step(returning=True), sim.reason)
+            _, acceleration, clearance = assert_output(sim, before, previous)
+            max_acceleration = max(max_acceleration, acceleration)
+            minimum = min(minimum, clearance)
+            if not stages or stages[-1] != sim.return_motion.stage:
+                stages.append(sim.return_motion.stage)
+            if sim.state == 'ready':
+                break
+        self.assertEqual(sim.state, 'ready')
+        self.assertEqual(sim.return_motion.stage, 'complete')
+        self.assertEqual(sim.return_motion.policy, 'bimanual_staged_return_v2')
+        self.assertTrue(sim.return_motion.near_hands_recovery)
+        self.assertAlmostEqual(sim.return_motion.return_start_clearance_m, start_clearance, places=12)
+        self.assertLess(sim.return_motion.near_hands_start_clearance_m,
+                        sim.return_motion.near_hands_threshold_m)
+        self.assertGreater(sim.return_motion.near_hands_start_clearance_m, start_clearance)
+        self.assertEqual(sim.return_motion.separation_side, 'left')
+        self.assertGreaterEqual(sim.return_motion.separation_probe_clearance_m['left'], sim.clearance_m)
+        self.assertEqual(stages, ['near_hands_stop','separate_left','safe_waypoint','home','complete'])
+        self.assertGreaterEqual(minimum, sim.clearance_m)
+        self.assertLessEqual(max_acceleration, np.deg2rad(60.)+1e-5)
+        self.assertLess((tick+1)*sim.dt, 10.)
+        self.assertEqual(sim.return_motion.replans, 0)
+        np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
+
+    def test_near_hands_mirror_chooses_right_side(self):
+        fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_near_hands_20260918.json').read_text())
+        sign = np.array([1.,-1.,-1.,1.,-1.,1.,-1.])
+        mirror = lambda values: np.r_[np.asarray(values)[7:]*sign, np.asarray(values)[:7]*sign]
+        sim = BimanualSimulation()
+        q = sim.home.copy()
+        q[sim.qids] = mirror(fixture['q14'])
+        sim.config.update(q)
+        sim.velocity[:] = 0.
+        sim.velocity[sim.dofs] = mirror(fixture['velocity14'])
+        sim.acceleration[:] = 0.
+        sim.acceleration[sim.dofs] = mirror(fixture['acceleration14'])
+        sim.brake_plan = []
+        for item in fixture['brake_plan']:
+            candidate = sim.home.copy()
+            candidate[sim.qids] = mirror(item['q14'])
+            velocity = np.zeros(sim.model.nv)
+            velocity[sim.dofs] = mirror(item['velocity14'])
+            sim.brake_plan.append((candidate, velocity))
+        minimum = sim.clearance(sim.config.q)
+        for tick in range(900):
+            before = sim.config.q.copy()
+            previous = sim.velocity[sim.dofs].copy()
+            self.assertTrue(sim.step(returning=True), sim.reason)
+            _, _, clearance = assert_output(sim, before, previous)
+            minimum = min(minimum, clearance)
+            if sim.state == 'ready':
+                break
+        self.assertEqual(sim.state, 'ready')
+        self.assertEqual(sim.return_motion.separation_side, 'right')
+        self.assertGreaterEqual(minimum, sim.clearance_m)
+        self.assertLess((tick+1)*sim.dt, 10.)
+        np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
+
+    def test_near_hands_trigger_uses_inter_arm_clearance_only(self):
+        q14 = np.array([
+            0.37877105997466565, 0.5018709993910249, 1.3869880803444947,
+            1.7752305760909797, -1.0995418598260935, -1.5892583669620304,
+            0.17414428402689253, -2.2018477350905616, 0.2429193076737186,
+            1.371685727018746, 0.5828341110909996, -0.5412371620371859,
+            0.970856138973355, 1.2987824485641153,
+        ])
+        sim = BimanualSimulation()
+        q = sim.home.copy()
+        q[sim.qids] = q14
+        sim.config.update(q)
+        global_clearance = sim.clearance(sim.config.q)
+        inter_arm_clearance = sim.return_motion._inter_arm_clearance(sim.config.q)
+        self.assertGreaterEqual(global_clearance, sim.clearance_m)
+        self.assertLess(global_clearance, sim.return_motion.near_hands_threshold_m)
+        self.assertGreaterEqual(inter_arm_clearance, sim.return_motion.near_hands_threshold_m)
+
+        sim.step(returning=True)
+        self.assertFalse(sim.return_motion.near_hands_recovery)
+        self.assertAlmostEqual(sim.return_motion.return_start_clearance_m, global_clearance, places=12)
+        self.assertAlmostEqual(sim.return_motion.near_hands_start_clearance_m,
+                               inter_arm_clearance, places=12)
+        self.assertNotEqual(sim.return_motion.stage, 'near_hands_stop')
 
     def test_actual_return_start_fixtures_visit_waypoint_and_finish(self):
         fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_starts_20260918.json').read_text())
@@ -92,6 +206,9 @@ class StagedReturnTests(unittest.TestCase):
                 self.assertLess(result['simulation_s'], 7.)
                 self.assertLess(result['simulation_s'], result['old_simulation_s'])
                 self.assertGreaterEqual(sim.return_motion.settled_ticks*sim.dt, .5)
+                self.assertFalse(sim.return_motion.near_hands_recovery)
+                self.assertGreaterEqual(sim.return_motion.near_hands_start_clearance_m,
+                                        sim.return_motion.near_hands_threshold_m)
                 self.assertEqual(result['replans'], 0)
 
     def test_right_waypoint_trajectory_matches_original_limiter(self):

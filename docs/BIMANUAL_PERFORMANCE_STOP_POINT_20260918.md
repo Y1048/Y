@@ -64,3 +64,6 @@ sphere broadphase 이후 threshold call당 exact candidate는 평균 약 7.88개
 
 이번 조사 중 사용한 실험용 worktree/스크립트는 production source에 포함하지 않는다.
 동시에 진행 중인 session-report 미커밋 작업도 수정하거나 커밋하지 않았다.
+
+> 후속 near-hands return 작업에서도 collision 성능 기준은 `1e28597`을 유지한다.
+> session-report/return 변경은 collision broadphase, 5mm hard clearance, 0.25도 sampled sweep 기준을 바꾸지 않는다.

@@ -1,0 +1,17 @@
+{
+  "schema": "g1.bimanual.near_hands_return.verification.v1",
+  "simulation_only": true,
+  "hardware_output_authorized": false,
+  "base_commit": "43e108d59998f503f16f66553057a9527fca3ac6",
+  "mujoco_version": "3.12.0",
+  "source_detached_suite": {"tests": 89, "result": "PASS", "seconds": 102.616},
+  "runtime_suite": {"tests": 89, "result": "PASS", "seconds": 111.748},
+  "normal_tracking_lost_return": {"ticks": 356, "simulation_s": 5.933333333333334, "minimum_clearance_mm": 40.372503023006544, "max_output_acceleration_deg_s2": 58.777690037050135},
+  "normal_pinch_return": {"ticks": 321, "simulation_s": 5.35, "minimum_clearance_mm": 39.13975976508173, "max_output_acceleration_deg_s2": 60.0000000000039},
+  "quest_reengage": {"state_ticks": 2927, "input_rows": 2016, "maximum_logged_q_difference_rad": 0.0, "minimum_clearance_mm": 5.032381333078582, "max_output_acceleration_deg_s2": 60.00000000006306},
+  "trigger_specificity": {"global_clearance_mm": 6.768927379766458, "inter_arm_clearance_mm": 85.63099607594225, "near_hands_recovery": false},
+  "near_hands_fixture": {"source_log": "unity_20260918_155812_5222579.jsonl", "source_sequence": 697, "source_log_sha256": "8fa12e145b96c07c9f4f1732b365c9d655252e23fffc00fe2733ee74c1d79d5d"},
+  "runtime_install": {"backup": "logs/backups/bimanual_near_hands_return_20260918_210946", "copied_files": 7, "protected_files": 385, "protected_differences": 0},
+  "bat_smoke": {"host": "127.0.0.1", "port": 57287, "seconds": 0.35, "exit_code": 0, "production_port_5020_used": false},
+  "physical_g1_validated": false
+}

@@ -11,6 +11,32 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## Latest: session report + near-hands return v2 (2026-09-18)
+
+Read [BIMANUAL_NEAR_HANDS_RETURN_20260918.md](BIMANUAL_NEAR_HANDS_RETURN_20260918.md) and
+[BIMANUAL_SESSION_REPORT_20260918.md](BIMANUAL_SESSION_REPORT_20260918.md) first.
+The read-only report tool found a real historical simulation failure in
+`unity_20260918_155812_5222579.jsonl`: tracking loss at sequence 697 entered return and
+ended BLOCKED with `return_path_blocked:return_swept_clearance`. The exact q/velocity/
+acceleration and 17-step checked brake tail are preserved as a regression fixture.
+
+Current return policy is `bimanual_staged_return_v2`. When inter-arm clearance at return start
+is below 12 mm, it consumes the checked brake tail to zero speed, chooses a one-arm separation
+route, then uses the existing safe waypoint -> home -> 0.5s settle path. Published movement still
+passes the original checked_stop_plan 5 mm / 0.25-degree sampled guards. Original fixture and
+its left-right mirror both finish in 510 ticks (8.5s), with minimum clearance 5.696/5.751 mm.
+Normal recorded returns remain 356/321 ticks and do not use the fallback.
+
+The report runner propagates strict exit codes, scans latest sessions to EOF, distinguishes reason
+changes from real state transitions, and reports malformed JSON without aborting summary.
+After runtime install/restart, identify new logs with `return_policy=bimanual_staged_return_v2`.
+No physical G1/DDS/motor validation. Collision performance baseline remains the 1e28597 sphere path.
+A detached `43e108d`-based source suite and the installed runtime suite both pass 89/89 on
+isolated MuJoCo 3.12.0. The trigger-specificity regression keeps recovery off for a posture with
+6.769 mm global but 85.631 mm inter-arm clearance. Runtime backup is
+`logs/backups/bimanual_near_hands_return_20260918_210946/`; 385 protected files were unchanged.
+Headless BAT smoke passed on loopback port 57287 without using production port 5020.
+
 ## Latest: performance micro-optimization stop point (2026-09-18)
 
 Read [BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md](BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md) first.

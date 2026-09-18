@@ -13,6 +13,32 @@ Scene            : Assets/Scenes/SampleScene.unity
 
 `com.unity.xr.oculus`가 아직 남아 있어 Unity 6에서 Oculus Plugin deprecation 경고가 표시될 수 있다. OpenXR migration은 wrist/frame 동작이 안정된 뒤 별도로 진행한다.
 
+## Windows PC별 XR 런타임 설정
+
+Git 저장소와 Unity 프로젝트를 동기화해도 Windows의 활성 OpenXR 런타임은 다른 PC로 복사되지 않는다. 새 PC에서 처음 실행하거나 SteamVR/Meta 앱 업데이트 뒤에는 다음 항목을 PC별로 확인한다.
+
+1. Unity 6000.5.4f1과 프로젝트에 필요한 플랫폼 모듈을 설치한다.
+2. Meta Horizon/Meta Quest Link와 Quest 장치 연결·개발자 권한을 준비한다.
+3. Meta Horizon/Meta Quest Link의 Settings > General에서 Meta Quest Link를 활성 OpenXR 런타임으로 설정한다.
+4. Unity에서 이 프로젝트와 `Assets/Scenes/SampleScene.unity`를 연다.
+
+현재 프로젝트는 Oculus XR Plugin을 사용한다. SteamVR이 활성 OpenXR 런타임이면 Oculus Plugin이 비 Oculus 런타임을 거부해 다음 오류가 발생할 수 있다.
+
+```text
+XR_ERROR_RUNTIME_FAILURE
+xrCreateInstance failed
+Oculus XR Plugin Failed to initialize
+Unable to start Oculus XR Plugin
+```
+
+현재 Windows 런타임은 다음 읽기 전용 명령으로 확인할 수 있다.
+
+```powershell
+Get-ItemProperty 'HKLM:\SOFTWARE\Khronos\OpenXR\1' | Select-Object ActiveRuntime
+```
+
+SteamVR과 Omni Connect는 계속 설치해 둘 수 있다. Quest teleop을 실행할 때는 현재 Oculus 기반 Unity 프로젝트가 요구하는 Meta 런타임이 활성인지 확인한다. 이 설정은 보통 PC당 최초 한 번만 필요하지만 새 PC 설정, XR 프로그램 업데이트, 또는 위 초기화 오류 발생 뒤에는 다시 확인한다.
+
 ## 데이터 흐름
 
 ```text

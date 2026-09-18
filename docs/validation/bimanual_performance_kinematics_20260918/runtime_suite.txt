@@ -1,0 +1,178 @@
+[BIMANUAL STARTUP] engine_begin perf_counter_ns=26227312317600
+[BIMANUAL STARTUP] engine_ready perf_counter_ns=26227470701800
+SIMULATION ONLY | MuJoCo 3.12.0 | C:\Users\user\Desktop\G1_Teleop_Project\logs\diagnostics\mujoco_versions\3.12.0\mujoco\__init__.py
+py : test_known_solver_exception_uses_tail_and_can_resume (test_bimanual_boundaries.OutputContinuityTests.test_known_so
+lver_exception_uses_tail_and_can_resume) ... ok
+위치 줄:1 문자:314
++ ... ns\3.12.0'; py -3.11 -B MuJoCo_G1_Controller\scripts\g1_bimanual_runt ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_known_solv..._resume) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+test_long_loss_returns_at_zero_speed_then_reengages (test_bimanual_boundaries.OutputContinuityTests.test_long_loss_retu
+rns_at_zero_speed_then_reengages) ... ok
+test_loss_immediately_after_engage_checks_stationary_hold (test_bimanual_boundaries.OutputContinuityTests.test_loss_imm
+ediately_after_engage_checks_stationary_hold) ... ok
+test_missing_moving_tail_is_fault_not_velocity_reset (test_bimanual_boundaries.OutputContinuityTests.test_missing_movin
+g_tail_is_fault_not_velocity_reset) ... ok
+test_nonfinite_solver_result_uses_checked_tail (test_bimanual_boundaries.OutputContinuityTests.test_nonfinite_solver_re
+sult_uses_checked_tail) ... ok
+test_programming_error_is_not_hidden_as_solver_failure (test_bimanual_boundaries.OutputContinuityTests.test_programming
+_error_is_not_hidden_as_solver_failure) ... ok
+test_solver_exception_without_tail_fails_closed (test_bimanual_boundaries.OutputContinuityTests.test_solver_exception_w
+ithout_tail_fails_closed) ... ok
+CONTINUITY left 1 max_output_accel_deg_s2= 60.0000000000039
+CONTINUITY left 6 max_output_accel_deg_s2= 60.0000000000268
+CONTINUITY left 20 max_output_accel_deg_s2= 60.0000000000268
+CONTINUITY right 1 max_output_accel_deg_s2= 60.0000000000039
+CONTINUITY right 6 max_output_accel_deg_s2= 60.0000000000268
+CONTINUITY right 20 max_output_accel_deg_s2= 60.0000000000268
+test_transient_loss_and_recovery_are_output_continuous (test_bimanual_boundaries.OutputContinuityTests.test_transient_l
+oss_and_recovery_are_output_continuous) ... ok
+test_backend_generation_and_feedback_order_are_explicit (test_bimanual_boundaries.ProtocolBoundaryTests.test_backend_ge
+neration_and_feedback_order_are_explicit) ... ok
+test_brackets_in_strings_do_not_count_as_depth (test_bimanual_boundaries.ProtocolBoundaryTests.test_brackets_in_strings
+_do_not_count_as_depth) ... ok
+test_engage_origin_and_filter_share_normalized_rotation (test_bimanual_boundaries.ProtocolBoundaryTests.test_engage_ori
+gin_and_filter_share_normalized_rotation) ... ok
+test_large_numbers_and_deep_json_are_value_errors (test_bimanual_boundaries.ProtocolBoundaryTests.test_large_numbers_an
+d_deep_json_are_value_errors) ... ok
+test_parse_rejections_do_not_modify_cycle (test_bimanual_boundaries.ProtocolBoundaryTests.test_parse_rejections_do_not_
+modify_cycle) ... ok
+QUALITY {"side": "left", "axis": 0, "distance": 0.02, "ticks": 600, "peak_joint_excursion_deg": [5.022320201461253, 0.1282827879991701, 0.06486457687391761, 3.7689345704961603, 0.5279105362514093, 1.741496264044632, 0.19701343277559932], "peak_position_error_mm": 19.855364462325, "overshoot_mm": 0.0, "final_position_error_mm": 0.22068457159289226, "final_rotation_error_deg": 0.0005937906720072671, "reasons": {"tracking": 600}}
+QUALITY {"side": "left", "axis": 0, "distance": 0.05, "ticks": 600, "peak_joint_excursion_deg": [14.409820956151174, 0.404421610706333, 0.2990905730038509, 14.20018727795951, 1.6835680810828526, 3.4467221735149933, 0.4414388676797766], "peak_position_error_mm": 49.84864024372968, "overshoot_mm": 0.0, "final_position_error_mm": 1.6791437275444852, "final_rotation_error_deg": 0.011134434947814244, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 0, "distance": 0.02, "ticks": 600, "peak_joint_excursion_deg": [5.022320201462034, 0.12828278799897927, 0.06486457687393414, 3.7689345704983994, 0.5279105362513193, 1.7414962640460858, 0.19701343277575795], "peak_position_error_mm": 19.855364462325, "overshoot_mm": 0.0, "final_position_error_mm": 0.22068457159184213, "final_rotation_error_deg": 0.0005937906720082477, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 0, "distance": 0.05, "ticks": 600, "peak_joint_excursion_deg": [14.409820956170668, 0.40442161070607535, 0.2990905730054046, 14.200187278005881, 1.6835680810858513, 3.446722173516752, 0.44143886767908086], "peak_position_error_mm": 49.84864024372968, "overshoot_mm": 0.0, "final_position_error_mm": 1.6791437275305097, "final_rotation_error_deg": 0.011134434948185156, "reasons": {"tracking": 600}}
+test_fixed_position_approach_has_no_overshoot (test_bimanual_motion_quality.MotionQualityTests.test_fixed_position_appr
+oach_has_no_overshoot) ... ok
+QUALITY {"side": "left", "axis": 0, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.24682992659262692, 2.718256887757961, 8.715349845242738, 0.1335889552537788, 42.87271305624945, 1.9168718453554672, 1.9747111139161633], "peak_position_error_mm": 2.3110719101719535, "overshoot_mm": 0.0, "final_position_error_mm": 0.05951264278159617, "final_rotation_error_deg": 0.045140972973274046, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 0, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.14248380777132333, 2.713864296083101, 8.662023197485107, 0.6684150477675118, 42.866211255177156, 2.272862527993013, 1.7268680072371367], "peak_position_error_mm": 2.3037160934465097, "overshoot_mm": 0.5650850256386231, "final_position_error_mm": 0.1828287950552835, "final_rotation_error_deg": 0.045292850795724184, "reasons": {"tracking": 600}}
+test_local_x_rotation_stays_wrist_dominant_on_both_arms (test_bimanual_motion_quality.MotionQualityTests.test_local_x_r
+otation_stays_wrist_dominant_on_both_arms) ... ok
+QUALITY {"side": "left", "axis": 2, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.06149529518049231, 1.3944390145251426, 4.2507073408918465, 0.2538615475632413, 4.272891768225557, 0.13516691697560496, 43.822883317947635], "peak_position_error_mm": 7.742142972043725, "overshoot_mm": 0.3927737769372705, "final_position_error_mm": 0.15478758946186663, "final_rotation_error_deg": 0.052571147845505574, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 2, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.18128863356201655, 1.4743094740159297, 4.5360455072129495, 0.2629331996186191, 4.55032579256366, 0.17182069096761288, 43.73109354499758], "peak_position_error_mm": 7.761326924773851, "overshoot_mm": 0.0, "final_position_error_mm": 0.17940006195165004, "final_rotation_error_deg": 0.05255656159986094, "reasons": {"tracking": 600}}
+test_local_z_rotation_stays_wrist_dominant_on_both_arms (test_bimanual_motion_quality.MotionQualityTests.test_local_z_r
+otation_stays_wrist_dominant_on_both_arms) ... ok
+test_orientation_priority_hysteresis_is_reversible_for_each_arm (test_bimanual_motion_quality.MotionQualityTests.test_o
+rientation_priority_hysteresis_is_reversible_for_each_arm) ... ok
+test_policies_do_not_remove_bilateral_collision_constraints (test_bimanual_motion_quality.MotionQualityTests.test_polic
+ies_do_not_remove_bilateral_collision_constraints) ... ok
+test_preference_state_is_per_arm_and_return_resets_it (test_bimanual_motion_quality.MotionQualityTests.test_preference_
+state_is_per_arm_and_return_resets_it) ... ok
+NEW_RECORDED_REPLAY {"ticks": 1404, "tracking_reasons": {"tracking": 666, "checked_braking:qp_infeasible": 1}, "states": ["ready", "returning", "tracking"], "braking_total": 1, "minimum_clearance_mm": 19.694884058626737, "p95_ms": 9.181745000387304, "max_ms": 17.903400002978742, "extra_return_ticks": 0}
+test_reported_quest_regression_preserves_limits_and_returns (test_bimanual_motion_quality.MotionQualityTests.test_repor
+ted_quest_regression_preserves_limits_and_returns) ... ok
+test_right_arm_matches_unchanged_reference_in_free_space (test_bimanual_motion_quality.MotionQualityTests.test_right_ar
+m_matches_unchanged_reference_in_free_space) ... ok
+test_torso_projection_preserves_rotation_and_side_reference (test_bimanual_motion_quality.MotionQualityTests.test_torso
+_projection_preserves_rotation_and_side_reference) ... ok
+test_duplicate_packet_does_not_advance_filter (test_bimanual_motion_quality.PoseFilterTests.test_duplicate_packet_does_
+not_advance_filter) ... ok
+test_first_packet_and_reengage_reset_without_jump (test_bimanual_motion_quality.PoseFilterTests.test_first_packet_and_r
+eengage_reset_without_jump) ... ok
+test_invalid_hand_does_not_advance_either_filtered_target (test_bimanual_motion_quality.PoseFilterTests.test_invalid_ha
+nd_does_not_advance_either_filtered_target) ... ok
+test_quaternion_hemisphere_does_not_invent_a_rotation (test_bimanual_motion_quality.PoseFilterTests.test_quaternion_hem
+isphere_does_not_invent_a_rotation) ... ok
+test_rotation_smoothing_and_unit_norm (test_bimanual_motion_quality.PoseFilterTests.test_rotation_smoothing_and_unit_no
+rm) ... ok
+test_smoothing_is_independent_per_hand (test_bimanual_motion_quality.PoseFilterTests.test_smoothing_is_independent_per_
+hand) ... ok
+test_tolerated_wire_rounding_is_normalized_before_filtering (test_bimanual_motion_quality.PoseFilterTests.test_tolerate
+d_wire_rounding_is_normalized_before_filtering) ... ok
+test_fixture_scope_and_provenance (test_bimanual_quest_reengage.QuestReengageReplayTests.test_fixture_scope_and_provena
+nce) ... ok
+QUEST_REENGAGE_REPLAY {"state_ticks": 2927, "input_rows": 2016, "transitions": [["ready", ""], ["tracking", ""], ["returning", "pinch"], ["ready", "pinch"], ["tracking", ""], ["returning", "pinch"], ["ready", "pinch"]], "minimum_clearance_mm": 5.032381333078582, "max_output_acceleration_deg_s2": 60.00000000006306, "maximum_logged_q_difference_rad": 0.0}
+test_replay_matches_logged_joint_path_and_two_returns (test_bimanual_quest_reengage.QuestReengageReplayTests.test_repla
+y_matches_logged_joint_path_and_two_returns) ... ok
+test_fixture_provenance_and_observed_scope (test_bimanual_recorded_session.RecordedStagedSessionTests.test_fixture_prov
+enance_and_observed_scope) ... ok
+RECORDED_STAGED_SESSION {"simulation_only": true, "state_ticks": 3433, "actions": {"idle": 394, "tracking": 2674, "tracking_braking": 20, "returning": 345}, "tracking_braking_reasons": {"checked_braking:qp_infeasible": 12, "checked_braking:swept_clearance": 242}, "stages": ["safe_waypoint", "home", "complete"], "recorded_return_wall_s": 6.063000000001921, "return_simulation_s": 5.75, "minimum_clearance_mm": 5.000012852751303, "max_output_acceleration_deg_s2": 60.0000000000268, "peak_speed_deg_s": 38.95382114229306, "maximum_logged_q_difference_rad": 0.0, "replay_tick_p95_ms": 8.314160000008986, "replay_tick_max_ms": 13.18380000157049}
+test_recorded_tracking_braking_and_staged_return (test_bimanual_recorded_session.RecordedStagedSessionTests.test_record
+ed_tracking_braking_and_staged_return) ... ok
+STAGED_RETURN {"reason": "tracking_lost", "ticks": 356, "simulation_s": 5.933333333333334, "old_simulation_s": 10.733333333333333, "old_observed_wall_s": 11.156000000000859, "stages": [[1, "safe_waypoint"], [213, "home"], [356, "complete"]], "minimum_clearance_mm": 40.372503023006544, "peak_speed_deg_s": 41.272304838050616, "max_output_acceleration_deg_s2": 58.777690037050135, "replans": 0}
+STAGED_RETURN {"reason": "pinch", "ticks": 321, "simulation_s": 5.35, "old_simulation_s": 9.833333333333334, "old_observed_wall_s": 10.25, "stages": [[1, "safe_waypoint"], [178, "home"], [321, "complete"]], "minimum_clearance_mm": 39.13975976508173, "peak_speed_deg_s": 36.95955174531841, "max_output_acceleration_deg_s2": 60.0000000000039, "replans": 0}
+test_actual_return_start_fixtures_visit_waypoint_and_finish (test_bimanual_return.StagedReturnTests.test_actual_return_
+start_fixtures_visit_waypoint_and_finish) ... ok
+test_collision_rejection_uses_checked_stop_instead_of_publishing_proposal (test_bimanual_return.StagedReturnTests.test_
+collision_rejection_uses_checked_stop_instead_of_publishing_proposal) ... ok
+test_complete_return_does_not_restart_and_reengage_is_possible (test_bimanual_return.StagedReturnTests.test_complete_re
+turn_does_not_restart_and_reengage_is_possible) ... ok
+test_full_cycle_pinch_return_inactive_rearm_and_reengage (test_bimanual_return.StagedReturnTests.test_full_cycle_pinch_
+return_inactive_rearm_and_reengage) ... ok
+test_invalid_waypoint_never_bypasses_joint_guards (test_bimanual_return.StagedReturnTests.test_invalid_waypoint_never_b
+ypasses_joint_guards) ... ok
+test_nonfinite_return_proposal_uses_checked_tail_and_faults_at_rest (test_bimanual_return.StagedReturnTests.test_nonfin
+ite_return_proposal_uses_checked_tail_and_faults_at_rest) ... ok
+test_profile_and_waypoint_match_original_right_arm (test_bimanual_return.StagedReturnTests.test_profile_and_waypoint_ma
+tch_original_right_arm) ... ok
+test_return_generator_exception_brakes_before_fault (test_bimanual_return.StagedReturnTests.test_return_generator_excep
+tion_brakes_before_fault) ... ok
+test_right_home_trajectory_matches_original_limiter (test_bimanual_return.StagedReturnTests.test_right_home_trajectory_
+matches_original_limiter) ... ok
+test_right_waypoint_trajectory_matches_original_limiter (test_bimanual_return.StagedReturnTests.test_right_waypoint_tra
+jectory_matches_original_limiter) ... ok
+test_timeout_brakes_before_fault (test_bimanual_return.StagedReturnTests.test_timeout_brakes_before_fault) ... ok
+test_both_launchers_use_validated_runtime (test_bimanual_runtime.RuntimeTests.test_both_launchers_use_validated_runtime
+) ... ok
+test_cannot_switch_preloaded_engine (test_bimanual_runtime.RuntimeTests.test_cannot_switch_preloaded_engine) ... ok
+test_core_guard_precedes_model_preparation (test_bimanual_runtime.RuntimeTests.test_core_guard_precedes_model_preparati
+on) ... ok
+test_default_project_engine_is_selected (test_bimanual_runtime.RuntimeTests.test_default_project_engine_is_selected) ..
+. ok
+test_environment_missing_engine_has_no_fallback (test_bimanual_runtime.RuntimeTests.test_environment_missing_engine_has
+_no_fallback) ... ok
+test_explicit_engine_wins_and_children_inherit_it (test_bimanual_runtime.RuntimeTests.test_explicit_engine_wins_and_chi
+ldren_inherit_it) ... ok
+test_explicit_missing_engine_has_no_fallback (test_bimanual_runtime.RuntimeTests.test_explicit_missing_engine_has_no_fa
+llback) ... ok
+test_installed_validated_engine_needs_no_local_root (test_bimanual_runtime.RuntimeTests.test_installed_validated_engine
+_needs_no_local_root) ... ok
+test_matching_package_and_native_are_required (test_bimanual_runtime.RuntimeTests.test_matching_package_and_native_are_
+required) ... ok
+test_metadata_is_simulation_only_and_hashes_source (test_bimanual_runtime.RuntimeTests.test_metadata_is_simulation_only
+_and_hashes_source) ... ok
+[BIMANUAL STARTUP] engine_begin perf_counter_ns=26308902367100
+test_startup_failure_does_not_import_runner (test_bimanual_runtime.RuntimeTests.test_startup_failure_does_not_import_ru
+nner) ... ok
+test_validation_does_not_import_runner (test_bimanual_runtime.RuntimeTests.test_validation_does_not_import_runner) ...
+ok
+test_broadphase_matches_full_clearance_decision (test_bimanual_sim.BimanualTests.test_broadphase_matches_full_clearance
+_decision) ... ok
+test_checked_tail_stops_on_infeasible_qp_without_reset (test_bimanual_sim.BimanualTests.test_checked_tail_stops_on_infe
+asible_qp_without_reset) ... ok
+test_clearance_guard_rejects_interior_and_latches (test_bimanual_sim.BimanualTests.test_clearance_guard_rejects_interio
+r_and_latches) ... ok
+test_crossed_targets_keep_sampled_clearance (test_bimanual_sim.BimanualTests.test_crossed_targets_keep_sampled_clearanc
+e) ... ok
+test_kinematic_clearance_matches_full_forward (test_bimanual_sim.BimanualTests.test_kinematic_clearance_matches_full_fo
+rward) ... ok
+test_kinematic_clearance_nonzero_path_skips_contact_promotion (test_bimanual_sim.BimanualTests.test_kinematic_clearance
+_nonzero_path_skips_contact_promotion) ... ok
+test_kinematic_clearance_promotes_zero_distance_to_contact_path (test_bimanual_sim.BimanualTests.test_kinematic_clearan
+ce_promotes_zero_distance_to_contact_path) ... ok
+test_missing_nonfinite_and_quaternion (test_bimanual_sim.BimanualTests.test_missing_nonfinite_and_quaternion) ... ok
+test_no_transport_in_entrypoint (test_bimanual_sim.BimanualTests.test_no_transport_in_entrypoint) ... ok
+test_nonfinite_clearance_rejects_new_plan (test_bimanual_sim.BimanualTests.test_nonfinite_clearance_rejects_new_plan) .
+.. ok
+test_order_and_hand_pairs (test_bimanual_sim.BimanualTests.test_order_and_hand_pairs) ... ok
+test_reach_return_reengage (test_bimanual_sim.BimanualTests.test_reach_return_reengage) ... ok
+test_recorded_unity_failure_replay (test_bimanual_sim.BimanualTests.test_recorded_unity_failure_replay) ... ok
+test_mapping_same_frame_both_hands (test_bimanual_unity_sim.CycleTests.test_mapping_same_frame_both_hands) ... ok
+test_pinch_return_ignores_early_engage_then_rearms (test_bimanual_unity_sim.CycleTests.test_pinch_return_ignores_early_
+engage_then_rearms) ... ok
+test_real_loopback_synthetic_sender (test_bimanual_unity_sim.CycleTests.test_real_loopback_synthetic_sender) ... ok
+test_session_change_returns_and_blocked_is_not_ready (test_bimanual_unity_sim.CycleTests.test_session_change_returns_an
+d_blocked_is_not_ready) ... ok
+test_startup_active_requires_inactive_edge (test_bimanual_unity_sim.CycleTests.test_startup_active_requires_inactive_ed
+ge) ... ok
+test_tracking_grace_timeout_and_reordering (test_bimanual_unity_sim.CycleTests.test_tracking_grace_timeout_and_reorderi
+ng) ... ok
+test_validation_nonfinite_missing_duplicates (test_bimanual_unity_sim.CycleTests.test_validation_nonfinite_missing_dupl
+icates) ... ok
+
+----------------------------------------------------------------------
+Ran 76 tests in 96.673s
+
+OK
+Recorded simulation replay: ticks=209 braking=0 p95_ms=7.05 max_ms=11.70

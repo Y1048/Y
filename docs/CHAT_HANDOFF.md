@@ -1,5 +1,14 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 clearance kinematics optimization
+
+Read [second clearance optimization](BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md).
+Normal sampled distance checks now use `mj_kinematics`; exact zero distance alone promotes
+to `mj_fwdPosition` and the existing robust contact/probe path. All collision margins,
+sweep samples and motion limits remain unchanged. Quest replay q is still identical.
+Repeated A/B p95 mean: 15.055 -> 12.274 ms; source/runtime suites 76/76 PASS each.
+Two files installed with backup, 277 protected files unchanged, BAT smoke passed.
+
 ## 2026-09-18 clearance performance optimization
 
 Read [performance/clearance validation](BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md).

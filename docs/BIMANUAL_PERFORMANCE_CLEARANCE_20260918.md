@@ -1,5 +1,8 @@
 # 양팔 충돌 여유와 제어 tick 성능 분석 — 2026-09-18
 
+> ?? 2? ???? ??. ?? ??? [BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md](BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md)?.
+> ? ??? `mj_fwdPosition` 1? ??? ?? ???? ????.
+
 기준 브랜치: `codex/g1-laptop-sync-20260917`, 출발 커밋 `a65495f`.
 실제 Quest에서 정상 동작을 확인한 세션과 그 회귀 fixture를 사용했다.
 이번 변경은 시뮬레이션 collision 검사 계산만 최적화한다.

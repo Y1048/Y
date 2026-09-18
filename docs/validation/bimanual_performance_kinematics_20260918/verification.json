@@ -1,0 +1,140 @@
+{
+  "schema": "g1.bimanual.performance.kinematics.validation.v1",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "source_base_commit": "dc1a29aad793ae9883255e99b5447e7b738bf50d",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "change": "clearance normal path uses mj_kinematics; exact-zero distance promotes once to mj_fwdPosition and existing robust contact/probe path",
+  "clearance_m": 0.005,
+  "sweep_substep_deg": 0.25,
+  "random_full_forward_equivalence_samples": 500,
+  "recorded_geom_distance_equivalence": {
+    "states": 300,
+    "pairs_per_state": 439,
+    "max_distance_difference_m": 0.0,
+    "geom_xpos_max_difference": 0.0,
+    "geom_xmat_max_difference": 0.0
+  },
+  "quest_fixture_replay": {
+    "ticks": 2927,
+    "maximum_logged_q_difference_rad": 0.0,
+    "minimum_clearance_mm": 5.032381333078582,
+    "final_state": "ready"
+  },
+  "ab_runs": [
+    {
+      "label": "baseline1",
+      "total_s": 19.973666300000332,
+      "ticks": 2927,
+      "p50_ms": 5.9765,
+      "p95_ms": 14.771869999999995,
+      "p99_ms": 17.817054,
+      "max_ms": 22.1334,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    },
+    {
+      "label": "optimized1",
+      "total_s": 16.971683400002803,
+      "ticks": 2927,
+      "p50_ms": 5.0439,
+      "p95_ms": 12.183549999999999,
+      "p99_ms": 14.61820799999999,
+      "max_ms": 19.2194,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    },
+    {
+      "label": "optimized2",
+      "total_s": 17.110466300000553,
+      "ticks": 2927,
+      "p50_ms": 5.0619,
+      "p95_ms": 12.364589999999996,
+      "p99_ms": 15.514219999999984,
+      "max_ms": 20.2991,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    },
+    {
+      "label": "baseline2",
+      "total_s": 20.443609199999628,
+      "ticks": 2927,
+      "p50_ms": 6.1562,
+      "p95_ms": 15.338459999999996,
+      "p99_ms": 18.860685999999976,
+      "max_ms": 24.1318,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    }
+  ],
+  "ab_mean": {
+    "total_s": {
+      "baseline_mean": 20.20863774999998,
+      "optimized_mean": 17.041074850001678,
+      "reduction_percent": 15.674301945455502
+    },
+    "p50_ms": {
+      "baseline_mean": 6.06635,
+      "optimized_mean": 5.052899999999999,
+      "reduction_percent": 16.706091801495145
+    },
+    "p95_ms": {
+      "baseline_mean": 15.055164999999995,
+      "optimized_mean": 12.274069999999998,
+      "reduction_percent": 18.47269691165788
+    },
+    "p99_ms": {
+      "baseline_mean": 18.338869999999986,
+      "optimized_mean": 15.066213999999988,
+      "reduction_percent": 17.845461579693843
+    },
+    "max_ms": {
+      "baseline_mean": 23.1326,
+      "optimized_mean": 19.75925,
+      "reduction_percent": 14.582666885693776
+    }
+  },
+  "source_suite": {
+    "count": 76,
+    "passed": 76,
+    "seconds": 97.577,
+    "exit_code": 0
+  },
+  "runtime_suite": {
+    "count": 76,
+    "passed": 76,
+    "seconds": 96.673,
+    "exit_code": 0
+  },
+  "bat_smoke": {
+    "exit_code": 0,
+    "port": 64842,
+    "headless_seconds": 0.35
+  },
+  "runtime_install": {
+    "backup": "C:/Users/user/Desktop/G1_Teleop_Project/logs/backups/bimanual_kinematic_clearance_20260918_155946",
+    "installed": [
+      "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py",
+      "backend/tests/test_bimanual_sim.py"
+    ],
+    "protected_files_checked": 277,
+    "protected_files_changed": 0
+  },
+  "source_sha256": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": "720d718161f47ff0d90ecd6130801c87430d69501e8d76dce69fc155945186ee",
+    "backend/tests/test_bimanual_sim.py": "beaaa9218af0915c70f719e610c7f5edb5bf0ec1e6470088a1ca94562ffd696f"
+  },
+  "runtime_matches_source": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": true,
+    "backend/tests/test_bimanual_sim.py": true
+  },
+  "limits": [
+    "No clearance, velocity, acceleration, sweep-substep, IK, or return policy was relaxed.",
+    "This is fixed-base sampled-geometry simulation, not continuous-time or physical G1 collision proof.",
+    "A/B timing is host-dependent and is not a hard real-time guarantee."
+  ]
+}

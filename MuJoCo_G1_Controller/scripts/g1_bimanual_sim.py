@@ -94,9 +94,10 @@ class BimanualSimulation:
 
     def clearance(self, q, threshold=None):
         self.check_data.qpos[:] = q
-        # Clearance only needs position-dependent kinematics/contact geometry.
-        # Avoid velocity/actuation/acceleration stages from full mj_forward.
-        mujoco.mj_fwdPosition(self.model, self.check_data)
+        # Geometry distance needs only kinematics in the normal non-contact path.
+        # If MuJoCo reports an exact zero, promote once to fwdPosition so the
+        # established exact-contact / zero-mesh probe logic still sees contacts.
+        mujoco.mj_kinematics(self.model, self.check_data)
         pairs = self.pairs
         if threshold is not None:
             # World AABBs enclose each rotated local geom AABB. Their separation
@@ -111,8 +112,21 @@ class BimanualSimulation:
             if not np.isfinite(lower).all():
                 return float('nan')
             pairs = self.pair_array[lower <= threshold + 1e-8]
-        nearest = base._nearest_pair_distance(self.model, self.check_data, pairs)
-        return .2 if nearest is None else nearest[0]
+        nearest = None
+        fromto = np.zeros(6, dtype=float)
+        promoted = False
+        for first, second in pairs:
+            distance = float(mujoco.mj_geomDistance(
+                self.model, self.check_data, int(first), int(second), .2, fromto))
+            if abs(distance) <= base.ZERO_DISTANCE_TOLERANCE_M:
+                if not promoted:
+                    mujoco.mj_fwdPosition(self.model, self.check_data)
+                    promoted = True
+                distance = base._robust_geom_distance(
+                    self.model, self.check_data, int(first), int(second), .2, fromto)
+            if distance < .2 and (nearest is None or distance < nearest):
+                nearest = distance
+        return .2 if nearest is None else nearest
 
     def step(self, targets=None, *, returning=False):
         """Both wrist poses in robot frame; return is a checked staged joint trajectory.

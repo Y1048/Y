@@ -1,0 +1,3 @@
+EQUIV {'samples': 300, 'xpos': 0.0, 'xmat': 0.0, 'max_pair_diff': 0.0, 'exact_distance_mismatches': 0}
+BENCH fwdPosition [5.3194, 5.0869, 4.9761, 5.4057, 5.4004] median 5.3194
+BENCH kinematics [1.3171, 1.2693, 1.2749, 1.2692, 1.2655] median 1.2693

@@ -11,6 +11,20 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## Latest: clearance kinematics optimization (2026-09-18)
+
+Read [BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md](BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md) first.
+The first performance pass (`dc1a29a`) kept contact generation but used `mj_fwdPosition`.
+The new normal clearance path uses `mj_kinematics`; only an exact zero distance promotes
+once to `mj_fwdPosition` and the established robust contact/zero-mesh probe path.
+No collision sample, 5 mm limit, 0.25 deg sweep substep, motion/return policy, or speed limit changed.
+
+300 recorded poses x 439 pairs had 0 raw distance/transform difference, 500 random poses
+matched full-forward nearest clearance, and the Quest fixture stayed 0 rad identical with
+5.032 mm minimum clearance. Repeated A/B p95 mean: 15.055 -> 12.274 ms (18.47% lower).
+Source/runtime suites: 76/76 PASS each; actual BAT headless smoke PASS. Two Python/test
+files were installed with backup; 277 protected files were unchanged. Running Python was not restarted.
+
 ## Latest: clearance performance optimization (2026-09-18)
 
 Read [BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md](BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md) first.

@@ -109,10 +109,10 @@ class BimanualTests(unittest.TestCase):
             fast = self.s.clearance(q, threshold=.005)
             self.assertEqual(exact < .005, fast < .005)
 
-    def test_position_only_clearance_matches_full_forward(self):
+    def test_kinematic_clearance_matches_full_forward(self):
         rng = np.random.default_rng(20260918)
         data = mujoco.MjData(self.s.model)
-        for _ in range(120):
+        for _ in range(500):
             q = self.s.home.copy()
             fraction = rng.uniform(.05, .95, len(self.s.qids))
             q[self.s.qids] = (self.s.ranges[:,0]
@@ -123,12 +123,25 @@ class BimanualTests(unittest.TestCase):
                 self.s.model, data, self.s.pairs)
             expected_distance = .2 if expected is None else expected[0]
             actual_distance = self.s.clearance(q)
-            actual = module.base._nearest_pair_distance(
-                self.s.model, self.s.check_data, self.s.pairs)
-            self.assertEqual(int(data.ncon), int(self.s.check_data.ncon))
-            self.assertEqual(None if expected is None else expected[1:],
-                             None if actual is None else actual[1:])
             self.assertEqual(expected_distance, actual_distance)
+            np.testing.assert_array_equal(data.geom_xpos, self.s.check_data.geom_xpos)
+            np.testing.assert_array_equal(data.geom_xmat, self.s.check_data.geom_xmat)
+
+    def test_kinematic_clearance_promotes_zero_distance_to_contact_path(self):
+        with (patch.object(module.mujoco, 'mj_geomDistance', return_value=0.),
+              patch.object(module.mujoco, 'mj_fwdPosition') as promoted,
+              patch.object(module.base, '_robust_geom_distance', return_value=.123) as robust):
+            self.assertEqual(self.s.clearance(self.s.home), .123)
+        promoted.assert_called_once_with(self.s.model, self.s.check_data)
+        self.assertEqual(robust.call_count, len(self.s.pairs))
+
+    def test_kinematic_clearance_nonzero_path_skips_contact_promotion(self):
+        with (patch.object(module.mujoco, 'mj_geomDistance', return_value=.1),
+              patch.object(module.mujoco, 'mj_fwdPosition') as promoted,
+              patch.object(module.base, '_robust_geom_distance',
+                           side_effect=AssertionError('unexpected robust path'))):
+            self.assertEqual(self.s.clearance(self.s.home), .1)
+        promoted.assert_not_called()
 
     def test_nonfinite_clearance_rejects_new_plan(self):
         with patch.object(self.s, 'clearance', return_value=float('nan')):

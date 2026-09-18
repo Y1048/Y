@@ -1,0 +1,27 @@
+
+test_adb_default_follows_program_files (test_windows_tool_paths.OtherToolPathTests.test_adb_default_follows_program_files) ... ok
+test_adb_override_is_not_overwritten (test_windows_tool_paths.OtherToolPathTests.test_adb_override_is_not_overwritten) ... ok
+test_powershell_vcvars_selection_only_and_full_script_syntax (test_windows_tool_paths.OtherToolPathTests.test_powershell_vcvars_selection_only_and_full_script_syntax) ... ok
+test_vcvars_defaults_follow_program_files (test_windows_tool_paths.OtherToolPathTests.test_vcvars_defaults_follow_program_files) ... ok
+test_vcvars_overrides_are_not_overwritten (test_windows_tool_paths.OtherToolPathTests.test_vcvars_overrides_are_not_overwritten) ... ok
+test_helper_has_no_execution_or_installation_commands (test_windows_tool_paths.PathContractTests.test_helper_has_no_execution_or_installation_commands) ... ok
+test_path_only_check_precedes_every_original_action (test_windows_tool_paths.PathContractTests.test_path_only_check_precedes_every_original_action) ... ok
+test_windows_entrypoints_have_no_fixed_user_or_install_drive (test_windows_tool_paths.PathContractTests.test_windows_entrypoints_have_no_fixed_user_or_install_drive) ... ok
+test_another_version_is_not_silently_selected (test_windows_tool_paths.UnityEditorDiscoveryTests.test_another_version_is_not_silently_selected) ... ok
+test_directory_named_unity_exe_is_not_an_editor (test_windows_tool_paths.UnityEditorDiscoveryTests.test_directory_named_unity_exe_is_not_an_editor) ... ok
+test_existing_override_wins_over_both_defaults (test_windows_tool_paths.UnityEditorDiscoveryTests.test_existing_override_wins_over_both_defaults) ... ok
+test_invalid_override_falls_back_to_profile (test_windows_tool_paths.UnityEditorDiscoveryTests.test_invalid_override_falls_back_to_profile) ... ok
+test_invalid_override_falls_back_to_program_files (test_windows_tool_paths.UnityEditorDiscoveryTests.test_invalid_override_falls_back_to_program_files) ... ok
+test_missing_override_and_defaults_fail (test_windows_tool_paths.UnityEditorDiscoveryTests.test_missing_override_and_defaults_fail) ... ok
+test_missing_root_variables_do_not_search_current_directory (test_windows_tool_paths.UnityEditorDiscoveryTests.test_missing_root_variables_do_not_search_current_directory) ... ok
+test_neither_location_reports_original_error_without_pausing (test_windows_tool_paths.UnityEditorDiscoveryTests.test_neither_location_reports_original_error_without_pausing) ... ok
+test_non_ascii_profile_name (test_windows_tool_paths.UnityEditorDiscoveryTests.test_non_ascii_profile_name) ... ok
+test_override_only_does_not_require_hub_installation (test_windows_tool_paths.UnityEditorDiscoveryTests.test_override_only_does_not_require_hub_installation) ... ok
+test_program_files_is_preferred_over_profile (test_windows_tool_paths.UnityEditorDiscoveryTests.test_program_files_is_preferred_over_profile) ... ok
+test_spaces_shell_characters_and_delayed_expansion (test_windows_tool_paths.UnityEditorDiscoveryTests.test_spaces_shell_characters_and_delayed_expansion) ... ok
+test_user_profile_installation_is_found (test_windows_tool_paths.UnityEditorDiscoveryTests.test_user_profile_installation_is_found) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 3.531s
+
+OK

@@ -1,0 +1,259 @@
+{
+  "schema": "g1.bimanual.observed_run.validation.v1",
+  "source_base_commit": "7e742190dc291dbe403a238a455f000ed828d5b5",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "simulation_only": true,
+  "new_unity_execution": false,
+  "new_quest_session": false,
+  "physical_robot_executed": false,
+  "desktop_verified": false,
+  "control_code_changed": false,
+  "source_suite": {
+    "count": 70,
+    "passed": 70,
+    "seconds": 85.186,
+    "exit_code": 0
+  },
+  "runtime_suite": {
+    "count": 70,
+    "passed": 70,
+    "seconds": 74.662,
+    "exit_code": 0
+  },
+  "path_suite": {
+    "count": 21,
+    "passed": 21,
+    "exit_code": 0
+  },
+  "recording": {
+    "file": "unity_20260918_134204_4595123.jsonl",
+    "prefix_bytes": 53426095,
+    "prefix_sha256": "08e63f708c22b2423705cb62ba5843f8610be47d0c4e11ba72974be3d5353700",
+    "prefix_rows": 34792,
+    "prefix_state_rows": 32506,
+    "observed_transitions": [
+      {
+        "index": 0,
+        "t_s": 0.0,
+        "state": "ready",
+        "reason": ""
+      },
+      {
+        "index": 394,
+        "t_s": 6.969,
+        "state": "tracking",
+        "reason": ""
+      },
+      {
+        "index": 3088,
+        "t_s": 53.906,
+        "state": "returning",
+        "reason": "tracking_lost"
+      },
+      {
+        "index": 3432,
+        "t_s": 59.969,
+        "state": "ready",
+        "reason": "tracking_lost"
+      }
+    ],
+    "source_python_hashes_match": true,
+    "source_python_hashes": {
+      "g1_bimanual_runtime.py": "2b9f9d4ca835350b3ce079054aa321320a5bd1d7203a62341daab2299c6f22a9",
+      "g1_bimanual_sim.py": "62eb473272583d456c68664d646523f23fdab99074ee7f814c62cac25e8ded0b",
+      "g1_bimanual_unity_sim.py": "004469ccfd5c3af65aed4bcd4c7322ea7d728de04c87e5af7a8c17f4324690d8",
+      "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe",
+      "g1_bimanual_return.py": "2e3a67639cdf63ffdcfecd8ccfe4f1fc3522a9c8cea56c39dc7323dae9e414ab"
+    },
+    "active_recorded_tick_p95_ms": 11.35103000124218,
+    "active_recorded_tick_max_ms": 48.72090000208118,
+    "no_normal_shutdown_marker": true
+  },
+  "fixture": {
+    "path": "backend/tests/fixtures/bimanual_staged_session_20260918.json.gz",
+    "bytes": 692539,
+    "sha256": "a7410f6433fa5f18c73fbcc23880ca14213f78e4accc1e70e46e2e6ffc855341",
+    "selected_records": 5635,
+    "selected_state_ticks": 3433
+  },
+  "source_replay": {
+    "simulation_only": true,
+    "state_ticks": 3433,
+    "actions": {
+      "idle": 394,
+      "tracking": 2674,
+      "tracking_braking": 20,
+      "returning": 345
+    },
+    "tracking_braking_reasons": {
+      "checked_braking:qp_infeasible": 12,
+      "checked_braking:swept_clearance": 242
+    },
+    "stages": [
+      "safe_waypoint",
+      "home",
+      "complete"
+    ],
+    "recorded_return_wall_s": 6.063000000001921,
+    "return_simulation_s": 5.75,
+    "minimum_clearance_mm": 5.000012852751303,
+    "max_output_acceleration_deg_s2": 60.0000000000268,
+    "peak_speed_deg_s": 38.95382114229306,
+    "maximum_logged_q_difference_rad": 0.0,
+    "replay_tick_p95_ms": 10.447619998740258,
+    "replay_tick_max_ms": 17.433799999707844
+  },
+  "runtime_replay": {
+    "simulation_only": true,
+    "state_ticks": 3433,
+    "actions": {
+      "idle": 394,
+      "tracking": 2674,
+      "tracking_braking": 20,
+      "returning": 345
+    },
+    "tracking_braking_reasons": {
+      "checked_braking:qp_infeasible": 12,
+      "checked_braking:swept_clearance": 242
+    },
+    "stages": [
+      "safe_waypoint",
+      "home",
+      "complete"
+    ],
+    "recorded_return_wall_s": 6.063000000001921,
+    "return_simulation_s": 5.75,
+    "minimum_clearance_mm": 5.000012852751303,
+    "max_output_acceleration_deg_s2": 60.0000000000268,
+    "peak_speed_deg_s": 38.95382114229306,
+    "maximum_logged_q_difference_rad": 0.0,
+    "replay_tick_p95_ms": 8.46796000114409,
+    "replay_tick_max_ms": 17.269399999349844
+  },
+  "nearest_pair": {
+    "clearance_mm": 5.000012852751303,
+    "t_s": 47.10900000000038,
+    "state": "tracking",
+    "ik_reason": "",
+    "geoms": [
+      "mink_collision_left_wrist_yaw_link_0_29",
+      "mink_right_rubber_hand_collision"
+    ],
+    "bodies": [
+      "left_wrist_yaw_link",
+      "right_wrist_yaw_link"
+    ]
+  },
+  "installation": {
+    "files": [
+      {
+        "path": "START_MUJOCO_ONLY.bat",
+        "existed": true,
+        "prior_sha256": "bbbad8c0c2ce68b7ef0061f38fbb054a021a9b8f1a90b5966416d8d726745d3a",
+        "sha256": "006b807a331960d53f05754268dc0170bd217c350486b8891148061b74c5398e"
+      },
+      {
+        "path": "START_VR_HAND_TO_MUJOCO.bat",
+        "existed": true,
+        "prior_sha256": "d3ca5e4067ccb133becf9dfd11d25bfc875603ed202a2846f61fd45bbfbcf3b9",
+        "sha256": "b2256ac6ad6d217cc684ed5364fd2736c79240306427a065323ee642fa5a9023"
+      },
+      {
+        "path": "experiments/twist2_right_arm_manual/VERIFY_OFFLINE.ps1",
+        "existed": true,
+        "prior_sha256": "bee4c9a3207239abefe52ef615ff00a9c730fbe97109228b992d24cb00c980a5",
+        "sha256": "52b6c499e266fa18fa77d1903bcc39f610fecab43c1c025e878b004fb43fd819"
+      },
+      {
+        "path": "tools/BUILD_AND_INSTALL_VR_APK.bat",
+        "existed": true,
+        "prior_sha256": "96a7e70577b49cd8b4683caa806f75afc5b8e1c8b01951c1f1977d073ed8b47a",
+        "sha256": "a999bb9fc29067b6e825aaca169352f874d49faf890c05ff4b51745491e79032"
+      },
+      {
+        "path": "tools/RESOLVE_UNITY_EDITOR.bat",
+        "existed": false,
+        "prior_sha256": null,
+        "sha256": "5e8e7194c07ea002724ed11f3ebfa3b01f01a9040fd39b4241a2becce66b90b5"
+      },
+      {
+        "path": "tools/TEST_CAMERA_REPLAY_TO_UNITY.bat",
+        "existed": true,
+        "prior_sha256": "9f30acf8eb02cc4d900d498d39f0becd74ded27d4ac2f8d3a8c3271b7f59f9a8",
+        "sha256": "06550a973e8510979794bb06d1ec4e24869e7d418cb7619bb58b7705118888b4"
+      },
+      {
+        "path": "tools/TEST_G1_MINK_FK_PARITY.bat",
+        "existed": true,
+        "prior_sha256": "ed21e490ab913c163bf967d6957b6d969bf5c62844a7437197baa197a7524a1b",
+        "sha256": "0f02d258eda648699195d01d196e9ed21dc4ce45af51c5dfdfc462cd29137fdb"
+      },
+      {
+        "path": "tools/TEST_MINK_CYCLE_CANDIDATE_OFFLINE.bat",
+        "existed": true,
+        "prior_sha256": "c29fa5c132ee4220fc08fb8c70835377ee47ca2ac8fc5cb3f821c2bf3668680c",
+        "sha256": "0d6db212eebbeadfe8b4be76cf8ea2190e0da31c67868b430004189d475ba38b"
+      },
+      {
+        "path": "tools/TEST_MINK_TORCH_OWNER_OFFLINE.bat",
+        "existed": true,
+        "prior_sha256": "a9286a931a3baf0476506fcaa2d897e31a1a2ce27f6d2d73f2c77f199bf24c61",
+        "sha256": "cc44ceb0ae2aad31d46689659436c6250b351972b12aa13f6eb5d3a997475a51"
+      }
+    ],
+    "new_regression_files": [
+      "backend/tests/test_bimanual_recorded_session.py",
+      "backend/tests/fixtures/bimanual_staged_session_20260918.json.gz"
+    ],
+    "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\windows_tool_paths_20260918_135946",
+    "protected_files_count": 508,
+    "protected_hashes_unchanged": true,
+    "path_only_checks": [
+      {
+        "file": "START_VR_HAND_TO_MUJOCO.bat",
+        "exit_code": 0,
+        "stdout": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles",
+        "stderr": ""
+      },
+      {
+        "file": "tools/BUILD_AND_INSTALL_VR_APK.bat",
+        "exit_code": 0,
+        "stdout": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles",
+        "stderr": ""
+      },
+      {
+        "file": "tools/TEST_CAMERA_REPLAY_TO_UNITY.bat",
+        "exit_code": 0,
+        "stdout": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles",
+        "stderr": ""
+      },
+      {
+        "file": "tools/TEST_G1_MINK_FK_PARITY.bat",
+        "exit_code": 0,
+        "stdout": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles",
+        "stderr": ""
+      }
+    ]
+  },
+  "interrupted_auxiliary_launch": {
+    "pid": 26116,
+    "command": [
+      "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "-B",
+      "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+      "--engine-root",
+      "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0",
+      "--mode",
+      "test"
+    ],
+    "stage_output": "[BIMANUAL STARTUP] engine_begin perf_counter_ns=19149176578600\n[BIMANUAL STARTUP] engine_ready perf_counter_ns=19162268439000\nSIMULATION ONLY | MuJoCo 3.12.0 | C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0\\mujoco\\__init__.py\nCONTINUITY left 1 max_output_accel_deg_s2= 60.0000000000039\nCONTINUITY left 6 max_output_accel_deg_s2= 60.0000000000268\nCONTINUITY left 20 max_output_accel_deg_s2= 60.0000000000268\nCONTINUITY right 1 max_output_accel_deg_s2= 60.0000000000039\nCONTINUITY right 6 max_output_accel_deg_s2= 60.0000000000268\nCONTINUITY right 20 max_output_accel_deg_s2= 60.0000000000268\nQUALITY {\"side\": \"left\", \"axis\": 0, \"distance\": 0.02, \"ticks\": 600, \"peak_joint_excursion_deg\": [5.022320201461253, 0.1282827879991701, 0.06486457687391761, 3.7689345704961603, 0.5279105362514093, 1.741496264044632, 0.19701343277559932], \"peak_position_error_mm\": 19.855364462325, \"overshoot_mm\": 0.0, \"final_position_error_mm\": 0.22068457159289226, \"final_rotation_error_deg\": 0.0005937906720072671, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"left\", \"axis\": 0, \"distance\": 0.05, \"ticks\": 600, \"peak_joint_excursion_deg\": [14.409820956151174, 0.404421610706333, 0.2990905730038509, 14.20018727795951, 1.6835680810828526, 3.4467221735149933, 0.4414388676797766], \"peak_position_error_mm\": 49.84864024372968, \"overshoot_mm\": 0.0, \"final_position_error_mm\": 1.6791437275444852, \"final_rotation_error_deg\": 0.011134434947814244, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"right\", \"axis\": 0, \"distance\": 0.02, \"ticks\": 600, \"peak_joint_excursion_deg\": [5.022320201462034, 0.12828278799897927, 0.06486457687393414, 3.7689345704983994, 0.5279105362513193, 1.7414962640460858, 0.19701343277575795], \"peak_position_error_mm\": 19.855364462325, \"overshoot_mm\": 0.0, \"final_position_error_mm\": 0.22068457159184213, \"final_rotation_error_deg\": 0.0005937906720082477, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"right\", \"axis\": 0, \"distance\": 0.05, \"ticks\": 600, \"peak_joint_excursion_deg\": [14.409820956170668, 0.40442161070607535, 0.2990905730054046, 14.200187278005881, 1.6835680810858513, 3.446722173516752, 0.44143886767908086], \"peak_position_error_mm\": 49.84864024372968, \"overshoot_mm\": 0.0, \"final_position_error_mm\": 1.6791437275305097, \"final_rotation_error_deg\": 0.011134434948185156, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"left\", \"axis\": 0, \"distance\": null, \"ticks\": 600, \"peak_joint_excursion_deg\": [0.24682992659262692, 2.718256887757961, 8.715349845242738, 0.1335889552537788, 42.87271305624945, 1.9168718453554672, 1.9747111139161633], \"peak_position_error_mm\": 2.3110719101719535, \"overshoot_mm\": 0.0, \"final_position_error_mm\": 0.05951264278159617, \"final_rotation_error_deg\": 0.045140972973274046, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"right\", \"axis\": 0, \"distance\": null, \"ticks\": 600, \"peak_joint_excursion_deg\": [0.14248380777132333, 2.713864296083101, 8.662023197485107, 0.6684150477675118, 42.866211255177156, 2.272862527993013, 1.7268680072371367], \"peak_position_error_mm\": 2.3037160934465097, \"overshoot_mm\": 0.5650850256386231, \"final_position_error_mm\": 0.1828287950552835, \"final_rotation_error_deg\": 0.045292850795724184, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"left\", \"axis\": 2, \"distance\": null, \"ticks\": 600, \"peak_joint_excursion_deg\": [0.06149529518049231, 1.3944390145251426, 4.2507073408918465, 0.2538615475632413, 4.272891768225557, 0.13516691697560496, 43.822883317947635], \"peak_position_error_mm\": 7.742142972043725, \"overshoot_mm\": 0.3927737769372705, \"final_position_error_mm\": 0.15478758946186663, \"final_rotation_error_deg\": 0.052571147845505574, \"reasons\": {\"tracking\": 600}}\nQUALITY {\"side\": \"right\", \"axis\": 2, \"distance\": null, \"ticks\": 600, \"peak_joint_excursion_deg\": [0.18128863356201655, 1.4743094740159297, 4.5360455072129495, 0.2629331996186191, 4.55032579256366, 0.17182069096761288, 43.73109354499758], \"peak_position_error_mm\": 7.761326924773851, \"overshoot_mm\": 0.0, \"final_position_error_mm\": 0.17940006195165004, \"final_rotation_error_deg\": 0.05255656159986094, \"reasons\": {\"tracking\": 600}}\n",
+    "reason": "Auxiliary test child remained in engine_begin with no unittest output. Stopped only this task-created test process; not counted as PASS.",
+    "exit_code": 1
+  },
+  "limits": [
+    "Only fixed-base kinematic sampled clearance is checked, not continuous or physical collision safety.",
+    "The new recorded session contains one tracking-loss return, no subsequent re-engage or pinch return.",
+    "Subjective Quest feel and the separate desktop installation were not tested.",
+    "Intermittent MuJoCo import delay remains unresolved; the interrupted auxiliary launch is not a passing run."
+  ]
+}

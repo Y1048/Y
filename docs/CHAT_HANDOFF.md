@@ -1,5 +1,22 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 observed staged-return replay and laptop path deployment
+
+Read [observed run validation](BIMANUAL_OBSERVED_RUN_20260918.md).
+Added a selected recorded-input fixture and two regression tests covering
+3,433 state ticks through tracking-loss braking and staged return. The source
+recording's five Python hashes match `7e74219`; replayed q matches exactly.
+Observed return: 6.063s recorded time, 5.75s simulation time, waypoint/home/
+0.5s zero-speed settling, no replans. Minimum sampled bilateral clearance was
+about 5mm, not generous margin. No new comfort, re-engage, or physical validation.
+
+Installed the nine existing Windows path patches into the laptop Desktop-folder
+project after baseline checks and backup; preserved 508 other code/scene files.
+Four actual BAT path-only checks passed. No Unity, robot, DDS, APK, or compiler
+execution. Separate desktop deployment remains unverified. An auxiliary engine
+import stalled again; its interrupted attempt is not counted as a pass.
+
+
 ## 2026-09-18 staged bimanual return restored on the same laptop
 
 Read [return parity and validation](BIMANUAL_RETURN_PARITY_20260918.md).

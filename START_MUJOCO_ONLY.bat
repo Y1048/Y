@@ -15,7 +15,7 @@ echo.
 if not exist "%MUJOCO_SCRIPT%" (
     echo [ERROR] Configured MuJoCo controller launcher was not found.
     echo %MUJOCO_SCRIPT%
-    echo [ACTION] Confirm this project is C:\Users\user\Desktop\G1_Teleop_Project, then restore the missing script from Git.
+    echo [ACTION] Confirm the project root is "%PROJECT_ROOT%", then restore the missing script from Git.
     goto :failed
 )
 

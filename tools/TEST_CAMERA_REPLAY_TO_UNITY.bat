@@ -1,11 +1,14 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions DisableDelayedExpansion
+
+rem Path-only check exits before the existing launcher actions.
+call "%~dp0RESOLVE_UNITY_EDITOR.bat" "%~1"
+if /I "%~1"=="--check-unity-path" exit /b %ERRORLEVEL%
 cd /d "%~dp0.."
 title G1 Camera Offline Replay to Unity
 
 set "PROJECT_ROOT=%CD%"
 set "UNITY_PROJECT=%PROJECT_ROOT%\Unity_G1_VR"
-set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "REPLAY_SCRIPT=%PROJECT_ROOT%\hardware\g1_arm_bridge\g1_camera_replay_tcp.py"
 
 echo ============================================================
@@ -23,7 +26,7 @@ if not exist "%REPLAY_SCRIPT%" (
 
 if not exist "%UNITY_EXE%" (
     echo [ERROR] Unity 6000.5.4f1 was not found.
-    echo [ACTION] Install Unity 6000.5.4f1 or update UNITY_EXE in this BAT.
+    echo [ACTION] Install Unity 6000.5.4f1 or set UNITY_EXE before calling this BAT.
     goto :failed
 )
 

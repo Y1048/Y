@@ -4,7 +4,9 @@ pushd "%~dp0.."
 echo OFFLINE ONLY: local CPU inference and synthetic state. No robot, SDK or publisher.
 set "mink_torch_python=%CD%\logs\diagnostics\twist2_cpu_venv\Scripts\python.exe"
 if not exist "%mink_torch_python%" goto failed
-call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat" >nul
+if not defined VCVARS64 set "VCVARS64=%ProgramFiles%\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
+if not exist "%VCVARS64%" goto failed
+call "%VCVARS64%" >nul
 if errorlevel 1 goto failed
 cl /nologo /std:c++17 /EHsc /W4 /WX experiments\twist2_right_arm_manual\mink_torch_owner_stdio_offline.cpp /Fe:logs\test_results\mink_torch_owner_stdio_offline.exe /Fo:logs\test_results\mink_torch_owner_stdio_offline.obj
 if errorlevel 1 goto failed

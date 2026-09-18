@@ -1,12 +1,15 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions DisableDelayedExpansion
+
+rem Path-only check exits before the existing launcher actions.
+call "%~dp0tools\RESOLVE_UNITY_EDITOR.bat" "%~1"
+if /I "%~1"=="--check-unity-path" exit /b %ERRORLEVEL%
 
 title G1 Quest Hand Tracking + Mink
 
 set "PROJECT_ROOT=%~dp0"
 set "CONTROLLER_ROOT=%PROJECT_ROOT%MuJoCo_G1_Controller"
 set "UNITY_PROJECT=%PROJECT_ROOT%Unity_G1_VR"
-set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "MUJOCO_SCRIPT=%CONTROLLER_ROOT%\scripts\run_mink_g1_right_arm_virtual_center_live_entry.py"
 set "CAMERA_LAUNCHER=%PROJECT_ROOT%tools\START_G1_CAMERA_TO_UNITY.bat"
 set "IK_MODE=virtual-center"
@@ -97,7 +100,7 @@ echo.
 if not exist "%UNITY_EXE%" (
     echo [ERROR] Unity 6000.5.4f1 was not found.
     echo %UNITY_EXE%
-    echo [ACTION] Install Unity 6000.5.4f1 in Unity Hub, or update UNITY_EXE in this BAT to its actual path.
+    echo [ACTION] Install Unity 6000.5.4f1 in Unity Hub, or set UNITY_EXE before calling this BAT.
     goto :failed
 )
 

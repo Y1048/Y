@@ -11,8 +11,9 @@
 >
 > **Current bimanual work:** Read
 > [`docs/GPT_BIMANUAL_HANDOFF_20260918.md`](docs/GPT_BIMANUAL_HANDOFF_20260918.md) first.
-> All work to date has remained on the same laptop; no additional development
-> on a separate desktop PC has started (user clarification, 2026-09-18).
+> Earlier bimanual work was on the laptop. The user has now reported a Unity
+> installation-path failure from Desktop Codex; read the
+> [Windows path discovery notes](docs/WINDOWS_TOOL_PATHS_20260918.md).
 > `C:/Users/user/Desktop/...` is the laptop's Windows Desktop folder, not another computer.
 
 처음 읽는 순서: [코드 연결·주요 함수·Mink 해설](docs/CODE_GUIDE.md)

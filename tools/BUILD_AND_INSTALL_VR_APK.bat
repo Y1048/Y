@@ -1,10 +1,13 @@
 @echo off
-setlocal
+setlocal EnableExtensions DisableDelayedExpansion
+
+rem Path-only check exits before the existing launcher actions.
+call "%~dp0RESOLVE_UNITY_EDITOR.bat" "%~1"
+if /I "%~1"=="--check-unity-path" exit /b %ERRORLEVEL%
 
 for %%I in ("%~dp0..") do set "PROJECT_ROOT=%%~fI"
 set "PROJECT_DIR=%PROJECT_ROOT%\Unity_G1_VR"
-set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
-set "ADB_EXE=C:\Program Files\Meta Quest Developer Hub\resources\bin\adb.exe"
+if not defined ADB_EXE set "ADB_EXE=%ProgramFiles%\Meta Quest Developer Hub\resources\bin\adb.exe"
 set "BUILD_ID="
 for /f %%I in ('powershell -NoProfile -Command "[Guid]::NewGuid().ToString('N')"') do set "BUILD_ID=%%I"
 if not defined BUILD_ID (
@@ -21,7 +24,7 @@ set "LOG_PATH=%LOG_DIR%\unity_vr_apk_build_%BUILD_ID%.log"
 if not exist "%UNITY_EXE%" (
     echo [ERROR] Unity 6000.5.4f1 was not found:
     echo %UNITY_EXE%
-    echo [ACTION] Install Unity 6000.5.4f1 in Unity Hub, or update UNITY_EXE in this BAT.
+    echo [ACTION] Install Unity 6000.5.4f1 in Unity Hub, or set UNITY_EXE before calling this BAT.
     pause
     exit /b 1
 )
@@ -29,7 +32,7 @@ if not exist "%UNITY_EXE%" (
 if not exist "%ADB_EXE%" (
     echo [ERROR] Meta Quest Developer Hub adb was not found:
     echo %ADB_EXE%
-    echo [ACTION] Install Meta Quest Developer Hub, or update ADB_EXE in this BAT.
+    echo [ACTION] Install Meta Quest Developer Hub, or set ADB_EXE before calling this BAT.
     pause
     exit /b 1
 )

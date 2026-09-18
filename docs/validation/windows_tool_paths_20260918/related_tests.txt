@@ -1,0 +1,7 @@
+test_preview_only_delegates_to_read_only_launchers (test_unity_display_mode_launcher.ReadOnlyPreviewLauncherTests.test_preview_only_delegates_to_read_only_launchers) ... ok
+test_create_replace_and_invalid_mode_preserve_contract (test_unity_display_mode_launcher.UnityDisplayModeLauncherTests.test_create_replace_and_invalid_mode_preserve_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.040s
+
+OK

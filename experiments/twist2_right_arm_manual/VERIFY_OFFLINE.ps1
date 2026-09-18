@@ -1,4 +1,11 @@
 $ErrorActionPreference = 'Stop'
+$vcvars64 = $env:VCVARS64
+if ([string]::IsNullOrWhiteSpace($vcvars64)) {
+    $vcvars64 = Join-Path $env:ProgramFiles 'Microsoft Visual Studio/18/Community/VC/Auxiliary/Build/vcvars64.bat'
+}
+if (-not (Test-Path -LiteralPath $vcvars64 -PathType Leaf)) {
+    throw 'Visual Studio vcvars64.bat was not found. Set VCVARS64 before calling this script.'
+}
 $root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 Push-Location $root
 try {
@@ -7,7 +14,7 @@ try {
         throw 'Physical reference changed; review before continuing.'
     }
     foreach ($name in @('test_state_watchdog','test_upper_target_offline','test_offline_writer_study','test_offline_owner','test_owner_startup','test_offline_dispatch','test_owner_torque_fade','test_native_vr_policy_adapter','owner_policy_stdio')) {
-        $command = 'call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat" >nul && cl /nologo /std:c++17 /EHsc /W4 /WX /Ilogs\test_results /Fe:logs\test_results\' + $name + '.exe /Fo:logs\test_results\' + $name + '.obj experiments\twist2_right_arm_manual\' + $name + '.cpp'
+        $command = 'call "' + $vcvars64 + '" >nul && cl /nologo /std:c++17 /EHsc /W4 /WX /Ilogs\test_results /Fe:logs\test_results\' + $name + '.exe /Fo:logs\test_results\' + $name + '.obj experiments\twist2_right_arm_manual\' + $name + '.cpp'
         & cmd.exe /d /c $command
         if ($LASTEXITCODE -ne 0) { throw "Build failed: $name" }
     }

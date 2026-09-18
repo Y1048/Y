@@ -1,0 +1,60 @@
+{
+  "schema": "g1.windows_tool_paths.validation.v1",
+  "source_base_commit": "5844d2d6e1f74936fc7df516d15672884881f5db",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "recorded_at": "2026-09-18T13:46:24.475673",
+  "validation_device": "connected laptop Windows; desktop installation not inspected",
+  "unit_tests": {
+    "new_path_tests": 21,
+    "related_existing_tests": 2,
+    "new_exit_code": 0,
+    "related_exit_code": 0
+  },
+  "actual_path_only_checks": [
+    {
+      "file": "START_VR_HAND_TO_MUJOCO.bat",
+      "exit_code": 0,
+      "output": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles"
+    },
+    {
+      "file": "tools/BUILD_AND_INSTALL_VR_APK.bat",
+      "exit_code": 0,
+      "output": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles"
+    },
+    {
+      "file": "tools/TEST_CAMERA_REPLAY_TO_UNITY.bat",
+      "exit_code": 0,
+      "output": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles"
+    },
+    {
+      "file": "tools/TEST_G1_MINK_FK_PARITY.bat",
+      "exit_code": 0,
+      "output": "UNITY_EXE=C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.4f1\\Editor\\Unity.exe\r\nUNITY_EXE_SOURCE=ProgramFiles"
+    }
+  ],
+  "unity_executed": false,
+  "robot_dds_executed": false,
+  "adb_executed": false,
+  "cpp_compiler_executed": false,
+  "apk_built_or_installed": false,
+  "active_control_sources_unchanged": true,
+  "source_only_no_runtime_copy": true,
+  "source_sha256": {
+    "START_MUJOCO_ONLY.bat": "006b807a331960d53f05754268dc0170bd217c350486b8891148061b74c5398e",
+    "START_VR_HAND_TO_MUJOCO.bat": "b2256ac6ad6d217cc684ed5364fd2736c79240306427a065323ee642fa5a9023",
+    "backend/tests/test_windows_tool_paths.py": "baf509b52691bde3695852352d827c9fb872bf291964612cf801d4e3e7b8b6b9",
+    "experiments/twist2_right_arm_manual/VERIFY_OFFLINE.ps1": "52b6c499e266fa18fa77d1903bcc39f610fecab43c1c025e878b004fb43fd819",
+    "tools/BUILD_AND_INSTALL_VR_APK.bat": "a999bb9fc29067b6e825aaca169352f874d49faf890c05ff4b51745491e79032",
+    "tools/RESOLVE_UNITY_EDITOR.bat": "5e8e7194c07ea002724ed11f3ebfa3b01f01a9040fd39b4241a2becce66b90b5",
+    "tools/TEST_CAMERA_REPLAY_TO_UNITY.bat": "06550a973e8510979794bb06d1ec4e24869e7d418cb7619bb58b7705118888b4",
+    "tools/TEST_G1_MINK_FK_PARITY.bat": "0f02d258eda648699195d01d196e9ed21dc4ce45af51c5dfdfc462cd29137fdb",
+    "tools/TEST_MINK_CYCLE_CANDIDATE_OFFLINE.bat": "0d6db212eebbeadfe8b4be76cf8ea2190e0da31c67868b430004189d475ba38b",
+    "tools/TEST_MINK_TORCH_OWNER_OFFLINE.bat": "cc44ceb0ae2aad31d46689659436c6250b351972b12aa13f6eb5d3a997475a51"
+  },
+  "limits": [
+    "Fake executable files test discovery, not executable validity, Unity version or Android modules.",
+    "The user-profile fallback was tested with synthetic folders, not the separate desktop.",
+    "ADB and Visual Studio keep existing default version/layout; alternate locations require explicit overrides.",
+    "Historical logs and recorded installation paths are retained as evidence."
+  ]
+}

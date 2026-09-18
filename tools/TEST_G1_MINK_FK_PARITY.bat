@@ -1,8 +1,11 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions DisableDelayedExpansion
+
+rem Path-only check exits before the existing launcher actions.
+call "%~dp0RESOLVE_UNITY_EDITOR.bat" "%~1"
+if /I "%~1"=="--check-unity-path" exit /b %ERRORLEVEL%
 cd /d "%~dp0.."
 
-set "UNITY_EXE=C:\Program Files\Unity\Hub\Editor\6000.5.4f1\Editor\Unity.exe"
 set "UNITY_PROJECT=%CD%\Unity_G1_VR"
 set "RESULT_DIR=%CD%\logs\test_results"
 set "RESULT_PATH=%RESULT_DIR%\g1_mink_fk_parity.log"
@@ -22,8 +25,8 @@ if not exist "%UNITY_EXE%" (
     echo [ERROR] Unity 6000.5.4f1 was not found:
     echo         %UNITY_EXE%
     echo [ERROR] Unity 6000.5.4f1 was not found: %UNITY_EXE%>> "%RESULT_PATH%"
-    echo [ACTION] Install Unity 6000.5.4f1 or update UNITY_EXE in this BAT.
-    echo [ACTION] Install Unity 6000.5.4f1 or update UNITY_EXE in this BAT.>> "%RESULT_PATH%"
+    echo [ACTION] Install Unity 6000.5.4f1 or set UNITY_EXE before calling this BAT.
+    echo [ACTION] Install Unity 6000.5.4f1 or set UNITY_EXE before calling this BAT.>> "%RESULT_PATH%"
     goto :fail
 )
 

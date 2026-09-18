@@ -2,7 +2,8 @@
 setlocal
 pushd "%~dp0.."
 echo OFFLINE ONLY: builds local test consumers. No G1, SSH, WSL, SDK or publisher.
-set "candidate_vcvars=C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
+if not defined VCVARS64 set "VCVARS64=%ProgramFiles%\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
+set "candidate_vcvars=%VCVARS64%"
 if not exist "%candidate_vcvars%" goto failed
 call "%candidate_vcvars%" >nul
 if errorlevel 1 goto failed

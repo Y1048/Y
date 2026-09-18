@@ -1,5 +1,29 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 sequential engagement and recorded IK failure
+
+- User finds simultaneous stable hand alignment uncomfortable. Each hand now
+  remembers completed stable alignment for 4 seconds. Both current alignment
+  gates and tracking must still pass at engage. Pinch, loss, stale feedback,
+  return/rearm invalidate memory. Neutral origins are captured together.
+- Compiled Unity/Meta references PASS; 576 engage combinations plus memory,
+  invalidation, expiry and final current-position gate checks PASS. No Quest
+  verification of this UX yet. Runtime selectively backed up and installed.
+- Latest laptop recording unity_20260918_094323_0712614.jsonl, session
+  2a9d0dc13c574a208a64b4c50f1ab6de: engage sequence 529, then sequence 607
+  qp_infeasible at +2.188s. Unity feedback stayed fresh; this was IK BLOCKED,
+  not a UDP disconnect. Exact event replay reproduces the same sequence.
+- Offline diagnostic removing only 28 acceleration inequalities makes that
+  QP feasible. At failure clearance .020925990836630545m; maximum joint
+  velocity .9528789799160351rad/s. This does NOT establish collision or
+  physical safety and does not justify removing acceleration constraints.
+- Solver is unchanged; interrupted tracking REMAINS UNRESOLVED. Next work:
+  implement and regression-test checked braking viability for coupled IK,
+  preserving range/clearance and using this replay. Do not claim fixed tracking.
+- Replay script/report live under logs/test_results/same_scene_bimanual/ in
+  source worktree; source recording remains laptop-local, not in GitHub.
+
+
 ## 2026-09-18 camera-attached bimanual status strip
 
 - Replaced paired sender floating TextMesh with a world-space UI strip attached

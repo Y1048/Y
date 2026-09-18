@@ -13,6 +13,13 @@ class BimanualEngageGateTest {
    }
   }
   if(G1BimanualSimulationSender.TrackedMarkerDiameter!=.060f || G1BimanualSimulationSender.TargetMarkerDiameter!=.055f) throw new Exception("marker dimensions");
+  double until=G1BimanualSimulationSender.RememberReady(10,double.NegativeInfinity,true,1);
+  if(until!=14) throw new Exception("initial memory");
+  if(G1BimanualSimulationSender.RememberReady(11,until,true,0)!=14) throw new Exception("sequential memory");
+  if(!double.IsNegativeInfinity(G1BimanualSimulationSender.RememberReady(11,until,false,1))) throw new Exception("invalid tracking memory");
+  if(15<until) throw new Exception("expiration");
+  if(G1BimanualSimulationSender.CanEngage(true,true,true,false,false,false,1,1)) throw new Exception("must recheck current zones");
+  Console.WriteLine("PASS: readiness memory, invalidation, expiration and final position gate");
   Console.WriteLine("PASS: "+tests+" engage gate cases; shared marker dimensions");
  }
 }

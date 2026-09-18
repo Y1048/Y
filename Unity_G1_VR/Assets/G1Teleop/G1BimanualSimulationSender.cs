@@ -20,6 +20,14 @@ public class G1BimanualSimulationSender : MonoBehaviour
         => fresh && ready && tracked && inZones && !pinch && !mustLeave
             && leftProgress >= 1 && rightProgress >= 1;
 
+    public static double RememberReady(double now, double until, bool eligible, float progress)
+    {
+        if (!eligible) return double.NegativeInfinity;
+        return progress >= 1 ? now + 4 : until;
+    }
+    private double leftReadyUntil = double.NegativeInfinity;
+    private double rightReadyUntil = double.NegativeInfinity;
+
     public enum ArmMode { RightArm, BimanualSimulation }
     public bool useExistingScene;
     public ArmMode armMode = ArmMode.BimanualSimulation;
@@ -139,6 +147,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         lastFeedback = double.NegativeInfinity;
         feedbackSequence = -1;
         returnSequence = -1;
+        leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
         client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0));
         client.Client.Blocking = false;
         // Suppress Windows UDP ICMP reset when Python is not running yet.
@@ -200,6 +209,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
 
     private void ResetBinders()
     {
+        leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
         if (!useExistingScene) return;
         if (rightBinder != null && rightBinder.IsCalibrated) rightBinder.ResetCalibration();
         if (leftBinder != null && leftBinder.IsCalibrated) leftBinder.ResetCalibration();
@@ -292,6 +302,14 @@ public class G1BimanualSimulationSender : MonoBehaviour
         }
         if (mustLeaveZones && backendState == "ready" && tracked && !inZones && !pinch)
             mustLeaveZones = false;
+        if (useExistingScene && !active)
+        {
+            bool eligible = fresh && backendState == "ready" && !pinch && !mustLeaveZones;
+            leftReadyUntil = RememberReady(now, leftReadyUntil, eligible && packet.left.tracked,
+                leftBinder.EngagementProgress);
+            rightReadyUntil = RememberReady(now, rightReadyUntil, eligible && packet.right.tracked,
+                rightBinder.EngagementProgress);
+        }
         if (!active)
         {
             alignmentTime = fresh && backendState == "ready" && inZones && !pinch && !mustLeaveZones
@@ -300,7 +318,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             // another simultaneous dwell gate on top of the two hand timers.
             bool engageReady = useExistingScene
                 ? CanEngage(fresh, backendState == "ready", tracked, inZones, pinch, mustLeaveZones,
-                    leftBinder.EngagementProgress, rightBinder.EngagementProgress)
+                    now < leftReadyUntil ? 1 : 0, now < rightReadyUntil ? 1 : 0)
                 : alignmentTime >= .35f;
             if (engageReady)
             {
@@ -358,7 +376,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             ? "RETURNING: wait" : active ? "TRACKING | pinch 0.5s to return"
             : mustLeaveZones ? "READY: move out of zones, release pinch"
             : pinch ? "READY: release pinch before engage"
-            : "READY: cyan wrists into white/yellow targets; hold BOTH";
+            : "READY: align one hand, then the other; readiness remembered 4s";
         if (useExistingScene && !active && backendState == "ready" && fresh)
             Status += string.Format("\nL: {0} {1:F1}cm {2:P0} | R: {3} {4:F1}cm {5:P0}",
                 leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
@@ -402,11 +420,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
         return text;
     }
 
-    private void UpdateHandStatus(Text text, string side, G1ExistingHandTargetBinder binder, bool tracked)
+    private void UpdateHandStatus(Text text, string side, G1ExistingHandTargetBinder binder, bool tracked, double readyUntil)
     {
         bool aligned = binder != null && binder.IsAlignmentReady;
-        bool ready = aligned && binder.EngagementProgress >= 1;
-        string state = !tracked ? "추적 없음" : active ? "조작 중" : ready ? "준비 완료"
+        bool ready = tracked && Time.realtimeSinceStartupAsDouble < readyUntil;
+        string state = !tracked ? "추적 없음" : active ? "조작 중" : ready ? (aligned ? "준비 완료" : "목표 안으로")
             : aligned ? string.Format("정렬 {0:P0}", binder.EngagementProgress) : "위치 맞추기";
         text.text = side + " | " + state;
         text.color = !tracked ? new Color(1, .65f, .3f) : active || ready ? Color.green
@@ -447,12 +465,12 @@ public class G1BimanualSimulationSender : MonoBehaviour
             statusBar.localPosition = new Vector3(0, G1HeadCameraPiP.DefaultCanvasVerticalOffset
                 - 126 * G1HeadCameraPiP.DefaultCanvasScale, .7982f);
         }
-        UpdateHandStatus(leftStatus, "왼손", leftBinder, packet.left.tracked);
-        UpdateHandStatus(rightStatus, "오른손", rightBinder, packet.right.tracked);
+        UpdateHandStatus(leftStatus, "왼손", leftBinder, packet.left.tracked, leftReadyUntil);
+        UpdateHandStatus(rightStatus, "오른손", rightBinder, packet.right.tracked, rightReadyUntil);
         cycleStatus.text = !fresh ? "시뮬레이션 수신 대기" : backendState == "blocked" ? "중단: PC 로그 확인"
             : backendState == "returning" || returnPending ? "초기자세 복귀 중"
             : active ? "양팔 조작 중 · pinch로 복귀" : mustLeaveZones ? "손을 목표 밖으로 옮겨 재준비"
-            : pinch ? "pinch를 풀어 주세요" : "양손을 목표 구에 맞춰 유지 · 시뮬레이션";
+            : pinch ? "pinch를 풀어 주세요" : "한 손씩 정렬 · 준비 4초 유지 · 시뮬레이션";
     }
 
     private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL SIMULATION ONLY | " + Status); }

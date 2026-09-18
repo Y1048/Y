@@ -14,6 +14,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
 from g1_bimanual_unity_sim import UnityCycle, PairedHandFilter, decode, BASIS, SCHEMA, mink
+from g1_bimanual_sim import BimanualSimulation
 
 
 def packet(sequence=0, engage=False, session='test', tracked=True, returning=False):
@@ -113,6 +114,64 @@ class CycleTests(unittest.TestCase):
         self.sim.reason = 'swept_clearance'
         self.cycle.tick(.05)
         self.assertEqual(self.cycle.state, 'blocked')
+
+    def test_near_hands_tracking_lost_cycle_returns_ready(self):
+        fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_near_hands_20260918.json').read_text())
+        sim = BimanualSimulation()
+        q = sim.home.copy()
+        q[sim.qids] = fixture['q14']
+        sim.config.update(q)
+        sim.velocity[:] = 0.
+        sim.velocity[sim.dofs] = fixture['velocity14']
+        sim.acceleration[:] = 0.
+        sim.acceleration[sim.dofs] = fixture['acceleration14']
+        sim.brake_plan = []
+        for item in fixture['brake_plan']:
+            candidate = sim.home.copy()
+            candidate[sim.qids] = item['q14']
+            velocity = np.zeros(sim.model.nv)
+            velocity[sim.dofs] = item['velocity14']
+            sim.brake_plan.append((candidate, velocity))
+
+        cycle = UnityCycle(sim)
+        cycle.state = 'tracking'
+        cycle.start_return('tracking_lost')
+        previous_velocity = sim.velocity[sim.dofs].copy()
+        minimum = sim.clearance(sim.config.q)
+        maximum_acceleration = 0.
+        stages = []
+
+        for tick in range(900):
+            before = sim.config.q.copy()
+            cycle.tick((tick + 1) * sim.dt)
+            velocity = (sim.config.q[sim.qids] - before[sim.qids]) / sim.dt
+            np.testing.assert_allclose(velocity, sim.velocity[sim.dofs], atol=1e-10, rtol=0)
+            acceleration = np.max(np.abs(velocity - previous_velocity)) / sim.dt
+            maximum_acceleration = max(maximum_acceleration, float(acceleration))
+            previous_velocity = velocity
+            self.assertTrue(np.all(np.abs(velocity) <= sim.caps + 1e-6))
+            self.assertTrue(np.all(sim.config.q[sim.qids] >= sim.ranges[:, 0] - 1e-8))
+            self.assertTrue(np.all(sim.config.q[sim.qids] <= sim.ranges[:, 1] + 1e-8))
+            clearance = sim.clearance(sim.config.q)
+            minimum = min(minimum, clearance)
+            self.assertGreaterEqual(clearance, sim.clearance_m)
+            if not stages or stages[-1] != sim.return_motion.stage:
+                stages.append(sim.return_motion.stage)
+            if cycle.state == 'ready':
+                break
+
+        self.assertEqual(cycle.reason, 'tracking_lost')
+        self.assertEqual(cycle.state, 'ready')
+        self.assertEqual(sim.state, 'ready')
+        self.assertEqual(sim.return_motion.stage, 'complete')
+        self.assertTrue(sim.return_motion.near_hands_recovery)
+        self.assertEqual(sim.return_motion.separation_side, 'left')
+        self.assertEqual(stages,
+                         ['near_hands_stop', 'separate_left', 'safe_waypoint', 'home', 'complete'])
+        self.assertGreaterEqual(minimum, sim.clearance_m)
+        self.assertLessEqual(maximum_acceleration, np.deg2rad(60.) + 1e-5)
+        self.assertEqual(np.max(np.abs(sim.velocity)), 0.)
+        np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
 
     def test_real_loopback_synthetic_sender(self):
         with tempfile.TemporaryDirectory() as directory, socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:

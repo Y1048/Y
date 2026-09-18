@@ -43,6 +43,13 @@ because right is below the unchanged 5 mm hard limit. A state-machine-only test 
 transition to `separate_right` when the opposite candidate is explicitly probe-safe. No production
 motion code changed in this follow-up. Runtime test-only backup:
 `logs/backups/bimanual_near_hands_retry_20260918_214512/`; 391 protected files unchanged.
+A UnityCycle integration regression now starts from the recorded fixture with reason `tracking_lost`
+and reaches READY through near_hands_stop/separate_left/safe_waypoint/home/complete in 510 ticks
+(8.5s), minimum sampled clearance 5.696090 mm, max output acceleration within numeric tolerance of
+60 deg/s^2. Source/runtime suites are 92/92 PASS. Runtime test-only backup:
+`logs/backups/bimanual_near_hands_unitycycle_20260918_215424/`; 391 protected files unchanged.
+Headless runtime log `unity_20260918_211223_0339097.jsonl` records `bimanual_staged_return_v2`,
+MuJoCo 3.12.0 and current return source hash `ff8f27f84ad2ff07973c8e23fd77eb4e790f905003aeb94dbc72512f6da2cdd6`.
 
 ## Latest: performance micro-optimization stop point (2026-09-18)
 

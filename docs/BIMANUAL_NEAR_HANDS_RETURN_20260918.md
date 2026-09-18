@@ -107,6 +107,15 @@ checked stop 후 `separate_right`로 전환되는 것도 고정했다. unsafe ri
 실행 폴더에는 테스트 파일 하나만 추가 동기화했고 백업은
 `logs/backups/bimanual_near_hands_retry_20260918_214512/`, 보호 파일 391개 변경은 0개였다.
 
+`UnityCycle` integration도 실제 fixture 상태에서 `tracking_lost` reason으로 시작해
+`near_hands_stop → separate_left → safe_waypoint → home → complete → READY`를 확인했다.
+510 tick / 8.5초, 최소 sampled clearance 5.696090mm, 최대 출력 가속도는 수치 오차 범위의
+60deg/s²였다. integration 포함 source/runtime suite는 각각 92/92 PASS다.
+실행 폴더 테스트 동기화 백업은 `logs/backups/bimanual_near_hands_unitycycle_20260918_215424/`이며
+보호 파일 391개 변경은 0개였다. 새 headless runtime 로그
+`unity_20260918_211223_0339097.jsonl`도 `return_policy=bimanual_staged_return_v2`,
+MuJoCo 3.12.0, return source SHA-256 `ff8f27f84ad2ff07973c8e23fd77eb4e790f905003aeb94dbc72512f6da2cdd6`를 기록했다.
+
 ## 범위
 
 5mm hard clearance, 0.25도 swept sampling, joint/velocity/acceleration limit,

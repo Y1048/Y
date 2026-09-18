@@ -21,6 +21,11 @@ injected as swept-clearance rejected, the right probe remains below the 5 mm har
 return fails closed without publishing it. A state-machine test also verifies switching to right
 when an opposite candidate is explicitly probe-safe. Runtime test-only backup:
 `logs/backups/bimanual_near_hands_retry_20260918_214512/`; 391 protected files unchanged.
+UnityCycle integration now replays the near-hands fixture from `tracking_lost` through READY in
+510 ticks / 8.5s, minimum sampled clearance 5.696090 mm and <=60 deg/s^2 output acceleration.
+Source/runtime suites are 92/92 PASS. Test-only runtime backup:
+`logs/backups/bimanual_near_hands_unitycycle_20260918_215424/`; 391 protected files unchanged.
+Headless log `unity_20260918_211223_0339097.jsonl` records v2 + MuJoCo 3.12.0 + current return hash.
 
 ## 2026-09-18 performance micro-optimization stop point
 

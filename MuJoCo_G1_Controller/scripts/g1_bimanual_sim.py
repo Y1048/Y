@@ -56,6 +56,11 @@ class BimanualSimulation:
                 keep.append(i)
         self.pairs = [geom_ids[i] for i in keep]
         self.pair_array = np.asarray(self.pairs, dtype=int)
+        # Bounding spheres enclose each geom's local AABB. If two such spheres
+        # are farther apart than the hard threshold, the actual geoms are too.
+        self._clearance_local_centers = self.model.geom_aabb[:, :3].copy()
+        self._clearance_bounding_radii = np.linalg.norm(
+            self.model.geom_aabb[:, 3:], axis=1)
         self.tasks = {side: mink.FrameTask(side + "_wrist_yaw_link", "body",
                      position_cost=8., orientation_cost=2., gain=.35,
                      lm_damping=1e-5) for side in ("left", "right")}
@@ -100,15 +105,16 @@ class BimanualSimulation:
         mujoco.mj_kinematics(self.model, self.check_data)
         pairs = self.pairs
         if threshold is not None:
-            # World AABBs enclose each rotated local geom AABB. Their separation
-            # is a lower bound, so only certainly distant pairs are excluded.
+            # Each sphere encloses its local geom AABB. Sphere separation is a
+            # conservative lower bound on real geometry distance, without the
+            # rotated-world-AABB extent calculation on every stopping sample.
             rotation = self.check_data.geom_xmat.reshape(-1, 3, 3)
-            bounds = self.model.geom_aabb
-            center = self.check_data.geom_xpos + np.einsum('nij,nj->ni', rotation, bounds[:, :3])
-            extent = np.einsum('nij,nj->ni', np.abs(rotation), bounds[:, 3:])
+            center = self.check_data.geom_xpos + np.einsum(
+                'nij,nj->ni', rotation, self._clearance_local_centers)
             a, b = self.pair_array.T
-            gap = np.maximum(0, np.abs(center[a]-center[b])-extent[a]-extent[b])
-            lower = np.linalg.norm(gap, axis=1)
+            lower = (np.linalg.norm(center[a]-center[b], axis=1)
+                     - self._clearance_bounding_radii[a]
+                     - self._clearance_bounding_radii[b])
             if not np.isfinite(lower).all():
                 return float('nan')
             pairs = self.pair_array[lower <= threshold + 1e-8]

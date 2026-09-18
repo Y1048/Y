@@ -1,0 +1,157 @@
+{
+  "schema": "g1.bimanual.performance.sphere.validation.v1",
+  "simulation_only": true,
+  "hardware_executed": false,
+  "source_base_commit": "31a68d47d5f5a81f03c2e9bcba245d79bd9ff231",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "change": "replace rotated world-AABB threshold broadphase with conservative world bounding spheres enclosing each local geom AABB; exact distance path unchanged",
+  "clearance_m": 0.005,
+  "sweep_substep_deg": 0.25,
+  "tail_reuse_probe": {
+    "checked_stop_plan_calls": 2717,
+    "tail_available": 2716,
+    "exact_first_velocity_and_candidate_reuse": 64,
+    "reuse_percent": 2.3555391976444606,
+    "applied": false
+  },
+  "sphere_bound_validation": {
+    "recorded_states": 2927,
+    "recorded_excluded_pairs_rechecked": 1258802,
+    "recorded_bad_exclusions": 0,
+    "random_states": 1200,
+    "random_excluded_pairs_rechecked": 510643,
+    "random_bad_exclusions": 0,
+    "production_random_conservative_test_states": 300
+  },
+  "quest_fixture_replay": {
+    "state_ticks": 2927,
+    "maximum_logged_q_difference_rad": 0.0,
+    "minimum_clearance_mm": 5.032381333078582,
+    "max_output_acceleration_deg_s2": 60.00000000006306,
+    "final_state": "ready"
+  },
+  "ab_runs": [
+    {
+      "label": "baseline1",
+      "total_s": 29.683408199998667,
+      "p50_ms": 7.635,
+      "p95_ms": 23.020939999999992,
+      "p99_ms": 46.638617999999866,
+      "max_ms": 68.5874,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    },
+    {
+      "label": "sphere1",
+      "total_s": 23.721979699999793,
+      "p50_ms": 7.0479,
+      "p95_ms": 17.07931,
+      "p99_ms": 22.708491999999985,
+      "max_ms": 34.7808,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    },
+    {
+      "label": "sphere2",
+      "total_s": 24.295169600001827,
+      "p50_ms": 7.1485,
+      "p95_ms": 17.521169999999998,
+      "p99_ms": 21.430389999999953,
+      "max_ms": 27.944,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    },
+    {
+      "label": "baseline2",
+      "total_s": 26.38399819999904,
+      "p50_ms": 7.6629,
+      "p95_ms": 18.784019999999995,
+      "p99_ms": 26.13144599999999,
+      "max_ms": 115.3593,
+      "max_q_diff": 0.0,
+      "min_clearance_mm": 5.032381333078582,
+      "final_state": "ready"
+    }
+  ],
+  "ab_mean": {
+    "total_s": {
+      "baseline_mean": 28.033703199998854,
+      "sphere_mean": 24.00857465000081,
+      "reduction_percent": 14.358176375350256
+    },
+    "p50_ms": {
+      "baseline_mean": 7.648949999999999,
+      "sphere_mean": 7.0982,
+      "reduction_percent": 7.200334686460221
+    },
+    "p95_ms": {
+      "baseline_mean": 20.902479999999994,
+      "sphere_mean": 17.30024,
+      "reduction_percent": 17.23355314776044
+    }
+  },
+  "clean_detached_suite": {
+    "base": "31a68d4 plus only the two sphere files",
+    "count": 77,
+    "passed": 77,
+    "seconds": 106.791,
+    "exit_code": 0
+  },
+  "runtime_targeted_suite": {
+    "modules": [
+      "backend.tests.test_bimanual_sim",
+      "backend.tests.test_bimanual_quest_reengage"
+    ],
+    "count": 16,
+    "passed": 16,
+    "seconds": 35.462,
+    "exit_code": 0
+  },
+  "runtime_integrated_local_only": {
+    "count": 82,
+    "passed": 82,
+    "seconds": 101.44,
+    "exit_code": 0,
+    "note": "Includes 5 concurrent uncommitted session-report tests and is not the canonical Git reproduction count."
+  },
+  "bat_smoke": {
+    "exit_code": 0,
+    "port": 63912,
+    "headless_seconds": 0.35
+  },
+  "runtime_install": {
+    "backup": "C:/Users/user/Desktop/G1_Teleop_Project/logs/backups/bimanual_sphere_broadphase_20260918_172922",
+    "installed": [
+      "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py",
+      "backend/tests/test_bimanual_sim.py"
+    ],
+    "protected_files_checked": 279,
+    "protected_files_changed": 0
+  },
+  "source_sha256": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": "e511ac7f95b1df7913ba1b523ee6b9ff318b8823f14df52162aa69b5d8b44c02",
+    "backend/tests/test_bimanual_sim.py": "9c98e664ff9a99277a016e482a69a2878a0178232dd85066bff101971ee7f28c"
+  },
+  "runtime_matches_source": {
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": true,
+    "backend/tests/test_bimanual_sim.py": true
+  },
+  "concurrent_work_preserved": [
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py",
+    "backend/tests/test_bimanual_runtime.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py",
+    "backend/tests/test_bimanual_session_report.py",
+    "backend/tests/fixtures/bimanual_return_near_hands_20260918.json",
+    "docs/BIMANUAL_SESSION_REPORT_20260918.md",
+    "tools/REPORT_LATEST_BIMANUAL_SESSION.bat"
+  ],
+  "limits": [
+    "Bounding spheres are used only to exclude certainly distant pairs; surviving pairs still use exact mj_geomDistance.",
+    "No hard clearance, sweep sampling, velocity, acceleration, IK or return policy was relaxed.",
+    "A/B timing was collected under variable host load and is not a hard real-time guarantee.",
+    "Fixed-base sampled geometry is not physical G1 collision proof."
+  ]
+}

@@ -1,0 +1,42 @@
+py : test_bounding_sphere_exclusion_is_conservative (backend.tests.test_bimanual_sim.BimanualTests.test_bounding_sphere
+_exclusion_is_conservative) ... ok
+위치 줄:1 문자:321
++ ... ns\3.12.0'; py -3.11 -B -m unittest backend.tests.test_bimanual_sim b ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_bounding_s...rvative) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+test_broadphase_matches_full_clearance_decision (backend.tests.test_bimanual_sim.BimanualTests.test_broadphase_matches_
+full_clearance_decision) ... ok
+test_checked_tail_stops_on_infeasible_qp_without_reset (backend.tests.test_bimanual_sim.BimanualTests.test_checked_tail
+_stops_on_infeasible_qp_without_reset) ... ok
+test_clearance_guard_rejects_interior_and_latches (backend.tests.test_bimanual_sim.BimanualTests.test_clearance_guard_r
+ejects_interior_and_latches) ... ok
+test_crossed_targets_keep_sampled_clearance (backend.tests.test_bimanual_sim.BimanualTests.test_crossed_targets_keep_sa
+mpled_clearance) ... ok
+test_kinematic_clearance_matches_full_forward (backend.tests.test_bimanual_sim.BimanualTests.test_kinematic_clearance_m
+atches_full_forward) ... ok
+test_kinematic_clearance_nonzero_path_skips_contact_promotion (backend.tests.test_bimanual_sim.BimanualTests.test_kinem
+atic_clearance_nonzero_path_skips_contact_promotion) ... ok
+test_kinematic_clearance_promotes_zero_distance_to_contact_path (backend.tests.test_bimanual_sim.BimanualTests.test_kin
+ematic_clearance_promotes_zero_distance_to_contact_path) ... ok
+test_missing_nonfinite_and_quaternion (backend.tests.test_bimanual_sim.BimanualTests.test_missing_nonfinite_and_quatern
+ion) ... ok
+test_no_transport_in_entrypoint (backend.tests.test_bimanual_sim.BimanualTests.test_no_transport_in_entrypoint) ... ok
+test_nonfinite_clearance_rejects_new_plan (backend.tests.test_bimanual_sim.BimanualTests.test_nonfinite_clearance_rejec
+ts_new_plan) ... ok
+test_order_and_hand_pairs (backend.tests.test_bimanual_sim.BimanualTests.test_order_and_hand_pairs) ... ok
+test_reach_return_reengage (backend.tests.test_bimanual_sim.BimanualTests.test_reach_return_reengage) ... ok
+test_recorded_unity_failure_replay (backend.tests.test_bimanual_sim.BimanualTests.test_recorded_unity_failure_replay) .
+.. ok
+test_fixture_scope_and_provenance (backend.tests.test_bimanual_quest_reengage.QuestReengageReplayTests.test_fixture_sco
+pe_and_provenance) ... ok
+Recorded simulation replay: ticks=209 braking=0 p95_ms=6.80 max_ms=9.86
+QUEST_REENGAGE_REPLAY {"state_ticks": 2927, "input_rows": 2016, "transitions": [["ready", ""], ["tracking", ""], ["returning", "pinch"], ["ready", "pinch"], ["tracking", ""], ["returning", "pinch"], ["ready", "pinch"]], "minimum_clearance_mm": 5.032381333078582, "max_output_acceleration_deg_s2": 60.00000000006306, "maximum_logged_q_difference_rad": 0.0}
+test_replay_matches_logged_joint_path_and_two_returns (backend.tests.test_bimanual_quest_reengage.QuestReengageReplayTe
+sts.test_replay_matches_logged_joint_path_and_two_returns) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 35.462s
+
+OK

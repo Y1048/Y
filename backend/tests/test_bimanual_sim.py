@@ -109,6 +109,26 @@ class BimanualTests(unittest.TestCase):
             fast = self.s.clearance(q, threshold=.005)
             self.assertEqual(exact < .005, fast < .005)
 
+    def test_bounding_sphere_exclusion_is_conservative(self):
+        rng = np.random.default_rng(2026091817)
+        fromto = np.zeros(6)
+        a, b = self.s.pair_array.T
+        for _ in range(300):
+            q = self.s.home.copy()
+            q[self.s.qids] = rng.uniform(self.s.ranges[:,0], self.s.ranges[:,1])
+            self.s.check_data.qpos[:] = q
+            mujoco.mj_kinematics(self.s.model, self.s.check_data)
+            rotation = self.s.check_data.geom_xmat.reshape(-1, 3, 3)
+            center = self.s.check_data.geom_xpos + np.einsum(
+                'nij,nj->ni', rotation, self.s._clearance_local_centers)
+            lower = (np.linalg.norm(center[a]-center[b], axis=1)
+                     - self.s._clearance_bounding_radii[a]
+                     - self.s._clearance_bounding_radii[b])
+            for index in np.flatnonzero(lower > self.s.clearance_m + 1e-8):
+                distance = mujoco.mj_geomDistance(
+                    self.s.model, self.s.check_data, int(a[index]), int(b[index]), .2, fromto)
+                self.assertGreater(distance, self.s.clearance_m + 1e-8)
+
     def test_kinematic_clearance_matches_full_forward(self):
         rng = np.random.default_rng(20260918)
         data = mujoco.MjData(self.s.model)

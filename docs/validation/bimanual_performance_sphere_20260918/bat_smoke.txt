@@ -1,0 +1,14 @@
+SMOKE_PORT=63912
+Unity paired-hand SIMULATION ONLY. UDP 127.0.0.1:5020. No G1 output.
+[BIMANUAL STARTUP] engine_begin perf_counter_ns=32178901683500
+[BIMANUAL STARTUP] engine_ready perf_counter_ns=32179034288200
+SIMULATION ONLY | MuJoCo 3.12.0 | C:\Users\user\Desktop\G1_Teleop_Project\logs\diagnostics\mujoco_versions\3.12.0\mujoco\__init__.py
+[BIMANUAL STARTUP] controller_import_begin perf_counter_ns=32179034309400
+[BIMANUAL STARTUP] controller_import_ready perf_counter_ns=32179314515300
+[BIMANUAL STARTUP] model_begin perf_counter_ns=32179315037900
+[BIMANUAL STARTUP] model_ready perf_counter_ns=32179464438600
+[BIMANUAL STARTUP] listener_ready perf_counter_ns=32179471863100
+SIMULATION ONLY: Unity -> 127.0.0.1:63912; no G1 output
+[BIMANUAL SIM] ready:
+[BIMANUAL STARTUP] normal_exit perf_counter_ns=32179830286500
+BAT_EXIT=0

@@ -1,5 +1,8 @@
 # 양팔 clearance 2차 성능 최적화 — 2026-09-18
 
+> ?? broadphase ???? ??. ?? ??? [BIMANUAL_PERFORMANCE_SPHERE_20260918.md](BIMANUAL_PERFORMANCE_SPHERE_20260918.md)?.
+> ? ??? `mj_kinematics` ?? ??? ?? ???? ????.
+
 기준 브랜치: `codex/g1-laptop-sync-20260917`, 출발 커밋 `dc1a29a`.
 직전 단계의 `mj_fwdPosition()` 최적화와 Quest 성공 세션을 그대로 기준으로 삼았다.
 이번 작업은 sampled collision 계산 비용만 더 줄이며, 동작 목표와 안전 한계를 바꾸지 않는다.

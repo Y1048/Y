@@ -1,0 +1,2 @@
+RECORDED {'states': 2927, 'excluded_pairs': 1258802, 'bad': []}
+RANDOM {'states': 1200, 'excluded_pairs': 510643, 'bad': []}

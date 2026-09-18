@@ -1,5 +1,15 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 conservative sphere broadphase
+
+Read [sphere broadphase validation](BIMANUAL_PERFORMANCE_SPHERE_20260918.md).
+Stopping-tail threshold checks now reject certainly distant collision pairs with bounding
+spheres enclosing each local geom AABB; surviving pairs still use exact geometry distance.
+No clearance/sweep/motion limit changed. Recorded + random exact-distance rechecks found
+zero bad exclusions. Quest replay q remains identical at 5.032 mm minimum clearance.
+Clean detached suite 77/77 PASS; runtime targeted 16/16 PASS. A/B p95 mean improved
+20.902 -> 17.300 ms under the same host load. Parallel session-report work was preserved.
+
 ## 2026-09-18 clearance kinematics optimization
 
 Read [second clearance optimization](BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md).

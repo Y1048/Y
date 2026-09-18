@@ -11,6 +11,21 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## Latest: conservative sphere broadphase (2026-09-18)
+
+Read [BIMANUAL_PERFORMANCE_SPHERE_20260918.md](BIMANUAL_PERFORMANCE_SPHERE_20260918.md) first.
+The checked stopping tail still dominated cost after the kinematics optimization.
+Threshold broadphase now uses world bounding spheres that enclose each geom local AABB;
+only certainly distant pairs are skipped, and survivors still use exact `mj_geomDistance`.
+The 5 mm hard limit, 0.25 deg sweep samples, speed/acceleration, IK and return policy are unchanged.
+
+2,927 recorded states rechecked 1,258,802 excluded pairs and 1,200 random states rechecked
+510,643 excluded pairs with zero bad exclusions. Quest replay remains 0 rad identical and
+minimum clearance remains 5.032381 mm. Clean detached suite: 77/77 PASS. Runtime targeted
+suite: 16/16 PASS; current integrated runtime also passed 82/82 including unrelated local
+session-report tests. A-B-B-A p95 mean fell 20.902 -> 17.300 ms under the same high-load run.
+Only the two sphere files were installed with backup; 279 protected files were unchanged.
+
 ## Latest: clearance kinematics optimization (2026-09-18)
 
 Read [BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md](BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md) first.

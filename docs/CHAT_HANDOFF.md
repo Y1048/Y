@@ -1,5 +1,19 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 same-scene engage/left-marker repair
+
+- User capture `unity_20260918_093446_2442044.jsonl`: 800 inputs; 625 had
+  both hands tracked, none engaged; backend remained ready. Saved left binder
+  had reference_transform=0 and head_camera_alignment=0, unlike the right binder.
+- Explicitly wire both references in installer and runtime Awake to repair
+  existing scenes on next Play. Add missing left cyan tracked-wrist marker,
+  green left target and per-hand alignment distance/hold status.
+- Keypad bootstrap now runs AfterSceneLoad so the bimanual marker is present
+  before its guard is evaluated; earlier log showed unwanted keypad startup.
+- Unity/Meta DLL-reference compilation passed. Quest retest and actual
+  runtime bootstrap suppression remain unverified; no G1/robot execution.
+
+
 ## Same-scene bimanual extension (2026-09-18, current)
 
 - User rejected the separate-scene workflow. Use existing SampleScene menu

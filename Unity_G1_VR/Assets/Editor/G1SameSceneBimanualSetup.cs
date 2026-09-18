@@ -73,6 +73,11 @@ public static class G1SameSceneBimanualSetup
         if (dual.leftBinder != null)
         {
             Undo.RecordObject(dual.leftBinder, "Select left input mode");
+            // EditorJsonUtility does not reliably preserve cross-object scene
+            // references when copying components. Assign these explicitly,
+            // including when repairing an already installed left binder.
+            dual.leftBinder.reference_transform = original.hand_binder.reference_transform;
+            dual.leftBinder.head_camera_alignment = original.hand_binder.head_camera_alignment;
             dual.leftBinder.enabled = both;
             EditorUtility.SetDirty(dual.leftBinder);
         }

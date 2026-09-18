@@ -83,6 +83,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private float pinchTime;
     private string backendState = "waiting";
     private GameObject leftMarker, rightMarker;
+    private GameObject leftTrackedMarker;
     private TextMesh label;
 
     private void Awake()
@@ -91,6 +92,13 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (leftBinder != null) leftBinder.enabled = UsesExistingScene;
         if (UsesExistingScene)
         {
+            // Repair scenes created by the first same-scene installer without
+            // asking the operator to recreate the scene or reset its tuning.
+            if (leftBinder != null && rightBinder != null)
+            {
+                leftBinder.reference_transform = rightBinder.reference_transform;
+                leftBinder.head_camera_alignment = rightBinder.head_camera_alignment;
+            }
             if (existingSender != null) existingSender.enabled = false;
             if (rightBinder != null) rightBinder.auto_calibrate_on_first_track = false;
             if (leftBinder != null) leftBinder.auto_calibrate_on_first_track = false;
@@ -120,6 +128,13 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
             client.Client.IOControl((IOControlCode)(-1744830452), new byte[] { 0 }, null);
         leftMarker = MakeMarker("Left engage / raw target");
+        leftMarker.GetComponent<Renderer>().material.color = Color.green;
+        if (useExistingScene)
+        {
+            leftTrackedMarker = MakeMarker("Left tracked wrist");
+            leftTrackedMarker.GetComponent<Renderer>().material.color = Color.cyan;
+            leftTrackedMarker.transform.localScale = Vector3.one * .025f;
+        }
         if (!useExistingScene) rightMarker = MakeMarker("Right engage zone");
         label = new GameObject("Bimanual simulation status").AddComponent<TextMesh>();
         label.fontSize = 48;
@@ -240,6 +255,12 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (rightMarker != null) rightMarker.transform.position = rightZone;
         bool tracked = useExistingScene ? ReadBinder(leftBinder, packet.left) : ReadHand(leftHand, leftWrist, packet.left);
         tracked = (useExistingScene ? ReadBinder(rightBinder, packet.right) : ReadHand(rightHand, rightWrist, packet.right)) && tracked;
+        if (leftTrackedMarker != null)
+        {
+            leftTrackedMarker.SetActive(packet.left.tracked);
+            if (packet.left.tracked) leftTrackedMarker.transform.SetPositionAndRotation(
+                leftBinder.TrackedWristPosition, leftBinder.TrackedWristRotation);
+        }
         bool inZones = useExistingScene
             ? tracked && leftBinder.IsAlignmentReady && rightBinder.IsAlignmentReady
             : tracked && Vector3.Distance(leftWrist.position, leftZone) < .07f && Vector3.Distance(rightWrist.position, rightZone) < .07f;
@@ -303,6 +324,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
             ? "RETURNING: wait" : active ? "TRACKING | pinch 0.5s to return"
             : mustLeaveZones ? "READY: move out of zones, release pinch"
             : "READY: align both wrists with spheres";
+        if (useExistingScene && !active && backendState == "ready" && fresh)
+            Status += string.Format("\nL: {0} {1:F1}cm {2:P0} | R: {3} {4:F1}cm {5:P0}",
+                leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
+                rightBinder.EngagementState, rightBinder.AlignmentPositionError*100, rightBinder.EngagementProgress);
         label.text = "BIMANUAL SIMULATION ONLY\n" + Status;
         label.transform.position = head.position + head.forward * .8f + Vector3.down * .1f;
         label.transform.rotation = head.rotation;
@@ -327,6 +352,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             client = null;
         }
         if (leftMarker != null) Destroy(leftMarker);
+        if (leftTrackedMarker != null) Destroy(leftTrackedMarker);
         if (rightMarker != null) Destroy(rightMarker);
         if (label != null) Destroy(label.gameObject);
     }

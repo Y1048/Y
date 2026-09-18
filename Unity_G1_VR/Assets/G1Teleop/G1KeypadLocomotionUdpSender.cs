@@ -46,7 +46,7 @@ public sealed class G1KeypadLocomotionUdpSender : MonoBehaviour
     private Timer windowsSendTimer;
 #endif
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Install()
     {
         if (G1BimanualSimulationSender.IsSimulationSceneLoaded()) return;

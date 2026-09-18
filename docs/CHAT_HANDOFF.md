@@ -1,5 +1,8 @@
 # G1 Teleop Project Chat Handoff
 
+**최신 GPT 인계 요약: [GPT_BIMANUAL_HANDOFF_20260918.md](GPT_BIMANUAL_HANDOFF_20260918.md).**
+아래 기록은 역순 작업 이력이며, 과거의 미해결 표시는 이후 수정 결과와 구분한다.
+
 ## 2026-09-18 coupled IK checked braking (offline verified)
 
 - Fix previous next-step-only planning: each accepted joint velocity now has

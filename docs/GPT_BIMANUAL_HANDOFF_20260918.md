@@ -11,6 +11,22 @@
 이 승인은 `main` 변경/병합, force push, reset/clean, 실제 G1 실행이나
 무관한 변경의 게시를 포함하지 않는다.
 
+## 최신: pinch 재engage와 startup 후속 검증 (2026-09-18)
+
+[재engage/startup 검증](BIMANUAL_REENGAGE_STARTUP_20260918.md)을 우선 읽는다.
+실제 14축 BimanualSimulation/UnityCycle로 tracking → pinch → 단계형 복귀 → READY →
+active-only 거부 → inactive rearm → 재engage를 끝까지 검사했다. 출력 연속성,
+60도/s² 가속도 제한과 sampled clearance를 유지하며 전체 소스 suite는 71/71 PASS다.
+
+Unity의 mustLeaveZones 해제 조건을 CanClearMustLeave()로 분리해 의미를 바꾸지 않고
+회귀검사화했다. 실제 Unity 참조 C# 컴파일 error 0, engage/leave 592조합,
+backend generation/order 17조합이 PASS했다. Unity Editor가 열려 있어 이번 C# 파일은
+바탕화면 실행 폴더에 hot-copy하지 않았다. 다음 정상 Unity/Play 중지 때 선택 반영한다.
+
+MuJoCo 3.12 fresh import 10회는 약 0.201~0.268초, headless full startup 5회는
+약 1.196~1.277초였다. 이전 간헐 장시간 import 지연은 이번 반복에서 재현되지 않았고
+원인은 여전히 미확정이다. 새 Quest 착용 pinch/reengage 사용감은 미검증이다.
+
 ## 최신: 단계형 복귀의 실제 기록 재생과 노트북 경로 동기화 (2026-09-18)
 
 [새 기록과 검증 범위](BIMANUAL_OBSERVED_RUN_20260918.md)를 우선 읽는다.

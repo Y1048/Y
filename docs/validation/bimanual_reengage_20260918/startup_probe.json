@@ -1,0 +1,156 @@
+{
+  "imports": [
+    {
+      "i": 0,
+      "wall_s": 0.3278329000022495,
+      "rc": 0,
+      "import_s": 0.26827659999980824,
+      "version": "3.12.0"
+    },
+    {
+      "i": 1,
+      "wall_s": 0.2736499000020558,
+      "rc": 0,
+      "import_s": 0.22773199999937788,
+      "version": "3.12.0"
+    },
+    {
+      "i": 2,
+      "wall_s": 0.2468879999978526,
+      "rc": 0,
+      "import_s": 0.20178089999899385,
+      "version": "3.12.0"
+    },
+    {
+      "i": 3,
+      "wall_s": 0.29468270000143093,
+      "rc": 0,
+      "import_s": 0.24551769999743556,
+      "version": "3.12.0"
+    },
+    {
+      "i": 4,
+      "wall_s": 0.3172182000016619,
+      "rc": 0,
+      "import_s": 0.263154599997506,
+      "version": "3.12.0"
+    },
+    {
+      "i": 5,
+      "wall_s": 0.2838969000003999,
+      "rc": 0,
+      "import_s": 0.2330175999995845,
+      "version": "3.12.0"
+    },
+    {
+      "i": 6,
+      "wall_s": 0.24614139999903273,
+      "rc": 0,
+      "import_s": 0.20087319999947795,
+      "version": "3.12.0"
+    },
+    {
+      "i": 7,
+      "wall_s": 0.25759370000014314,
+      "rc": 0,
+      "import_s": 0.2116872999977204,
+      "version": "3.12.0"
+    },
+    {
+      "i": 8,
+      "wall_s": 0.2602475999992748,
+      "rc": 0,
+      "import_s": 0.21638150000217138,
+      "version": "3.12.0"
+    },
+    {
+      "i": 9,
+      "wall_s": 0.26011040000230423,
+      "rc": 0,
+      "import_s": 0.21604169999773148,
+      "version": "3.12.0"
+    }
+  ],
+  "full_startups": [
+    {
+      "i": 0,
+      "wall_s": 1.246669,
+      "rc": 0,
+      "stages_s": {
+        "engine_begin": 0.0,
+        "engine_ready": 0.167421,
+        "controller_import_begin": 0.167444,
+        "controller_import_ready": 0.528682,
+        "model_begin": 0.529294,
+        "model_ready": 0.693259,
+        "listener_ready": 0.702991,
+        "normal_exit": 1.06318
+      },
+      "stderr": ""
+    },
+    {
+      "i": 1,
+      "wall_s": 1.227861,
+      "rc": 0,
+      "stages_s": {
+        "engine_begin": 0.0,
+        "engine_ready": 0.161479,
+        "controller_import_begin": 0.1615,
+        "controller_import_ready": 0.512753,
+        "model_begin": 0.513404,
+        "model_ready": 0.678239,
+        "listener_ready": 0.688111,
+        "normal_exit": 1.047983
+      },
+      "stderr": ""
+    },
+    {
+      "i": 2,
+      "wall_s": 1.213466,
+      "rc": 0,
+      "stages_s": {
+        "engine_begin": 0.0,
+        "engine_ready": 0.159825,
+        "controller_import_begin": 0.159847,
+        "controller_import_ready": 0.503335,
+        "model_begin": 0.504002,
+        "model_ready": 0.659226,
+        "listener_ready": 0.669461,
+        "normal_exit": 1.028945
+      },
+      "stderr": ""
+    },
+    {
+      "i": 3,
+      "wall_s": 1.276994,
+      "rc": 0,
+      "stages_s": {
+        "engine_begin": 0.0,
+        "engine_ready": 0.200581,
+        "controller_import_begin": 0.200606,
+        "controller_import_ready": 0.564207,
+        "model_begin": 0.564829,
+        "model_ready": 0.725916,
+        "listener_ready": 0.735361,
+        "normal_exit": 1.095899
+      },
+      "stderr": ""
+    },
+    {
+      "i": 4,
+      "wall_s": 1.196089,
+      "rc": 0,
+      "stages_s": {
+        "engine_begin": 0.0,
+        "engine_ready": 0.16509,
+        "controller_import_begin": 0.165113,
+        "controller_import_ready": 0.497382,
+        "model_begin": 0.497984,
+        "model_ready": 0.650955,
+        "listener_ready": 0.659764,
+        "normal_exit": 1.020655
+      },
+      "stderr": ""
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'MuJoCo_G1_Controller/scripts'))
+sys.path.insert(0, str(ROOT/'backend/tests'))
 from g1_bimanual_sim import BimanualSimulation, base, mink
 from g1_bimanual_return import BimanualReturnMotion, RuckigJointMotionLimiter
 from g1_mink_return_cycle import SAFE_RIGHT_ARM_RAD
@@ -141,6 +142,61 @@ class StagedReturnTests(unittest.TestCase):
         self.assertTrue(sim.step(sim.home_targets))
         self.assertEqual(sim.state,'tracking')
         self.assertEqual(sim.return_motion.stage,'inactive')
+
+    def test_full_cycle_pinch_return_inactive_rearm_and_reengage(self):
+        from g1_bimanual_unity_sim import UnityCycle
+        from test_bimanual_unity_sim import packet
+        sim = BimanualSimulation()
+        cycle = UnityCycle(sim)
+        sequence = 0
+        previous_velocity = np.zeros(14)
+        stages = []
+
+        def advance(message):
+            nonlocal sequence, previous_velocity
+            sequence = message['sequence']
+            now = sequence * sim.dt
+            cycle.receive(message, now)
+            before = sim.config.q.copy()
+            cycle.tick(now)
+            velocity, _, _ = assert_output(sim, before, previous_velocity)
+            previous_velocity = velocity
+
+        cycle.receive(packet(0), 0.)
+        advance(packet(1, True))
+        self.assertEqual(cycle.state, 'tracking')
+        for _ in range(35):
+            message = packet(sequence + 1, True)
+            message['right']['position_m'][2] += .08
+            advance(message)
+        self.assertGreater(np.max(np.abs(sim.velocity)), .01)
+
+        advance(packet(sequence + 1, True, returning=True))
+        self.assertEqual(cycle.state, 'returning')
+        for _ in range(600):
+            advance(packet(sequence + 1, False, returning=True))
+            if not stages or stages[-1] != sim.return_motion.stage:
+                stages.append(sim.return_motion.stage)
+            if cycle.state == 'ready':
+                break
+        self.assertEqual(cycle.state, 'ready')
+        self.assertEqual(sim.return_motion.stage, 'complete')
+        self.assertIn('safe_waypoint', stages)
+        self.assertIn('home', stages)
+        self.assertEqual(np.max(np.abs(sim.velocity)), 0.)
+
+        # The backend must not accept an active-only edge after return.
+        advance(packet(sequence + 1, True))
+        self.assertEqual(cycle.state, 'ready')
+        self.assertFalse(cycle.armed)
+        advance(packet(sequence + 1, False))
+        self.assertEqual(cycle.state, 'ready')
+        self.assertTrue(cycle.armed)
+        advance(packet(sequence + 1, True))
+        self.assertEqual(cycle.state, 'tracking')
+        self.assertEqual(sim.state, 'tracking')
+        self.assertEqual(sim.return_motion.stage, 'inactive')
+        np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-5)
 
     def moving_sim(self):
         sim = BimanualSimulation()

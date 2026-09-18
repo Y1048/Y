@@ -1,0 +1,218 @@
+{
+  "schema": "g1.bimanual.reengage_startup.validation.v1",
+  "simulation_only": true,
+  "source_base_commit": "caaafdc1782f309268ca894e332f73b9bf84ad4b",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "hardware_executed": false,
+  "unity_executed": false,
+  "quest_verified": false,
+  "runtime_hot_installed": false,
+  "runtime_hot_install_reason": "Unity Editor was open; avoid script hot-reload during the user session.",
+  "python_full_suite": {
+    "count": 71,
+    "passed": 71,
+    "seconds": 87.316,
+    "exit_code": 0
+  },
+  "staged_return_suite": {
+    "count": 11,
+    "passed": 11,
+    "seconds": 7.148,
+    "exit_code": 0
+  },
+  "csharp_compile": {
+    "exit_code": 0,
+    "warning_count": 81,
+    "error_count": 0
+  },
+  "engage_gate": {
+    "cases": 592,
+    "passed": true
+  },
+  "feedback_gate": {
+    "cases": 17,
+    "passed": true
+  },
+  "full_cycle": {
+    "pinch_return": true,
+    "staged_return": true,
+    "active_only_after_return_rejected": true,
+    "inactive_edge_rearms": true,
+    "reengage": true,
+    "output_acceleration_limit_deg_s2": 60.0
+  },
+  "mujoco_import_probe": {
+    "count": 10,
+    "version": "3.12.0",
+    "min_s": 0.20087319999947795,
+    "max_s": 0.26827659999980824,
+    "rows": [
+      {
+        "i": 0,
+        "wall_s": 0.3278329000022495,
+        "rc": 0,
+        "import_s": 0.26827659999980824,
+        "version": "3.12.0"
+      },
+      {
+        "i": 1,
+        "wall_s": 0.2736499000020558,
+        "rc": 0,
+        "import_s": 0.22773199999937788,
+        "version": "3.12.0"
+      },
+      {
+        "i": 2,
+        "wall_s": 0.2468879999978526,
+        "rc": 0,
+        "import_s": 0.20178089999899385,
+        "version": "3.12.0"
+      },
+      {
+        "i": 3,
+        "wall_s": 0.29468270000143093,
+        "rc": 0,
+        "import_s": 0.24551769999743556,
+        "version": "3.12.0"
+      },
+      {
+        "i": 4,
+        "wall_s": 0.3172182000016619,
+        "rc": 0,
+        "import_s": 0.263154599997506,
+        "version": "3.12.0"
+      },
+      {
+        "i": 5,
+        "wall_s": 0.2838969000003999,
+        "rc": 0,
+        "import_s": 0.2330175999995845,
+        "version": "3.12.0"
+      },
+      {
+        "i": 6,
+        "wall_s": 0.24614139999903273,
+        "rc": 0,
+        "import_s": 0.20087319999947795,
+        "version": "3.12.0"
+      },
+      {
+        "i": 7,
+        "wall_s": 0.25759370000014314,
+        "rc": 0,
+        "import_s": 0.2116872999977204,
+        "version": "3.12.0"
+      },
+      {
+        "i": 8,
+        "wall_s": 0.2602475999992748,
+        "rc": 0,
+        "import_s": 0.21638150000217138,
+        "version": "3.12.0"
+      },
+      {
+        "i": 9,
+        "wall_s": 0.26011040000230423,
+        "rc": 0,
+        "import_s": 0.21604169999773148,
+        "version": "3.12.0"
+      }
+    ]
+  },
+  "full_startup_probe": {
+    "count": 5,
+    "min_wall_s": 1.196089,
+    "max_wall_s": 1.276994,
+    "rows": [
+      {
+        "i": 0,
+        "wall_s": 1.246669,
+        "rc": 0,
+        "stages_s": {
+          "engine_begin": 0.0,
+          "engine_ready": 0.167421,
+          "controller_import_begin": 0.167444,
+          "controller_import_ready": 0.528682,
+          "model_begin": 0.529294,
+          "model_ready": 0.693259,
+          "listener_ready": 0.702991,
+          "normal_exit": 1.06318
+        },
+        "stderr": ""
+      },
+      {
+        "i": 1,
+        "wall_s": 1.227861,
+        "rc": 0,
+        "stages_s": {
+          "engine_begin": 0.0,
+          "engine_ready": 0.161479,
+          "controller_import_begin": 0.1615,
+          "controller_import_ready": 0.512753,
+          "model_begin": 0.513404,
+          "model_ready": 0.678239,
+          "listener_ready": 0.688111,
+          "normal_exit": 1.047983
+        },
+        "stderr": ""
+      },
+      {
+        "i": 2,
+        "wall_s": 1.213466,
+        "rc": 0,
+        "stages_s": {
+          "engine_begin": 0.0,
+          "engine_ready": 0.159825,
+          "controller_import_begin": 0.159847,
+          "controller_import_ready": 0.503335,
+          "model_begin": 0.504002,
+          "model_ready": 0.659226,
+          "listener_ready": 0.669461,
+          "normal_exit": 1.028945
+        },
+        "stderr": ""
+      },
+      {
+        "i": 3,
+        "wall_s": 1.276994,
+        "rc": 0,
+        "stages_s": {
+          "engine_begin": 0.0,
+          "engine_ready": 0.200581,
+          "controller_import_begin": 0.200606,
+          "controller_import_ready": 0.564207,
+          "model_begin": 0.564829,
+          "model_ready": 0.725916,
+          "listener_ready": 0.735361,
+          "normal_exit": 1.095899
+        },
+        "stderr": ""
+      },
+      {
+        "i": 4,
+        "wall_s": 1.196089,
+        "rc": 0,
+        "stages_s": {
+          "engine_begin": 0.0,
+          "engine_ready": 0.16509,
+          "controller_import_begin": 0.165113,
+          "controller_import_ready": 0.497382,
+          "model_begin": 0.497984,
+          "model_ready": 0.650955,
+          "listener_ready": 0.659764,
+          "normal_exit": 1.020655
+        },
+        "stderr": ""
+      }
+    ]
+  },
+  "unresolved": [
+    "Previously observed intermittent long MuJoCo import was not reproduced; root cause remains unknown.",
+    "No new Quest/Unity Play pinch/re-engage session was executed in this validation."
+  ],
+  "source_sha256": {
+    "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs": "d92d7d6177da17e1cab50efb7aead3e8c9bff9701be1fced3e1c367f8cbd6a3e",
+    "backend/tests/BimanualEngageGateTest.cs": "2a05b9a1edc9a7ed336f4d85b9104398cf511b98a2ae28f5c952ba7a808e4a6d",
+    "backend/tests/test_bimanual_return.py": "114971380a1026f189eae29e48812f94c47a2a5e4e7c4826beaf345878acd48c"
+  }
+}

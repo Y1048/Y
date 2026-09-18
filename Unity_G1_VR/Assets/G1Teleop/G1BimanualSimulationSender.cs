@@ -25,6 +25,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (!eligible) return double.NegativeInfinity;
         return progress >= 1 ? now + 4 : until;
     }
+
+    public static bool CanClearMustLeave(bool backendReady, bool tracked, bool inZones, bool pinch)
+        => backendReady && tracked && !inZones && !pinch;
     private double leftReadyUntil = double.NegativeInfinity;
     private double rightReadyUntil = double.NegativeInfinity;
 
@@ -323,7 +326,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             mustLeaveZones = true;
             ResetBinders();
         }
-        if (mustLeaveZones && backendState == "ready" && tracked && !inZones && !pinch)
+        if (mustLeaveZones && CanClearMustLeave(backendState == "ready", tracked, inZones, pinch))
             mustLeaveZones = false;
         if (useExistingScene && !active)
         {

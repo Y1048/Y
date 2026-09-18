@@ -19,6 +19,13 @@ class BimanualEngageGateTest {
   if(!double.IsNegativeInfinity(G1BimanualSimulationSender.RememberReady(11,until,false,1))) throw new Exception("invalid tracking memory");
   if(15<until) throw new Exception("expiration");
   if(G1BimanualSimulationSender.CanEngage(true,true,true,false,false,false,1,1)) throw new Exception("must recheck current zones");
+  for(int bits=0; bits<16; ++bits) {
+   bool ready=(bits&1)!=0, tracked=(bits&2)!=0, zones=(bits&4)!=0, pinch=(bits&8)!=0;
+   bool expected=ready && tracked && !zones && !pinch;
+   if(G1BimanualSimulationSender.CanClearMustLeave(ready,tracked,zones,pinch)!=expected)
+    throw new Exception("leave-zone clear mismatch "+bits);
+   tests++;
+  }
   Console.WriteLine("PASS: readiness memory, invalidation, expiration and final position gate");
   Console.WriteLine("PASS: "+tests+" engage gate cases; shared marker dimensions");
  }

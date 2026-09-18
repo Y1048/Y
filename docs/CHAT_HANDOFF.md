@@ -1,5 +1,21 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 pinch re-engage and startup follow-up
+
+Read [re-engage/startup validation](BIMANUAL_REENGAGE_STARTUP_20260918.md).
+A real BimanualSimulation/UnityCycle regression now covers motion, pinch return,
+staged waypoint/home/settle, active-only rejection, inactive rearm and re-engage.
+Source bimanual suite: 71/71 PASS; return suite: 11/11 PASS.
+
+The existing leave-zone release condition is now a testable production helper;
+592 engage/leave combinations and 17 backend-generation/order cases passed after
+a full Unity-reference C# compile with zero errors. Unity was open, so this
+semantics-preserving C# refactor was not hot-copied into the runtime project.
+
+Fresh MuJoCo 3.12 imports (10) took about 0.201-0.268s and five headless full
+startups took about 1.196-1.277s. The earlier intermittent long import delay was
+not reproduced and remains unexplained. No new Quest or physical G1 validation.
+
 ## 2026-09-18 observed staged-return replay and laptop path deployment
 
 Read [observed run validation](BIMANUAL_OBSERVED_RUN_20260918.md).

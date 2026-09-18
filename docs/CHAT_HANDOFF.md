@@ -1,5 +1,20 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-18 original Desktop project: bimanual simulation installed
+
+- Selectively copied the paired Unity/MuJoCo simulation files from source commit
+  `0a83dc3` into the existing Desktop project at the user request.
+- Backup: `logs/backups/bimanual_install_20260918_090952/`: tracked dirty diff,
+  pre-install copies of affected existing files, original SampleScene, hashes.
+- Keypad Install/Awake received only the two simulation-scene guards; no broad
+  overwrite/reset/pull of this dirty worktree. Original SampleScene hash unchanged.
+- Runtime checkout: 13 offline/generated/loopback tests passed on MuJoCo 3.12.0.
+  Open Unity recompiled Assembly-CSharp and Assembly-CSharp-Editor; both new types
+  were found in the resulting DLLs. Scene creation and Quest Play remain untested.
+- Use the existing Unity project menu G1 Teleop -> Create Separate Bimanual
+  Simulation Scene, then tools/START_BIMANUAL_UNITY_SIM.bat. G1 is not used.
+
+
 > **Absolute G1 mutation rule:** Never create, delete, rename, move, or modify any file on the G1; never run a program that can create a log, publish a command, change a service or mode, or otherwise mutate G1 state without the user's explicit approval for that exact action. Inspect source before running diagnostics. Remote-to-local copy is allowed only when it reads existing G1 files and writes exclusively to the Windows project.
 
 Last updated: 2026-09-18

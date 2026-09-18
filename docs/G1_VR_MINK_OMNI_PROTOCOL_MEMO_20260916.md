@@ -54,12 +54,209 @@ Unity 화면
 | Unity → Mink | UDP JSON | PC `127.0.0.1:5005` | 손목 위치와 quaternion | 사용 중 |
 | Mink → Arm Relay | UDP JSON | PC `127.0.0.1:5008` | 오른팔 관절 22~28 목표와 상태 | 사용 중 |
 | Arm Relay → G1 | UDP JSON | `${G1_HOST}:5014` | 검증된 오른팔 관절 목표 | 후보 구현 |
-| G1 → PC | UDP JSON | PC `127.0.0.1:5015` | 초기화·ready·tracking·return 상태 | 후보 구현 |
+| G1 → PC | UDP JSON | G1 `5014` 응답 → relay → PC `127.0.0.1:5015` | 초기화·ready·tracking·return 상태 | 후보 구현 |
 | Omni One → Omni Connect | Bluetooth | PC 로컬 연결 | Omni 이동·방향 입력 | 사용 중 |
 | Omni Connect → Omni Gateway | WebSocket JSON | PC `127.0.0.1:32123` | `movementXY`, `armYaw` | 수신 확인 |
 | G1 → Omni Gateway | UDP broadcast JSON | PC `0.0.0.0:5018` | G1 식별자와 velocity 수신 포트 | 구현됨, 미배포 |
-| Omni Gateway → G1 | UDP JSON | 자동 발견된 G1의 `5017` | 보정된 `vx`, `vy`, `yaw_rate` | Gateway 구현 예정 |
+| Omni Gateway → G1 | UDP JSON | 자동 발견된 G1의 `5017` | 보정된 `vx`, `vy`, `yaw_rate` | Gateway 구현됨, 실제 G1 미검증 |
 | G1 카메라 → Unity | TCP JPEG | PC `5011` | 전면 카메라 영상 | 사용 중 |
+
+## 전달 데이터 형식
+
+| 구간 | 데이터 형식 | 좌표·단위 및 배열 순서 |
+|---|---|---|
+| Quest → Unity | Unity XR 객체: 손목 `Vector3`, `Quaternion`, 손 추적 `bool`, index pinch `bool` | Unity 좌표계 `+X=오른쪽`, `+Y=위`, `+Z=앞`; 위치 m; quaternion은 Unity 필드 순서 `x,y,z,w` |
+| Unity → Mink | UTF-8 JSON 객체 | `right.pos=[x,y,z]`는 G1/MuJoCo 목표 위치 m, `right.rot=[x,y,z,w]`는 정규화 quaternion, `right.valid`는 추적·engage 유효 여부 |
+| Mink → Arm Relay | UTF-8 JSON 객체 `g1.mink.cycle.live.v1` | `joints`는 오른팔 22~28번의 절대 목표각 7개, 단위 rad; `clearance_m`는 최소 충돌 여유 m |
+| Arm Relay → G1 | 위 Mink JSON에 `relay_token` 문자열을 추가 | 관절 배열과 단위는 변경하지 않음. relay가 schema·session·sequence·freshness를 검증한 뒤 G1 `5014`로 전달 |
+| G1 → PC | UTF-8 JSON 객체 `g1.mink.cycle.ack.v1` | 로봇 cycle 상태 문자열과 해당 session/epoch/sequence. relay가 받은 ACK를 PC loopback `5015`로 전달 |
+| Omni Connect → Omni Gateway | WebSocket text JSON | `movementXY=[mx,my]`: 정규화 입력, `mx=오른쪽 양수`, `my=전진 양수`; `armYaw`: degree |
+| G1 → Omni Gateway | UDP JSON 객체 `g1.velocity.discovery.v1` | G1 식별자, `velocity_port` 정수, 증가 sequence, 실행별 token. UDP datagram의 실제 송신 IP를 G1 주소로 사용 |
+| Omni Gateway → G1 | UDP JSON 객체 `g1.velocity.command.v1` | `velocity=[vx,vy,yaw_rate]`; `vx,vy` m/s, `yaw_rate` rad/s |
+| G1 카메라 → Unity | TCP binary: 24-byte big-endian header 뒤 JPEG 원본 bytes | header=`magic(4) + version(u32) + sequence(u32) + timestamp_ns(u64) + jpeg_size(u32)`; magic=`G1CM`, version=`1` |
+
+아래 JSON은 공백과 줄바꿈을 넣은 설명용 예다. 실제 UDP 송신은 같은 필드를
+compact JSON으로 직렬화한다. JSON 숫자는 finite number만 허용하고 quaternion은
+정규화된 값을 사용한다.
+
+### Quest → Unity
+
+네트워크 패킷이 아니라 Unity XR 런타임 내부 값이다.
+
+```text
+wrist_position : Vector3(float x, float y, float z)  // m
+wrist_rotation : Quaternion(float x, float y, float z, float w)
+tracked        : bool
+index_pinching : bool
+```
+
+### Unity → Mink: UDP 5005
+
+별도 `schema` 필드가 없는 현재 Unity 입력 계약이다.
+
+```json
+{
+  "session_id": "0123456789abcdef0123456789abcdef",
+  "sequence": 42,
+  "command_state": "active",
+  "right": {
+    "pos": [0.42, -0.16, 1.05],
+    "rot": [0.0, 0.0, 0.0, 1.0],
+    "valid": true
+  },
+  "timestamp": 1234.567890,
+  "source": "quest3s_head_relative"
+}
+```
+
+- `session_id`: Unity Play마다 새로 만드는 문자열 ID.
+- `sequence`: 같은 session에서 0부터 증가하는 정수.
+- `command_state`: `active`, `idle`, `workspace_exit`,
+  `pinch_disengaged`, `tracking_disengaged` 중 하나.
+- `timestamp`: Unity `realtimeSinceStartup` 기반 초. 다른 장치의 시계와 직접
+  비교하는 Unix timestamp가 아니다.
+- `right.pos`: Unity 손목 절대 위치가 아니라 engage 기준 상대 이동을 G1 좌표로
+  변환한 손목 task 목표다.
+
+### Mink → Arm Relay: UDP 5008
+
+Mink 내부 상태 `g1.mink.right_arm.state.v1`에서 실제 cycle relay가 필요한 필드만
+추출해 다음 형식으로 보낸다.
+
+```json
+{
+  "schema": "g1.mink.cycle.live.v1",
+  "command_provenance": "live_mink",
+  "profile": "today",
+  "session": "0123456789abcdef0123456789abcdef",
+  "sequence": 1001,
+  "epoch": 0,
+  "sample_time_s": 16.683333,
+  "source_age_s": 0.012,
+  "event": "active",
+  "joints": [0.30, -0.20, 0.10, 1.00, -0.10, 0.00, 0.00],
+  "clearance_m": 0.031
+}
+```
+
+- `joints[0..6]`: `right_shoulder_pitch`, `right_shoulder_roll`,
+  `right_shoulder_yaw`, `right_elbow`, `right_wrist_roll`,
+  `right_wrist_pitch`, `right_wrist_yaw`; 모두 rad.
+- `event`: `idle`, `active`, `pinch`, `tracking_disengaged`, `return`,
+  `fault` 중 하나. `fault`의 최종 G1 처리 의미는 아직 통일되지 않았다.
+- `source_age_s`: Unity 원본 입력의 경과 시간. 현재 relay 허용 범위는
+  `0..0.25 s`다.
+- `sample_time_s`: stream 내부 시간축의 초 단위 값이며 PC의 현재 시각이 아니다.
+
+### Arm Relay → G1: UDP 5014
+
+relay는 위 패킷을 검증한 뒤 실행별 token을 추가한다. 나머지 필드는 그대로다.
+
+```json
+{
+  "schema": "g1.mink.cycle.live.v1",
+  "command_provenance": "live_mink",
+  "profile": "today",
+  "session": "0123456789abcdef0123456789abcdef",
+  "sequence": 1001,
+  "epoch": 0,
+  "sample_time_s": 16.683333,
+  "source_age_s": 0.012,
+  "event": "active",
+  "joints": [0.30, -0.20, 0.10, 1.00, -0.10, 0.00, 0.00],
+  "clearance_m": 0.031,
+  "relay_token": "PER_RUN_TOKEN"
+}
+```
+
+`relay_token`은 실행 묶음을 구분하는 영숫자 문자열이다. 암호학적 인증값은 아니다.
+
+### G1 → PC 상태: UDP 5014 응답 → PC 5015 전달
+
+```json
+{
+  "schema": "g1.mink.cycle.ack.v1",
+  "relay_token": "PER_RUN_TOKEN",
+  "profile": "today",
+  "sequence": 55,
+  "epoch": 0,
+  "session": "0123456789abcdef0123456789abcdef",
+  "state": "waiting"
+}
+```
+
+`state`는 `initializing`, `waiting`, `tracking`, `returning`, `stopped` 중 하나다.
+`initializing`에는 구현에 따라 관절별 정렬 오차를 담은 `ready_blockers` 배열이
+추가될 수 있다. `waiting`이며 session/epoch가 맞고 ACK가 250 ms 이내일 때만
+새 engage가 가능한 ready로 취급한다.
+
+### Omni Connect → Omni Gateway: WebSocket 32123
+
+```json
+{
+  "armYaw": 112.62,
+  "movementXY": [-0.25, 0.75]
+}
+```
+
+- `movementXY[0]`: 오른쪽 양수의 정규화 lateral 입력.
+- `movementXY[1]`: 전진 양수의 정규화 forward 입력.
+- `armYaw`: degree. Gateway가 연속 샘플 차이를 시간으로 나눠 회전 속도를 만든다.
+- Omni 원본에는 프로젝트용 session, sequence, source timestamp가 없다. Gateway가
+  수신 시 monotonic timestamp와 sequence를 부여한다.
+
+### G1 discovery: UDP broadcast 5018
+
+```json
+{
+  "schema": "g1.velocity.discovery.v1",
+  "robot_id": "g1-hostname",
+  "velocity_port": 5017,
+  "sequence": 12,
+  "relay_token": "PER_RUN_TOKEN"
+}
+```
+
+Gateway는 `robot_id` 문자열보다 UDP datagram의 실제 송신 IP를 목적지 주소로
+사용한다. 따라서 G1 IP를 코드에 고정할 필요가 없다.
+
+### Omni Gateway → G1: UDP 5017
+
+```json
+{
+  "schema": "g1.velocity.command.v1",
+  "command_provenance": "omni_gateway",
+  "simulation_only": false,
+  "session": "fedcba9876543210fedcba9876543210",
+  "sequence": 220,
+  "source_monotonic_s": 4567.123,
+  "velocity": [0.60, -0.20, 0.30],
+  "relay_token": "PER_RUN_TOKEN"
+}
+```
+
+- `velocity=[vx,vy,yaw_rate]`: 각각 전후 m/s, 좌우 m/s, 회전 rad/s.
+- G1 수신기 계약은 현재 각 성분의 절댓값을 `0.8` 이하로 제한한다.
+- 현재 Gateway 설정의 `yaw_max_rad_s` 기본값은 `1.6`이어서 수신기 상한 `0.8`과
+  일치하지 않는다. 실제 통합 전에 둘 중 하나로 명시적으로 통일해야 한다.
+- 마지막 유효 입력이 250 ms 이상 없으면 Gateway 또는 수신기는 zero velocity를
+  사용한다.
+
+### G1 카메라 → Unity: TCP 5011
+
+카메라 경로는 JSON이 아니다. TCP stream에서 매 프레임을 다음 순서로 읽는다.
+
+| 바이트 | 형식 | 의미 |
+|---:|---|---|
+| 0..3 | ASCII 4 bytes | magic `G1CM` |
+| 4..7 | big-endian `uint32` | version, 현재 `1` |
+| 8..11 | big-endian `uint32` | frame sequence |
+| 12..19 | big-endian `uint64` | Unix epoch nanoseconds |
+| 20..23 | big-endian `uint32` | 뒤따르는 JPEG byte 수 |
+| 24.. | raw bytes | 완전한 JPEG, SOI `FF D8`부터 EOI `FF D9`까지 |
+
+JPEG 최대 크기는 현재 4 MiB다. 이 경로는 읽기 전용 영상이며 제어 명령과
+동일한 packet/session 계약을 사용하지 않는다.
 
 `127.0.0.1`은 특정 PC 주소가 아니라 프로그램이 실행 중인 PC 자신을 뜻한다.
 따라서 Unity, Mink, relay, Omni Connect와 Omni Gateway를 같은 PC에서 실행하면

@@ -365,3 +365,37 @@ response files가 따로 있다. 공개된 fixture를 전체 원본 또는 실�
 
 사용자는 컴파일만으로 해결됐다고 말하는 것과 반복적인 시험 요청에 불편함을
 표했다. 오프라인에서 재현 가능한 문제를 먼저 검증하고, 확인 범위를 정확히 말한다.
+
+## 2026-09-20 Unity-free preflight checkpoint
+
+Unity/Quest를 켜기 전에 실행할 수 있는 검증을 추가했다.
+
+- `tools/PREFLIGHT_BIMANUAL_QUEST_SIM.bat`: structural/parity/5020/MuJoCo → near-hands 경계 sweep → 실제 ephemeral UDP E2E를 연속 실행한다.
+- `tools/RUN_BIMANUAL_NEAR_HANDS_SWEEP.bat`: 12mm inter-arm trigger 주변 hard-clearance-safe 자세를 deterministic하게 검사한다.
+- `tools/RUN_BIMANUAL_UDP_CYCLE.bat`: Unity 없이 실제 UDP packet/feedback 경로를 검증한다.
+- 상세 결과: `docs/BIMANUAL_QUEST_PREFLIGHT_20260920.md`
+- machine-readable evidence: `docs/validation/bimanual_quest_preflight_20260920/verification.json`
+
+최종 one-click preflight는 PASS했다. source/runtime parity 9개, runtime SampleScene의
+`useExistingScene=1` / `armMode=1` / UDP 5020, MuJoCo package/native 3.12.0,
+simulation-only provenance를 확인한다. 5020이 이미 점유되어 있으면 fail한다.
+
+near-hands sweep은 seed 20260920으로 안전 자세 320개를 검사했다.
+near 160 / ordinary 160, false/missed trigger 0, 최소 global clearance 5.063977mm,
+12mm 경계 최근접 margin 0.058464mm였다. 대표 실제 return 4개도 모두 READY:
+near 두 자세는 `separate_left → safe_waypoint → home → complete`,
+ordinary 두 자세는 `safe_waypoint → home → complete`. 대표 최대 출력 가속도
+50.557419deg/s², 최소 clearance 7.092192mm였다.
+
+기록 fixture에서 home까지 단순 joint-space interpolation은 진단상 중간에
+약 -31mm penetration까지 발생한다. 이것은 output path가 아니다. 현 v2의 staged
+separation + safe waypoint를 우회해 direct-home으로 바꾸면 안 된다는 근거로 남긴다.
+
+실제 loopback UDP E2E는 production 5020이 아닌 ephemeral port에서
+`READY → TRACKING → RETURNING(pinch) → READY → TRACKING`을 확인했다.
+accepted input 9, 최소 clearance 40.372503mm, 최대 재구성 출력 가속도
+33.886225deg/s², BLOCKED 0이었다.
+
+새 sweep 2개 포함 전체 bimanual suite는 source/runtime 각각 94/94 PASS였다.
+Unity Play에서의 최신 실제 손 추적·정렬·pinch 사용감은 아직 operator 검증 대상이다.
+실제 G1/SSH/DDS/motor output 또는 물리 안전 검증은 수행하지 않았다.

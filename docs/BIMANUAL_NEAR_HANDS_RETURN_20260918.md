@@ -127,3 +127,27 @@ near-hands route probe는 후보 선택 heuristic일 뿐 safety certificate가 �
 실제 G1의 연속시간 충돌 회피, 구조 오차, 탄성, 지연이나 물리 제동을 증명하지 않는다.
 
 검증 자료는 `docs/validation/bimanual_near_hands_return_20260918/`에 보존한다.
+
+## 2026-09-20 threshold sweep 추가 검증
+
+Unity 없이 12mm inter-arm trigger 양쪽을 집중 검사하는 deterministic sweep을 추가했다.
+seed `20260920`, hard 5mm를 만족하는 자세 320개 중 near-hands 160개와 ordinary
+160개 모두 trigger 분류가 기대값과 일치했다. false/missed trigger는 0개였다.
+
+- 12mm threshold fraction: `0.2951253054328338`
+- local hard-clearance-safe lower fraction: `0.28489868044654365`
+- 최근접 threshold margin: `0.058464mm`
+- 전체 320개 최소 global clearance: `5.063977mm`
+
+대표 near-hands 자세 2개는 실제 return에서
+`separate_left → safe_waypoint → home → complete`로 READY가 되었고,
+ordinary 자세 2개는 `safe_waypoint → home → complete`로 READY가 되었다.
+4개 대표 자세의 최소 clearance는 7.092192mm 이상, 최대 출력 가속도는
+50.557419deg/s² 이하였다.
+
+또한 recorded fixture→home을 단순 joint-space 보간하면 중간 구간에서 geometry
+penetration이 발생하고 관측 최저가 약 -31mm였다. 이 보간은 실제 출력 경로가 아니다.
+따라서 기존 v2의 staged separation 및 safe waypoint를 유지한다.
+
+검증은 `backend/tests/test_bimanual_near_hands_sweep.py`에 고정했다.
+새 테스트 포함 source/runtime 전체 bimanual suite는 각각 94/94 PASS다.

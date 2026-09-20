@@ -1148,3 +1148,28 @@ gain change occurred. Termination ownership and a physical caller remain blocked
 - The pose was still visually excessive because the solver repeatedly reached the 65 deg envelope and shoulder roll reached -62.7 deg. Recorded-target replay favored a 45 deg shoulder-yaw envelope: position-error p95 was 15.67 cm at 45 deg versus 16.12 cm at 65 deg.
 - The QP approach-rate braking allowance was also changed from a 4x to the standard 2x acceleration-distance factor, without changing the configured 60 deg/s2 acceleration or 90/180 deg/s velocity caps. On the same replay, position-error p95 improved to 14.17 cm and most shoulder/wrist p95 speeds rose by roughly 15-30%.
 - Verification after both changes: 45 tests and 18 subtests passed. Evidence remains simulation/replay only; no G1 output was used.
+
+## 2026-09-20 Bimanual Unity-free preflight
+
+Quest/Unity operator 테스트 전에 실행할 one-click gate를 추가했다:
+`tools/PREFLIGHT_BIMANUAL_QUEST_SIM.bat`.
+
+이 gate는 source/runtime parity, runtime SampleScene bimanual 설정, UDP 5020 free,
+isolated MuJoCo 3.12.0과 simulation-only provenance를 검사한 뒤,
+near-hands 12mm 경계 safe-pose 320개 sweep과 ephemeral-port 실제 UDP E2E를 실행한다.
+
+최종 결과:
+- preflight PASS, source/runtime parity 9 files.
+- near-hands 160 + ordinary 160, false/missed trigger 0, min clearance 5.063977mm.
+- 대표 return 4개 READY, max accel 50.557419deg/s².
+- UDP: READY→TRACKING→RETURNING(pinch)→READY→TRACKING, accepted 9,
+  min clearance 40.372503mm, max accel 33.886225deg/s².
+- full bimanual suite source/runtime: 94/94 PASS.
+
+preflight 과정에서 runtime `G1BimanualSimulationSender.cs`가 source의 commit
+`45146f4` helper extraction을 놓친 동일동작 구버전임을 잡아냈다. runtime 원본을
+`logs/backups/bimanual_sender_sync_20260920_134512`에 백업하고 source와 동기화했다.
+
+상세: `docs/BIMANUAL_QUEST_PREFLIGHT_20260920.md`.
+Unity/Quest 최신 operator feel은 아직 검증하지 않았다. 실제 G1, SSH, DDS, motor
+output 및 물리 안전 검증은 범위 밖이다.

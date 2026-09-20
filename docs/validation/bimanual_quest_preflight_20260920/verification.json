@@ -1,0 +1,82 @@
+{
+  "schema": "g1.bimanual.quest_preflight.validation.v1",
+  "date": "2026-09-20",
+  "branch": "codex/g1-laptop-sync-20260917",
+  "simulation_only": true,
+  "hardware_output_authorized": false,
+  "limits_unchanged": {
+    "hard_clearance_m": 0.005,
+    "swept_sample_max_deg": 0.25,
+    "near_hands_threshold_m": 0.012,
+    "max_output_acceleration_deg_s2": 60.0
+  },
+  "preflight": {
+    "result": "PASS",
+    "parity_files": 9,
+    "udp_5020_free": true,
+    "mujoco_package": "3.12.0",
+    "mujoco_native": "3.12.0",
+    "runtime_sample_scene_bimanual": true
+  },
+  "near_hands_sweep": {
+    "seed": 20260920,
+    "safe_samples": 320,
+    "near_samples": 160,
+    "ordinary_samples": 160,
+    "threshold_fraction": 0.2951253054328338,
+    "safe_lower_fraction": 0.28489868044654365,
+    "closest_threshold_margin_mm": 0.058463932029498636,
+    "minimum_global_clearance_mm": 5.063977115917031,
+    "representative_minimum_clearance_mm": 7.092191953245362,
+    "representative_max_acceleration_deg_s2": 50.55741830951558,
+    "representative_returns": 4,
+    "false_or_missed_triggers": 0
+  },
+  "udp_cycle": {
+    "result": "PASS",
+    "port": 55879,
+    "accepted_inputs": 9,
+    "transitions": [
+      ["ready", ""],
+      ["tracking", ""],
+      ["returning", "pinch"],
+      ["ready", "pinch"],
+      ["tracking", ""]
+    ],
+    "minimum_clearance_mm": 40.372503023006516,
+    "max_output_acceleration_deg_s2": 33.88622542773147,
+    "blocked": false
+  },
+  "full_suite": {
+    "source": {
+      "tests": 94,
+      "passed": 94,
+      "seconds": 118.379,
+      "recorded_replay_p95_ms": 8.42,
+      "recorded_replay_max_ms": 10.40
+    },
+    "runtime": {
+      "tests": 94,
+      "passed": 94,
+      "seconds": 127.907,
+      "recorded_replay_p95_ms": 6.50,
+      "recorded_replay_max_ms": 9.70
+    }
+  },
+  "runtime_sync": {
+    "new_files_backup": "logs/backups/bimanual_preflight_20260920_134314",
+    "sender_backup": "logs/backups/bimanual_sender_sync_20260920_134512",
+    "sender_drift": "runtime lacked tracked CanClearMustLeave helper extraction; inline condition was semantically equivalent",
+    "source_runtime_parity_after_sync": true
+  },
+  "diagnostic_only": {
+    "direct_fixture_to_home_interpolation_has_collision": true,
+    "observed_minimum_clearance_mm_approx": -31.17,
+    "note": "This interpolation is not an output path; staged separation and safe waypoint remain required."
+  },
+  "remaining_unverified": [
+    "Unity Play operator behavior after this checkpoint",
+    "Quest hand tracking/alignment feel",
+    "physical G1 behavior or safety"
+  ]
+}

@@ -12,11 +12,12 @@
   },
   "preflight": {
     "result": "PASS",
-    "parity_files": 9,
+    "parity_files": 12,
     "udp_5020_free": true,
     "mujoco_package": "3.12.0",
     "mujoco_native": "3.12.0",
-    "runtime_sample_scene_bimanual": true
+    "runtime_sample_scene_bimanual": true,
+    "tool_contracts": true
   },
   "near_hands_sweep": {
     "seed": 20260920,
@@ -34,14 +35,29 @@
   },
   "udp_cycle": {
     "result": "PASS",
-    "port": 55879,
+    "port": 64736,
     "accepted_inputs": 9,
     "transitions": [
-      ["ready", ""],
-      ["tracking", ""],
-      ["returning", "pinch"],
-      ["ready", "pinch"],
-      ["tracking", ""]
+      [
+        "ready",
+        ""
+      ],
+      [
+        "tracking",
+        ""
+      ],
+      [
+        "returning",
+        "pinch"
+      ],
+      [
+        "ready",
+        "pinch"
+      ],
+      [
+        "tracking",
+        ""
+      ]
     ],
     "minimum_clearance_mm": 40.372503023006516,
     "max_output_acceleration_deg_s2": 33.88622542773147,
@@ -49,25 +65,28 @@
   },
   "full_suite": {
     "source": {
-      "tests": 94,
-      "passed": 94,
-      "seconds": 118.379,
-      "recorded_replay_p95_ms": 8.42,
-      "recorded_replay_max_ms": 10.40
+      "tests": 95,
+      "passed": 95,
+      "seconds": 89.666,
+      "recorded_replay_p95_ms": 5.23,
+      "recorded_replay_max_ms": 6.12
     },
     "runtime": {
-      "tests": 94,
-      "passed": 94,
-      "seconds": 127.907,
-      "recorded_replay_p95_ms": 6.50,
-      "recorded_replay_max_ms": 9.70
+      "tests": 95,
+      "passed": 95,
+      "seconds": 91.791,
+      "recorded_replay_p95_ms": 7.53,
+      "recorded_replay_max_ms": 7.98,
+      "windows_tool_path_tests": 23
     }
   },
   "runtime_sync": {
     "new_files_backup": "logs/backups/bimanual_preflight_20260920_134314",
     "sender_backup": "logs/backups/bimanual_sender_sync_20260920_134512",
     "sender_drift": "runtime lacked tracked CanClearMustLeave helper extraction; inline condition was semantically equivalent",
-    "source_runtime_parity_after_sync": true
+    "source_runtime_parity_after_sync": true,
+    "post_session_backup": "logs/backups/bimanual_post_session_verify_20260920_141325",
+    "post_session_docs_backup": "logs/backups/bimanual_post_session_docs_20260920_141959"
   },
   "diagnostic_only": {
     "direct_fixture_to_home_interpolation_has_collision": true,
@@ -78,5 +97,24 @@
     "Unity Play operator behavior after this checkpoint",
     "Quest hand tracking/alignment feel",
     "physical G1 behavior or safety"
-  ]
+  ],
+  "post_session_verifier": {
+    "launcher": "tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat",
+    "fixture_quest_cycle_pass": true,
+    "fixture_replay_pass": true,
+    "tracking_starts": 2,
+    "reengage_count": 1,
+    "pinch_returns": 2,
+    "near_hands_recoveries": 0,
+    "final_state": "ready",
+    "focused_source_contract_tests": 31
+  },
+  "unity_resolver_environment": {
+    "process_local_only": true,
+    "persistent_environment_writes": false,
+    "programdata": "C:\\ProgramData",
+    "allusersprofile": "C:\\ProgramData",
+    "tmp": "C:\\Users\\user\\AppData\\Local\\Temp",
+    "runtime_path_contract_tests": 23
+  }
 }

@@ -41,6 +41,15 @@ class PathContractTests(unittest.TestCase):
             self.assertTrue(command.startswith(('@echo off', 'set ', 'if ', 'goto ', ':', 'exit /b ')), command)
         self.assertIn('6000.5.4f1', text)
 
+    def test_helper_repairs_only_process_local_upm_environment(self):
+        text = (ROOT/HELPER).read_text(encoding='utf-8')
+        lower = text.lower()
+        self.assertIn('if not defined programdata', lower)
+        self.assertIn('if not defined allusersprofile', lower)
+        self.assertIn('if not defined tmp if defined temp', lower)
+        self.assertNotIn('setx ', lower)
+        self.assertNotIn('reg add', lower)
+
     def test_windows_entrypoints_have_no_fixed_user_or_install_drive(self):
         paths = list(ROOT.glob('*.bat'))
         for directory in ('tools', 'experiments/twist2_right_arm_manual'):
@@ -172,6 +181,34 @@ class UnityEditorDiscoveryTests(unittest.TestCase):
         self.create_inert_file(editor)
         self.check_all(editor,'USERPROFILE',{'USERPROFILE':str(profile)})
 
+    def test_missing_upm_environment_is_filled_for_calling_cmd_only(self):
+        self.create_inert_file(self.custom_editor)
+        wrapper = self.workspace/'environment_probe.bat'
+        wrapper.write_text(
+            '@echo off\nsetlocal EnableExtensions DisableDelayedExpansion\n'
+            f'call "{self.checkout/HELPER}" --check-unity-path\n'
+            'if errorlevel 1 exit /b %ERRORLEVEL%\n'
+            'echo TEST_PROGRAMDATA=%PROGRAMDATA%\n'
+            'echo TEST_ALLUSERSPROFILE=%ALLUSERSPROFILE%\n'
+            'echo TEST_TMP=%TMP%\n',
+            encoding='utf-8', newline='\r\n')
+        env = dict(self.env)
+        env['UNITY_EXE'] = str(self.custom_editor)
+        for key in ('PROGRAMDATA','ALLUSERSPROFILE','TMP'):
+            env.pop(key, None)
+        env['SystemDrive'] = os.environ.get('SystemDrive', 'C:')
+        env['TEMP'] = str(self.workspace/'temporary')
+        command = subprocess.list2cmdline([CMD])+' /d /u /v:off /c call "'+str(wrapper)+'"'
+        completed = subprocess.run(
+            command, cwd=self.workspace, env=env,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+        stdout = completed.stdout.decode('utf-16-le', errors='replace')
+        self.assertEqual(completed.returncode, 0, stdout)
+        values = dict(line.split('=',1) for line in stdout.splitlines() if '=' in line)
+        expected_programdata = env['SystemDrive'] + r'\ProgramData'
+        self.assertEqual(values['TEST_PROGRAMDATA'], expected_programdata)
+        self.assertEqual(values['TEST_ALLUSERSPROFILE'], expected_programdata)
+        self.assertEqual(values['TEST_TMP'], env['TEMP'])
 
 @unittest.skipUnless(os.name == 'nt' and CMD, 'Requires Windows path expansion')
 class OtherToolPathTests(unittest.TestCase):

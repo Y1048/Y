@@ -21,7 +21,7 @@ read-only/offline 검증이다. 실제 G1, SSH, DDS, motor output 경로는 사�
 1. runtime root와 isolated MuJoCo 3.12.0 존재.
 2. source에 same-scene bimanual installer가 존재.
 3. runtime `SampleScene`이 `useExistingScene=1`, `armMode=1`, port 5020으로 저장됨.
-4. bimanual production/source 파일 9개의 source/runtime SHA-256 parity.
+4. bimanual production/report/Unity-launch support 파일 12개의 source/runtime SHA-256 parity.
 5. bimanual Python 경로에 Unitree/rclpy/cyclonedds/paramiko import가 없음.
 6. production simulation UDP 5020이 비어 있음.
 7. MuJoCo package/native 모두 3.12.0, `hardware_output_authorized=false`.
@@ -43,7 +43,7 @@ runtime 원본을 다음 위치에 백업한 뒤 source 버전으로 동기화�
 
 `logs/backups/bimanual_sender_sync_20260920_134512/...`
 
-그 뒤 parity 9개가 모두 일치했고 preflight가 PASS했다.
+그 뒤 core parity를 정리했고, 2026-09-20 후속 보강에서 report/resolver/verifier까지 포함해 parity 12개가 모두 일치하도록 확장했다.
 
 ## Near-hands 12mm boundary sweep
 
@@ -96,22 +96,47 @@ UDP packet/feedback을 주고받았다.
 
 ## Full regression
 
-새 sweep 2개가 추가되어 전체 bimanual suite는 94개다.
+near-hands sweep 2개와 post-session cycle requirement 회귀가 포함되어 전체 bimanual suite는 95개다.
 source worktree:
 
-- `94/94 PASS`
-- runtime: `118.379s`
-- recorded replay p95: `8.42ms`
-- recorded replay max: `10.40ms`
+- `95/95 PASS`
+- runtime: `89.666s`
+- recorded replay p95: `5.23ms`
+- recorded replay max: `6.12ms`
 
 runtime folder:
 
-- `94/94 PASS`
-- runtime: `127.907s`
-- recorded replay p95: `6.50ms`
-- recorded replay max: `9.70ms`
+- `95/95 PASS`
+- runtime: `91.791s`
+- recorded replay p95: `7.53ms`
+- recorded replay max: `7.98ms`
 
+Windows Unity launcher/path contract는 source 집중 검증 포함 31/31 PASS,
+runtime의 `test_windows_tool_paths`는 23/23 PASS였다.
 이 시간은 해당 노트북의 실행 관측치이며 hard real-time 보증이 아니다.
+
+## Post-session Quest cycle verifier
+
+실제 Quest operator 테스트가 끝난 뒤에는 다음 명령으로 최신 operator session을 자동 판독한다.
+
+`tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat`
+
+이 도구는 Unity를 실행하지 않고 최신 accepted-input JSONL을 찾아 static report + current-code replay를 수행한다.
+필수 cycle 조건은 최소 1회 engage, 완료된 pinch return, 그 뒤 re-engage이며,
+BLOCKED/출력 한계/replay mismatch는 기존 strict failure와 함께 비정상 종료로 반환한다.
+report에는 pinch return 수, re-engage 수, near-hands recovery 수, separation side 집계가 기록된다.
+
+기존 user-confirmed Quest fixture에 새 조건을 적용한 결과:
+`Quest cycle PASS`, `Replay PASS`, tracking starts 2, re-engage 1,
+pinch returns 2, near-hands recovery 0, final READY였다.
+
+## Unity remote-launch environment hardening
+
+원격 command shell에서 누락될 수 있는 `PROGRAMDATA`, `ALLUSERSPROFILE`, `TMP`는
+`tools/RESOLVE_UNITY_EDITOR.bat`가 현재 CMD process에만 기본값을 채운다.
+`setx`/registry write는 사용하지 않으며 machine/user environment를 변경하지 않는다.
+실제 노트북 CMD smoke에서 세 변수를 비운 뒤 각각 `C:\ProgramData`,
+`C:\ProgramData`, 사용자 Temp로 복구되는 것을 확인했다.
 
 ## Remaining operator validation
 

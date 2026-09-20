@@ -1173,3 +1173,21 @@ preflight 과정에서 runtime `G1BimanualSimulationSender.cs`가 source의 comm
 상세: `docs/BIMANUAL_QUEST_PREFLIGHT_20260920.md`.
 Unity/Quest 최신 operator feel은 아직 검증하지 않았다. 실제 G1, SSH, DDS, motor
 output 및 물리 안전 검증은 범위 밖이다.
+
+## 2026-09-20 post-session Quest verifier
+
+Unity/Quest 테스트 후 수동 로그 해석을 줄이기 위해
+`tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat`를 추가했다.
+최신 operator session을 찾아 static safety/integrity report와 current-code replay를 수행하고,
+engage → pinch return 완료 → re-engage가 없으면 strict failure로 반환한다.
+
+report는 pinch return, re-engage, near-hands recovery, separation side를 직접 집계한다.
+user-confirmed historical Quest fixture에서 cycle/replay 모두 PASS했다.
+
+또한 원격 Unity launch 때 UPM 9.x가 필요로 하는 `PROGRAMDATA` /
+`ALLUSERSPROFILE` / `TMP` 누락을 `RESOLVE_UNITY_EDITOR.bat`가
+현재 CMD process에만 보강한다. machine/user 환경은 변경하지 않는다.
+
+preflight parity는 12 files로 확장되어 PASS했고,
+source/runtime bimanual suite는 각각 95/95 PASS,
+runtime Windows tool-path contract는 23/23 PASS다.

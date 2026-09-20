@@ -39,6 +39,35 @@ def _current_source_hashes():
             for name in SOURCE_FILES}
 
 
+def _update_return_metadata(active_return, motion):
+    if not active_return or not motion:
+        return
+    active_return['near_hands_recovery'] = (
+        active_return['near_hands_recovery']
+        or bool(motion.get('near_hands_recovery')))
+    side = str(motion.get('separation_side') or '')
+    if side:
+        active_return['separation_side'] = side
+    for key in ('return_start_clearance_m', 'near_hands_start_clearance_m'):
+        value = motion.get(key)
+        if isinstance(value, (int, float)) and math.isfinite(value):
+            active_return[key] = float(value)
+
+
+def _quest_cycle_failures(report):
+    failures = []
+    summary = report.get('operator_summary') or {}
+    if report.get('accepted_inputs', 0) <= 0:
+        failures.append('quest_cycle_no_operator_input')
+    if report.get('tracking_starts', 0) < 2:
+        failures.append('quest_cycle_no_reengage')
+    if summary.get('pinch_returns', 0) < 1:
+        failures.append('quest_cycle_no_completed_pinch_return')
+    if report.get('final_state') not in ('ready', 'tracking'):
+        failures.append('quest_cycle_final_state_not_ready_or_tracking')
+    return failures
+
+
 def _latest_session():
     folder = ROOT / 'logs/test_results/bimanual'
     candidates = sorted(folder.glob('unity_*.jsonl'),
@@ -139,10 +168,16 @@ def analyze_session(path):
                 if state == 'tracking':
                     tracking_starts += 1
                 if state == 'returning':
-                    active_return = dict(reason=reason, start_monotonic_s=row.get('monotonic_s'),
-                                         start_sequence=row.get('sequence'), stages=[], replans=0)
+                    active_return = dict(
+                        reason=reason, start_monotonic_s=row.get('monotonic_s'),
+                        start_sequence=row.get('sequence'), stages=[], replans=0,
+                        near_hands_recovery=False, separation_side='',
+                        return_start_clearance_m=None,
+                        near_hands_start_clearance_m=None)
                 elif state == 'ready' and active_return is not None:
-                    final_stage = (row.get('return_motion') or {}).get('stage')
+                    final_motion = row.get('return_motion') or {}
+                    _update_return_metadata(active_return, final_motion)
+                    final_stage = final_motion.get('stage')
                     if final_stage and (not active_return['stages'] or active_return['stages'][-1] != final_stage):
                         active_return['stages'].append(final_stage)
                     active_return['end_monotonic_s'] = row.get('monotonic_s')
@@ -157,6 +192,7 @@ def analyze_session(path):
 
             motion = row.get('return_motion') or {}
             if active_return is not None:
+                _update_return_metadata(active_return, motion)
                 stage = motion.get('stage')
                 if stage and (not active_return['stages'] or active_return['stages'][-1] != stage):
                     active_return['stages'].append(stage)
@@ -224,12 +260,27 @@ def analyze_session(path):
     if active_return is not None:
         warnings.append('return_incomplete_at_log_end')
 
+    return_reasons = Counter(item['reason'] for item in returns)
+    separation_sides = Counter(
+        item['separation_side'] for item in returns if item.get('separation_side'))
+    operator_summary = dict(
+        completed_returns=len(returns),
+        pinch_returns=return_reasons.get('pinch', 0),
+        tracking_lost_returns=return_reasons.get('tracking_lost', 0),
+        input_timeout_returns=return_reasons.get('input_timeout', 0),
+        session_changed_returns=return_reasons.get('session_changed', 0),
+        near_hands_recoveries=sum(
+            bool(item.get('near_hands_recovery')) for item in returns),
+        separation_sides=dict(separation_sides),
+        reengage_count=max(0, tracking_starts - 1))
+
     return dict(schema='g1.bimanual.session.report.v1', simulation_only=True,
                 source_log=str(path), source_log_bytes=path.stat().st_size,
                 run=run, counts=dict(counts), accepted_inputs=accepted_inputs,
                 transitions=transitions, input_edges=input_edges,
                 tracking_starts=tracking_starts,
                 reengage_count=max(0, tracking_starts - 1), returns=returns,
+                operator_summary=operator_summary,
                 reject_reasons=dict(reject_reasons), braking_reasons=dict(braking_reasons),
                 control_tick_ms=_percentiles(control_ticks),
                 tracking_tick_ms=tracking_percentiles,
@@ -316,12 +367,14 @@ def replay_session(path):
 def markdown_report(report):
     tick = report.get('tracking_tick_ms') or {}
     output = report.get('output_fixed_dt') or {}
+    operator = report.get('operator_summary') or {}
     lines = [
         '# Bimanual session report', '',
         f"- Log: `{report['source_log']}`",
         f"- Final state: `{report.get('final_state')}` / `{report.get('final_reason')}`",
         f"- Tracking starts: {report.get('tracking_starts', 0)}; re-engages: {report.get('reengage_count', 0)}",
-        f"- Returns completed: {len(report.get('returns', []))}",
+        f"- Returns completed: {operator.get('completed_returns', 0)}; pinch: {operator.get('pinch_returns', 0)}",
+        f"- Near-hands recoveries: {operator.get('near_hands_recoveries', 0)}; separation sides: {operator.get('separation_sides', {})}",
         f"- Tracking tick p95/max: {tick.get('p95', float('nan')):.3f} / {tick.get('max', float('nan')):.3f} ms",
         f"- Fixed-dt max speed: {output.get('max_speed_deg_s', float('nan')):.3f} deg/s",
         f"- Fixed-dt max acceleration: {output.get('max_acceleration_deg_s2', float('nan')):.3f} deg/s^2",
@@ -329,6 +382,11 @@ def markdown_report(report):
         f"- Warnings: {', '.join(report.get('warnings', [])) or 'none'}",
         f"- Failures: {', '.join(report.get('failures', [])) or 'none'}",
     ]
+    if 'quest_cycle_check' in report:
+        quest = report['quest_cycle_check']
+        lines.extend(['', '## Quest cycle',
+            f"- Passed: {quest['passed']}",
+            f"- Failures: {', '.join(quest['failures']) or 'none'}"])
     if 'replay' in report:
         replay = report['replay']
         lines.extend(['', '## Replay',
@@ -348,8 +406,10 @@ def main(argv=None):
                         help='Replay accepted input through the current validated simulator')
     parser.add_argument('--json-output', type=Path)
     parser.add_argument('--markdown-output', type=Path)
+    parser.add_argument('--require-quest-cycle', action='store_true',
+                        help='Require engage, pinch return, and a subsequent re-engage')
     parser.add_argument('--strict', action='store_true',
-                        help='Nonzero exit for static failures or replay mismatch')
+                        help='Nonzero exit for static/quest-cycle failures or replay mismatch')
     args = parser.parse_args(argv)
     if args.latest == (args.input is not None):
         parser.error('Specify exactly one input path or --latest')
@@ -358,6 +418,13 @@ def main(argv=None):
         parser.error(f'Input session does not exist: {path}')
 
     report = analyze_session(path)
+    if args.require_quest_cycle:
+        quest_failures = _quest_cycle_failures(report)
+        report['quest_cycle_check'] = dict(
+            required=True, passed=not quest_failures, failures=quest_failures)
+        for failure in quest_failures:
+            if failure not in report['failures']:
+                report['failures'].append(failure)
     if args.replay:
         report['replay'] = replay_session(path)
         if not report['replay']['passed']:

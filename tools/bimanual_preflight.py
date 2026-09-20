@@ -19,9 +19,12 @@ PARITY_FILES = [
     "MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py",
     "MuJoCo_G1_Controller/scripts/g1_bimanual_return.py",
     "MuJoCo_G1_Controller/scripts/g1_bimanual_udp_cycle.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py",
     "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs",
     "Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs",
     "tools/START_BIMANUAL_UNITY_SIM.bat",
+    "tools/RESOLVE_UNITY_EDITOR.bat",
+    "tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat",
 ]
 FORBIDDEN_IMPORTS = {"unitree_sdk2py", "rclpy", "cyclonedds", "paramiko"}
 
@@ -58,11 +61,33 @@ def check_source_installer():
             "source bimanual installer is incomplete")
 
 
+def check_tool_contracts():
+    resolver = (ROOT / "tools/RESOLVE_UNITY_EDITOR.bat").read_text(
+        encoding="utf-8").lower()
+    for required in (
+            "if not defined programdata",
+            "if not defined allusersprofile",
+            "if not defined tmp if defined temp"):
+        require(required in resolver, f"Unity resolver missing: {required}")
+    require("setx " not in resolver and "reg add" not in resolver,
+            "Unity resolver must not persist environment changes")
+
+    verifier = (ROOT / "tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat").read_text(
+        encoding="utf-8").lower()
+    require("--mode report --latest --replay" in verifier,
+            "Quest verifier must use read-only report replay")
+    require("--require-quest-cycle --strict" in verifier,
+            "Quest verifier must enforce the operator cycle")
+    require("start_bimanual_unity_sim" not in verifier and "adb " not in verifier,
+            "Quest verifier must not launch Unity or access Quest adb")
+
+
 def check_no_hardware_imports(root):
     scripts = [
         "g1_bimanual_runtime.py", "g1_bimanual_sim.py",
         "g1_bimanual_unity_sim.py", "g1_bimanual_motion_policy.py",
         "g1_bimanual_return.py", "g1_bimanual_udp_cycle.py",
+        "g1_bimanual_session_report.py",
     ]
     for name in scripts:
         path = root / "MuJoCo_G1_Controller/scripts" / name
@@ -143,6 +168,8 @@ def main(argv=None):
         checks.append("source_bimanual_installer")
         check_runtime_scene(runtime_root)
         checks.append("runtime_sample_scene_bimanual")
+        check_tool_contracts()
+        checks.append("tool_contracts")
         parity_count = check_parity(runtime_root)
         checks.append(f"source_runtime_sha256:{parity_count}")
         check_no_hardware_imports(ROOT)

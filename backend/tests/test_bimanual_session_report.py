@@ -23,6 +23,9 @@ class SessionReportTests(unittest.TestCase):
         self.assertEqual(result['tracking_starts'], 2)
         self.assertEqual(result['reengage_count'], 1)
         self.assertEqual(len(result['returns']), 2)
+        self.assertEqual(result['operator_summary']['pinch_returns'], 2)
+        self.assertEqual(result['operator_summary']['near_hands_recoveries'], 0)
+        self.assertEqual(result['operator_summary']['separation_sides'], {})
         self.assertEqual([item['reason'] for item in result['returns']], ['pinch', 'pinch'])
         self.assertEqual([item['stages'] for item in result['returns']],
                          [['safe_waypoint', 'home', 'complete']] * 2)
@@ -52,6 +55,8 @@ class SessionReportTests(unittest.TestCase):
             self.assertNotIn('replay', payload)
             markdown = markdown_path.read_text(encoding='utf-8')
             self.assertIn('Tracking starts: 2; re-engages: 1', markdown)
+            self.assertIn('Returns completed: 2; pinch: 2', markdown)
+            self.assertIn('Near-hands recoveries: 0', markdown)
             self.assertIn('Failures: none', markdown)
 
     def test_latest_skips_newer_headless_log_without_operator_input(self):
@@ -98,7 +103,10 @@ class SessionReportTests(unittest.TestCase):
                 {'kind':'state','state':'tracking','reason':'','sequence':1,'monotonic_s':1.0,'q_rad':q},
                 {'kind':'state','state':'tracking','reason':'diagnostic','sequence':2,'monotonic_s':2.0,'q_rad':q},
                 {'kind':'state','state':'returning','reason':'pinch','sequence':3,'monotonic_s':3.0,'q_rad':q,
-                 'return_motion':{'stage':'safe_waypoint','elapsed_simulation_s':0.1,'replans':0}},
+                 'return_motion':{'stage':'safe_waypoint','elapsed_simulation_s':0.1,'replans':0,
+                                  'near_hands_recovery':True,'separation_side':'left',
+                                  'return_start_clearance_m':0.006,
+                                  'near_hands_start_clearance_m':0.008}},
                 {'kind':'state','state':'returning','reason':'diagnostic','sequence':4,'monotonic_s':4.0,'q_rad':q,
                  'return_motion':{'stage':'home','elapsed_simulation_s':0.2,'replans':0}},
                 {'kind':'state','state':'ready','reason':'pinch','sequence':5,'monotonic_s':5.0,'q_rad':q,
@@ -112,6 +120,10 @@ class SessionReportTests(unittest.TestCase):
             self.assertEqual(result['returns'][0]['reason'], 'pinch')
             self.assertEqual(result['returns'][0]['stages'], ['safe_waypoint','home','complete'])
             self.assertEqual(result['returns'][0]['wall_s'], 2.0)
+            self.assertTrue(result['returns'][0]['near_hands_recovery'])
+            self.assertEqual(result['returns'][0]['separation_side'], 'left')
+            self.assertEqual(result['operator_summary']['near_hands_recoveries'], 1)
+            self.assertEqual(result['operator_summary']['separation_sides'], {'left': 1})
 
     def test_malformed_json_row_is_reported_without_aborting_summary(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -127,12 +139,47 @@ class SessionReportTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(report.main([str(path), '--strict']), 1)
 
-    def test_latest_requires_project_relative_session_and_launcher_is_read_only(self):
+    def test_quest_cycle_requirement_accepts_confirmed_fixture_and_rejects_incomplete_flow(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(report.main([
+                str(FIXTURE), '--require-quest-cycle', '--strict']), 0)
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'incomplete.jsonl'
+            run = {'kind':'run','source_sha256':report._current_source_hashes()}
+            packet = {
+                'engage':True, 'return_home':False,
+                'left':{'tracked':True}, 'right':{'tracked':True}}
+            q = [0.0] * 14
+            rows = [
+                run,
+                {'kind':'input','accepted':True,'raw_json_text':json.dumps(packet)},
+                {'kind':'state','state':'ready','reason':'','sequence':0,
+                 'monotonic_s':0.0,'q_rad':q},
+                {'kind':'state','state':'tracking','reason':'','sequence':1,
+                 'monotonic_s':1.0,'q_rad':q},
+            ]
+            path.write_text(
+                ''.join(json.dumps(row)+'\n' for row in rows),
+                encoding='utf-8')
+            result = report.analyze_session(path)
+            failures = report._quest_cycle_failures(result)
+            self.assertIn('quest_cycle_no_reengage', failures)
+            self.assertIn('quest_cycle_no_completed_pinch_return', failures)
+
+    def test_latest_requires_project_relative_session_and_launchers_are_read_only(self):
         source = (ROOT / 'tools/REPORT_LATEST_BIMANUAL_SESSION.bat').read_text(encoding='utf-8')
         self.assertIn('--mode report --latest', source)
         self.assertNotIn('START_BIMANUAL_UNITY_SIM', source)
         self.assertIn('g1_bimanual_runtime.py --mode report --latest', source)
         self.assertNotIn('unitree', source.lower())
+
+        verify = (ROOT / 'tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat').read_text(encoding='utf-8')
+        self.assertIn('--mode report --latest --replay', verify)
+        self.assertIn('--require-quest-cycle --strict', verify)
+        self.assertNotIn('START_BIMANUAL_UNITY_SIM', verify)
+        self.assertNotIn('adb ', verify.lower())
+        self.assertNotIn('unitree', verify.lower())
 
 
 if __name__ == '__main__':

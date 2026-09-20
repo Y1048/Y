@@ -399,3 +399,20 @@ accepted input 9, 최소 clearance 40.372503mm, 최대 재구성 출력 가속�
 새 sweep 2개 포함 전체 bimanual suite는 source/runtime 각각 94/94 PASS였다.
 Unity Play에서의 최신 실제 손 추적·정렬·pinch 사용감은 아직 operator 검증 대상이다.
 실제 G1/SSH/DDS/motor output 또는 물리 안전 검증은 수행하지 않았다.
+
+## 2026-09-20 post-session verifier / Unity resolver checkpoint
+
+Unity 없이 추가로 닫은 항목:
+
+- `tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat` 추가. 최신 accepted-input operator JSONL을 선택해 static report + current-code replay + Quest cycle requirement를 strict 검증한다.
+- cycle requirement는 initial tracking, 완료된 pinch return, subsequent re-engage를 요구한다. final state는 READY 또는 TRACKING이어야 하며 기존 BLOCKED/output-limit/replay failure도 그대로 failure다.
+- session report가 completed/pinch return 수, near-hands recovery 수, separation side를 집계한다.
+- 기존 user-confirmed Quest fixture는 Quest cycle PASS + replay PASS, tracking starts 2, re-engage 1, pinch returns 2, final READY였다.
+- `RESOLVE_UNITY_EDITOR.bat`가 원격 CMD에서 누락될 수 있는 `PROGRAMDATA`, `ALLUSERSPROFILE`, `TMP`를 process-local로만 보강한다. `setx`/registry write는 없다.
+- 실제 노트북 CMD에서 세 변수를 비운 smoke에서 `C:\ProgramData`, `C:\ProgramData`, 사용자 Temp로 복구됨을 확인했다.
+- preflight parity는 report/resolver/verifier를 포함한 12 files로 확장했고 전체 PASS했다.
+- 전체 bimanual suite source/runtime 각각 95/95 PASS. runtime Windows launcher/path tests 23/23 PASS.
+
+다음 실제 사용자 작업은 여전히 Unity SampleScene + Quest operator 체감 검증이다.
+테스트 후에는 `tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat`로 로그 판독부터 한다.
+실제 G1/SSH/DDS/motor output 또는 물리 안전 검증은 수행하지 않았다.

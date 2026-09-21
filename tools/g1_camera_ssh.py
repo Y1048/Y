@@ -19,6 +19,7 @@ from unitree_sdk2py.go2.video.video_client import VideoClient
 ChannelFactoryInitialize(0, 'eth0')
 c = VideoClient(); c.SetTimeout(3.0); c.Init()
 sequence = 0
+frame_period_s = 0.5  # 2 fps: prioritize joint/velocity transport over video.
 while True:
     start = time.monotonic()
     code, data = c.GetImageSample()
@@ -35,7 +36,7 @@ while True:
         if not written: raise RuntimeError('SSH pipe closed')
         packet = packet[written:]
     sequence = (sequence+1) & 0xffffffff
-    time.sleep(max(0, .05-(time.monotonic()-start)))
+    time.sleep(max(0, frame_period_s-(time.monotonic()-start)))
 """
 
 
@@ -70,23 +71,27 @@ def run(host):
     log = (logdir/(time.strftime('%Y%m%d_%H%M%S')+'_'+str(os.getpid())+'.log')).open('a', encoding='utf-8')
     def status(message):
         print(message, flush=True); log.write(message+'\n'); log.flush()
-    status('[CAMERA SSH] '+host+' eth0 -> SSH -> Unity 127.0.0.1:5011; camera only')
+    status('[CAMERA SSH] '+host+' eth0 -> SSH -> Unity 127.0.0.1:5011; camera only; low bandwidth 2 fps')
     child = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
     connection = None
     frames = 0
     last_status = 0
+    next_connect = 0
     try:
         child.stdin.write(REMOTE.encode('utf-8')); child.stdin.close()
         while True:
             packet = read_packet(child.stdout)
             if connection is None:
+                if time.monotonic() < next_connect:
+                    continue  # Drain and discard while Unity is unavailable.
+                next_connect = time.monotonic() + 1
                 try:
-                    connection = socket.create_connection(('127.0.0.1',5011),timeout=1)
-                    connection.settimeout(2)
+                    connection = socket.create_connection(('127.0.0.1',5011),timeout=.2)
+                    connection.settimeout(.2)
                     connection.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
                 except OSError:
-                    status('[WAIT] Unity TCP5011 unavailable; enter Play');time.sleep(1);continue
+                    status('[WAIT] Unity TCP5011 unavailable; enter Play');continue
             try:
                 connection.sendall(packet);frames+=1
             except OSError:

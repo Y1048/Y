@@ -18,6 +18,9 @@ class QuietTests(unittest.TestCase):
                 self.assertEqual(quiet.subprocess.CREATE_NO_WINDOW, call.kwargs['creationflags'])
                 self.assertEqual(quiet.subprocess.DEVNULL, call.kwargs['stdin'])
                 self.assertIn('stdout', call.kwargs)
+            send_command = spawn.call_args_list[0].args[0]
+            self.assertEqual(send_command[send_command.index('--print-hz')+1], '1')
+            self.assertEqual(send_command[send_command.index('--send-hz')+1], '60')
             self.assertEqual(3, kill.call_count)
             self.assertEqual(0, child.terminate.call_count)
             for call in kill.call_args_list:

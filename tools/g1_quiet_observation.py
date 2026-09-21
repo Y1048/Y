@@ -61,7 +61,10 @@ def run_workers(root, workers, host, env):
                                          creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:
                 with logfile.open('ab') as output:
-                    child = subprocess.Popen(observation.worker_command(worker, host, stamp),
+                    command = observation.worker_command(worker, host, stamp)
+                    if worker == 'send':
+                        command[command.index('--print-hz') + 1] = '1'
+                    child = subprocess.Popen(command,
                         cwd=root, env=env, stdin=subprocess.DEVNULL, stdout=output,
                         stderr=subprocess.STDOUT, creationflags=subprocess.CREATE_NO_WINDOW)
             children.append((worker, child))

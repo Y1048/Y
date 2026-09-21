@@ -10,6 +10,11 @@ import g1_camera_ssh as camera
 import g1_ssh_login as login
 
 class CameraTests(unittest.TestCase):
+    def test_low_bandwidth_remote_rate_without_reencoding(self):
+        self.assertIn('frame_period_s = 0.5', camera.REMOTE)
+        self.assertIn('frame_period_s-(time.monotonic()-start)', camera.REMOTE)
+        self.assertNotIn('cv2', camera.REMOTE)
+
     def test_valid_packet_roundtrip(self):
         jpeg=b'\xff\xd8data\xff\xd9'
         raw=camera.HEADER.pack(b'G1CM',1,1,123,len(jpeg))+jpeg

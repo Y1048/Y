@@ -1,3 +1,9 @@
+## 2026-09-21 Full measured pose supersedes leg-only display
+
+User clarified all29 joints must define the displayed robot, to compare operator wrists, IK targets and measured wrist FK. G1LowStateLegView retains its legacy component name but now applies the full29 array through G1OfficialRig. State is polled in Update; G1UnityRightArmPreview applies measured FK before markers/lines in its LateUpdate, preventing a simulated wrist/actual mesh frame mismatch. IK targets and hand markers remain independent. No state: explicitly labeled simulation fallback; after first measured state, stale input holds the last measured pose and labels STALE rather than substituting IK. Root local position stays fixed; no IMU/base odometry added. Actual world-space wrist pose is not claimed.
+
+Whole G1Teleop compilation with Unity/Meta references passed (existing CS1701 warnings). LowState transport tests rerun separately. Runtime backed up under logs/backups/full_measured_pose_* and installed after user confirmed Play stopped. Actual visual operator verification remains pending. No new robot command/IK solve changes.
+
 ## 2026-09-21 All-joint LowState observation / leg visualization / headless IK
 
 See docs/G1_LOWSTATE_UNITY_VIEW.md. Integrated launcher adds read-only lowstate worker, keeps remote audit receiver disabled, and uses --headless for IK. Collect29 joints, display only legs0..11, keep IK arms/root position. Whole G1Teleop compile PASS;23 tests/18 subtests PASS. Actual read-only G1 sample117 CRC/order PASS and5 loopback packets PASS. Runtime installed after Play-stop confirmation; Unity visual behavior not yet verified.

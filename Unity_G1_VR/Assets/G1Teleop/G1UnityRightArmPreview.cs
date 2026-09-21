@@ -74,6 +74,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private Transform preview_root;
     private GameObject official_g1_object;
     private G1OfficialRig official_g1_rig;
+    private G1LowStateLegView measured_view;
     private Transform tracked_hand_marker;
     private Transform robot_wrist_marker;
     private Transform target_hand_marker;
@@ -185,7 +186,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             official_g1_object = Instantiate(prefab_value, preview_root);
             official_g1_object.name = "G1_29DoF_Official";
             official_g1_rig = official_g1_object.GetComponent<G1OfficialRig>();
-            official_g1_object.AddComponent<G1LowStateLegView>();
+            measured_view = official_g1_object.AddComponent<G1LowStateLegView>();
             ApplyFallbackPosture();
             official_g1_object.SetActive(false);
         }
@@ -366,6 +367,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
         {
             return;
         }
+
+        // Apply measured FK before wrist markers/target error lines are positioned.
+        if (measured_view != null && measured_view.ApplyMeasuredPose()) return;
 
         if (UsesBimanualSimulation)
         {
@@ -557,7 +561,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
         if (UsesBimanualSimulation)
         {
             recent = bimanual_simulation.HasFreshJoints;
-            DisplayStatus = "BIMANUAL SIMULATION - " + bimanual_simulation.Status;
+            DisplayStatus = (measured_view != null && measured_view.LatestState != null
+                ? (measured_view.HasFreshState ? "G1 MEASURED 29 JOINTS / IK TARGET - "
+                                             : "G1 STATE STALE (POSE HELD) / IK TARGET - ")
+                : "BIMANUAL SIMULATION (NO G1 STATE) - ") + bimanual_simulation.Status;
         }
         if (DisplayStatus != previous_display_status)
         {

@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using Newtonsoft.Json;
 
-// Read-only overlay: only legs 0..11. No root motion or robot commands.
+// Full 29-joint measured pose. Legacy class name retained; no root motion or commands.
 [DefaultExecutionOrder(20000)]
 public sealed class G1LowStateLegView : MonoBehaviour
 {
@@ -63,7 +63,7 @@ public sealed class G1LowStateLegView : MonoBehaviour
         for (int i = 0; i < 29; i++) if (value.joint_names[i] != expected[i]) return false;
         return true;
     }
-    private void LateUpdate()
+    private void Update()
     {
         if (client == null) return;
         for (int n = 0; n < 128 && client.Available > 0; n++)
@@ -82,16 +82,19 @@ public sealed class G1LowStateLegView : MonoBehaviour
             catch (JsonException) { }
             catch (SocketException) { break; }
         }
-        if (latest != null && rig != null)
-        {
-            for (int i = 0; i < 12; i++) rig.ApplyJointPosition(names[i] + "_joint", latest.q_rad[i]);
-            transform.localPosition = fixedPosition;
-        }
         if (HasFreshState != wasFresh)
         {
             wasFresh = HasFreshState;
-            Debug.Log("[G1 LOWSTATE VIEW] " + (wasFresh ? "LIVE: measured legs, IK arms, fixed position" : "STALE: holding last measured legs"));
+            Debug.Log("[G1 LOWSTATE VIEW] " + (wasFresh ? "LIVE: all 29 joints measured, fixed position" : "STALE: holding last measured full-body pose"));
         }
+    }
+    // Called before preview markers/lines, so wrist FK and the robot share a frame.
+    public bool ApplyMeasuredPose()
+    {
+        if (latest == null || rig == null) return false;
+        rig.ApplyAllJointPositions(names, latest.q_rad);
+        transform.localPosition = fixedPosition;
+        return true; // On stale input hold measured pose, never silently substitute IK.
     }
     private void OnDestroy() { client?.Close(); }
 }

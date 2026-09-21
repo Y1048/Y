@@ -20,10 +20,10 @@ DDS LowState 구독용 통신만 사용하므로 파트너 제어기와 관찰�
 JSONL은 logs/test_results/lowstate_view에 기록하며 raw motor command/acceptance를 의미하지 않는다.
 age_s는 첫 연결 이후 최소 clock offset 기준의 추가 전송 지연 추정이다. 절대 동기화된 sensor age가 아니다.
 
-Unity는 전체29축을 수신/보관하지만 표시 적용은 다리0..11만 한다. 양팔은 기존 IK 표시 유지.
+Unity 로봇 모델은 전체29축 실측값을 적용한다. 파란 사용자 손목·초록 IK 목표는 독립적으로 유지하며, 연결선은 실측 손목 FK에서 목표로 이어진다.
 실측 base position/IMU로 root를 움직이지 않는다. 최초 표시 localPosition을 유지한다.
-입력중단0.5초 후 stale을 표시하고 마지막 다리자세를 유지하며 외삽하지 않는다.
-이 다리표시는 fixed-base MuJoCo 모델의 IK/충돌계산에 주입되지 않는 시각화다.
+입력중단0.5초 후 stale을 표시하고 마지막 전신 실측자세를 유지하며 외삽하지 않는다.
+이 실측표시는 fixed-base MuJoCo 모델의 IK/충돌계산에 주입되지 않는 시각화다.
 
 검증: 전체 Unity/Meta 참조 C# 컴파일 통과(기존 CS1701 경고).
 23 Python tests /18 subtests PASS. 실제 G1에서2초117개29축 표본, CRC/순서 PASS.

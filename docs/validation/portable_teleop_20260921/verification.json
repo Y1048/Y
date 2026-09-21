@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-21",
+  "source_branch": "codex/g1-laptop-sync-20260917",
+  "windows_fresh_venv_install": true,
+  "full_ik_model_constructed": true,
+  "pip_check": true,
+  "wsl_cyclonedds_build": true,
+  "camera_sdk_import_only": true,
+  "setup_rerun": true,
+  "check_only": true,
+  "offline_tests_passed": 48,
+  "generated_pipeline_rerun": false,
+  "generated_pipeline_note": "First attempt missing test-only websockets; existing UDP 55071 owner found, not stopped.",
+  "camera_images_verified": false,
+  "robot_sdk_initialized": false,
+  "motor_output": false,
+  "tcp22_probe_only": {
+    "192.168.123.164": false,
+    "192.168.10.165": false
+  },
+  "preservation": {
+    "hardware/g1_arm_bridge/g1_camera_tcp_bridge.py": {
+      "unchanged_normalized": true,
+      "sha256_lf": "8335e934b2326a822d29f9c9838bd648cd7e718743937888dc91255a85d78337"
+    },
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py": {
+      "unchanged_normalized": true,
+      "sha256_lf": "06f42468a374207d5613f6fc5d34dda6691111add96098db6090d733ff00173b"
+    },
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py": {
+      "unchanged_normalized": true,
+      "sha256_lf": "8685f9df91b70f3bd6f77ef8ea24eb7ddb8bd622f26881914566b82362e18ba5"
+    }
+  }
+}

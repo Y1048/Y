@@ -12,6 +12,7 @@ import subprocess
 import sys
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
+from g1_portable_environment import wsl_prefix, camera_run, select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -96,7 +97,7 @@ def running_workers(rows, root, host):
 
 def camera_running():
     result = subprocess.run(
-        ['wsl.exe', '-d', 'Ubuntu', '--', 'bash', '-lc',
+        wsl_prefix() + ['bash', '-lc',
          "pgrep -af '[p]ython.*g1_camera_tcp_bridge[.]py'"],
         capture_output=True, timeout=15, creationflags=subprocess.CREATE_NO_WINDOW)
     if result.returncode not in (0, 1):
@@ -132,8 +133,9 @@ def preflight(missing, env):
     if 'omni' in missing:
         subprocess.run([sys.executable, '-B', '-c', 'import websocket'], check=True, env=env)
     if 'arm' in missing:
-        subprocess.run([sys.executable, '-B', str(ROOT / 'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py'),
-                        '--validate-only'], cwd=ROOT, env=env, check=True)
+        subprocess.run([sys.executable, '-B', str(ROOT / 'tools/g1_portable_environment.py')], cwd=ROOT, env=env, check=True)
+    if 'camera' in missing:
+        camera_run('--check-only', '192.168.123.164')
     if not (ROOT / 'tools/START_G1_CAMERA_TO_UNITY.bat').is_file():
         raise RuntimeError('Existing camera BAT is missing')
 
@@ -145,7 +147,7 @@ def launch_plan(existing, has_camera, no_receiver=False):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--host', default='192.168.123.164')
+    parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--no-receiver', action='store_true',
                         help='Keep a G1 receive window started separately, e.g. on another PC.')
@@ -154,6 +156,7 @@ def main(argv=None):
         parser.error('host must be a hostname or IPv4 address')
     if os.name != 'nt':
         raise RuntimeError('Use this launcher on Windows')
+    args.host = select_robot_host(args.host)
     existing = running_workers(process_arguments(), ROOT, args.host)
     has_camera = camera_running()
     plan = launch_plan(existing, has_camera, args.no_receiver)
@@ -163,10 +166,10 @@ def main(argv=None):
     print('[KEEP] ' + (', '.join(sorted(existing | ({'camera'} if has_camera else set()))) or 'none'))
     print('[START] ' + (', '.join(plan) or 'none; existing processes are kept'))
     if args.check_only:
-        print('PASS: launch plan checked; no workers, camera SDK or SSH connection started.')
+        print('PASS: launch plan checked; no workers, camera SDK initialization or SSH login. Auto mode probes TCP 22 only.')
         return 0
     for worker in plan:
-        command = (['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat']
+        command = (['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', args.host]
                    if worker == 'camera' else
                    [sys.executable, '-u', '-B', str(ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'),
                     '--worker', worker, '--host', args.host])

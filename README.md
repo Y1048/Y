@@ -1,3 +1,5 @@
+> 새 PC 최초 설치: [PORTABLE_TELEOP_SETUP.md](docs/PORTABLE_TELEOP_SETUP.md) → `tools/SETUP_G1_VR_TELEOP.bat`
+
 # G1 VR Teleoperation
 
 > **2026-09-21 최신 데스크톱 인계:** [DESKTOP_INPUT_HANDOFF_20260921.md](docs/DESKTOP_INPUT_HANDOFF_20260921.md)를 먼저 읽는다.

@@ -111,3 +111,6 @@ desktop.ini
 
 # Machine-local Unity build cache
 Unity_G1_VR/.utmp/
+
+# Per-checkout portable teleop environment
+.venv-teleop/

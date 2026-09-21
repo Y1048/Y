@@ -9,6 +9,7 @@ import shutil
 import socket
 import subprocess
 import sys
+from g1_portable_environment import select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
 REMOTE_DIR = '/home/unitree/g1_input_audit_20260921_7e83c4'
@@ -42,8 +43,8 @@ def engine_environment():
     # Only children started by this launcher receive the opt-in observation tap.
     env['G1_OBSERVATION_TAP'] = '1'
     if not env.get('G1_BIMANUAL_ENGINE_ROOT'):
-        candidates = [ROOT/'logs/diagnostics/mujoco_versions/3.12.0',
-                      Path.home()/'Desktop/G1_Teleop_Project/logs/diagnostics/mujoco_versions/3.12.0']
+        candidates = [ROOT/'.venv-teleop/Lib/site-packages',
+                      ROOT/'logs/diagnostics/mujoco_versions/3.12.0']
         for candidate in candidates:
             if (candidate/'mujoco/__init__.py').is_file():
                 env['G1_BIMANUAL_ENGINE_ROOT'] = str(candidate)
@@ -64,13 +65,12 @@ def preflight(env):
                 raise RuntimeError('UDP %d is occupied. Close the old simulation/observation console you started; '
                                    'no process was stopped automatically.' % port) from error
     subprocess.run([sys.executable, '-B', '-c', 'import websocket'], check=True, env=env)
-    subprocess.run([sys.executable, '-B', str(ROOT/'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py'),
-                    '--validate-only'], check=True, env=env, cwd=str(ROOT))
+    subprocess.run([sys.executable, '-B', str(ROOT/'tools/g1_portable_environment.py')], check=True, env=env, cwd=str(ROOT))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--host', default='192.168.123.164')
+    parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
     parser.add_argument('--worker', choices=WORKERS)
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--no-receiver', action='store_true',
@@ -78,6 +78,7 @@ def main():
     args = parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', args.host):
         parser.error('host must be a hostname or IPv4 address')
+    args.host = select_robot_host(args.host)
     env = engine_environment()
     if args.worker:
         if os.name == 'nt':

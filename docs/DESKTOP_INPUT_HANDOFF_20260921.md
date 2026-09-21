@@ -1,3 +1,5 @@
+> 후속 업데이트: PC 환경 설치와 카메라 경로 이식성은 [PORTABLE_TELEOP_SETUP.md](PORTABLE_TELEOP_SETUP.md)를 따른다. 아래 고정 경로/수동 venv 안내는 이전 게시 시점 기록이다.
+
 # 다른 데스크톱에서 이어받기 — 2026-09-21
 
 현재 브랜치는 `codex/g1-laptop-sync-20260917`, 저장소는 `https://github.com/Y1048/Y.git`이다.

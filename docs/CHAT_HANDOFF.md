@@ -1,3 +1,21 @@
+## 2026-09-21 자동 네트워크 선택 및 설치 검증 완료
+
+`START_G1_VR_TELEOP.bat`은 유선주소 192.168.123.164:22 우선, 불가 시 폐쇄망 192.168.10.165:22를 선택한다.
+명시적 --host는 자동 선택을 덮어쓴다. 입력 worker와 카메라에 같은 주소 전달. 두 주소 불가 시 창 생성 전 중단.
+최초 `SETUP_G1_VR_TELEOP.bat` 실행: 프로젝트 전용 고정 Windows 패키지 + WSL 전용 카메라 SDK 설치.
+.wslconfig mirrored 항목은 원본 백업 후 병합하며 자동 WSL shutdown은 하지 않는다.
+Windows/WSL 새 환경 설치와 재실행, check-only, 오프라인 48개 검사 통과. 실제 영상은 미검증.
+노트북 네트워크 점검 시 10.1.119.101/172.20.10.5였고 G1 두 주소 TCP22 연결불가. NIC/방화벽 변경 없음.
+현재 사용 중인 dirty Desktop runtime에는 설치/덮어쓰기 하지 않았다. source checkout에서 검증했다.
+
+## 2026-09-21 PC 환경 이식성 개선
+
+최신 설치/실행 안내는 `docs/PORTABLE_TELEOP_SETUP.md`다.
+`SETUP_G1_VR_TELEOP.bat`으로 PC별 전용 환경을 준비하고 동일 START 배치를 사용한다.
+카메라의 노트북 절대경로·Ubuntu 이름·192.168.123.99 고정을 제거했다.
+최초 Python/Unity/Meta Link/Omni Connect/WSL 및 mirrored LAN 설정은 각 PC에 필요하다.
+아래의 고정 경로 관련 설명은 이전 상태의 기록이다. IK/게인/프로토콜은 변경하지 않았다.
+
 # G1 Teleop Project Chat Handoff
 
 ## 2026-09-21 다른 데스크톱 이전 체크포인트

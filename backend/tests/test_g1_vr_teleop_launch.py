@@ -90,6 +90,8 @@ class OrchestrationTests(unittest.TestCase):
         stack = ExitStack()
         self.addCleanup(stack.close)
         stack.enter_context(redirect_stdout(io.StringIO()))
+        stack.enter_context(mock.patch.object(launcher, 'select_robot_host',
+                                             side_effect=lambda host: HOST if host == 'auto' else host))
         stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=list(rows)))
         camera_mock = stack.enter_context(mock.patch.object(launcher, 'camera_running', return_value=camera))
         environment = {'G1_OBSERVATION_TAP': '1', 'TEST_ONLY': '1'}
@@ -110,7 +112,7 @@ class OrchestrationTests(unittest.TestCase):
         commands = [call.args[0] for call in spawn.call_args_list]
         self.assertEqual(list(launcher.observation.WORKERS),
                          [launcher.option(command, '--worker') for command in commands[:-1]])
-        self.assertEqual(['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat'], commands[-1])
+        self.assertEqual(['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', HOST], commands[-1])
         for call in spawn.call_args_list:
             self.assertEqual(ROOT, call.kwargs['cwd'])
             self.assertEqual(environment, call.kwargs['env'])
@@ -127,6 +129,14 @@ class OrchestrationTests(unittest.TestCase):
         check.assert_called_once_with([], environment)
         spawn.assert_not_called()
 
+    def test_closed_network_host_reaches_observation_and_camera_launches(self):
+        result, spawn, _, _, _ = self.invoke(args=['--host', '192.168.10.165'])
+        self.assertEqual(0, result)
+        commands = [call.args[0] for call in spawn.call_args_list]
+        for command in commands[:-1]:
+            self.assertEqual('192.168.10.165', launcher.option(command, '--host'))
+        self.assertEqual('192.168.10.165', launcher.option(commands[-1], '--robot-host'))
+
     def test_partial_start_only_creates_missing_workers(self):
         result, spawn, check, _, environment = self.invoke(
             [worker_row('send'), worker_row('arm')], camera=True)
@@ -142,7 +152,8 @@ class OrchestrationTests(unittest.TestCase):
         spawn.assert_not_called()
 
     def test_conflicting_inventory_fails_before_any_spawn(self):
-        with mock.patch.object(launcher, 'process_arguments', return_value=[worker_row('send', 'other-host')]), \
+        with mock.patch.object(launcher, 'select_robot_host', return_value=HOST), \
+                mock.patch.object(launcher, 'process_arguments', return_value=[worker_row('send', 'other-host')]), \
                 mock.patch.object(launcher, 'camera_running') as camera, \
                 mock.patch.object(launcher.subprocess, 'Popen') as spawn, \
                 mock.patch.object(launcher.subprocess, 'run') as run:
@@ -151,6 +162,15 @@ class OrchestrationTests(unittest.TestCase):
             camera.assert_not_called()
             spawn.assert_not_called()
             run.assert_not_called()
+
+    def test_both_networks_unreachable_starts_no_workers(self):
+        with mock.patch.object(launcher, 'select_robot_host', side_effect=RuntimeError('unreachable')), \
+                mock.patch.object(launcher, 'process_arguments') as inventory, \
+                mock.patch.object(launcher.subprocess, 'Popen') as spawn:
+            with self.assertRaisesRegex(RuntimeError, 'unreachable'):
+                launcher.main([])
+            inventory.assert_not_called()
+            spawn.assert_not_called()
 
 
 @unittest.skipUnless(os.name == 'nt', 'Windows socket and subprocess constants')
@@ -191,7 +211,7 @@ class CameraRecognitionTests(unittest.TestCase):
                                       return_value=subprocess.CompletedProcess([], returncode, stdout=stdout)) as run, \
                     mock.patch.object(launcher.socket, 'socket') as socket_factory:
                 self.assertEqual(expected, launcher.camera_running())
-                self.assertEqual(['wsl.exe', '-d', 'Ubuntu', '--', 'bash', '-lc'],
+                self.assertEqual(launcher.wsl_prefix() + ['bash', '-lc'],
                                  run.call_args.args[0][:-1])
                 self.assertIn('pgrep -af', run.call_args.args[0][-1])
                 # Unity owns the TCP listener; camera inspection must not bind it.

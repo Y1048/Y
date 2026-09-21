@@ -14,6 +14,12 @@ public sealed class G1OmniHeadingState
     public static double Delta(double current, double previous)
         => ((current - previous) % 360 + 540) % 360 - 180;
 
+    // Omni/G1 positive yaw is counter-clockwise (left) when viewed from above.
+    // Unity's positive Y rotation turns the rendered forward direction right, so
+    // the view transform must use the opposite sign to show the same body turn.
+    public static double ToUnityYawDelta(double omniYawDelta)
+        => -omniYawDelta;
+
     private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 
     public bool Accept(string id, double[] sample, double receipt)

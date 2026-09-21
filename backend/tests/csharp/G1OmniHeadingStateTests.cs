@@ -27,6 +27,8 @@ public static class G1OmniHeadingStateTests
         Check(!state.Accept("b", new double[] { 3, 4 }, 22));
         Check(G1OmniHeadingState.Delta(1, 359) == 2);
         Check(G1OmniHeadingState.Delta(359, 1) == -2);
+        Check(G1OmniHeadingState.ToUnityYawDelta(30) == -30); // G1 left -> Unity left
+        Check(G1OmniHeadingState.ToUnityYawDelta(-30) == 30); // G1 right -> Unity right
         Console.WriteLine("PASS: " + count + " production heading-gate assertions");
     }
 }

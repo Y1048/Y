@@ -63,11 +63,10 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
             catch (ArgumentException) { /* malformed view-only packet */ }
         }
         if (!ready) return;
-        float delta = (float)(state.Degrees - applied);
-        if (delta == 0) return;
-        // Omni positive yaw = robot left; Unity body yaw would be negative.
-        // Its inverse rotates the robot-centred world/XR by positive Unity yaw.
-        Quaternion turn = Quaternion.AngleAxis(delta, Vector3.up);
+        double omni_delta = state.Degrees - applied;
+        if (omni_delta == 0) return;
+        float unity_delta = (float)G1OmniHeadingState.ToUnityYawDelta(omni_delta);
+        Quaternion turn = Quaternion.AngleAxis(unity_delta, Vector3.up);
         Transform tracking = alignment.TrackingSpace;
         Vector3 eye = alignment.xr_center_eye.position;
         tracking.rotation = turn * tracking.rotation;

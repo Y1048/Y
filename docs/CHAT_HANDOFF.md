@@ -1844,3 +1844,6 @@ Integrated START_G1_VR_TELEOP verifies dedicated per-user SSH key before spawnin
 
 ## 2026-09-21 Windows venv duplicate-worker false positive fixed
 Live inventory showed Omni venv redirector PID14424 parenting base Python PID11440 with identical arguments/CSV. Process inventory now retains PID/PPID/executable and collapses only the exact project .venv-teleop redirector and its identical base-Python child. Independent duplicate workers still fail closed. 20 tests / 17 subtests passed. Runtime launcher backed up and installed; read-only live recognition passed without starting/stopping workers. No robot commands.
+
+
+2026-09-21: Verified runtime camera helper/launcher hashes equal source; SSH default confirmed. Corrected camera architecture documentation; legacy WSL instructions explicitly labeled. No runtime changes or hardware execution this turn.

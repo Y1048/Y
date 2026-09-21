@@ -1,6 +1,26 @@
-> 2026-09-21 更新: Camera execution defaults to SSH JPEG transport using G1 system Python3 + existing unitree_sdk2py on eth0. The camera image crosses SSH; WSL DDS is no longer the default runtime transport. Setup/check-only WSL imports remain legacy dependency checks. --transport wsl is diagnostic only and currently aborts in its new local CycloneDDS build on this notebook. Actual SSH JPEG receipt verified; final Unity display awaits Play.
-
 # 다른 PC에서 입력·카메라 실행
+
+## 현재 기본 카메라 경로
+
+```text
+G1 내부 VideoClient (eth0)
+ → JPEG + G1CM 프레임 헤더
+ → SSH stdout 스트림 (G1 TCP 22)
+ → PC g1_camera_ssh.py
+ → PC 내부 TCP 127.0.0.1:5011
+ → Unity
+```
+
+기본값은 SSH다. VideoClient는 G1 내부에서 실행하며, PC와 G1 사이에는 JPEG만 SSH로 전달한다.
+Unity의 TCP5011 수신 포맷은 그대로다. TCP5011은 외부 네트워크가 아닌 PC 로컬 전용이다.
+G1 시스템 Python3와 기존 unitree_sdk2py를 사용하며 SSH stdin 실행으로 새 파일은 남기지 않는다.
+카메라 코드는 모터 명령이나 입력 수신 포트를 사용하지 않는다.
+통합 배치는 G1_INPUT_RECEIVE_AUDIT.py 수신기를 실행/재사용하지 않는다.
+
+설치/check-only에는 WSL 의존성 검사가 남아 있지만 기본 영상 전송은 WSL을 거치지 않는다.
+--transport wsl은 이전 경로 진단용이며, 현재 노트북의 새 CycloneDDS 초기화 crash는 미해결이다.
+기본 SSH 경로로 실제 G1 JPEG 수신은 확인했다. Unity 최종 화면 표시는 별도 확인이 필요하다.
+
 
 이 문서는 이전 인계의 **노트북 고정 카메라 경로/venv 안내를 대체**한다.
 대상은 Windows 11 22H2 이상 x64 + 최신 WSL2 Linux 환경이다.
@@ -52,9 +72,9 @@ G1이 없는 PC에서 IK/Omni 의존성만 준비할 때는 setup에 `--pc-only`
 - G1 유선 LAN은 로봇과 같은 서브넷의 **중복되지 않는 PC IP**가 필요하다.
   이제 PC IP를 `192.168.123.99`로 강제하지 않는다. 로봇까지 직접 연결된 WSL route에서 NIC를 찾는다.
 
-## WSL 네트워크: 카메라가 연결되지 않을 때
+## 이전 WSL 경로 설정 (기본 SSH 영상에는 해당 없음)
 
-현재 카메라 전송은 WSL → Windows Unity **127.0.0.1:5011**이다.
+이전 --transport wsl 카메라 전송은 WSL → Windows Unity **127.0.0.1:5011**이다.
 Windows 11의 WSL mirrored networking을 사용한다.
 [Microsoft 문서](https://learn.microsoft.com/en-us/windows/wsl/networking#mirrored-mode-networking)의
 방법대로 setup은 사용자 홈 `.wslconfig`의 기존 항목을 보존하고 원본 백업을 만든 뒤 아래 값만 병합한다. 중복/모호한 항목은 덮어쓰지 않는다.
@@ -98,8 +118,8 @@ G1 주소가 바뀌면 통합 실행에 `--host 새주소`, 카메라 단독 실
 - 실제 데스크톱의 영상·Quest 표시·Omni 입력은 해당 PC에서 확인해야 한다.
 - `.venv-teleop`와 원본 로그는 Git에 넣지 않는다. 새 PC에서는 setup을 다시 실행한다.
 
-기존 G1의 관찰 수신기는 `/home/unitree/g1_input_audit_20260921_7e83c4`를 계속 사용한다.
-다른 로봇에는 이 수신기 파일을 따로 설치해야 하며, PC setup은 G1에 SSH/배포하지 않는다.
+기존 관찰 수신기 파일은 보존하지만 통합 실행에서는 사용하지 않는다.
+상위 제어기 입력 통합은 별도 작업이며 PC setup은 수신기를 배포하지 않는다.
 
 ## 2026-09-21 검증
 

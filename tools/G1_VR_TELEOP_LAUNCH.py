@@ -10,7 +10,6 @@ import shutil
 import socket
 import subprocess
 import sys
-from g1_ssh_login import ensure_login, remote_receiver_running
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
 from g1_portable_environment import wsl_prefix, camera_run, select_robot_host
@@ -163,8 +162,7 @@ def preflight(missing, env):
 
 
 def launch_plan(existing, has_camera, no_receiver=False):
-    return [worker for worker in observation.WORKERS if worker not in existing
-            and not (worker == 'receive' and no_receiver)] + ([] if has_camera else ['camera'])
+    return [worker for worker in observation.WORKERS if worker != 'receive' and worker not in existing] + ([] if has_camera else ['camera'])
 
 
 def main(argv=None):
@@ -172,7 +170,7 @@ def main(argv=None):
     parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--no-receiver', action='store_true',
-                        help='Keep a G1 receive window started separately, e.g. on another PC.')
+                        help='Compatibility flag; this launcher never starts a G1 audit receiver.')
     parser.add_argument('--show-consoles', action='store_true', help='Show legacy diagnostic windows')
     args = parser.parse_args(argv)
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', args.host):
@@ -181,7 +179,8 @@ def main(argv=None):
         raise RuntimeError('Use this launcher on Windows')
     args.host = select_robot_host(args.host)
     process_rows = process_arguments()
-    existing = running_workers(process_rows, ROOT, args.host)
+    existing = running_workers([row for row in process_rows
+                                if row and Path(row[0]).name.lower() != 'ssh.exe'], ROOT, args.host)
     camera_rows = [row for row in process_rows if any(
         arg.replace('\\','/').endswith('tools/G1_CAMERA_LAUNCH.py') for arg in row)]
     if len(camera_rows) > 1:
@@ -198,10 +197,6 @@ def main(argv=None):
     if args.check_only:
         print('PASS: launch plan checked; no workers, camera SDK initialization or SSH login. Auto mode probes TCP 22 only.')
         return 0
-    if 'receive' in plan:
-        ensure_login(args.host)
-        if remote_receiver_running(args.host, observation.REMOTE_DIR):
-            plan.remove('receive')
     if not args.show_consoles:
         from g1_quiet_observation import run_workers
         if 'camera' in plan:
@@ -219,7 +214,7 @@ def main(argv=None):
                    [sys.executable, '-u', '-B', str(ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'),
                     '--worker', worker, '--host', args.host])
         subprocess.Popen(command, cwd=ROOT, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
-    print('Use Unity Play and Omni Connect. Log in in the receive window if opened.')
+    print('Use Unity Play and Omni Connect. No G1 audit receiver is started.')
     print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: up to 20 fps.')
     print('Close each observation/camera window to stop it. Unity Play is not changed automatically.')
     return 0

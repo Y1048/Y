@@ -35,7 +35,7 @@ class WorkerRecognitionTests(unittest.TestCase):
         existing = launcher.running_workers(rows, ROOT, HOST)
         self.assertEqual(set(launcher.observation.WORKERS), existing)
         self.assertEqual([], launcher.launch_plan(existing, True))
-        self.assertEqual(['receive', 'omni', 'camera'],
+        self.assertEqual(['omni', 'camera'],
                          launcher.launch_plan({'send', 'arm'}, False))
         self.assertEqual(['omni'],
                          launcher.launch_plan({'send', 'arm'}, True, no_receiver=True))
@@ -46,7 +46,7 @@ class WorkerRecognitionTests(unittest.TestCase):
                  '--worker', worker, '--host', HOST]
                 for worker in launcher.observation.WORKERS]
         self.assertEqual(set(), launcher.running_workers(rows, ROOT, HOST))
-        self.assertEqual(['receive', 'send', 'omni', 'arm', 'camera'],
+        self.assertEqual(['send', 'omni', 'arm', 'camera'],
                          launcher.launch_plan(set(), False))
 
     def test_incompatible_worker_options_are_refused(self):
@@ -118,8 +118,6 @@ class OrchestrationTests(unittest.TestCase):
         environment = {'G1_OBSERVATION_TAP': '1', 'TEST_ONLY': '1'}
         stack.enter_context(mock.patch.object(launcher.observation, 'engine_environment', return_value=environment))
         check = stack.enter_context(mock.patch.object(launcher, 'preflight', side_effect=preflight_error))
-        stack.enter_context(mock.patch.object(launcher, 'ensure_login'))
-        stack.enter_context(mock.patch.object(launcher, 'remote_receiver_running', return_value=False))
         spawn = stack.enter_context(mock.patch.object(launcher.subprocess, 'Popen'))
         run = stack.enter_context(mock.patch.object(launcher.subprocess, 'run',
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
@@ -130,10 +128,10 @@ class OrchestrationTests(unittest.TestCase):
     def test_fresh_start_creates_exactly_five_observation_and_camera_windows(self):
         result, spawn, check, _, environment = self.invoke()
         self.assertEqual(0, result)
-        check.assert_called_once_with(['receive', 'send', 'omni', 'arm', 'camera'], environment)
-        self.assertEqual(5, spawn.call_count)
+        check.assert_called_once_with(['send', 'omni', 'arm', 'camera'], environment)
+        self.assertEqual(4, spawn.call_count)
         commands = [call.args[0] for call in spawn.call_args_list]
-        self.assertEqual(list(launcher.observation.WORKERS),
+        self.assertEqual(['send', 'omni', 'arm'],
                          [launcher.option(command, '--worker') for command in commands[:-1]])
         self.assertEqual(['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', HOST], commands[-1])
         for call in spawn.call_args_list:
@@ -164,8 +162,8 @@ class OrchestrationTests(unittest.TestCase):
         result, spawn, check, _, environment = self.invoke(
             [worker_row('send'), worker_row('arm')], camera=True)
         self.assertEqual(0, result)
-        check.assert_called_once_with(['receive', 'omni'], environment)
-        self.assertEqual(['receive', 'omni'],
+        check.assert_called_once_with(['omni'], environment)
+        self.assertEqual(['omni'],
                          [launcher.option(call.args[0], '--worker') for call in spawn.call_args_list])
 
     def test_check_only_does_not_start_workers_camera_or_ssh(self):

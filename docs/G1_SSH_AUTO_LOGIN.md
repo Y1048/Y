@@ -1,3 +1,5 @@
+> Current integrated launcher only uses SSH for camera. It does not start/reuse the audit receiver. Older receiver enrollment descriptions below are historical.
+
 # G1 자동 SSH 로그인
 
 `tools/START_G1_VR_TELEOP.bat` 실행 시 새 수신기를 시작하기 전에 해당 PC의 키 로그인을 확인한다. 처음 사용하는 PC에서는 실행창에 G1 비밀번호를 한 번 입력한다. 성공하면 이후 실행은 자동 로그인한다. 비밀번호를 BAT, Python, 로그, GitHub에 저장하지 않는다.

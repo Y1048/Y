@@ -6,6 +6,7 @@ import sys
 import threading
 import ctypes
 import G1_INPUT_OBSERVATION_LAUNCH as observation
+from g1_process_lifetime import bind_session_lifetime
 
 
 def receive(host, log):
@@ -35,6 +36,7 @@ def receive(host, log):
 
 
 def run_workers(root, workers, host, env):
+    bind_session_lifetime()
     stamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
     folder = root / 'logs/test_results/teleop_background' / stamp
     folder.mkdir(parents=True, exist_ok=False)
@@ -42,14 +44,18 @@ def run_workers(root, workers, host, env):
     stopped = threading.Event()
     def wait_for_stop():
         try:
-            input('Press Enter here to stop this session input/send workers. ')
+            input('Press Enter or close this manager to stop its workers and camera. ')
         except EOFError:
             pass
         stopped.set()
     try:
         for worker in workers:
             logfile = folder / (worker + '.log')
-            if worker == 'receive':
+            if worker == 'camera':
+                child = subprocess.Popen(
+                    ['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', host],
+                    cwd=root, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
+            elif worker == 'receive':
                 command = [sys.executable, '-u', '-B', str(Path(__file__).resolve()), host, str(logfile)]
                 child = subprocess.Popen(command, cwd=root, env=env,
                                          creationflags=subprocess.CREATE_NEW_CONSOLE)
@@ -72,11 +78,8 @@ def run_workers(root, workers, host, env):
         # Only exact children launched by this invocation; no inventory-wide termination.
         for name, child in reversed(children):
             if child.poll() is None:
-                if name == 'receive':
-                    subprocess.run(['taskkill.exe', '/PID', str(child.pid), '/T', '/F'],
-                        capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
-                else:
-                    child.terminate()
+                subprocess.run(['taskkill.exe', '/PID', str(child.pid), '/T', '/F'],
+                    capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
                 child.wait(timeout=10)
     return 0
 

@@ -206,13 +206,8 @@ def main(argv=None):
         ensure_login(args.host)
     if not args.show_consoles:
         from g1_quiet_observation import run_workers
-        if 'camera' in plan:
-            subprocess.Popen(['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat',
-                              '--robot-host', args.host], cwd=ROOT, env=env,
-                             creationflags=subprocess.CREATE_NEW_CONSOLE)
-        workers = [worker for worker in plan if worker != 'camera']
-        if workers:
-            return run_workers(ROOT, workers, args.host, env)
+        if plan:
+            return run_workers(ROOT, plan, args.host, env)
         print('Existing workers kept. Close their original windows to stop them.')
         return 0
     for worker in plan:

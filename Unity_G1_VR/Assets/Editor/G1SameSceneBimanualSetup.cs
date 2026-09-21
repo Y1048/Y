@@ -6,11 +6,21 @@ using UnityEngine;
 /// <summary>Extend the existing scene. No replacement scene or prefab is generated.</summary>
 public static class G1SameSceneBimanualSetup
 {
-    [MenuItem("G1 Teleop/Arms/Use Both Arms (Simulation)")]
+    [MenuItem("G1 Teleop/Arms/Use Both Arms")]
     public static void Both() { Configure(true); }
 
     [MenuItem("G1 Teleop/Arms/Use Original Right Arm")]
     public static void Right() { Configure(false); }
+
+    [MenuItem("G1 Teleop/Arms/Use Both Arms", true)]
+    private static bool ValidateBoth()
+    {
+        var senders = UnityEngine.Object.FindObjectsByType<G1BimanualSimulationSender>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        bool both = false;
+        foreach (var sender in senders) both |= sender.UsesExistingScene;
+        Menu.SetChecked("G1 Teleop/Arms/Use Both Arms", both);
+        return !Application.isPlaying;
+    }
 
     private static void Configure(bool both)
     {
@@ -86,7 +96,7 @@ public static class G1SameSceneBimanualSetup
         EditorUtility.SetDirty(preview);
         EditorSceneManager.MarkSceneDirty(scene);
         Selection.activeGameObject = original.gameObject;
-        Debug.Log(both ? "Same scene: BOTH ARMS SIMULATION selected. Save scene, start START_BIMANUAL_UNITY_SIM.bat, then Play."
+        Debug.Log(both ? "Same scene: BOTH ARMS selected. Save scene, start START_G1_VR_TELEOP.bat, then Play."
                        : "Same scene: ORIGINAL RIGHT ARM selected. Save scene, use your original launcher, then Play.");
     }
 }

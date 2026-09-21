@@ -55,7 +55,7 @@ def check_runtime_scene(runtime_root):
 def check_source_installer():
     installer = (ROOT / "Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs").read_text(
         encoding="utf-8")
-    require('MenuItem("G1 Teleop/Arms/Use Both Arms (Simulation)")' in installer,
+    require('MenuItem("G1 Teleop/Arms/Use Both Arms")' in installer,
             "source bimanual scene installer is missing")
     require("dual.useExistingScene = true;" in installer and
             "ArmMode.BimanualSimulation" in installer,

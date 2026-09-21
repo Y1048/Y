@@ -95,7 +95,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     public OVRSkeleton leftSkeleton;
     public OVRSkeleton rightSkeleton;
     public int port = 5020;
-    public string Status { get; private set; } = "WAIT: start Python simulation";
+    public string Status { get; private set; } = "WAIT: start IK backend";
 
     [Serializable] private class HandPacket
     {
@@ -184,7 +184,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (head == null || leftHand == null || rightHand == null ||
             leftSkeleton == null || rightSkeleton == null)
         {
-            Debug.LogError("Bimanual simulation requires headset and both OVR hand/skeleton references.");
+            Debug.LogError("Bimanual input requires headset and both OVR hand/skeleton references.");
             enabled = false;
             return;
         }
@@ -461,8 +461,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
             ++packet.sequence;
             lastSend = now;
         }
-        Status = !fresh ? "WAIT: start Python simulation" : backendState == "blocked"
-            ? "BLOCKED: restart simulation" : backendState == "returning" || returnPending
+        Status = !fresh ? "WAIT: start IK backend" : backendState == "blocked"
+            ? "BLOCKED: restart IK backend" : backendState == "returning" || returnPending
             ? "RETURNING: wait" : active ? "TRACKING | pinch 0.5s to return"
             : mustLeaveZones ? "READY: move out of zones, release pinch"
             : pinch ? "READY: release pinch before engage"
@@ -563,7 +563,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             : pinch ? "pinch를 풀어 주세요" : "한 손씩 정렬 · 준비 4초 유지 · 시뮬레이션";
     }
 
-    private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL SIMULATION ONLY | " + Status); }
+    private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL IK INPUT | " + Status); }
 
     private void OnDisable()
     {

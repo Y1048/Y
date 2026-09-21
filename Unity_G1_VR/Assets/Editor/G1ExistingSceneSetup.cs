@@ -152,6 +152,7 @@ public static class G1ExistingSceneSetup
         OrganizeEnvironment(scene_value);
 
         EditorUtility.SetDirty(target_object);
+        G1SameSceneBimanualSetup.Both(); // Default teleop setup uses both arms.
         EditorSceneManager.MarkSceneDirty(scene_value);
         EditorSceneManager.SaveScene(scene_value);
         Debug.Log("G1 existing scene setup complete.");

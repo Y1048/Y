@@ -65,18 +65,18 @@
   },
   "full_suite": {
     "source": {
-      "tests": 95,
-      "passed": 95,
-      "seconds": 89.666,
-      "recorded_replay_p95_ms": 5.23,
-      "recorded_replay_max_ms": 6.12
+      "tests": 96,
+      "passed": 96,
+      "seconds": 114.384,
+      "recorded_replay_p95_ms": 6.63,
+      "recorded_replay_max_ms": 8.04
     },
     "runtime": {
-      "tests": 95,
-      "passed": 95,
-      "seconds": 91.791,
-      "recorded_replay_p95_ms": 7.53,
-      "recorded_replay_max_ms": 7.98,
+      "tests": 96,
+      "passed": 96,
+      "seconds": 127.967,
+      "recorded_replay_p95_ms": 7.19,
+      "recorded_replay_max_ms": 15.8,
       "windows_tool_path_tests": 23
     }
   },
@@ -86,7 +86,8 @@
     "sender_drift": "runtime lacked tracked CanClearMustLeave helper extraction; inline condition was semantically equivalent",
     "source_runtime_parity_after_sync": true,
     "post_session_backup": "logs/backups/bimanual_post_session_verify_20260920_141325",
-    "post_session_docs_backup": "logs/backups/bimanual_post_session_docs_20260920_141959"
+    "post_session_docs_backup": "logs/backups/bimanual_post_session_docs_20260920_141959",
+    "operator_acceptance_backup": "logs/backups/bimanual_operator_acceptance_20260921_092019"
   },
   "diagnostic_only": {
     "direct_fixture_to_home_interpolation_has_collision": true,
@@ -94,9 +95,8 @@
     "note": "This interpolation is not an output path; staged separation and safe waypoint remain required."
   },
   "remaining_unverified": [
-    "Unity Play operator behavior after this checkpoint",
-    "Quest hand tracking/alignment feel",
-    "physical G1 behavior or safety"
+    "Near-hands recovery operator feel when the recovery actually triggers",
+    "Physical G1 behavior or safety"
   ],
   "post_session_verifier": {
     "launcher": "tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat",
@@ -116,5 +116,33 @@
     "allusersprofile": "C:\\ProgramData",
     "tmp": "C:\\Users\\user\\AppData\\Local\\Temp",
     "runtime_path_contract_tests": 23
+  },
+  "operator_acceptance_20260921": {
+    "result": "PASS",
+    "source_log": "logs/test_results/bimanual/unity_20260921_091420_0176388.jsonl",
+    "source_log_sha256": "d091391676a2603c88c7e7d501e5163e22cc92e02a6b22ce2a506650f2eacd21",
+    "report": "logs/test_results/bimanual/reports/quest_cycle_20260921_091545_3894208.json",
+    "report_sha256": "816297ccb4de24475eb9c125975ecea4d462e300045118ea3c9c407d193d1ada",
+    "quest_cycle_pass": true,
+    "replay_pass": true,
+    "tracking_starts": 2,
+    "reengage_count": 1,
+    "pinch_returns": 2,
+    "completed_returns": 2,
+    "near_hands_recoveries": 0,
+    "final_state": "ready",
+    "minimum_sampled_clearance_mm": 30.914498821651485,
+    "maximum_speed_deg_s": 43.09015267709448,
+    "maximum_acceleration_deg_s2": 60.00000000000496,
+    "tracking_tick_p95_ms": 12.360040000044137,
+    "tracking_tick_max_ms": 13.328100000080667,
+    "failures": []
+  },
+  "session_report_acceleration_tolerance": {
+    "configured_limit_deg_s2": 60.0,
+    "comparison_tolerance_rad_s2": 0.0001,
+    "limit_unchanged": true,
+    "focused_source_tests": 9,
+    "focused_runtime_tests": 9
   }
 }

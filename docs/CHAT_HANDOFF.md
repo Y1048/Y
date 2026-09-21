@@ -1191,3 +1191,32 @@ user-confirmed historical Quest fixture에서 cycle/replay 모두 PASS했다.
 preflight parity는 12 files로 확장되어 PASS했고,
 source/runtime bimanual suite는 각각 95/95 PASS,
 runtime Windows tool-path contract는 23/23 PASS다.
+
+## 2026-09-21 Quest operator acceptance 완료
+
+최신 operator session `unity_20260921_091420_0176388.jsonl`에서 normal bimanual flow를 실제 Quest로 확인했다.
+
+자동 verifier 결과:
+- Quest cycle PASS.
+- replay PASS.
+- tracking starts 2 / re-engage 1.
+- pinch return 2회 모두 complete.
+- final READY.
+- failures 0 / BLOCKED 0.
+- replay min clearance 30.914499mm.
+- max speed 43.090153deg/s.
+- replay max accel 60.000000000005deg/s².
+- tracking p95/max 12.360040 / 13.328100ms.
+
+사용자도 re-engage 1회 정상 동작을 확인했다. 로그 sequence 491에서 두 번째 TRACKING으로 기록됐다.
+원본 로그 SHA-256:
+`d091391676a2603c88c7e7d501e5163e22cc92e02a6b22ce2a506650f2eacd21`.
+
+첫 09:07 세션의 `quest_cycle_no_reengage`는 re-engage를 수행하기 전에 종료한 세션이라 발생한 범위 미완료이며,
+09:14 세션이 최종 acceptance evidence다.
+
+report의 acceleration comparison만 기존 controller regression과 같은 `+1e-4 rad/s²` numerical tolerance로 정렬했다.
+60deg/s² 설정 limit은 변경하지 않았다.
+
+near-hands recovery는 이번 실착 세션에서 발동하지 않았으며 기존 offline/replay 검증으로 남는다.
+fixed-base Quest→Unity→MuJoCo normal operator flow는 이 checkpoint에서 완료로 본다.

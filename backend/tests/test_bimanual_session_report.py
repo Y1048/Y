@@ -38,7 +38,21 @@ class SessionReportTests(unittest.TestCase):
         self.assertIn('logged_source_differs_from_current', result['warnings'])
         self.assertIn('tracking_tick_p95_exceeds_nominal_60hz_period', result['warnings'])
         self.assertLessEqual(result['output_fixed_dt']['max_speed_excess_deg_s'], 1e-9)
-        self.assertLessEqual(result['output_fixed_dt']['max_acceleration_deg_s2'], 60.0001)
+        self.assertLessEqual(
+            result['output_fixed_dt']['max_acceleration_deg_s2'],
+            report.ACCELERATION_LIMIT_DEG_S2
+            + report.ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2)
+
+    def test_acceleration_report_tolerance_matches_controller_regressions(self):
+        self.assertAlmostEqual(
+            report.ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2,
+            float(report.np.rad2deg(1e-4)), places=12)
+        self.assertGreater(
+            report.ACCELERATION_LIMIT_DEG_S2
+            + report.ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2, 60.0032)
+        self.assertLess(
+            report.ACCELERATION_LIMIT_DEG_S2
+            + report.ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2, 60.006)
 
     def test_cli_writes_machine_and_human_reports_without_replay(self):
         with tempfile.TemporaryDirectory() as directory:

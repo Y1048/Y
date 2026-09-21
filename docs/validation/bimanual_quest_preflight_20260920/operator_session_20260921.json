@@ -1,0 +1,44 @@
+{
+  "schema": "g1.bimanual.operator_session.validation.v1",
+  "date": "2026-09-21",
+  "simulation_only": true,
+  "hardware_output_authorized": false,
+  "source_log": "logs/test_results/bimanual/unity_20260921_091420_0176388.jsonl",
+  "source_log_sha256": "d091391676a2603c88c7e7d501e5163e22cc92e02a6b22ce2a506650f2eacd21",
+  "report_file": "logs/test_results/bimanual/reports/quest_cycle_20260921_091545_3894208.json",
+  "report_sha256": "816297ccb4de24475eb9c125975ecea4d462e300045118ea3c9c407d193d1ada",
+  "return_policy": "bimanual_staged_return_v2",
+  "mujoco_version": "3.12.0",
+  "quest_cycle_pass": true,
+  "replay_pass": true,
+  "failures": [],
+  "tracking_starts": 2,
+  "reengage_count": 1,
+  "completed_returns": 2,
+  "pinch_returns": 2,
+  "near_hands_recoveries": 0,
+  "final_state": "ready",
+  "final_reason": "pinch",
+  "transitions": [
+    ["ready", ""],
+    ["tracking", ""],
+    ["returning", "pinch"],
+    ["ready", "pinch"],
+    ["tracking", ""],
+    ["returning", "pinch"],
+    ["ready", "pinch"]
+  ],
+  "metrics": {
+    "maximum_speed_deg_s": 43.09015267709448,
+    "maximum_acceleration_deg_s2": 60.00000000000496,
+    "minimum_sampled_clearance_mm": 30.914498821651485,
+    "tracking_tick_p95_ms": 12.360040000044137,
+    "tracking_tick_max_ms": 13.328100000080667
+  },
+  "notes": [
+    "Operator confirmed one successful re-engage.",
+    "The re-engage is also present in the latest session log at sequence 491.",
+    "Near-hands recovery was not triggered in this operator session; it remains covered by deterministic offline/replay validation.",
+    "This is fixed-base simulation evidence only and does not validate physical G1 safety."
+  ]
+}

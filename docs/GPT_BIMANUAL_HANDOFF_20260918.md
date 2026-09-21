@@ -416,3 +416,36 @@ Unity 없이 추가로 닫은 항목:
 다음 실제 사용자 작업은 여전히 Unity SampleScene + Quest operator 체감 검증이다.
 테스트 후에는 `tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat`로 로그 판독부터 한다.
 실제 G1/SSH/DDS/motor output 또는 물리 안전 검증은 수행하지 않았다.
+
+## 2026-09-21 final Quest operator checkpoint
+
+실제 Quest operator test가 완료됐다. 최신 session:
+`logs/test_results/bimanual/unity_20260921_091420_0176388.jsonl`.
+
+`tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat` 결과는 PASS:
+- current-code replay PASS.
+- tracking starts 2.
+- re-engage 1.
+- pinch returns 2.
+- final READY.
+- failures 0.
+- min replay clearance 30.914499mm.
+- max output speed 43.090153deg/s.
+- max replay acceleration 60.000000000005deg/s².
+- tracking tick p95/max 12.360040 / 13.328100ms.
+
+사용자도 re-engage 1회가 실제로 정상 동작했다고 확인했다.
+원본 SHA-256은
+`d091391676a2603c88c7e7d501e5163e22cc92e02a6b22ce2a506650f2eacd21`.
+
+09:07 session은 re-engage 이전 종료라 verifier가 no_reengage를 반환했으나 기능 실패가 아니다.
+09:14 session에서 완전한 engage→pinch return→re-engage→pinch return→READY가 기록됐다.
+
+session report는 60deg/s² 설정을 건드리지 않고 기존 regression과 동일한
+`+1e-4 rad/s²` numerical comparison tolerance를 사용한다.
+
+near-hands recovery는 이 operator session에서는 발동하지 않았다.
+해당 경로는 기존 deterministic sweep/fixture/mirror/retry/UnityCycle 검증으로 유지한다.
+
+따라서 fixed-base bimanual simulation normal operator flow는 완료 checkpoint다.
+실제 G1/DDS/SSH/motor output 또는 물리 안전 검증은 여전히 범위 밖이다.

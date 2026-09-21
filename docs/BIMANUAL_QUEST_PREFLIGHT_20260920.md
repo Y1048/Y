@@ -96,20 +96,20 @@ UDP packet/feedback을 주고받았다.
 
 ## Full regression
 
-near-hands sweep 2개와 post-session cycle requirement 회귀가 포함되어 전체 bimanual suite는 95개다.
+near-hands sweep 2개, post-session cycle requirement, report numerical-tolerance 회귀가 포함되어 전체 bimanual suite는 96개다.
 source worktree:
 
-- `95/95 PASS`
-- runtime: `89.666s`
-- recorded replay p95: `5.23ms`
-- recorded replay max: `6.12ms`
+- `96/96 PASS`
+- runtime: `114.384s`
+- recorded replay p95: `6.63ms`
+- recorded replay max: `8.04ms`
 
 runtime folder:
 
-- `95/95 PASS`
-- runtime: `91.791s`
-- recorded replay p95: `7.53ms`
-- recorded replay max: `7.98ms`
+- `96/96 PASS`
+- runtime: `127.967s`
+- recorded replay p95: `7.19ms`
+- recorded replay max: `15.80ms`
 
 Windows Unity launcher/path contract는 source 집중 검증 포함 31/31 PASS,
 runtime의 `test_windows_tool_paths`는 23/23 PASS였다.
@@ -138,11 +138,41 @@ pinch returns 2, near-hands recovery 0, final READY였다.
 실제 노트북 CMD smoke에서 세 변수를 비운 뒤 각각 `C:\ProgramData`,
 `C:\ProgramData`, 사용자 Temp로 복구되는 것을 확인했다.
 
-## Remaining operator validation
+## 2026-09-21 Quest operator acceptance
 
-Unity 없이 닫을 수 있는 범위는 여기까지다. 다음 실제 operator 단계는
-`SampleScene Play + Quest`에서 손 추적/정렬/사용감과 실제 pinch 흐름을 확인하는 것이다.
+최신 operator session `unity_20260921_091420_0176388.jsonl`에서 normal flow acceptance를 닫았다.
 
-현재 검증은 fixed-base simulation과 sampled geometry에 한정된다.
+- Quest cycle verifier: PASS.
+- current-code replay: PASS.
+- tracking starts: 2.
+- re-engage: 1.
+- completed pinch returns: 2.
+- final state: READY / pinch.
+- BLOCKED: 0.
+- malformed/nonfinite output: 0.
+- replay minimum sampled clearance: 30.914499mm.
+- maximum output speed: 43.090153deg/s.
+- replay maximum output acceleration: 60.000000000005deg/s².
+- tracking control tick p95/max: 12.360040 / 13.328100ms.
+- near-hands recovery: 0 in this operator session.
+
+사용자도 실제로 re-engage 1회가 정상 동작했다고 확인했고,
+동일 re-engage가 로그 sequence 491에서 두 번째 TRACKING으로 기록되었다.
+세션 원본 SHA-256은
+`d091391676a2603c88c7e7d501e5163e22cc92e02a6b22ce2a506650f2eacd21`이다.
+
+첫 09:07 세션은 engage → pinch return → READY까지 정상이고 re-engage를 실제로 수행하기 전에
+끝났기 때문에 verifier가 `quest_cycle_no_reengage`를 반환했다. 이는 기능 실패가 아니라
+해당 세션 범위 미완료였다. 09:14 세션이 완전한 acceptance evidence다.
+
+session report의 acceleration comparison tolerance는 기존 controller regression과 동일한
+`+1e-4 rad/s²` numerical slack으로 맞췄다. 설정된 60deg/s² limit 자체는 변경하지 않았다.
+
+near-hands recovery는 이번 operator session에서는 실제 발동하지 않았다.
+그 경로는 deterministic 320-pose sweep, recorded fixture, mirror, retry/fail-closed,
+UnityCycle replay로 별도 검증된 상태를 유지한다.
+
+따라서 fixed-base Quest → Unity → MuJoCo **normal bimanual operator flow는 완료 checkpoint**로 본다.
+현재 범위는 fixed-base simulation과 sampled geometry에 한정되며,
 실제 G1의 연속시간 충돌 회피, 제동, 구조 오차, 네트워크 지연 또는 물리 안전을
 증명하거나 실행을 승인하지 않는다.

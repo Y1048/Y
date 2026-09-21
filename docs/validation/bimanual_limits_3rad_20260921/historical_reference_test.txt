@@ -1,0 +1,6 @@
+test_right_arm_matches_unchanged_reference_in_free_space (test_bimanual_motion_quality.MotionQualityTests.test_right_arm_matches_unchanged_reference_in_free_space) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.916s
+
+OK

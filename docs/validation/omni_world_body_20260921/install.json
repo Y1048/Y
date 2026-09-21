@@ -1,0 +1,20 @@
+{
+  "runtime": "C:\\Users\\user\\Desktop\\G1_Teleop_Project",
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\omni_world_body_20260921_143812",
+  "files": [
+    {
+      "path": "hardware/g1_arm_bridge/g1_omni_velocity_gateway.py",
+      "sha256": "d9172773a493e16935b06be70b4dd6bd29e0607f3e580ba7e4a02b084b7fc79f"
+    },
+    {
+      "path": "docs/G1_LIVE_INPUT_OBSERVATION_20260921.md",
+      "sha256": "34a56558894f50df486cf17c4341907cf6407ffed81e94981f8794f68ac8381d"
+    }
+  ],
+  "protected_file_count": 667,
+  "protected_unchanged": true,
+  "runtime_older_protocol_memo_preserved": true,
+  "active_processes_restarted": false,
+  "hardware_commands_executed": false,
+  "automatic_log_deletion_enabled": false
+}

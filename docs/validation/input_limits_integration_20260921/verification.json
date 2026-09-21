@@ -1,0 +1,85 @@
+{
+  "production_files": [
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_return.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_udp_cycle.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "tools/G1_INPUT_RECEIVE_AUDIT.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "tools/g1_observation_tap.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "tools/G1_VR_TELEOP_LAUNCH.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "tools/START_G1_VR_TELEOP.bat",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    },
+    {
+      "path": "hardware/g1_arm_bridge/g1_omni_velocity_gateway.py",
+      "source_unchanged": true,
+      "runtime_unchanged": true
+    }
+  ],
+  "all_unchanged": true,
+  "generated_tests_passed": 42,
+  "actual_user_test_status": "arm_verified_omni_stationary_input_only_walking_confirmation_pending",
+  "g1_tested": false,
+  "recommended_hardware_gains": null,
+  "arm_tracking_starts": 3,
+  "arm_reengage": 2,
+  "arm_pinch_returns_complete": 3,
+  "receiver_packets": 15656,
+  "exact_value_mismatches": 0,
+  "actual_simultaneous_walking_verified": false
+}

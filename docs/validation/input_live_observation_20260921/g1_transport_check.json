@@ -1,0 +1,30 @@
+{
+  "fixture": "generated, not live Quest/Omni measurements",
+  "motor_output": false,
+  "host": "192.168.123.164",
+  "port": 55070,
+  "final_tx_sequence": 199,
+  "ack_verified_count": 199,
+  "last_ack": {
+    "sequence": 198,
+    "rtt_ms": 31.000000000858563,
+    "ack_at": 9808.531,
+    "received_sha256": "12b225b590309be68e9678f1bf76f7f181476dc04789a29282daa349d84bdab0",
+    "receiver_log_records_dropped": 0,
+    "receiver_display_snapshots_dropped": null
+  },
+  "simultaneous_fresh_display_rows": 74,
+  "final_streams": {
+    "arm": "STALE",
+    "omni": "STALE"
+  },
+  "source_packets_rejected": 0,
+  "g1_received": 200,
+  "g1_sequence_range": [
+    0,
+    199
+  ],
+  "g1_sequence_gaps": 0,
+  "g1_all_packet_hashes_match": true,
+  "g1_log_records_dropped": 0
+}

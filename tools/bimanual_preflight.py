@@ -18,6 +18,7 @@ PARITY_FILES = [
     "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
     "MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py",
     "MuJoCo_G1_Controller/scripts/g1_bimanual_return.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py",
     "MuJoCo_G1_Controller/scripts/g1_bimanual_udp_cycle.py",
     "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py",
     "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs",
@@ -86,7 +87,7 @@ def check_no_hardware_imports(root):
     scripts = [
         "g1_bimanual_runtime.py", "g1_bimanual_sim.py",
         "g1_bimanual_unity_sim.py", "g1_bimanual_motion_policy.py",
-        "g1_bimanual_return.py", "g1_bimanual_udp_cycle.py",
+        "g1_bimanual_return.py", "g1_bimanual_limits.py", "g1_bimanual_udp_cycle.py",
         "g1_bimanual_session_report.py",
     ]
     for name in scripts:

@@ -10,6 +10,7 @@ import run_mink_g1_right_arm_prototype as base
 from g1_mink_return_cycle import SAFE_RIGHT_ARM_RAD
 from g1_virtual_center_tasks import JOINT_MAX_JERK_RAD_S3
 from g1_mink_trajectory import RuckigJointMotionLimiter
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2
 
 
 class BimanualReturnMotion:
@@ -25,7 +26,7 @@ class BimanualReturnMotion:
         # Mirror the original seven-joint intermediate pose, not a new pose.
         mirrored = SAFE_RIGHT_ARM_RAD * np.array([1., -1., -1., 1., -1., 1., -1.])
         self.waypoint = np.r_[mirrored, SAFE_RIGHT_ARM_RAD].copy()
-        self.acceleration_limits = np.full(14, np.deg2rad(60.))
+        self.acceleration_limits = np.full(14, JOINT_ACCELERATION_LIMIT_RAD_S2)
         self.jerk_limits = np.full(14, JOINT_MAX_JERK_RAD_S3)
         left_pairs = {tuple(map(int, pair)) for pair in simulation.policy_pairs['left']}
         right_pairs = {tuple(map(int, pair)) for pair in simulation.policy_pairs['right']}
@@ -181,6 +182,11 @@ class BimanualReturnMotion:
                 self.stage = 'fault'
                 s.state, s.reason = 'blocked', self.fault_reason
                 return False
+            # The first zero-velocity command still has braking acceleration.
+            # Consume one checked stationary sample before seeding Ruckig again,
+            # otherwise that acceleration can push a joint outward from rest.
+            if np.any(s.acceleration[s.dofs]):
+                return True
             self.recovering = False
             self.limiter = None
             if self.retry_separation_after_stop:

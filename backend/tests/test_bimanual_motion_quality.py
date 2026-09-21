@@ -14,6 +14,7 @@ from test_bimanual_unity_sim import packet
 import numpy as np
 import json
 from collections import Counter
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation, mink
 
 
@@ -33,7 +34,7 @@ def quality_case(side='right', axis=0, distance=None, ticks=600):
     for _ in range(ticks):
         previous = sim.velocity.copy()
         assert sim.step(goals), sim.reason
-        assert np.max(np.abs(sim.velocity-previous)) <= np.deg2rad(60.)*sim.dt+1e-6
+        assert np.max(np.abs(sim.velocity-previous)) <= JOINT_ACCELERATION_LIMIT_RAD_S2*sim.dt+1e-6
         assert np.all(np.abs(sim.velocity[sim.dofs]) <= sim.caps+1e-6)
         assert np.all(sim.config.q[sim.qids] >= sim.ranges[:,0]-1e-8)
         assert np.all(sim.config.q[sim.qids] <= sim.ranges[:,1]+1e-8)
@@ -75,7 +76,7 @@ def replay_recorded_motion():
         timings.append((time.perf_counter()-start)*1000)
         states.add(cycle.state)
         assert cycle.state!='blocked',cycle.reason
-        assert np.max(np.abs(sim.velocity-previous))<=np.deg2rad(60)*sim.dt+1e-6
+        assert np.max(np.abs(sim.velocity-previous))<=JOINT_ACCELERATION_LIMIT_RAD_S2*sim.dt+1e-6
         assert np.all(np.abs(sim.velocity[sim.dofs])<=sim.caps+1e-6)
         assert np.all(sim.config.q[sim.qids]>=sim.ranges[:,0]-1e-8)
         assert np.all(sim.config.q[sim.qids]<=sim.ranges[:,1]+1e-8)
@@ -89,7 +90,7 @@ def replay_recorded_motion():
     while cycle.state=='returning' and extra<1800:
         previous=sim.velocity.copy()
         cycle.tick(row['monotonic_s']+(extra+1)*sim.dt)
-        assert np.max(np.abs(sim.velocity-previous))<=np.deg2rad(60)*sim.dt+1e-6
+        assert np.max(np.abs(sim.velocity-previous))<=JOINT_ACCELERATION_LIMIT_RAD_S2*sim.dt+1e-6
         assert sim.clearance(sim.config.q)>=.005
         extra+=1
     assert cycle.state=='ready',cycle.reason
@@ -135,7 +136,10 @@ class MotionQualityTests(unittest.TestCase):
     def test_right_arm_matches_unchanged_reference_in_free_space(self):
         sys.path.insert(0,str(ROOT/'experiments/twist2_right_arm_manual'))
         from replay_upstream_mink import build, base
-        sim = BimanualSimulation()
+        from bimanual_replay_profiles import historical_recording_profile
+        # Compare algorithms under the reference's original limits. The new
+        # 3/3 profile intentionally differs in timing and has separate gates.
+        sim = self.enterContext(historical_recording_profile())
         model, planner, tracking = build()
         q = base._initial_configuration(model)
         planner.configuration.update(q)
@@ -208,9 +212,9 @@ class MotionQualityTests(unittest.TestCase):
         self.assertEqual(set(sim.motion),{'left','right'})
         self.assertEqual(sim.clearance_m,.005)
         self.assertEqual(sim.limits[2].minimum_distance_from_collisions,.006)
-        np.testing.assert_allclose(sim.caps,np.tile(np.deg2rad([90]*4+[180]*3),2))
+        np.testing.assert_allclose(sim.caps,np.full(14, JOINT_VELOCITY_LIMIT_RAD_S))
         for side,policy in sim.motion.items():
-            np.testing.assert_allclose(policy.acceleration_limits,np.deg2rad([60.]*7))
+            np.testing.assert_allclose(policy.acceleration_limits,np.full(7, JOINT_ACCELERATION_LIMIT_RAD_S2))
             rows,bounds=policy.yaw_velocity_bounds()
             self.assertEqual(rows.shape,(2,sim.model.nv))
             self.assertTrue(np.isfinite(bounds).all())

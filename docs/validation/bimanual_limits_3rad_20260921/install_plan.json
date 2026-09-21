@@ -1,0 +1,28 @@
+{
+  "source": "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration",
+  "runtime": "C:\\Users\\user\\Desktop\\G1_Teleop_Project",
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_limits_3rad_20260921_151406",
+  "files": [
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_limits.py",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_sim.py",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_motion_policy.py",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_return.py",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_session_report.py",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_udp_cycle.py",
+    "tools\\bimanual_preflight.py",
+    "docs\\G1_LIVE_INPUT_OBSERVATION_20260921.md",
+    "backend\\tests\\test_bimanual_sim.py",
+    "backend\\tests\\test_bimanual_return.py",
+    "backend\\tests\\test_bimanual_motion_quality.py",
+    "backend\\tests\\test_bimanual_marker_feedback.py",
+    "backend\\tests\\test_bimanual_boundaries.py",
+    "backend\\tests\\test_bimanual_near_hands_sweep.py",
+    "backend\\tests\\test_bimanual_quest_reengage.py",
+    "backend\\tests\\test_bimanual_recorded_session.py",
+    "backend\\tests\\test_bimanual_unity_sim.py",
+    "backend\\tests\\test_bimanual_runtime.py",
+    "backend\\tests\\test_bimanual_session_report.py",
+    "backend\\tests\\bimanual_replay_profiles.py"
+  ]
+}

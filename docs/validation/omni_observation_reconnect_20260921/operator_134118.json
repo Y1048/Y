@@ -1,0 +1,147 @@
+{
+  "data_kind": "actual_operator_PC_sensor_inputs_and_G1_observation_receipt",
+  "hardware_motor_validation": false,
+  "g1": {
+    "g1_log": "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\logs\\test_results\\input_observation_live_20260921\\g1_received_134120.jsonl",
+    "file_sha256": "af12ad5d78a7c5c083df8de74b99a3ae829193b8086e4d903d720774b5e38c83",
+    "rows": 3553,
+    "received": 3553,
+    "kinds": {
+      "received_observation": 3553
+    },
+    "span_s": 59.197834046000025,
+    "observed_receive_hz": 60.00219530396834,
+    "first_sequence": 136,
+    "last_sequence": 3688,
+    "missing_inside_received_window": 0,
+    "ordered_all": true,
+    "packet_digest_mismatch": 0,
+    "max_log_drop": 0,
+    "max_receive_gap_ms": 18.367220999948586,
+    "arm_status": {
+      "FRESH_LIVE": 3553
+    },
+    "omni_status": {
+      "FRESH_LIVE": 3553
+    },
+    "both_fresh": 3553,
+    "g1_arm_state": {
+      "ready": 2093,
+      "tracking": 1150,
+      "returning": 310
+    },
+    "arm_source_matches": 3553,
+    "arm_source_mismatches": 0,
+    "omni_source_matches": 3553,
+    "omni_source_mismatches": 0,
+    "cpp_command_sent_any": false,
+    "sequence_skip_before_first_record": 136
+  },
+  "omni": {
+    "file": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\omni_gateway_readonly\\omni_observation_20260921_134118_368864.csv",
+    "rows": 1923,
+    "span_s": 66.31300000000192,
+    "processed_new_samples_hz": 28.983758840648807,
+    "compute_tick_rate_estimate_hz": 59.9897479194295,
+    "raw_first": 0,
+    "raw_last": 6195,
+    "skipped_raw": 4273,
+    "deadline_misses": 0,
+    "max_input_gap_s": 0.15700000000288128,
+    "nonmonotonic": 0,
+    "equal_timestamp": 190,
+    "calibrated_rows": 1894,
+    "configured_hz": [
+      "60.0"
+    ],
+    "ranges": {
+      "mx": [
+        0.0,
+        0.0
+      ],
+      "my": [
+        0.0,
+        0.0
+      ],
+      "arm_yaw_deg": [
+        112.49,
+        112.86
+      ],
+      "vx": [
+        0.0,
+        0.0
+      ],
+      "vy": [
+        0.0,
+        0.0
+      ],
+      "yaw_rate": [
+        0.0,
+        0.0
+      ],
+      "yaw_diff_deg": [
+        -0.17000000000001592,
+        0.19999999999998863
+      ]
+    },
+    "nonfinite": 0,
+    "raw_json_matches": true
+  },
+  "arm": {
+    "file": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\bimanual\\unity_20260921_134118_416682.jsonl",
+    "file_sha256": "d9fd652c7e74592d17af62642e5fc3fb58802bac64f7863bb7b20b14e6899b18",
+    "source_hashes": {
+      "g1_bimanual_runtime.py": "98ddef138fe03bc59f7e1719ee966949d1e1f3125739825d9983b92c0245530b",
+      "g1_bimanual_sim.py": "e511ac7f95b1df7913ba1b523ee6b9ff318b8823f14df52162aa69b5d8b44c02",
+      "g1_bimanual_unity_sim.py": "cd2dc3acf30766d47b035d658679737b532c2455591d6788c2e7a5096df7a6fa",
+      "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe",
+      "g1_bimanual_return.py": "ff8f27f84ad2ff07973c8e23fd77eb4e790f905003aeb94dbc72512f6da2cdd6"
+    },
+    "states": 3821,
+    "state_counts": {
+      "ready": 2372,
+      "tracking": 1139,
+      "returning": 310
+    },
+    "observed_loop_hz": 59.82140713533341,
+    "deadline_misses": 11,
+    "transitions": [
+      {
+        "state": "ready",
+        "reason": "",
+        "timestamp": 16873.609
+      },
+      {
+        "state": "tracking",
+        "reason": "",
+        "timestamp": 16897.625
+      },
+      {
+        "state": "returning",
+        "reason": "pinch",
+        "timestamp": 16916.796
+      },
+      {
+        "state": "ready",
+        "reason": "pinch",
+        "timestamp": 16921.953
+      }
+    ],
+    "input_count": 1257,
+    "input_accepted": 1256,
+    "shutdown": {
+      "kind": "shutdown",
+      "simulation_only": true,
+      "backend_id": "1c259c4945284f1fa14b2a48c94edf53",
+      "state": "ready"
+    },
+    "note": "One final input timestamp regressed and was rejected; cycle still completed READY"
+  },
+  "limitations": [
+    "Omni movementXY and output vx/vy/yaw_rate all zero: stationary receipt verified, walking/turn-direction not tested",
+    "G1 received packet sequences136..3688 are contiguous; sequences0..135 precede first saved record, not claimed received",
+    "100Hz display was not recorded in this operator session; previous bounded G1 display test verified100Hz",
+    "PC ACK console history was not retained; G1 receipt file and source equality are the evidence",
+    "Omni new processed sample frequency28.98Hz is distinct from59.99Hz processing ticks"
+  ]
+}

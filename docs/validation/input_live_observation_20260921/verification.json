@@ -1,0 +1,31 @@
+{
+  "scope": "G1-side external-controller input receiver mock, no actuation",
+  "actual_g1_initial_angles": null,
+  "cpp_command_sent": false,
+  "tests": {
+    "bimanual_regression": {
+      "passed": 102,
+      "seconds": 116.954
+    },
+    "omni_mapper": {
+      "passed": 12
+    },
+    "omni_existing_mock_websocket_e2e": {
+      "status": "PASS",
+      "packets": 10
+    },
+    "observation_tap": {
+      "passed": 9
+    },
+    "observation_receiver": {
+      "passed": 10
+    },
+    "real_producers_with_generated_input_pipeline": {
+      "passed": 2,
+      "seconds": 12.156
+    }
+  },
+  "network": "200 generated observations received on actualG1; all sequence/digests verified; NOT measured Quest/Omni input",
+  "hardware_validation": false,
+  "live_operator_confirmation": "pending: start OmniConnect and UnityPlay"
+}

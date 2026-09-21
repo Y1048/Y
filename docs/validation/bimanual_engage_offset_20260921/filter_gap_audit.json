@@ -1,0 +1,23 @@
+{
+  "source_log": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\bimanual\\unity_20260921_095254_4149346.jsonl",
+  "data_kind": "recorded Quest input and simulated IK; not G1 measurements",
+  "position_filter_tau_s": 0.06,
+  "tracking_input_max_interval_s": 0.04102130000001125,
+  "sides": {
+    "left": {
+      "samples": 908,
+      "raw_to_filtered_gap_median_m": 0.000572608426607603,
+      "raw_to_filtered_gap_max_m": 0.04922731860006592,
+      "filter_reconstruction_max_error_m": 5.931130932667741e-17,
+      "projected_ticks": 0
+    },
+    "right": {
+      "samples": 908,
+      "raw_to_filtered_gap_median_m": 0.00045848386570269864,
+      "raw_to_filtered_gap_max_m": 0.04387049835077027,
+      "filter_reconstruction_max_error_m": 5.96906223549092e-17,
+      "projected_ticks": 0
+    }
+  },
+  "limitation": "Unity diagnostic has no matching feedback sequence/time; exact 5.90/5.96 cm display sample cannot be uniquely aligned. Rendering/feedback delay is not measured here."
+}

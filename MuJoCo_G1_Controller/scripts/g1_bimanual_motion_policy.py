@@ -8,6 +8,7 @@ import numpy as np
 import mink
 import mujoco
 import run_mink_g1_right_arm_prototype as base
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2
 
 class ElbowClearanceTask(mink.Task):
     """World lateral/vertical elbow bias; FrameTask axes are body-local."""
@@ -60,7 +61,7 @@ class ArmMotionPolicy:
         self.joint_ids = np.array([base._joint_id(model, name) for name in names])
         self.qpos_ids = model.jnt_qposadr[self.joint_ids]
         self.dofs = model.jnt_dofadr[self.joint_ids]
-        self.acceleration_limits = np.full(7, np.deg2rad(60.))
+        self.acceleration_limits = np.full(7, JOINT_ACCELERATION_LIMIT_RAD_S2)
         self.wrist_task = mink.FrameTask(side + '_wrist_yaw_link', 'body',
             base.POSITION_COST, base.ORIENTATION_COST,
             gain=base.FRAME_GAIN, lm_damping=base.LM_DAMPING)

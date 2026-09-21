@@ -1,0 +1,350 @@
+{
+  "data_kind": "synthetic_fixed_targets",
+  "hardware_validated": false,
+  "without_posture": true,
+  "source_sha256": {
+    "g1_bimanual_sim.py": "e511ac7f95b1df7913ba1b523ee6b9ff318b8823f14df52162aa69b5d8b44c02",
+    "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe"
+  },
+  "cases": [
+    {
+      "name": "rotation_y_minus45",
+      "checkpoints": [
+        {
+          "seconds": 6.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 14.382028073429334,
+          "rotation_error_deg": 2.2624670370675566,
+          "joint_angles_deg": [
+            4.109111055481795,
+            -21.472538057337538,
+            -3.2488918575046486,
+            79.42767993988213,
+            -3.445669431403189,
+            -61.32441772558183,
+            0.49512826234424073
+          ],
+          "joint_margin_deg": [
+            148.89353855625325,
+            107.52890951636732,
+            146.75145890774485,
+            40.57232006011786,
+            109.55421283988804,
+            31.17560759372366,
+            92.00489705696125
+          ],
+          "speed_peak_deg_s": 0.8443072646263104,
+          "clearance_mm": 39.96370287343118,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.29277629457809135
+          }
+        },
+        {
+          "seconds": 12.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 15.243267598949435,
+          "rotation_error_deg": 1.0345827589898131,
+          "joint_angles_deg": [
+            3.5932010999066866,
+            -21.417812782265845,
+            -4.093694984272637,
+            80.74764262541817,
+            -4.283217324044031,
+            -63.36600945987599,
+            0.5527009733328198
+          ],
+          "joint_margin_deg": [
+            149.40944851182834,
+            107.58363479143901,
+            145.90665578097688,
+            39.25235737458182,
+            108.7166649472472,
+            29.134015859429503,
+            91.94732434597269
+          ],
+          "speed_peak_deg_s": 0.12858887683572445,
+          "clearance_mm": 39.913094338624255,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.1927231438795887
+          }
+        },
+        {
+          "seconds": 20.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 15.461219747211542,
+          "rotation_error_deg": 0.7271153168487429,
+          "joint_angles_deg": [
+            3.475824467582585,
+            -21.348995570241605,
+            -4.848430375303189,
+            81.00568011179068,
+            -4.974935719062159,
+            -63.82362904397496,
+            0.6360629945191993
+          ],
+          "joint_margin_deg": [
+            149.52682514415244,
+            107.65245200346325,
+            145.15192038994633,
+            38.994319888209304,
+            108.02494655222907,
+            28.67639627533054,
+            91.8639623247863
+          ],
+          "speed_peak_deg_s": 0.08596658172729414,
+          "clearance_mm": 39.822874054336005,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.14724594552657994
+          }
+        }
+      ]
+    },
+    {
+      "name": "translation_y_minus50mm",
+      "checkpoints": [
+        {
+          "seconds": 6.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 13.766119148354003,
+          "rotation_error_deg": 0.18067965179530682,
+          "joint_angles_deg": [
+            0.11642961548455462,
+            -28.0798545798223,
+            -4.116272037345436,
+            79.64096044798333,
+            -2.0912695618098525,
+            -14.593771445442627,
+            7.259269279186319
+          ],
+          "joint_margin_deg": [
+            152.88621999625047,
+            100.92159299388256,
+            145.8840787279041,
+            40.35903955201666,
+            110.90861270948137,
+            77.90625387386288,
+            85.24075604011918
+          ],
+          "speed_peak_deg_s": 0.43102962466966127,
+          "clearance_mm": 40.37250302300654,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.29595865343648353
+          }
+        },
+        {
+          "seconds": 12.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 13.655323010544057,
+          "rotation_error_deg": 0.1898299757764213,
+          "joint_angles_deg": [
+            -0.35812638045801226,
+            -28.207636619510676,
+            -4.840927907266577,
+            80.74091775816117,
+            -2.8388973249166787,
+            -15.219736717399543,
+            7.452966813378323
+          ],
+          "joint_margin_deg": [
+            153.36077599219306,
+            100.79381095419419,
+            145.15942285798292,
+            39.25908224183882,
+            110.16098494637454,
+            77.28028860190595,
+            85.04705850592717
+          ],
+          "speed_peak_deg_s": 0.10253891246289562,
+          "clearance_mm": 40.37250302300654,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.20421399329774426
+          }
+        },
+        {
+          "seconds": 20.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 13.641768852891147,
+          "rotation_error_deg": 0.19242256434174942,
+          "joint_angles_deg": [
+            -0.4804756167998169,
+            -28.19412180477323,
+            -5.50085999119276,
+            81.00559432925982,
+            -3.500683766686222,
+            -15.368169367303167,
+            7.525943156056893
+          ],
+          "joint_margin_deg": [
+            153.48312522853485,
+            100.80732576893162,
+            144.49949077405674,
+            38.99440567074017,
+            109.499198504605,
+            77.13185595200233,
+            84.9740821632486
+          ],
+          "speed_peak_deg_s": 0.07407153954479809,
+          "clearance_mm": 40.37250302300654,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.15477917253096285
+          }
+        }
+      ]
+    },
+    {
+      "name": "translation_z_minus50mm",
+      "checkpoints": [
+        {
+          "seconds": 6.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 37.73320557053851,
+          "rotation_error_deg": 0.3960259275233249,
+          "joint_angles_deg": [
+            -0.041865198685334386,
+            -19.226511083361547,
+            -2.69831446196343,
+            80.57924334294327,
+            -4.719588337656861,
+            -15.158803893666372,
+            -2.1938045930474104
+          ],
+          "joint_margin_deg": [
+            153.04451481042037,
+            109.77493649034331,
+            147.3020363032861,
+            39.42075665705672,
+            108.28029393363437,
+            77.34122142563912,
+            90.30622072625808
+          ],
+          "speed_peak_deg_s": 0.20962027060108407,
+          "clearance_mm": 37.10293923649662,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.1285479658104286
+          }
+        },
+        {
+          "seconds": 12.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 37.612721933493596,
+          "rotation_error_deg": 0.4582644729504384,
+          "joint_angles_deg": [
+            -0.2138646448473988,
+            -18.940578496442054,
+            -3.523555262925448,
+            81.05812196712587,
+            -5.634232710901212,
+            -15.399462076119118,
+            -2.3646374586964733
+          ],
+          "joint_margin_deg": [
+            153.21651425658243,
+            109.9377355191194,
+            146.47679550232405,
+            38.941878032874115,
+            107.36564956039001,
+            77.10056324318639,
+            90.13538786060901
+          ],
+          "speed_peak_deg_s": 0.12469685074497457,
+          "clearance_mm": 36.6945402191042,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.09284169423690274
+          }
+        },
+        {
+          "seconds": 20.0,
+          "state": "tracking",
+          "reason": "",
+          "position_error_mm": 37.56948091983655,
+          "rotation_error_deg": 0.4949970602837889,
+          "joint_angles_deg": [
+            -0.22904018519614922,
+            -18.73950728618298,
+            -4.441185484806684,
+            81.11377408488262,
+            -6.582965820726614,
+            -15.40847884542731,
+            -2.4064665324894614
+          ],
+          "joint_margin_deg": [
+            153.23168979693116,
+            109.73666430886033,
+            145.5591652804428,
+            38.88622591511737,
+            106.4169164505646,
+            77.0915464738782,
+            90.09355878681605
+          ],
+          "speed_peak_deg_s": 0.11572185564703788,
+          "clearance_mm": 36.40240821813979,
+          "motion": {
+            "wrist_priority_weight": 0.0,
+            "orientation_cost_scale": 1.0,
+            "position_priority_active": false,
+            "elbow_assist_active": false,
+            "target_projected": false,
+            "target_projection_distance_m": 0.0,
+            "approach_rate_s": 0.09022048015172372
+          }
+        }
+      ]
+    }
+  ]
+}

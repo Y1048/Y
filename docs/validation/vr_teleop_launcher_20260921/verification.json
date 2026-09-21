@@ -1,0 +1,16 @@
+{
+  "source_preserved_files": 313,
+  "runtime_preserved_files": 302,
+  "installed": {
+    "tools/START_G1_VR_TELEOP.bat": "2e013349ae2b29d3d48ab8312177862f3c9ef5fdcd6724977b78beccf6c5cb41",
+    "tools/G1_VR_TELEOP_LAUNCH.py": "c41bd81f5f3bec6c2e783d525608356298e1bf3f9517051c9bcd114e2d074a51",
+    "docs/G1_LIVE_INPUT_OBSERVATION_20260921.md": "56357e5185c3a61c678e8bc5da070c04d64489b2b171b68e041fd98da12f0efb"
+  },
+  "tests_passed": 16,
+  "actual_runtime_bat_check_only": "PASS at 2026-09-21 14:58 KST; KEEP none; plan receive/send/omni/arm/camera",
+  "fresh_five_window_launch_executed": false,
+  "measured_camera_video_verified": false,
+  "motor_output_executed": false,
+  "original_launchers_modified": false,
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\vr_teleop_launcher_20260921_145817"
+}

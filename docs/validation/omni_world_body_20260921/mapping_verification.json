@@ -1,0 +1,64 @@
+{
+  "data_kind": "generated offline samples; no measured direction or G1 motor test",
+  "samples": 1000,
+  "yaw_and_calibration_timing_state_unchanged": true,
+  "translation_different_samples": 921,
+  "forward_examples": [
+    {
+      "arm_yaw_deg": 0,
+      "mx": 0.5,
+      "my": 0.0,
+      "vx": 0.3652173913043478,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "arm_yaw_deg": 45,
+      "mx": 0.3535533905932738,
+      "my": 0.3535533905932738,
+      "vx": 0.36521739130434794,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "arm_yaw_deg": 90,
+      "mx": 3.061616997868383e-17,
+      "my": 0.5,
+      "vx": 0.3652173913043478,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "arm_yaw_deg": 112,
+      "mx": -0.18730329670795604,
+      "my": 0.4635919272833937,
+      "vx": 0.3652173913043478,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "arm_yaw_deg": 180,
+      "mx": -0.5,
+      "my": 6.123233995736766e-17,
+      "vx": 0.3652173913043478,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "arm_yaw_deg": -90,
+      "mx": 3.061616997868383e-17,
+      "my": -0.5,
+      "vx": 0.3652173913043478,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "arm_yaw_deg": 359,
+      "mx": 0.49992384757819563,
+      "my": -0.00872620321864178,
+      "vx": 0.3652173913043478,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    }
+  ]
+}

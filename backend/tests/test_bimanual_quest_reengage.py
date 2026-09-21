@@ -10,8 +10,11 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "MuJoCo_G1_Controller/scripts"))
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_unity_sim import UnityCycle, decode
+from backend.tests.bimanual_replay_profiles import (
+    RECORDED_ACCELERATION_RAD_S2, historical_recording_profile)
 
 FIXTURE = ROOT / "backend/tests/fixtures/bimanual_quest_reengage_20260918.json.gz"
 
@@ -61,9 +64,21 @@ class QuestReengageReplayTests(unittest.TestCase):
         self.assertIn((2215, False, True), engage_edges)
 
     def test_replay_matches_logged_joint_path_and_two_returns(self):
-        data = rows()
+        with historical_recording_profile() as sim:
+            self._replay(sim, exact_recording=True)
+
+    def test_current_profile_preserves_two_cycles_and_bounds(self):
         sim = BimanualSimulation()
+        np.testing.assert_array_equal(sim.caps, np.full(14, JOINT_VELOCITY_LIMIT_RAD_S))
+        self._replay(sim, exact_recording=False)
+
+    def _replay(self, sim, *, exact_recording):
+        data = rows()
         cycle = UnityCycle(sim)
+        acceleration_limit = (RECORDED_ACCELERATION_RAD_S2 if exact_recording
+                              else JOINT_ACCELERATION_LIMIT_RAD_S2)
+        frozen = np.ones(sim.model.nq, dtype=bool)
+        frozen[sim.qids] = False
         state_changes = []
         previous_state = None
         minimum_clearance = .2
@@ -79,20 +94,30 @@ class QuestReengageReplayTests(unittest.TestCase):
                 continue
 
             previous_velocity = sim.velocity[sim.dofs].copy()
+            previous_q = sim.config.q[sim.qids].copy()
             cycle.tick(row["monotonic_s"])
-            self.assertEqual(cycle.state, row["state"])
-            self.assertEqual(cycle.reason, row["reason"])
+            if exact_recording:
+                self.assertEqual(cycle.state, row["state"])
+                self.assertEqual(cycle.reason, row["reason"])
             logged_q = np.asarray(row["q_rad"], dtype=float)
             actual_q = sim.config.q[sim.qids]
             maximum_q_error = max(maximum_q_error,
                                   float(np.max(np.abs(actual_q - logged_q))))
-            np.testing.assert_allclose(actual_q, logged_q, atol=5e-6, rtol=0)
+            if exact_recording:
+                np.testing.assert_allclose(actual_q, logged_q, atol=5e-6, rtol=0)
+            np.testing.assert_allclose((actual_q - previous_q) / sim.dt,
+                                       sim.velocity[sim.dofs], atol=1e-10, rtol=0)
+            self.assertTrue(np.all(np.abs(sim.velocity[sim.dofs]) <= sim.caps + 1e-6))
+            self.assertTrue(np.all(actual_q >= sim.ranges[:, 0] - 1e-8))
+            self.assertTrue(np.all(actual_q <= sim.ranges[:, 1] + 1e-8))
+            np.testing.assert_array_equal(sim.config.q[frozen], sim.home[frozen])
             acceleration = np.max(np.abs(sim.velocity[sim.dofs] - previous_velocity)) / sim.dt
             maximum_acceleration = max(maximum_acceleration, float(acceleration))
-            self.assertLessEqual(acceleration, np.deg2rad(60.0) + 1e-4)
-            if row.get("tick_action") in ("tracking", "tracking_braking", "returning"):
-                minimum_clearance = min(minimum_clearance, sim.clearance(sim.config.q))
-                self.assertGreaterEqual(minimum_clearance, sim.clearance_m)
+            self.assertLessEqual(acceleration, acceleration_limit + 1e-4)
+            clearance = sim.clearance(sim.config.q)
+            self.assertTrue(np.isfinite(clearance))
+            minimum_clearance = min(minimum_clearance, clearance)
+            self.assertGreaterEqual(minimum_clearance, sim.clearance_m)
 
             key = (cycle.state, cycle.reason)
             if key != previous_state:
@@ -106,7 +131,10 @@ class QuestReengageReplayTests(unittest.TestCase):
         self.assertEqual(sim.return_motion.stage, "complete")
         self.assertEqual(sim.return_motion.replans, 0)
         self.assertEqual(np.max(np.abs(sim.velocity)), 0.0)
+        np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids],
+                                   atol=1e-6, rtol=0)
         result = {
+            "exact_recording": exact_recording,
             "state_ticks": sum(row["kind"] == "state" for row in data),
             "input_rows": sum(row["kind"] == "input" for row in data),
             "transitions": state_changes,

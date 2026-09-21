@@ -1,0 +1,24 @@
+{
+  "reason": "user requested no automatic deletion",
+  "restored": [
+    {
+      "path": "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
+      "sha256": "db285dd6c137fbdee3dd87a694713bc155dd66e1c1fbe6e5363551fe1e515af5"
+    },
+    {
+      "path": "tools/G1_INPUT_RECEIVE_AUDIT.py",
+      "sha256": "acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b"
+    },
+    {
+      "path": "docs/G1_LIVE_INPUT_OBSERVATION_20260921.md",
+      "sha256": "78522f880f2ed934b50a431eb2ee5feb07d86965eb8ce246348e436af56e00e3"
+    }
+  ],
+  "helper_removed_from_source_and_runtime": true,
+  "retention_tests_removed": true,
+  "real_logs_deleted": false,
+  "remote_rollback_pending": false,
+  "remote_receiver_sha256": "acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b",
+  "remote_helper_absent": true,
+  "automatic_log_deletion_enabled": false
+}

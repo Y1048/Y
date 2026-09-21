@@ -10,6 +10,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'MuJoCo_G1_Controller/scripts'))
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 import g1_bimanual_sim as core
 from g1_bimanual_unity_sim import UnityCycle, decode, mink
 from test_bimanual_unity_sim import packet
@@ -40,7 +41,7 @@ class OutputContinuityTests(unittest.TestCase):
         np.testing.assert_allclose(output_velocity, self.sim.velocity[self.sim.dofs], atol=1e-10, rtol=0)
         acceleration = np.max(np.abs(output_velocity-self.previous_output_velocity))/self.sim.dt
         self.max_output_acceleration = max(self.max_output_acceleration, acceleration)
-        self.assertLessEqual(acceleration, np.deg2rad(60.)+1e-4)
+        self.assertLessEqual(acceleration, JOINT_ACCELERATION_LIMIT_RAD_S2+1e-4)
         self.previous_output_velocity = output_velocity
         self.assertTrue(np.all(np.abs(output_velocity) <= self.sim.caps+1e-6))
         self.assertGreaterEqual(self.sim.clearance(self.sim.config.q), .005)

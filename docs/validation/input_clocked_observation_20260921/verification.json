@@ -1,0 +1,42 @@
+{
+  "data_kind": "synthetic_generated_fixtures_only",
+  "source_tests": [
+    {
+      "command": "py -3.11 -B -m unittest backend.tests.test_g1_observation_tap backend.tests.test_g1_observation_audit backend.tests.test_g1_observation_pipeline",
+      "passed": 26,
+      "elapsed_s": 19.33
+    },
+    {
+      "command": "py -3.11 -B -m unittest hardware.g1_arm_bridge.test_g1_omni_clocked_observation hardware.g1_arm_bridge.test_g1_omni_velocity_gateway",
+      "passed": 19,
+      "elapsed_s": 0.942
+    }
+  ],
+  "initial_collection_error": "unittest discover -s hardware/g1_arm_bridge omitted package root; rerun full module paths passed",
+  "loopback": {
+    "ik_observed_hz": 59.99931242062254,
+    "ik_deadline_misses": 0,
+    "received_packets": 420,
+    "receive_observed_hz": 59.99427262315098,
+    "display_frames": 800,
+    "display_observed_hz": 100.06261740763203,
+    "repeated_display_frames": 380
+  },
+  "python38_receiver_syntax_pass": true,
+  "runtime_check_only_pass": true,
+  "runtime_protected_sha256_count": 666,
+  "g1_deployed": true,
+  "actual_quest_omni_validation": false,
+  "hardware_output": false,
+  "g1_initial_connection_attempt": "SSH timeout; subsequent user connection succeeded",
+  "g1_receiver_backup": "G1_INPUT_RECEIVE_AUDIT.before_clocked_20260921.py",
+  "g1_receiver_smoke": {
+    "frames": 120,
+    "display_hz": 99.9999322689534,
+    "all_wait": true,
+    "data_kind": "G1_idle_receiver_no_sensor_input",
+    "receiver_sha256": "acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b",
+    "port_55070_free_after_bounded_test": true,
+    "hardware_output": false
+  }
+}

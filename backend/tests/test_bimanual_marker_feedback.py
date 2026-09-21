@@ -8,6 +8,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'MuJoCo_G1_Controller/scripts'))
 from g1_bimanual_unity_sim import UnityCycle, BASIS, mink
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 from test_bimanual_unity_sim import packet
 from g1_bimanual_unity_sim import decode
@@ -62,8 +63,8 @@ class MarkerFeedbackTests(unittest.TestCase):
         before = sim.config.q.copy()
         cycle.tick(.02)
         self.assertNotEqual(cycle.state, 'blocked')
-        self.assertLessEqual(float(np.max(np.abs(sim.velocity))), np.deg2rad(60)*sim.dt+1e-6)
-        self.assertLessEqual(float(np.max(np.abs(sim.config.q-before))), np.deg2rad(60)*sim.dt**2+1e-6)
+        self.assertLessEqual(float(np.max(np.abs(sim.velocity))), JOINT_ACCELERATION_LIMIT_RAD_S2*sim.dt+1e-6)
+        self.assertLessEqual(float(np.max(np.abs(sim.config.q-before))), JOINT_ACCELERATION_LIMIT_RAD_S2*sim.dt**2+1e-6)
         self.assertGreaterEqual(sim.clearance(sim.config.q), .005)
 
     def test_marker_is_requested_goal_and_feedback_does_not_change_motion(self):

@@ -1,0 +1,57 @@
+QUALITY {"side": "left", "axis": 0, "distance": 0.02, "ticks": 600, "peak_joint_excursion_deg": [5.022421146659719, 0.13199090009686476, 0.07998797269931203, 3.7690904195229833, 0.5399795018444573, 1.7351574609892269, 0.20022185352112237], "peak_position_error_mm": 19.71368802973762, "overshoot_mm": 0.0, "final_position_error_mm": 0.22043824511466123, "final_rotation_error_deg": 0.0005997196663172824, "reasons": {"tracking": 600}}
+QUALITY {"side": "left", "axis": 0, "distance": 0.05, "ticks": 600, "peak_joint_excursion_deg": [14.412938985142885, 0.4134852984927938, 0.34790749292510226, 14.207353112749656, 1.7216069424844473, 3.4114035021413702, 0.45158230555746015], "peak_position_error_mm": 49.58613606905239, "overshoot_mm": 0.0, "final_position_error_mm": 1.6765597980738538, "final_rotation_error_deg": 0.011135656045663677, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 0, "distance": 0.02, "ticks": 600, "peak_joint_excursion_deg": [5.022421146660071, 0.13199090009712874, 0.07998797269869441, 3.7690904195234793, 0.5399795018440026, 1.7351574610103788, 0.20022185352071936], "peak_position_error_mm": 19.71368802973762, "overshoot_mm": 0.0, "final_position_error_mm": 0.22043824511430188, "final_rotation_error_deg": 0.0005997196663335031, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 0, "distance": 0.05, "ticks": 600, "peak_joint_excursion_deg": [14.412938985093446, 0.4134852984927779, 0.3479074929246462, 14.20735311263171, 1.7216069424836715, 3.4114035021455535, 0.451582305557387], "peak_position_error_mm": 49.58613606905239, "overshoot_mm": 0.0, "final_position_error_mm": 1.676559798109554, "final_rotation_error_deg": 0.01113565604504581, "reasons": {"tracking": 600}}
+test_fixed_position_approach_has_no_overshoot (test_bimanual_motion_quality.MotionQualityTests.test_fixed_position_approach_has_no_overshoot) ... ok
+QUALITY {"side": "left", "axis": 0, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.2311605759195658, 2.619176371879675, 8.397687753366698, 0.12789008828401868, 43.77912977594301, 1.8528979697157961, 1.8984517453333762], "peak_position_error_mm": 0.9713995682088153, "overshoot_mm": 0.0, "final_position_error_mm": 0.05750365339426639, "final_rotation_error_deg": 0.045137683431364255, "reasons": {"tracking": 600}}
+test_local_x_rotation_stays_wrist_dominant_on_both_arms (test_bimanual_motion_quality.MotionQualityTests.test_local_x_rotation_stays_wrist_dominant_on_both_arms) ... ok
+QUALITY {"side": "right", "axis": 0, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.13125059338427889, 2.612953859267902, 8.344877896579606, 0.6410681048602518, 43.77667871859908, 2.193024449888986, 1.6581419403413382], "peak_position_error_mm": 0.9719352289747655, "overshoot_mm": 0.22207871682103364, "final_position_error_mm": 0.17755919968566367, "final_rotation_error_deg": 0.04528321431052581, "reasons": {"tracking": 600}}
+QUALITY {"side": "left", "axis": 2, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.028108409968687267, 0.8071275093937559, 2.4992257627480594, 0.11505383305715944, 2.50624282291284, 0.06872925950709678, 44.639414892773225], "peak_position_error_mm": 3.1656540316796966, "overshoot_mm": 0.20040131184372728, "final_position_error_mm": 0.1525383649415128, "final_rotation_error_deg": 0.052703328411293715, "reasons": {"tracking": 600}}
+QUALITY {"side": "right", "axis": 2, "distance": null, "ticks": 600, "peak_joint_excursion_deg": [0.03275203922399547, 1.0021572387249664, 3.1011482800806482, 0.0818390356992984, 3.1090116145596562, 0.1016615793560672, 44.49749608164215], "peak_position_error_mm": 3.165744460319811, "overshoot_mm": 0.0, "final_position_error_mm": 0.1646011649040643, "final_rotation_error_deg": 0.05255548084279939, "reasons": {"tracking": 600}}
+test_local_z_rotation_stays_wrist_dominant_on_both_arms (test_bimanual_motion_quality.MotionQualityTests.test_local_z_rotation_stays_wrist_dominant_on_both_arms) ... ok
+test_orientation_priority_hysteresis_is_reversible_for_each_arm (test_bimanual_motion_quality.MotionQualityTests.test_orientation_priority_hysteresis_is_reversible_for_each_arm) ... ok
+test_policies_do_not_remove_bilateral_collision_constraints (test_bimanual_motion_quality.MotionQualityTests.test_policies_do_not_remove_bilateral_collision_constraints) ... ok
+test_preference_state_is_per_arm_and_return_resets_it (test_bimanual_motion_quality.MotionQualityTests.test_preference_state_is_per_arm_and_return_resets_it) ... ok
+test_reported_quest_regression_preserves_limits_and_returns (test_bimanual_motion_quality.MotionQualityTests.test_reported_quest_regression_preserves_limits_and_returns) ... ok
+NEW_RECORDED_REPLAY {"ticks": 1404, "tracking_reasons": {"tracking": 667}, "states": ["ready", "returning", "tracking"], "braking_total": 0, "minimum_clearance_mm": 18.291088659918895, "p95_ms": 8.19314000018494, "max_ms": 17.315599998255493, "extra_return_ticks": 0}
+test_right_arm_matches_unchanged_reference_in_free_space (test_bimanual_motion_quality.MotionQualityTests.test_right_arm_matches_unchanged_reference_in_free_space) ... FAIL
+test_torso_projection_preserves_rotation_and_side_reference (test_bimanual_motion_quality.MotionQualityTests.test_torso_projection_preserves_rotation_and_side_reference) ... ok
+test_duplicate_packet_does_not_advance_filter (test_bimanual_motion_quality.PoseFilterTests.test_duplicate_packet_does_not_advance_filter) ... ok
+test_first_packet_and_reengage_reset_without_jump (test_bimanual_motion_quality.PoseFilterTests.test_first_packet_and_reengage_reset_without_jump) ... ok
+test_invalid_hand_does_not_advance_either_filtered_target (test_bimanual_motion_quality.PoseFilterTests.test_invalid_hand_does_not_advance_either_filtered_target) ... ok
+test_quaternion_hemisphere_does_not_invent_a_rotation (test_bimanual_motion_quality.PoseFilterTests.test_quaternion_hemisphere_does_not_invent_a_rotation) ... ok
+test_rotation_smoothing_and_unit_norm (test_bimanual_motion_quality.PoseFilterTests.test_rotation_smoothing_and_unit_norm) ... ok
+test_smoothing_is_independent_per_hand (test_bimanual_motion_quality.PoseFilterTests.test_smoothing_is_independent_per_hand) ... ok
+test_tolerated_wire_rounding_is_normalized_before_filtering (test_bimanual_motion_quality.PoseFilterTests.test_tolerated_wire_rounding_is_normalized_before_filtering) ... ok
+
+======================================================================
+FAIL: test_right_arm_matches_unchanged_reference_in_free_space (test_bimanual_motion_quality.MotionQualityTests.test_right_arm_matches_unchanged_reference_in_free_space)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\Documents\Codex\2026-09-16\d\work\g1-integration\backend/tests\test_bimanual_motion_quality.py", line 153, in test_right_arm_matches_unchanged_reference_in_free_space
+    np.testing.assert_allclose(sim.config.q[sim.motion['right'].qpos_ids],q[planner.qpos_ids],atol=1e-7,rtol=0)
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\testing\_private\utils.py", line 1768, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\testing\_private\utils.py", line 983, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Not equal to tolerance rtol=0, atol=1e-07
+
+Mismatched elements: 7 / 7 (100%)
+First 5 mismatches are at indices:
+ [0]: 0.17440615911771706 (ACTUAL), 0.17439658933601393 (DESIRED)
+ [1]: -0.3831391021054191 (ACTUAL), -0.38368154723008674 (DESIRED)
+ [2]: -0.0008333333333333336 (ACTUAL), -0.00029088820866572245 (DESIRED)
+ [3]: 0.9599430661868956 (ACTUAL), 0.9599451733423543 (DESIRED)
+ [4]: 0.0008333333333333335 (ACTUAL), 0.00029088820866571995 (DESIRED)
+Max absolute difference among violations: 0.00054245
+Max relative difference among violations: 2.11481586
+ ACTUAL: array([ 1.744062e-01, -3.831391e-01, -8.333333e-04,  9.599431e-01,
+        8.333333e-04,  1.368412e-04, -1.969605e-04])
+ DESIRED: array([ 1.743966e-01, -3.836815e-01, -2.908882e-04,  9.599452e-01,
+        2.908882e-04,  1.485254e-04, -6.323344e-05])
+
+----------------------------------------------------------------------
+Ran 16 tests in 25.598s
+
+FAILED (failures=1)

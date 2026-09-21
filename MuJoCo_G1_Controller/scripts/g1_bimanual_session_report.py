@@ -13,17 +13,55 @@ from pathlib import Path
 
 import numpy as np
 
+from g1_bimanual_limits import (
+    JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S)
+
 ROOT = Path(__file__).resolve().parents[2]
 SIM_DT = 1.0 / 60.0
-CAPS_DEG_S = np.asarray([90.0] * 4 + [180.0] * 3 + [90.0] * 4 + [180.0] * 3)
+LEGACY_CAPS_DEG_S = np.asarray([90.0] * 4 + [180.0] * 3 + [90.0] * 4 + [180.0] * 3)
 # Match the established controller regression tolerance: +1e-4 rad/s^2 is
-# numerical comparison slack only. The configured 60 deg/s^2 limit is unchanged.
-ACCELERATION_LIMIT_DEG_S2 = 60.0
+# numerical comparison slack only, applied to the relevant recorded/current cap.
+LEGACY_ACCELERATION_LIMIT_DEG_S2 = 60.0
 ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2 = float(np.rad2deg(1e-4))
 SOURCE_FILES = (
     'g1_bimanual_runtime.py', 'g1_bimanual_sim.py',
     'g1_bimanual_unity_sim.py', 'g1_bimanual_motion_policy.py',
-    'g1_bimanual_return.py')
+    'g1_bimanual_return.py', 'g1_bimanual_limits.py')
+
+
+def _recorded_motion_limits(run):
+    """Keep historical output validation independent of today's controller caps."""
+    legacy = dict(
+        source='legacy_defaults',
+        velocity_rad_s=np.deg2rad(LEGACY_CAPS_DEG_S).tolist(),
+        acceleration_rad_s2=[math.radians(LEGACY_ACCELERATION_LIMIT_DEG_S2)] * 14)
+    if run is None or 'motion_limits' not in run:
+        return legacy, False
+    metadata = run['motion_limits']
+    try:
+        limits = dict(source='run.motion_limits')
+        for key in ('velocity_rad_s', 'acceleration_rad_s2'):
+            raw = np.asarray(metadata[key])
+            if raw.dtype.kind not in 'fiu':
+                raise ValueError('Motion limits must be numeric')
+            values = np.asarray(raw, dtype=float)
+            if values.ndim == 0:
+                values = np.full(14, float(values))
+            if values.shape != (14,) or not np.isfinite(values).all() or np.any(values <= 0.0):
+                raise ValueError('Motion limits must be positive finite scalars or 14-joint arrays')
+            limits[key] = values.tolist()
+        return limits, False
+    except (KeyError, TypeError, ValueError, OverflowError):
+        # Keep the summary available, but never pass an invalid limit record.
+        legacy['source'] = 'invalid_metadata_legacy_fallback'
+        return legacy, True
+
+
+def _current_motion_limits():
+    return dict(
+        source='current_code',
+        velocity_rad_s=[JOINT_VELOCITY_LIMIT_RAD_S] * 14,
+        acceleration_rad_s2=[JOINT_ACCELERATION_LIMIT_RAD_S2] * 14)
 
 
 def _open_text(path):
@@ -115,6 +153,10 @@ def analyze_session(path):
     max_speed = 0.0
     max_acceleration = 0.0
     max_speed_excess = 0.0
+    max_acceleration_excess = 0.0
+    motion_limits, invalid_motion_limits = _recorded_motion_limits(None)
+    speed_caps_deg_s = np.rad2deg(motion_limits['velocity_rad_s'])
+    acceleration_caps_deg_s2 = np.rad2deg(motion_limits['acceleration_rad_s2'])
     tracking_starts = 0
     active_return = None
     returns = []
@@ -137,6 +179,9 @@ def analyze_session(path):
             counts[kind] += 1
             if kind == 'run' and run is None:
                 run = row
+                motion_limits, invalid_motion_limits = _recorded_motion_limits(run)
+                speed_caps_deg_s = np.rad2deg(motion_limits['velocity_rad_s'])
+                acceleration_caps_deg_s2 = np.rad2deg(motion_limits['acceleration_rad_s2'])
                 continue
             if kind == 'reject':
                 reject_reasons[str(row.get('reason', 'unknown'))] += 1
@@ -229,11 +274,14 @@ def analyze_session(path):
                 velocity = (q - previous_q) / SIM_DT
                 speed_deg = np.rad2deg(np.abs(velocity))
                 max_speed = max(max_speed, float(np.max(speed_deg)))
-                max_speed_excess = max(max_speed_excess, float(np.max(speed_deg - CAPS_DEG_S)))
+                max_speed_excess = max(max_speed_excess, float(np.max(speed_deg - speed_caps_deg_s)))
                 if previous_velocity is not None:
                     acceleration = (velocity - previous_velocity) / SIM_DT
+                    acceleration_deg = np.rad2deg(np.abs(acceleration))
                     max_acceleration = max(max_acceleration,
-                                           float(np.max(np.rad2deg(np.abs(acceleration)))))
+                                           float(np.max(acceleration_deg)))
+                    max_acceleration_excess = max(max_acceleration_excess, float(np.max(
+                        acceleration_deg - acceleration_caps_deg_s2)))
                 previous_velocity = velocity
             previous_q = q
     current_hashes = _current_source_hashes()
@@ -244,6 +292,8 @@ def analyze_session(path):
     warnings = []
     if run is None:
         failures.append('missing_run_metadata')
+    if invalid_motion_limits:
+        failures.append('invalid_motion_limits_metadata')
     if blocked_rows:
         failures.append('blocked_state_observed')
     if nonfinite_q_rows or malformed_joint_rows:
@@ -252,8 +302,7 @@ def analyze_session(path):
         failures.append('malformed_json_rows_present')
     if max_speed_excess > 1e-4:
         failures.append('output_speed_limit_exceeded')
-    if max_acceleration > (
-            ACCELERATION_LIMIT_DEG_S2 + ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2):
+    if max_acceleration_excess > ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2:
         failures.append('output_acceleration_limit_exceeded')
     if reject_reasons:
         warnings.append('rejected_packets_present')
@@ -292,7 +341,9 @@ def analyze_session(path):
                 loop_period_ms=_percentiles(loop_periods),
                 output_fixed_dt=dict(max_speed_deg_s=max_speed,
                                      max_speed_excess_deg_s=max_speed_excess,
-                                     max_acceleration_deg_s2=max_acceleration),
+                                     max_acceleration_deg_s2=max_acceleration,
+                                     max_acceleration_excess_deg_s2=max_acceleration_excess),
+                validation_motion_limits=motion_limits,
                 blocked_rows=blocked_rows, nonfinite_joint_rows=nonfinite_q_rows,
                 malformed_joint_rows=malformed_joint_rows,
                 malformed_json_rows=malformed_json_rows,
@@ -314,16 +365,25 @@ def replay_session(path):
     reason_mismatches = 0
     q_mismatch_max = 0.0
     minimum_clearance = 0.2
+    maximum_speed = 0.0
     maximum_acceleration = 0.0
     state_rows = 0
     input_rows = 0
-    previous_velocity = sim.velocity[sim.dofs].copy()
+    blocked_rows = 0
+    run = None
+    motion_limits = _current_motion_limits()
+    flows = {name: dict(previous_state=None, tracking_starts=0,
+                        completed_returns=Counter(), active_return_reason=None)
+             for name in ('logged', 'current')}
 
     with _open_text(Path(path)) as stream:
         for line in stream:
             if not line.strip():
                 continue
             row = json.loads(line)
+            if row.get('kind') == 'run' and run is None:
+                run = row
+                continue
             if row.get('kind') == 'input':
                 input_rows += 1
                 try:
@@ -339,6 +399,20 @@ def replay_session(path):
             state_rows += 1
             before_velocity = sim.velocity[sim.dofs].copy()
             cycle.tick(row['monotonic_s'])
+            blocked_rows += cycle.state == 'blocked'
+            for name, state, reason in (
+                    ('logged', row.get('state'), row.get('reason', '')),
+                    ('current', cycle.state, cycle.reason)):
+                flow = flows[name]
+                if state != flow['previous_state']:
+                    if state == 'tracking':
+                        flow['tracking_starts'] += 1
+                    if state == 'returning':
+                        flow['active_return_reason'] = reason
+                    elif state == 'ready' and flow['active_return_reason'] is not None:
+                        flow['completed_returns'][flow['active_return_reason']] += 1
+                        flow['active_return_reason'] = None
+                    flow['previous_state'] = state
             if cycle.state != row.get('state'):
                 state_mismatches += 1
             if cycle.reason != row.get('reason', ''):
@@ -349,10 +423,45 @@ def replay_session(path):
                     sim.config.q[sim.qids] - np.asarray(logged_q, dtype=float)))))
             acceleration = np.rad2deg(np.abs(
                 (sim.velocity[sim.dofs] - before_velocity) / sim.dt))
+            maximum_speed = max(maximum_speed, float(np.max(np.rad2deg(np.abs(
+                sim.velocity[sim.dofs])))))
             maximum_acceleration = max(maximum_acceleration, float(np.max(acceleration)))
-            if row.get('tick_action') in ('tracking', 'tracking_braking', 'returning'):
+            if (cycle.state in ('tracking', 'returning', 'blocked')
+                    or row.get('tick_action') in ('tracking', 'tracking_braking', 'returning')):
                 minimum_clearance = min(minimum_clearance, sim.clearance(sim.config.q))
-            previous_velocity = sim.velocity[sim.dofs].copy()
+
+    recorded_limits, invalid_motion_limits = _recorded_motion_limits(run)
+    comparable = not invalid_motion_limits and all(
+        np.allclose(recorded_limits[key], motion_limits[key], rtol=0.0, atol=1e-12)
+        for key in ('velocity_rad_s', 'acceleration_rad_s2'))
+    comparison = ('invalid_recorded_motion_limits' if invalid_motion_limits else
+                  'same_motion_limits' if comparable else 'different_motion_limits')
+    exact_match = (accepted_mismatches == 0 and state_mismatches == 0
+                   and reason_mismatches == 0 and q_mismatch_max <= 5e-6)
+    current_failures = []
+    if invalid_motion_limits:
+        current_failures.append('invalid_motion_limits_metadata')
+    if accepted_mismatches:
+        current_failures.append('input_acceptance_mismatch')
+    if blocked_rows:
+        current_failures.append('blocked_state_observed')
+    if minimum_clearance < sim.clearance_m:
+        current_failures.append('clearance_limit_exceeded')
+    if maximum_speed > math.degrees(JOINT_VELOCITY_LIMIT_RAD_S) + 1e-4:
+        current_failures.append('output_speed_limit_exceeded')
+    if maximum_acceleration > (math.degrees(JOINT_ACCELERATION_LIMIT_RAD_S2)
+                               + ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2):
+        current_failures.append('output_acceleration_limit_exceeded')
+    logged_flow, current_flow = flows['logged'], flows['current']
+    if current_flow['tracking_starts'] < logged_flow['tracking_starts']:
+        current_failures.append('recorded_tracking_or_reengage_not_observed')
+    if any(current_flow['completed_returns'][reason] < count
+           for reason, count in logged_flow['completed_returns'].items()):
+        current_failures.append('recorded_return_completion_not_observed')
+    if (logged_flow['previous_state'] in ('ready', 'tracking')
+            and cycle.state not in ('ready', 'tracking')):
+        current_failures.append('final_state_not_ready_or_tracking')
+    current_passed = not current_failures
 
     return dict(state_rows=state_rows, input_rows=input_rows,
                 accepted_mismatches=accepted_mismatches,
@@ -360,21 +469,31 @@ def replay_session(path):
                 reason_mismatches=reason_mismatches,
                 maximum_logged_q_difference_rad=q_mismatch_max,
                 minimum_sampled_clearance_mm=minimum_clearance * 1000.0,
+                max_output_speed_deg_s=maximum_speed,
                 max_output_acceleration_deg_s2=maximum_acceleration,
+                validation_motion_limits=motion_limits,
+                recorded_motion_limits=recorded_limits,
+                comparison=comparison,
+                exact_replay_passed=exact_match if comparable else None,
+                current_validation=dict(
+                    passed=current_passed, failures=current_failures,
+                    blocked_rows=blocked_rows,
+                    tracking_starts=current_flow['tracking_starts'],
+                    completed_returns=dict(current_flow['completed_returns']),
+                    expected_tracking_starts=logged_flow['tracking_starts'],
+                    expected_completed_returns=dict(logged_flow['completed_returns'])),
                 final_state=cycle.state, final_reason=cycle.reason,
                 return_stage=sim.return_motion.stage,
                 return_replans=sim.return_motion.replans,
-                passed=(accepted_mismatches == 0 and state_mismatches == 0
-                        and reason_mismatches == 0 and q_mismatch_max <= 5e-6
-                        and minimum_clearance >= sim.clearance_m
-                        and maximum_acceleration <= (
-                            ACCELERATION_LIMIT_DEG_S2
-                            + ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2)))
+                # A different profile can pass current validation without being
+                # evidence that the original joint trajectory was reproduced.
+                passed=(exact_match and current_passed) if comparable else None)
 
 def markdown_report(report):
     tick = report.get('tracking_tick_ms') or {}
     output = report.get('output_fixed_dt') or {}
     operator = report.get('operator_summary') or {}
+    limits = report.get('validation_motion_limits') or _recorded_motion_limits(None)[0]
     lines = [
         '# Bimanual session report', '',
         f"- Log: `{report['source_log']}`",
@@ -385,6 +504,10 @@ def markdown_report(report):
         f"- Tracking tick p95/max: {tick.get('p95', float('nan')):.3f} / {tick.get('max', float('nan')):.3f} ms",
         f"- Fixed-dt max speed: {output.get('max_speed_deg_s', float('nan')):.3f} deg/s",
         f"- Fixed-dt max acceleration: {output.get('max_acceleration_deg_s2', float('nan')):.3f} deg/s^2",
+        f"- Validation limit source: `{limits['source']}`; velocity caps: "
+        f"{min(limits['velocity_rad_s']):.6g} to {max(limits['velocity_rad_s']):.6g} rad/s; "
+        f"acceleration caps: {min(limits['acceleration_rad_s2']):.6g} to "
+        f"{max(limits['acceleration_rad_s2']):.6g} rad/s^2",
         f"- Blocked rows: {report.get('blocked_rows', 0)}",
         f"- Warnings: {', '.join(report.get('warnings', [])) or 'none'}",
         f"- Failures: {', '.join(report.get('failures', [])) or 'none'}",
@@ -397,9 +520,15 @@ def markdown_report(report):
     if 'replay' in report:
         replay = report['replay']
         lines.extend(['', '## Replay',
-            f"- Passed: {replay['passed']}",
+            f"- Comparison: `{replay['comparison']}`",
+            f"- Exact replay passed: {replay['exact_replay_passed'] if replay['exact_replay_passed'] is not None else 'not comparable'}",
+            f"- Current validation passed: {replay['current_validation']['passed']}",
+            f"- Current validation failures: {', '.join(replay['current_validation']['failures']) or 'none'}",
+            f"- Validation limits: current code, {JOINT_VELOCITY_LIMIT_RAD_S:g} rad/s and "
+            f"{JOINT_ACCELERATION_LIMIT_RAD_S2:g} rad/s^2",
             f"- Max logged-q difference: {replay['maximum_logged_q_difference_rad']:.9g} rad",
             f"- Minimum sampled clearance: {replay['minimum_sampled_clearance_mm']:.6f} mm",
+            f"- Max output speed: {replay['max_output_speed_deg_s']:.6f} deg/s",
             f"- Max output acceleration: {replay['max_output_acceleration_deg_s2']:.6f} deg/s^2"])
     return '\n'.join(lines) + '\n'
 
@@ -416,7 +545,7 @@ def main(argv=None):
     parser.add_argument('--require-quest-cycle', action='store_true',
                         help='Require engage, pinch return, and a subsequent re-engage')
     parser.add_argument('--strict', action='store_true',
-                        help='Nonzero exit for static/quest-cycle failures or replay mismatch')
+                        help='Nonzero exit for static/current validation failures or comparable replay mismatch')
     args = parser.parse_args(argv)
     if args.latest == (args.input is not None):
         parser.error('Specify exactly one input path or --latest')
@@ -434,8 +563,11 @@ def main(argv=None):
                 report['failures'].append(failure)
     if args.replay:
         report['replay'] = replay_session(path)
-        if not report['replay']['passed']:
+        if (not report['replay']['current_validation']['passed']
+                or report['replay']['exact_replay_passed'] is False):
             report['failures'].append('replay_mismatch_or_safety_failure')
+        if report['replay']['comparison'] == 'different_motion_limits':
+            report['warnings'].append('replay_not_comparable_motion_limits')
     payload = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
     if args.json_output:
         args.json_output.parent.mkdir(parents=True, exist_ok=True)

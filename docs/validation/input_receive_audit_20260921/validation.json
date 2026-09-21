@@ -1,0 +1,8 @@
+{
+  "tests_passed": 4,
+  "loopback_udp": true,
+  "g1_connected": false,
+  "ssh_attempts": 2,
+  "ssh_result": "TCP22 timeout",
+  "motor_output": false
+}

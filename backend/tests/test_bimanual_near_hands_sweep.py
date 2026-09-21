@@ -9,6 +9,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "MuJoCo_G1_Controller/scripts"))
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 
 FIXTURE = ROOT / "backend/tests/fixtures/bimanual_return_near_hands_20260918.json"
@@ -146,7 +147,7 @@ def representative_return(sim, q14):
         raise AssertionError("representative return did not terminate")
     if minimum < sim.clearance_m - 1e-8:
         raise AssertionError(f"clearance violation: {minimum}")
-    if max_acceleration > np.deg2rad(60.0) + 1e-5:
+    if max_acceleration > JOINT_ACCELERATION_LIMIT_RAD_S2 + 1e-5:
         raise AssertionError(
             f"acceleration violation: {np.rad2deg(max_acceleration)}")
     if np.any(sim.config.q[sim.qids] < sim.ranges[:, 0] - 1e-8):
@@ -258,7 +259,7 @@ class NearHandsSweepTests(unittest.TestCase):
             row["minimum_clearance_mm"] >= sim.clearance_m * 1000.0 - 1e-5
             for row in results))
         self.assertTrue(all(
-            row["max_acceleration_deg_s2"] <= 60.001
+            row["max_acceleration_deg_s2"] <= np.rad2deg(JOINT_ACCELERATION_LIMIT_RAD_S2) + .001
             for row in results))
         print("NEAR_HANDS_BOUNDARY_RETURNS",
               json.dumps(results), flush=True)

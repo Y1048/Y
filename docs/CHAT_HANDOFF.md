@@ -1,5 +1,347 @@
 # G1 Teleop Project Chat Handoff
 
+## 2026-09-21 다른 데스크톱 이전 체크포인트
+
+최신 진입 문서는 `docs/DESKTOP_INPUT_HANDOFF_20260921.md`다.
+사용자는 FOV/시점/화면배치를 그대로 유지하고 현재작업을 GitHub에 push하도록 요청했다.
+현재 범위는 양팔14축3rad/s·3rad/s²와 Omni 입력 전달/관찰이다. 실제PD 변경·모터제어 없음.
+양팔실착3회추적·2회재engage·3회복귀와 로컬수신무손실 확인; Omni 실제보행은 미확인이다.
+노트북원본logs/설치환경은Git에없으며 카메라 고정경로/WSLvenv는새PC에서확인해야한다.
+아래항목들의 '이번commit/push없음'은 각작업당시이력이다. 이번에는 이변경을공용브랜치
+`codex/g1-laptop-sync-20260917`에묶어게시한다. main/dirty Desktop실행작업본은건드리지않는다.
+
+## 2026-09-21 다음 단계 — 새 3/3 양팔 + Omni 전달 검사와 로컬 실입력 준비
+
+사용자는 Quest·Omni만 사용할 수 있다고 답했다. G1/카메라는 실행하지 않고
+PC localhost127.0.0.1:55070에 동일 관찰 수신기를 열어 send/omni/arm과 연결했다.
+모터 제어·실제 PD 변경 없음. 관련 source/runtime14파일SHA 일치, runtime3/3 확인.
+원본 복사·Omni 좌표 변환·clocked 검사40개, 실제 계산프로그램→로컬수신기 연결2개 통과.
+생성 fixture 양팔419개/Omni415개 표본 정확일치, 수신59.9857Hz·표시100Hz.
+생성 입력으로 검증했으며 G1 수신/물리 검증은 아니다. 실제 새3/3 실착 결과는 대기 중이다.
+
+로컬 시작20260921_152630_958214. 수신 로그:
+`logs/test_results/input_local_live/20260921_152630_958214/received_observation.jsonl`.
+양팔`unity_20260921_152631_628857.jsonl`, Omni`omni_observation_20260921_152631_589019.csv`.
+시작 시 두 생산자FRESH_LIVE, Omni calibrated=true, 양팔ready/Unity WAIT 확인.
+Unity Play 후 동시 보행·양팔 움직임·pinch복귀·재engage를 요청했다.
+현재 네 관찰 창을 유지한다. G1 대상으로 다시 시작하기 전 이 localhost 창을 닫는다.
+관찰 창 종료는Ctrl+C/창닫기이며 실제 제어기와 무관하다. 로그자동삭제 없음.
+
+검증증거 `docs/validation/input_limits_integration_20260921/`.
+PD연구후보는 여전히 미확정, recommended_hardware_gains=null.
+production코드 수정 없음. 기존 pipeline테스트만 검증을 보강했고 소스에 저장했다.
+sourceHEAD/origin31a5df6동일,dirty보존,이번commit/push없음.
+
+### 실입력 확인 결과 (2026-09-21 15:31 스냅샷)
+
+사용자는 시험을 완료했다고 알렸다. 실제 Quest/Unity 입력과 MuJoCo 목표값을
+로컬 수신 로그에서 대조했다. 양팔 tracking3회, 재engage2회, pinch복귀3/3완료,
+최종READY, BLOCKED/solver/return fault0. 최대목표속도1.364523rad/s,
+최대목표가속도3.000000000000469rad/s²(수치오차), tracking계산p95 7.882ms,
+최대10.860ms, deadline miss0. 실제 G1관절 측정값이 아니다.
+
+로컬수신seq0..15655(15,656개),59.99877Hz,순번누락/역전/reject/로그drop0.
+양팔15,544개·Omni15,647개 전달값이 생산자 원본과 정확일치했다.
+다만 Omni원본mx=-0.05,my=0.27이전구간고정,armYaw112.37~112.79°,
+vx/vy/yaw_rate모두0이었다. **동시 실제보행은 미확인**이며, 사용자에게
+실제 Omni보행 여부를 확인 중이다. 잘못된 방향이라고 단정하거나 동시보행PASS로표시하지 않는다.
+Omni계산tick60Hz와 새로운원본처리약28.32Hz를구분한다.
+
+원본파일은 계속 기록될 수 있어 증거JSON에 분석 prefix SHA/byte수/cutoff를 기록했다.
+`actual_arm_metrics.json`, `actual_local_receive_metrics.json` 참조.
+production코드/실제PD/모터출력은 변경하지 않았고 G1접속·카메라도 실행하지 않았다.
+
+## 2026-09-21 양팔 속도·가속도 상한 3 rad/s · 3 rad/s²
+
+사용자 요청으로 양팔14축(왼15~21,오른22~28)을 모두 각속도3.0rad/s,
+각가속도3.0rad/s²로 맞췄다. 약171.887°/s·171.887°/s²다.
+이전 어깨/팔꿈치90°/s·손목180°/s·가속도60°/s²에서 변경했으므로 손목속도만 약간 내려간다.
+설정은 `MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py` 한 곳이다.
+추적 QP, 접근·관절한계 제동 계산, checked stopping tail, Ruckig 복귀가 같은 상한을 사용한다.
+IK cost/damping, jerk, collision clearance, 모델관절범위, 단독오른팔/실기PD는 바꾸지 않았다.
+`START_G1_VR_TELEOP.bat`의 다음 arm 실행부터 적용. 현재는 값 전달·관찰용이며 G1모터 출력 없음.
+
+새 profile로 과거 staged-session 입력을 재생할 때 `return_joint_range` 재시도 실패를 발견했다.
+제동의 첫 v=0 tick에는 아직 유한차분 가속도가 남아 Ruckig 재시작이 바깥쪽으로 밀릴 수 있었다.
+복귀 재시도 전에 이미 검사된 정지 표본을 한 tick 더 소비해 가속도가 실제로0이 된 뒤 다시 계획한다.
+상태값을 임의로0으로 덮거나 관절/충돌 제한을 풀지 않는다.
+동일 복귀 시작 상태는6.833333초 후ready/complete; 원본 기록 종료가5.75초였으므로
+current-profile regression에만 표시된 생성 clock65ticks를 추가해 완료를 검사했다.
+가짜 측정값·입력은 만들지 않았으며 원본 fixture는 변경하지 않았다.
+
+검증: 전체source suite116개 실행에서115PASS, 1개는 위의 짧은 기록창 끝에서home상태라 실패.
+그 마지막 test의 생성종료구간 명시 후 단일재실행PASS. 전체 suite를 다시 돌렸다고 주장하지 않는다.
+양팔경계/충돌/복귀/손목우선/재engage와 새상한 검사를 포함하며 현재116항목이각각통과했다.
+과거두녹화는 test-only 원래profile로 q차이0 exact replay 보존. 새3/3 Quest입력은
+두pinch복귀/재engage 통과. 실패중간로그도 삭제하지 않고 검증폴더에 보존한다.
+실제runtime13파일동일성/preflightPASS, 새sim인스턴스의14축velocity/acceleration모두3.0확인.
+실제 Quest/Omni/G1 동작을 새속도로 시험한 것은 아니다.
+
+run 로그에 `motion_limits`를 추가했다. 보고서는 원본기록당시 상한으로 판정한다.
+과거와 현재상한이다른 replay는 `different_motion_limits`, exact_replay_passed=null로표시하고
+현재속도/가속도/충돌/복귀검증을별도로판정한다. 과거실패결과를새상한으로PASS로바꾸지 않는다.
+
+문의한 마지막 오른팔PD연구조합:
+Kp22..28=[120,300,64,100,20,30,20], Kd22..28=[1,3,1.2,1.4,1,1,1].
+26/28은기존20/1유지이며별도최적화가아니다. 근거 `docs/G1_PD_PITCH_WRIST_20260913.md`.
+기존12/12,확장15/16;send-clock mix_a에서yaw24 -1.5035593181rad/s로당시1.5gate실패.
+20ms명령보간포함연구로최종PD/실기승인/왼팔검증값이아니다.
+이번속도변경은과거PD실패를무효화하지않으며PD/실기gain/validator는변경하지않았다.
+
+설치백업 `logs/backups/bimanual_limits_3rad_20260921_151406`.
+증거 `docs/validation/bimanual_limits_3rad_20260921/`.
+기존보호파일source308개/runtime297개동일, 예상된양팔7파일외변경없음(새limits파일추가).
+sourceHEAD/origin31a5df6동일,기존dirty보존. 이번작업commit/push없음.
+
+## 2026-09-21 입력 관찰 + 카메라 통합 배치 설치
+
+현재 통합 진입점은 `tools/START_G1_VR_TELEOP.bat`이다. 새
+`tools/G1_VR_TELEOP_LAUNCH.py`가 기존 관찰 launcher의 receive/send/omni/arm
+worker와 기존 `START_G1_CAMERA_TO_UNITY.bat`을 재사용한다. 기본 다섯 창이며,
+같은 작업본·옵션의 살아 있는 자식 프로세스는 유지하고 빠진 항목만 연다.
+서로 다른 설정·중복 생산자·알 수 없는 UDP 점유는 오류로 알리고 종료/kill하지 않는다.
+종료 후 Enter를 기다리는 wrapper 창은 실행 중인 생산자로 세지 않는다.
+`--host`, `--no-receiver`, `--check-only` 지원. 원래 두 개별 배치도 그대로 유지한다.
+
+우리 범위는 양팔14축·몸 기준 Omni vx/vy/yaw_rate의 입력 전달 및 수신 확인이다.
+관찰 경로는 SDK/DDS 없음. 카메라만 기존 SDK2 VideoClient 읽기와 WSL→Unity TCP5011을 사용한다.
+모터 명령·제어기·모드 전환·실제 gain 변경은 없다. Unity Play와 Omni Connect는 직접 실행한다.
+카메라 최대20fps 요청, IK/Omni계산/관찰송신60Hz, 화면출력100Hz 유지. 자동 로그 삭제 없음.
+
+실행: 프로젝트 루트에서 `.\tools\START_G1_VR_TELEOP.bat`.
+receive 창의 SSH 로그인 후 Unity Play. 종료는 각 관찰/카메라 창의 Ctrl+C 또는 창 닫기.
+다른 PC/터미널의 G1 수신기를 유지할 때는 `--no-receiver`.
+
+검증: 새 launcher mocked unit tests15개 + 기존 관찰 command-contract1개, 합계16/16 PASS.
+실제 Windows runtime BAT `--check-only`도 PASS(WSL 프로세스 조회, dependency/import 검증).
+이 통합 배치로 다섯 창을 새로 열거나 실제 카메라 영상을 재검증한 시험은 하지 않았다.
+기존 개별 배치는 직전 턴에 실행한 이력과 구분한다. 하드웨어 제어 검증을 주장하지 않는다.
+설치: Desktop runtime의 새 BAT/helper와 사용 가이드. 기존 문서는 백업 후 선택 갱신.
+백업 `logs/backups/vr_teleop_launcher_20260921_145817`.
+소스 증거 `docs/validation/vr_teleop_launcher_20260921/`.
+기존 runtime handoff의 다른 내용은 덮어쓰지 않고 이 항목만 추가했다.
+fetch 후 source HEAD/origin `31a5df6` 동일. 기존 dirty 유지, 이번 작업 commit/push 없음.
+
+## 2026-09-21 현재 담당 범위 확정 — 입력값 생성·전달
+
+최신 사용자 지시: **우리는 값을 정확히 보내는 데 집중하고, 로봇 제어는 상대가 담당하며
+나중에 통합한다.** 이전의 제어기 통합 계획을 현재의 필수 작업으로 다시 확대하지 않는다.
+
+추가 정정: **모드 전환은 없고, 하체·상체를 동시에 제어하는 통합을 전제로 한다.**
+우리 송신 측도 Omni와 양팔 값을 함께 제공한다. 팔 조작 후 하체 모드로 바꾸는 식의
+상호 배타적 모드 전환 기능을 설계하거나 복구 작업으로 추가하지 않는다.
+팔의 ready/tracking/return 같은 입력 상태와 로봇 제어 모드를 구분한다.
+
+- 우리 범위: Quest/Unity → 양팔 IK 14축(왼팔15~21, 오른팔22~28, rad),
+  Omni 월드 mx/my → 현재 몸체 기준 vx/vy(m/s), yaw_rate(rad/s)의 생성·송신·수신 확인.
+- JSON 필드/단위/축/관절 순서, 원본 시각·순번, stale/누락 표시와 CSV/JSONL 기록을 관리한다.
+  계산·송신 목표60Hz와 표시100Hz는 구분하며, 같은 화면 행을 동시 센서 취득으로 해석하지 않는다.
+- G1 관찰 수신기는 입력 확인용이다. 실제 관절 초기각 읽기, C++/LowCmd 연결, PD/하체 정책,
+  균형·모드 전환·로봇 회전각 추종은 상대의 제어/향후 통합 범위다.
+  `initial_g1_q_rad=null`, `cpp_command_sent=false`는 현재 우리 범위의 완료를 막는 TODO가 아니다.
+
+다음 실제 입력 확인은 새 Omni 변환으로 방향을 바꿔도 직진 시 vx 양수·vy≈0인지,
+그 값과 양팔14축이 같은 관찰 세션에서 수신 원문과 일치하는지 확인하는 것이다.
+변환 코드는 offline 68개를 통과했으나 새 변환의 실제 보행 확인을 완료한 것은 아니다.
+이번 범위 확정은 문서만 수정했으며 프로그램 실행·입력값·제어 경로를 변경하지 않았다.
+자동 삭제 요청 철회는 계속 유효하다.
+
+## 2026-09-21 Omni 월드 이동 벡터를 현재 몸체 속도로 변환
+
+사용자가 `mx/my`는 월드 기준이며 현재 방향으로 직진하면 기존 JSON의 `vx`에
+전진, `vy`에 0이 들어가야 한다고 요청했다. **yaw 0에서 mx→vx, my→vy**라는
+이번 입력 계약을 사용하여 기존 `vx←my`, `vy←-mx` 가정을 대체했다.
+원점/양의 yaw 축은 사용자 요청에 따른 계약이며, Virtuix 원시 센서 축을 이번에
+독립 실측해 확정한 것은 아니다. 과거 문서의 X=오른쪽/Y=앞 가정을 새 코드와 혼용하지 않는다.
+
+`hardware/g1_arm_bridge/g1_omni_velocity_gateway.py`:
+`world_movement_to_body`에서 현재 절대 armYaw의 R(-theta)를 적용한다.
+`x=mx-zero_x`, `y=my-zero_y`, `forward=c*x+s*y`, `left=-s*x+c*y` 순서이며,
+회전 뒤 기존 body 축 deadzone·0.8 m/s scale/상한을 적용한다. 단위벡터 정규화는 하지 않는다.
+start yaw를 뺀 상대각만 사용하지 않으므로 시작112°도 처리한다. 원본 mx/my/raw JSON,
+CSV 필드, JSON vx/vy, command velocity 배열 순서, yaw_rate와 yaw_diff 처리는 유지한다.
+관찰 ClockedOmniProcessor와 기존 event 경로가 같은 mapper를 사용한다.
+
+사용자의 calibration 질문에는 방향 정렬은 불필요하다고 설명했다. **기존 1초 정지
+mx/my 오프셋 평균은 유지**하며, yaw_diff의 기준은 첫 표본에서 잡는다.
+실제 G1의 초기 관절각·heading 수신 또는 회전각 폐루프 제어를 추가한 것은 아니다.
+
+검증: offline/synthetic 68/68 PASS. 별도 새 방향 테스트16개는 0/45/90/112/-90/180/359°,
+전후좌우, 크기 보존, 현재각 vs 이전각/시작각, world bias, wrap, gap/nonfinite,
+기존 JSON/CSV/command 값과 실제 receive-audit 검증 함수 통과를 확인한다.
+1000개 생성 샘플에서 git HEAD와 비교하여 yaw 결과 및 calibration/timing 상태 동일 확인.
+최신 receiver 경유 assertion 추가 후 방향16개도 다시 통과했다.
+실제 Omni 재보행·G1 물리 동작 확인은 아직 하지 않았다.
+
+PC runtime은 Gateway와 관찰 가이드만 선택 설치하고, 보호 파일667개의 SHA를 유지했다.
+백업 `logs/backups/omni_world_body_20260921_143812`.
+Gateway SHA256 `d9172773a493e16935b06be70b4dd6bd29e0607f3e580ba7e4a02b084b7fc79f`.
+현재 실행 중인 창을 중지·재시작하지 않았다. 다음 Omni 관찰 창 실행부터 적용:
+`tools/START_G1_INPUT_OBSERVATION.bat --worker omni` (기존 Omni 창을 먼저 Ctrl+C).
+G1 프로그램/송신기/IK/PD/모터 명령은 변경·실행하지 않았다. 자동 로그 삭제도 다시 넣지 않았다.
+소스 protocol memo의 Omni 설명은 갱신했지만 runtime의 다른 내용인 구형 memo는 덮어쓰지 않았다.
+상세 사용법은 runtime `docs/G1_LIVE_INPUT_OBSERVATION_20260921.md`에 반영했다.
+증거 `docs/validation/omni_world_body_20260921/`. 기존 dirty 유지, fetch 후 HEAD/origin
+`31a5df6` 일치 확인. 이 작업에서 commit/push는 하지 않았다.
+
+## 2026-09-21 자동 로그 삭제 요청 철회 및 원복 완료
+
+사용자가 구현 직후 **자동삭제 넣지말자**로 방향을 변경했다. 이 지시가 우선이다.
+PC 소스/runtime launcher·수신기·가이드를 기능 추가 전 백업과 같은 SHA로 복원했고,
+자동 삭제 helper 및 그 전용 테스트 2개를 제거했다. G1 관찰 수신기도 원복했으며
+실행 폴더의 helper가 없는 것을 SSH에서 확인했다. **자동 저장만 유지하고 자동 삭제·압축은 없다.**
+실제 사용자 로그는 삭제하지 않았다. 실행 중인 프로세스나 모터 프로그램은 건드리지 않았다.
+
+G1/PC 수신기 SHA256: `acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b`.
+PC launcher SHA256: `db285dd6c137fbdee3dd87a694713bc155dd66e1c1fbe6e5363551fe1e515af5`.
+삭제 기능의 구현/시험/설치 기록은 `docs/validation/observation_log_retention_20260921/`에
+과거 이력으로 남으며, **현재 상태는 rollback.json**을 기준으로 한다. 구현물을 재적용하지 않는다.
+기존 수신 회귀의 실제 Omni 표본 혼입을 막는 임시 포트 격리 수정은 테스트 파일에만 유지했다.
+기존 dirty 작업은 보존했고 commit/push는 하지 않았다.
+
+## 2026-09-21 Omni 이동·회전 실입력의 G1 관찰 수신 확인
+
+사용자 Omni 테스트 완료 후 PC omni_observation_20260921_134946_064568.csv와
+G1 input_receive_20260921_134949.jsonl을 대조했다. G1원문9,122,470byte를
+읽기전용 SCP회수:3364packet/56.04819s/60.00194Hz,순번168..3531 연속,
+구간내누락0·순서역행0·reject기록0·logdrop0·packetSHA불일치0.
+모든3364개에서양쪽source FRESH_LIVE. 각Omni수신값을 PC raw_sample_sequence로
+조인해3364개전부일치(고유Omni표본1748개). 앞선순번0..167 수신은주장하지않는다.
+
+G1 수신 vx[-0.1681,+0.2667]m/s, vy[-0.7786,+0.1171]m/s,
+yaw_rate[-1.6,+1.6]rad/s. 세성분모두양·음값확인,2246packet에서이동/회전출력비영.
+yaw_diff[-84.57,+83.15]deg. 고유31표본은현재회전상한±1.6rad/s에포화됐다.
+이동방향의실제행동라벨/구간이없고양의vy구간이짧으므로6방향물리정확도를완료판정하지않는다.
+이번세션은Unity입력WAIT/팔READY였으며, 실제양팔움직임은직전134118세션에서검증했다.
+동일패킷으로양팔/Omni값이함께수신됨과두동작의동시수행검증을구분한다.
+
+PC CSV 고정snapshot5710행/179.937초에서계산tick59.999Hz,deadline skip0,
+새처리표본31.7278Hz. 원본JSON/CSV값불일치·timestamp역행0. 활성파일의
+Get-ChildItem Length가0으로표시됐지만실제내용은정상증가중이므로메타데이터만으로
+미기록판정하지않았다. 조회시OmniConnect32123·IK5020은활성,PCsender55071은
+없었다. 이후PC원본행을G1수신검증범위에포함하지않는다. 프로세스조작/모터출력없음.
+
+결과 `docs/validation/omni_observation_reconnect_20260921/operator_omni_134946.json`.
+원문은로컬 `logs/test_results/input_observation_live_20260921/g1_received_134949.jsonl`,
+SHA256 `3ebf05ee07d9235fd0b5a62acd09430e57682733a98e3c04e36eb20f5d4ded8c`.
+
+## 2026-09-21 timeout 수정 후 실제 양팔/Omni → G1 관찰 수신 확인
+
+사용자 완료 후13:41:18 PC 세션과 G1 input_receive_20260921_134120.jsonl을
+대조했다. 실제 Quest/Unity/Omni 입력 관찰이며 새 합성 fixture가 아니다.
+G1 원문10,012,517byte를 읽기전용 SCP 회수했다.3553packet/59.197834s,
+60.0022Hz, 순번136..3688 구간 내 누락0/순서역행0/reject기록0/logdrop0.
+두 source 모두3553개 전부FRESH_LIVE. 전체packet SHA256 재구성 일치하고,
+수신3553개 각각의 양팔14축 값은 PC IK feedback_sequence와, Omni 값은
+PC CSV raw_sample_sequence와 대조하여 전부 일치했다. 첫 기록 이전0..135는
+수신했다고 주장하지 않는다. PC ACK 콘솔은 보존되지 않아 ACK 개수는 미확인.
+
+양팔 unity_20260921_134118_416682.jsonl: 전체59.8214Hz, tracking59.4262Hz,
+추적 tick p95 11.8769ms/max17.4778ms, deadline skip11회. READY→TRACKING→
+RETURNING(pinch)→READY 정상shutdown, BLOCKED0. 입력1257중1256수용,
+종료 부근 마지막1개 sender timestamp역행은 거부됐다. source SHA5개가현재
+source/runtime과 일치한다. 이번turn에 제어/설정 변경 없이 로그만 조회했다.
+
+Omni CSV omni_observation_20260921_134118_368864.csv:66.313s/1923처리표본,
+계산tick 추정59.9897Hz/deadline skip0. 새 표본 기록은28.9838Hz로,60Hz계산
+주기와 다르다. rawseq0..6195 중 latest선택으로4273표본이건너뛰어진것이기록됐다.
+원본JSON과값전부일치, nonfinite/시각역행0, 최대새표본간격157ms. 영점보정완료.
+다만 mx=my=vx=vy=yaw_rate 모두0이고 armYaw112.49~112.86도였으므로
+**정지 상태 연결/수신 확인만 완료**, 보행·회전 부호/속도 실동작은 이번에검증하지않았다.
+이번operator세션100Hz화면출력로그는없어이전bounded표시시험결과와구분한다.
+실제G1관절초기각/SDK/DDS/C++명령/모터출력은여전히미연결.
+
+분석기록 `docs/validation/omni_observation_reconnect_20260921/operator_134118.json`.
+G1원문은 로컬 `logs/test_results/input_observation_live_20260921/g1_received_134120.jsonl`;
+SHA256 `af12ad5d78a7c5c083df8de74b99a3ae829193b8086e4d903d720774b5e38c83`.
+
+## 2026-09-21 Omni 관찰 startup timeout 수정
+
+사용자가 clocked Omni 창에서 raw_samples_received=0 / 약0.116초 뒤
+`TimeoutError: timed out` 종료를 보고했다. 기존 관찰 reader가 WS 연결에도
+수신 polling용0.1초 timeout을 사용하고, create_connection 예외를 fatal로
+분류한 문제가 확인됐다. 설치 websocket-client1.8.0은 connect에서 원시
+TimeoutError를 올릴 수 있고 recv timeout은 별도 WebSocketTimeoutException이다.
+13:33:55 KST 읽기전용 조회에서 로컬TCP32123 listener 및 Omni/Virtuix 이름의
+프로세스가 없었다. 이는 조회 시점 상태이며 오류 발생 당시 서버 상태까지 단정하지 않는다.
+
+관찰전용 LatestOmniReader에 connect timeout2초 / established recv0.1초를 분리했다.
+connect timeout/refusal, socket disconnect는0.5~2초 stop-interruptible backoff로
+재접속한다. 정상 수신 중 timeout은 대기만 한다. 원본 sample seq/시각은 재접속
+중에도 유지하고 중복 표본을 발행하지 않는다. 잘못된 JSON/필드/nonfinite 오류는
+여전히 fatal이다. CONNECTING/RETRY_WAIT/WAIT_SAMPLE/RECEIVING 상태·시도 횟수·
+수신 timeout 수를 표시한다. 60Hz 처리/100Hz 외부표시 설정은 그대로다.
+기존 비관찰 Gateway mapping/command 송신, IK, G1 수신기/제어파일 변경 없음.
+
+실제 실행 테스트 총38개 PASS:
+- `backend.tests.test_g1_observation_tap` + `hardware.g1_arm_bridge.test_g1_omni_velocity_gateway`:22/22(0.107s), 기존 core AST 보존 포함.
+- `hardware.g1_arm_bridge.test_g1_omni_clocked_observation`:14/14(1.220s), timeout/refusal→recovery, stale 원문 유지, malformed fatal, 종료/backoff/late connect 포함.
+- `backend.tests.test_g1_omni_transport_recovery`:2/2(3.353s). 실제 websocket-client/websockets의 임시 loopback TCP 서버가 handshake300ms 지연 → 수신 idle → 재개, 서버보다 reader를 먼저 켠 뒤 자동 복구를 검증. 생성 데이터이며 실제 Omni/G1 계측이 아니다.
+
+Desktop Gateway+사용설명2파일 이전 설치 SHA 확인 후 백업·반영. 보호파일667개
+변경 없음. 백업 `logs/backups/omni_observation_reconnect_20260921_133854`.
+Gateway SHA `27f346c09defeee4afae41d8d4332e63ba6a2895d52a9c71bacb43d97499cec0`.
+근거 `docs/validation/omni_observation_reconnect_20260921/`.
+Omni Connect와Bluetooth 연결을 켠 뒤 launcher 재실행하면 된다. 다른 관찰 창을
+이미 실행 중이면 `START_G1_INPUT_OBSERVATION.bat --worker omni`로 Omni만 재시작.
+실제 Omni 재연결 확인은 아직이며 G1 접속/모터 출력/프로세스 자동 종료는 하지 않았다.
+
+## 2026-09-21 관찰 계산60Hz / 표시100Hz — PC/G1 반영 완료
+
+사용자가 모든 계산주기를 맞추고 표시를50→100Hz로 변경 요청했다. 계산은 기존
+검증된 양팔 IK dt=1/60초에 맞춰 **60Hz**, PC/G1 관찰 콘솔은 별도 **100Hz**로
+구현했다. 새 observation launcher가 IK `--compute-hz 60`, Omni dry-run
+`--process-hz 60`, send-live `--send-hz 60 --print-hz 100`, receive
+`--print-hz 100`을 전달한다. Unity/C#/IK수학·필터·속도·모델·PD·실제 명령 경로는
+변경하지 않았다. 관찰 모드에서만 perf_counter 기준 스케줄을 사용하고 과부하 시
+밀린 tick을 건너뛴다. target Hz이지 hard-realtime 보장은 아니다.
+
+Omni 원본 WebSocket 수신은 독립 thread, 최신1개 슬롯에서 새 sample만 계산한다.
+센서 수신빈도를60Hz로 바꾼 것은 아니다. CSV는 처리한 표본의 부분집합이며 원래
+raw JSON/시각/순번 및 raw_samples_skipped를 기록한다. 이전 전용CSV 기록기의
+기본 event 경로는 보존했다. IK/Omni/송신이 같은 주기를 쓰더라도 센서 측정 동시성,
+프로세스 위상 동기화, PC-G1 clock 동기화는 하지 않는다.
+
+100Hz 표시는 새 sample 생성과 분리했다. 원본 payload/SHA/순번/시각은 유지하며
+display_payload만 age를 증가시키고 STALE로 표시한다. G1 age는 PC 보고 age에
+G1 수신 후 경과를 더하되, 아직 계측하지 않은 transport delay는 포함하지 않는다.
+stdout이 느리면 표시 slot을 건너뛰며 수신/ACK를 막지 않는다.
+
+실제 실행한 검증:
+- `py -3.11 -B -m unittest backend.tests.test_g1_observation_tap backend.tests.test_g1_observation_audit backend.tests.test_g1_observation_pipeline`: **26/26 PASS**, 19.330s.
+- `py -3.11 -B -m unittest hardware.g1_arm_bridge.test_g1_omni_clocked_observation hardware.g1_arm_bridge.test_g1_omni_velocity_gateway`: **19/19 PASS**, 0.942s.
+- 생성 Unity + 가짜 Omni WS를 실제 producer에 넣은 localhost 통합: IK59.9993Hz,
+  수신420packet/59.9943Hz, 표시800frame/100.0626Hz, 반복표시380, IK deadline miss0.
+- Python3.8 receiver 구문/기존 mapper·UnityCycle·filter·command encoding AST 보존,
+  100Hz 독립 출력·느린stdout·오래된 데이터 판정 회귀 포함.
+- runtime launcher `--check-only` PASS. 실제 Quest/Omni 센서 및 G1 새 버전 계측 아님.
+- 처음 `unittest discover -s hardware/g1_arm_bridge` 호출은 package relative import
+  때문에 수집 실패했다. 위 full module 경로로 바로잡아19개 모두 실행·통과했다.
+
+Desktop 실행본6파일을 이전 설치 SHA와 대조한 뒤 백업·설치했다.
+백업 `logs/backups/observation_clocked_20260921_132705`; 보호파일666개 SHA 불변.
+근거 `docs/validation/input_clocked_observation_20260921/install.json` 및
+`verification.json`. 실행 중 Python은 자동으로 바뀌지 않으므로 재시작 필요.
+
+첫192.168.123.164:22 접속은5초 timeout이었으나 사용자가 연결됐다고 알려준 뒤
+재접속 성공했다. PC 이더넷4 주소192.168.123.99/24, G1 기존e9b34184... SHA 및
+55070 미점유 확인 후 수신전용 파일을 백업·갱신했다. 새 PC/G1 receiver SHA256:
+`acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b`.
+경로는 기존 `~/g1_input_audit_20260921_7e83c4/G1_INPUT_RECEIVE_AUDIT.py` 그대로이며
+백업은 `G1_INPUT_RECEIVE_AUDIT.before_clocked_20260921.py`다. G1 Python으로
+`receive --seconds 1.2 --print-hz 100`을 실행해 WAIT 표시120frame/99.99993Hz,
+정상 종료 후55070 비점유 확인. 콘솔 원문을 g1_console_smoke.jsonl로 회수했다.
+새 실제 Quest/Omni를G1까지 보낸 시험은 아직이며 다음 사용자 실행에서 확인한다.
+다른 프로세스 종료나 SDK/DDS/LowCmd/모터 출력 없음. PC 기존 launcher를 재실행하면
+60Hz 계산/전송과100Hz 표시를 사용한다. 수신창을 직접 띄울 때 기존 receive 명령은
+이제 기본100Hz이며, PC launcher는 --no-receiver 옵션으로 중복 수신을 피한다.
+
+추가 질문: 사용자는 기존 Quest2를Quest3S로 교체할 수 있는지 물었다. Desktop Unity는
+공통 OVRHand/OVRSkeleton 입력을 사용하며 G1Teleop 소스에 Quest2 모델명 분기를
+발견하지 못했다. 기존 PC Link+Unity Play 경로는 같은 IK/UDP 구조를 사용할 수 있다.
+실제 Quest3S 연결은 미검증. APK standalone은 loopback 주소와 Android target이
+현재Quest2/Pro만 포함돼 별도 작업이다. XR설정/패키지는 이번에 변경하지 않았다.
+
 ## 2026-09-18 session report and near-hands return v2
 
 Read [near-hands return v2](BIMANUAL_NEAR_HANDS_RETURN_20260918.md) and
@@ -1332,3 +1674,103 @@ Play 정지 사용자 확인 후 runtime 3파일을 백업/설치하고 hash를 
 ## 2026-09-21 보정 후 operator 로그 확인
 
 `unity_20260921_095254_4149346.jsonl`에서 READY → TRACKING → RETURNING(pinch) → READY, BLOCKED 0. Unity 최신 7개 marker 진단 쌍 중 6쌍은 각 손 0.06~0.30cm, 마지막 L 0.21cm/R 0.06cm. 기존 지속적인 기준점 차이는 크게 감소했다. 다만 중간 1쌍에서 L 5.90cm/R 5.96cm 일시 간격이 있으며 원인은 확정하지 않았다. 모든 순간 오차가 해결됐다고 주장하지 않는다. `docs/validation/bimanual_engage_offset_20260921/operator_check.json` 참조. 이번 확인은 기존 로그 분석이며 테스트 재실행/실제 G1 계측은 하지 않았다.
+
+## 2026-09-21 일시적 목표 간격의 필터 재구성 분석
+
+동일 operator 세션의 tracking 908 state를 accepted input sequence로 결합하고,
+engage 시 position을 원점으로 포착한 뒤 dt=min(sender delta,0.1),
+alpha=1-exp(-dt/0.060)로 위치 필터를 재구성했다.
+재구성 목표와 실제 기록된 IK 목표의 최대 차이는 양손 모두 6e-17m 미만
+(assert <1e-12m 통과). 해당 구간 target_projected는 양손 모두 0이다.
+따라서 이 세션의 backend raw-to-goal 위치 차이는 60ms 필터로 설명된다.
+raw 대비 목표 간격 중앙값 L0.573mm/R0.458mm, 최대 L49.227mm/R43.870mm.
+tracking 입력 최대 간격은 41.021ms였다. 전체 세션의 1.25s 입력 간격을
+tracking 중 gap으로 잘못 해석하지 않는다.
+
+Unity의 5.90/5.96cm 표본에는 대응 sequence/time이 없어 정확한 단일 화면
+표본까지 원인을 확정할 수 없다. 렌더링/피드백 지연 기여도 미계측이다.
+정지 기준점 오류와 이동 중 필터 지연은 구분해야 한다. 이번 단계에서는
+필터/IK/속도/실행 프로젝트를 변경하지 않았다. 기존 전체 회귀 재실행 없음;
+실측 입력의 오프라인 수학 재구성만 실행했다. 실제 G1 검증 아님.
+증거: docs/validation/bimanual_engage_offset_20260921/filter_gap_audit.json.
+
+## 2026-09-21 양팔 잔여 오차 장시간 정착 진단
+
+3개 synthetic 목표를 20초, baseline 및 posture 비용 제거로 총 7200 ticks 실행했다. 단순 정착시간 연장/자세 비용 제거로 잔여 오차가 해결되지 않았다. 상세 표와 재현은 `docs/BIMANUAL_SETTLING_AUDIT_20260921.md`, 원본 결과는 `docs/validation/bimanual_settling_20260921/`. 진단 도구만 추가했으며 실행 IK/Unity/runtime은 변경하지 않았다. 다음은 고정 방향에서의 운동학적 도달 가능성과 QP 활성 제약 분리 확인. 실제 G1 실행 없음.
+
+## 2026-09-21 도달 가능성/QP 분리 진단
+
+`docs/BIMANUAL_REACHABILITY_AUDIT_20260921.md` 참조. 144회 synthetic endpoint 탐색, 대조군 성공 검증. 3개 실패 목표는 요청 위치/방향을 동시에 만족하는 해를 못 찾았다. Y/Z 이동은 방향을 제거해도 각각 약10.7/34.6mm 잔여오차, 다수 미수렴이므로 전역 도달불가로 단정하지 않는다. 저장된 정착 q/속도0의 QP 부등식 slack은 모두 양수. 따라서 충돌/속도 한계만 완화하는 변경은 근거가 없으며 controller/runtime은 그대로 유지했다. 기존 잘되는 사용자 흐름은 유지하고, 이 synthetic 목표들은 일반적인 추종 정확도 합격조건으로 쓰지 않는다. 실제 G1 실행 없음.
+
+## 2026-09-21 도달 가능한 양팔 목표 12조건 확인
+
+`docs/BIMANUAL_KNOWN_TARGETS_20260921.md` 참조. FK witness로 생성한 왼팔5/오른팔5/동시2조건, 총7200ticks 실행, 사전 기준 12/12 PASS. 10초 후 최대 위치0.894mm/회전0.058도, 최저 sampled clearance40.015mm, BLOCKED0. 3초 위치 최대5.926mm. 작은 고정목표 정착 결과이지 빠른 VR 추종/물리검증은 아니다. 실행 IK/runtime 설정은 보존. 앞선 arbitrary 목표의 잔여오차만으로 추가 비용 튜닝을 하지 않는다. 진단 도구 `backend/tools/audit_bimanual_known_targets.py`, 결과 `docs/validation/bimanual_known_targets_20260921/baseline.json`.
+
+## 2026-09-21 양팔/Omni 50Hz 콘솔 표시
+
+사용자는 기존7축 relay가 아닌 현재 양팔14개 값을 선택했다. `tools/PRINT_G1_INPUTS_50HZ.bat` 및 Python 모니터 추가. 기존 bimanual JSONL/Omni CSV를 읽기만 하며 50Hz 최신값/단위/sequence/age/freshness 표시. 실제송신/수신과 구분하도록 G1_RX UNVERIFIED 상시 표시. G1 수신 검증은 미완료이며 새 양팔 전송경로는 만들지 않았다. 4개 unittest 및 과거 로그2초96줄49.843Hz smoke 통과. 문서 `docs/G1_INPUT_CONSOLE_50HZ.md`. 새 Quest/Omni 입력/실제G1 실행 없음. 기존 제어 파일 보존.
+
+## 2026-09-21 G1 측 수신 출력 요청
+
+사용자가 G1에서도 양팔/Omni 수신값을 보고 싶다고 요청. UDP55070 observation-only 전용 링크 및 seq/SHA256 ACK 구현. `tools/G1_INPUT_RECEIVE_AUDIT.py receive`는 G1 표준Python만 사용, send는 기존 PC로그 복사. 기존5014/5017 제어경로/SDK/DDS/모터에 연결하지 않는다. `SEND_G1_INPUT_AUDIT.bat` 준비. 4개 unittest/loopback UDP tests 통과. 실제192.168.123.164:22는 2회 timeout으로 전송/실행 불가, 연결 확인 질문 pending. 실제 G1 수신확인은 미완료. 실행법/구분은 `docs/G1_OBSERVATION_RECEIVE_AUDIT.md`.
+
+## 2026-09-21 사용자 재연결 후 G1 observation 수신 확인
+
+G1 192.168.123.164 / PC192.168.123.99 접속 성공. Python3.8.10, UDP55070 미점유 확인. 새 `/home/unitree/g1_input_audit_20260921_7e83c4`에 수신전용 단일파일 배포, SHA256 일치. 30초 bounded receiver +5초 PC send에서 247송신/247 G1수신, 순번0..246 누락0, PC ACK246개 확인. 마지막은 PC 종료 전 송신후 ACK polling이 없어 집계되지 않았지만 G1 로그 수신확인. 모든 저장 ACK hash를 회수한 G1 로그와 대조. 원본 양팔/Omni 모두 HISTORICAL이라 새로운 센서입력 검증은 아님. 모터 수신/실행은 NOT_CHECKED. 실제 제어포트5014/5017과 SDK/DDS 미사용. 증거 `docs/validation/input_receive_audit_20260921/g1_network_check.json`.
+
+사용자 관찰용 지속실행: G1 SSH receiver unified session13859, PC sender13027. G1 log `input_receive_20260921_110559.jsonl`. 수신창 표시 요청은 Codex UI queued 반환. 종료는 각 관찰터미널 Ctrl+C; 실제 제어프로그램과 무관하다. 새 Quest/Omni 로그가 생성되면 1초내 최신 파일로 전환하되 source buffering 지연 가능. 기존 dirty runtime에는 새 수신도구만 설치했으며 원래 제어파일은 변경하지 않았다.
+
+## 2026-09-21 동시 실물통합 보류
+
+사용자가 오늘 Omni+양팔 실물통합을 요청했으나, 적용할 외부 하체정책/제어기 경로 확인 질문에 "이건 일단 보류"라고 답했다. 하체정책 확인/실물통합 작업을 중단했다. 코드/정책/SDK/DDS/모터출력 변경 또는 실행 없음. 읽기전용 SSH 목록 조회만 수행. 기존5014 relay7축과 bimanual sim14축은 직접 호환되지 않고 관찰55070은 과거자료도 ACK하므로 제어입력으로 사용하지 않는다.
+
+지속관찰 stdout backpressure 가능성: remote ss에서55070 Recv-Q213248 확인. PC sender13027은 Ctrl+C로 종료. SSH receiver13859는 Ctrl+C 뒤 connection reset으로 종료상태가 불명확하며, 이후 ss에서55070이 남아 있었다. 자신이 생성한 정확한 receiver command만 대상으로 정리하려고 SSH 재접속했으나 인증 중 connection reset되어 G1 측 종료 확인을 못했다. 다른 제어프로세스에는 손대지 않았다. 차후 연결 시 해당 observer만 상태 확인/정리할 것. 관찰용 출력 비동기화는 검토만 했고 user hold에 따라 구현하지 않았다.
+
+## 2026-09-21 GROOT 확인 후 외부제어기 입력 모사로 범위 변경
+
+사용자가 하체 실행본을 `~/groot_onboard_runtime/build/groot_balance_actuator --normal ...`
+이라고 제공했다. SSH로 소스/문서를 읽어 복사했으며 실행·SDK/DDS 초기화·모터 출력은
+하지 않았다. 실제 구조는 GR00T lower15(다리+허리), 별도 upper14이며 단일 LowCmd다.
+이후 사용자가 통합을 중지하고 Omni+양팔 값만 실시간 수신하는 일을 우선 요청했다.
+GROOT 파일/모델/gain/원래 실행본은 수정하지 않았다.
+
+사용자 확정 방향: 향후 G1 내부 Python 외부제어기가 통신 시작 시 실제 G1 초기각을
+읽고 Windows Arm Relay/Omni Gateway 입력을 받아 C++ 실제 제어기에 UDP 명령을 보낸다.
+이번 완료 범위는 **외부제어기 입력 수신부 모사**이며 실측 초기각 및 C++ 송신은 미연결이다.
+`initial_g1_q_rad=null`, `initial_g1_q_status=NOT_MEASURED`, `cpp_command_sent=false`를
+출력/로그에 명시한다. IK 목표를 실제 G1 관절값으로 취급하지 않는다.
+
+기존 로그 tail 관찰과 별도로 `send-live` 추가. 양팔 IK 계산 직후·Omni WebSocket
+수신 직후 opt-in localhost55071 observation tap → PC 최신값 snapshot50Hz → G1
+UDP55070 → exact SHA256/seq ACK. old `send`는 과거 로그도 표시하는 별도 모드다.
+원본 시각/순번을 유지해 중단 후 STALE로 바뀐다. IK-loop freshness와 Unity 입력
+freshness를 별도로 표시한다. 양팔/Omni 동시센서시각 정렬·보간은 하지 않는다.
+50Hz는 최신값 표시/송신 주기이며 서로 다른 생성시각의 두 값을 함께 표시한다.
+
+G1 stdout blocked에도 수신/ACK가 진행되도록 pending1개 비동기 출력, queue256개
+비동기 JSONL 기록을 적용했다. display/log drop 수를 기록하며 ACK는 디스크 영속화나
+모터 수신을 증명하지 않는다. 기존 옛 receiver3588은 이번 SSH 조회 시 없어졌고
+55070도 비점유였다. 무관한 프로세스를 종료하지 않았다.
+
+실제로 실행한 검증: 기존 bimanual102/102 PASS(116.954s), Omni mapper12/12 PASS,
+기존 synthetic WebSocket/discovery e2e PASS10packets, tap9/9 PASS, audit10/10 PASS,
+새 실제 producer→loopback pipeline2/2 PASS(최종12.156s). 새 pipeline은 생성한
+Unity pose와 가짜 Omni WebSocket을 사용해 실제 IK/Gateway 프로그램을 실행했다.
+현재 실제 Quest+Omni 사용자 입력을 이용한 동시시험은 하지 않았다.
+
+G1 Python3.8 수신전용 실제 네트워크 시험: 생성 fixture 200송신/200수신, 순번0..199
+누락0, 회수 로그 전체 SHA256 일치, PC ACK199(마지막 송신 후 PC 종료), log drop0.
+입력 중단 후 양쪽 STALE 확인. 이는 실제 네트워크 수신 검증이지 물리제어 검증이 아니다.
+소스/로그 증거: `docs/validation/input_live_observation_20260921/`.
+
+처음 별도 `~/g1_input_live_observation_20260921`에서 시험 후, 사용자 요청 기존 명령에
+맞춰 `~/g1_input_audit_20260921_7e83c4/G1_INPUT_RECEIVE_AUDIT.py`를 백업/갱신했다.
+백업 `G1_INPUT_RECEIVE_AUDIT.before_live_20260921.py`. 최종 receiver SHA256:
+`e9b34184ca0a52b36ba2d14a3ff513654e0909ad3785792189663f7fcca56267`.
+첫 PC 설치 백업 `logs/backups/live_observation_20260921_114415`.
+새 `tools/START_G1_INPUT_OBSERVATION.bat`가 source/sender/SSH수신창을 연다.
+G1 수신창을 직접 열었으면 `--no-receiver`로 PC3개 창만 실행한다.
+기존 Python 양팔 프로세스는 닫고 새 launcher로 재실행해야 tap이 켜진다.
+Unity/C# 수정 없음. Omni Connect(32123)가 이 작업 시점에는 열려 있지 않았으므로
+사용자가 연결 후 실제 센서입력을 확인해야 한다. 명령/해석은
+`docs/G1_LIVE_INPUT_OBSERVATION_20260921.md`에 모두 기록했다.

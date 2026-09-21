@@ -1,0 +1,21 @@
+{
+  "schema": "g1.bimanual.preflight.v1",
+  "result": "PASS",
+  "simulation_only": true,
+  "hardware_output_authorized": false,
+  "source_root": "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration",
+  "runtime_root": "C:\\Users\\user\\Desktop\\G1_Teleop_Project",
+  "engine_root": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0",
+  "checks": [
+    "runtime_root",
+    "engine_root",
+    "source_bimanual_installer",
+    "runtime_sample_scene_bimanual",
+    "tool_contracts",
+    "source_runtime_sha256:13",
+    "no_hardware_imports",
+    "udp_5020_free",
+    "mujoco_3.12_validate"
+  ],
+  "mujoco_module": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\diagnostics\\mujoco_versions\\3.12.0\\mujoco\\__init__.py"
+}

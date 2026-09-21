@@ -64,6 +64,7 @@ def load_engine(engine_root=None):
 
 
 def runtime_metadata(input_kind):
+    from g1_bimanual_limits import JOINT_VELOCITY_LIMIT_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2
     engine = require_validated_engine()
     packages = {}
     for name in ('mink', 'qpsolvers', 'daqp', 'numpy', 'ruckig'):
@@ -74,14 +75,16 @@ def runtime_metadata(input_kind):
     scripts = Path(__file__).resolve().parent
     sources = {name: hashlib.sha256((scripts/name).read_bytes()).hexdigest()
                for name in ('g1_bimanual_runtime.py', 'g1_bimanual_sim.py', 'g1_bimanual_unity_sim.py',
-                            'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py')}
+                            'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py', 'g1_bimanual_limits.py')}
     return dict(schema='g1.bimanual.sim.run.v1', simulation_only=True,
                 hardware_output_authorized=False, input_kind=input_kind,
                 started_utc=datetime.now(timezone.utc).isoformat(),
                 python_version=sys.version, python_executable=sys.executable,
                 mujoco_version=engine.__version__, mujoco_native_version=engine.mj_versionString(),
                 mujoco_module=str(Path(engine.__file__).resolve()), packages=packages,
-                source_sha256=sources)
+                source_sha256=sources,
+                motion_limits=dict(velocity_rad_s=[JOINT_VELOCITY_LIMIT_RAD_S]*14,
+                                   acceleration_rad_s2=[JOINT_ACCELERATION_LIMIT_RAD_S2]*14))
 
 
 def main(argv=None):

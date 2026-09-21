@@ -11,8 +11,10 @@ import argparse
 import csv
 import json
 import math
+import os
 import select
 import socket
+import threading
 import time
 import uuid
 from dataclasses import dataclass
@@ -48,6 +50,24 @@ def deadzone(value: float, width: float) -> float:
 
 def wrapped_delta_degrees(current: float, previous: float) -> float:
     return (current - previous + 180.0) % 360.0 - 180.0
+
+
+def world_movement_to_body(movement_x: float, movement_y: float,
+                           arm_yaw_deg: float) -> tuple[float, float]:
+    """Express a world XY movement vector in the current body frame.
+
+    Input contract: heading zero faces world +X, positive heading turns toward
+    world +Y. Output +X is forward, +Y is left. Use absolute armYaw in this same
+    world frame, not the yaw difference from session start. This rotates the
+    vector without normalizing its magnitude or integrating a robot position.
+    """
+    if not all(math.isfinite(value) for value in
+               (movement_x, movement_y, arm_yaw_deg)):
+        raise ValueError('nonfinite world movement or heading')
+    theta = math.radians(arm_yaw_deg % 360.0)
+    cosine, sine = math.cos(theta), math.sin(theta)
+    return (cosine * movement_x + sine * movement_y,
+            -sine * movement_x + cosine * movement_y)
 
 
 @dataclass
@@ -145,12 +165,12 @@ class OmniVelocityMapper:
                 * self.config.yaw_max_rad_s / usable,
                 self.filtered_yaw_rate)
 
-        forward = deadzone(movement_y - self.zero_y,
-                           self.config.movement_deadzone)
-        # Omni/Unity movementX is right-positive. The Unitree velocity policy
-        # is body +Y/left-positive, so the lateral axis must be inverted.
-        lateral = -deadzone(movement_x - self.zero_x,
-                            self.config.movement_deadzone)
+        # Bias is measured in world coordinates. Rotate before per-axis
+        # deadzones/scales, so forward walking stays forward at every heading.
+        body_forward, body_left = world_movement_to_body(
+            movement_x - self.zero_x, movement_y - self.zero_y, arm_yaw_deg)
+        forward = deadzone(body_forward, self.config.movement_deadzone)
+        lateral = deadzone(body_left, self.config.movement_deadzone)
         velocity = (
             clamp(forward * self.config.forward_max_m_s,
                   self.config.forward_max_m_s),
@@ -207,6 +227,239 @@ def omni_csv_row(now_s: float, run_started_s: float, sequence: int,
     ]
 
 
+@dataclass(frozen=True)
+class ReceivedOmniSample:
+    sequence: int
+    received_monotonic_s: float
+    values: tuple[float, float, float]
+    raw_json_text: str
+
+
+class LatestOmniReader:
+    """One bounded latest-sample slot; WS waiting never controls processing cadence."""
+    CONNECT_TIMEOUT_S = 2.0
+    RECEIVE_TIMEOUT_S = .10
+    RECONNECT_DELAY_S = .5
+
+    def __init__(self, url, websocket_module):
+        self.url, self.websocket = url, websocket_module
+        self.lock, self.stop = threading.Lock(), threading.Event()
+        self.latest = None
+        self.received = 0
+        self.error = None
+        self.status = 'CONNECTING'
+        self.connect_attempts = self.reconnect_count = self.receive_timeouts = 0
+        self.last_transport_error = None
+        self.thread = threading.Thread(target=self._run, daemon=True)
+
+    def _run(self):
+        timeouts = (TimeoutError, self.websocket.WebSocketTimeoutException)
+        transport_errors = (OSError, self.websocket.WebSocketTimeoutException,
+                            getattr(self.websocket, 'WebSocketConnectionClosedException', ConnectionError))
+        failures = successful_connections = 0
+        while not self.stop.is_set():
+            connection = None
+            retry = False
+            with self.lock:
+                self.status = 'CONNECTING'
+                self.connect_attempts += 1
+            try:
+                # Handshake waiting is independent of the short recv polling period.
+                connection = self.websocket.create_connection(self.url, timeout=self.CONNECT_TIMEOUT_S)
+                connection.settimeout(self.RECEIVE_TIMEOUT_S)
+                if self.stop.is_set():
+                    break
+                successful_connections += 1
+                failures = 0
+                with self.lock:
+                    self.reconnect_count = successful_connections - 1
+                    self.status = 'WAIT_SAMPLE'
+                while not self.stop.is_set():
+                    try:
+                        raw = connection.recv()
+                    except timeouts:
+                        with self.lock:
+                            self.receive_timeouts += 1
+                        continue
+                    received_at = time.monotonic()
+                    if self.stop.is_set():
+                        break
+                    if not raw:
+                        raise ConnectionError('Omni WebSocket disconnected')
+                    if isinstance(raw, bytes):
+                        raw = raw.decode('utf-8')
+                    values = parse_omni_message(raw)
+                    with self.lock:
+                        self.latest = ReceivedOmniSample(self.received, received_at, values, raw)
+                        self.received += 1
+                        self.status = 'RECEIVING'
+            except transport_errors as error:
+                # Keep the original last-sample timestamp; retrying is not new input.
+                failures += 1
+                retry = True
+                with self.lock:
+                    self.last_transport_error = '%s: %s' % (type(error).__name__, error)
+                    self.status = 'RETRY_WAIT'
+            except Exception as error:
+                # Invalid payloads/protocol configuration remain fatal.
+                with self.lock:
+                    self.error = '%s: %s' % (type(error).__name__, error)
+                    self.status = 'ERROR'
+                break
+            finally:
+                if connection is not None:
+                    try:
+                        connection.close(timeout=0)
+                    except (OSError, ValueError):
+                        pass
+            if retry:
+                self.stop.wait(min(2., self.RECONNECT_DELAY_S * failures))
+        with self.lock:
+            if self.error is None:
+                self.status = 'STOPPED'
+
+    def transport_status(self):
+        with self.lock:
+            status = self.status
+            if status == 'RECEIVING' and self.latest is not None and (
+                    time.monotonic() - self.latest.received_monotonic_s > .75):
+                status = 'WAIT_SAMPLE'
+            return dict(status=status, connect_attempts=self.connect_attempts,
+                        reconnect_count=self.reconnect_count, receive_timeouts=self.receive_timeouts,
+                        last_transport_error=self.last_transport_error)
+
+    def snapshot(self):
+        with self.lock:
+            return self.latest, self.received, self.error
+
+    def close(self):
+        self.stop.set()
+        # Retry waits stop immediately. recv polls at 100 ms; connection setup
+        # uses its separate 2 s socket timeout and cannot publish input after stop.
+        self.thread.join(timeout=.5)
+
+
+class ClockedOmniProcessor:
+    """Map each new raw sample at most once; repeats never acquire a new source time."""
+    def __init__(self, mapper, process_hz, calibration_starts):
+        self.mapper, self.process_hz = mapper, process_hz
+        self.calibration_starts = calibration_starts
+        self.last_sequence = -1
+        self.processed_samples = self.raw_samples_skipped = 0
+
+    def process(self, sample, tick, processed_at, deadline_misses):
+        if sample is None or sample.sequence <= self.last_sequence:
+            return None
+        self.raw_samples_skipped += sample.sequence - self.last_sequence - 1
+        self.last_sequence = sample.sequence
+        self.processed_samples += 1
+        x, y, yaw = sample.values
+        velocity = ((0., 0., 0.) if sample.received_monotonic_s < self.calibration_starts
+                    else self.mapper.update(x, y, yaw, sample.received_monotonic_s))
+        return dict(source_origin='omni_connect_readonly', sample_sequence=sample.sequence,
+            raw_sample_sequence=sample.sequence, mx=x, my=y, arm_yaw_deg=yaw,
+            omni_yaw_rate_deg_s=self.mapper.yaw_rate_raw_deg_s,
+            vx=velocity[0], vy=velocity[1], yaw_rate=velocity[2],
+            yaw_diff_deg=self.mapper.yaw_from_origin_deg,
+            yaw_step_diff_deg=self.mapper.yaw_step_diff_deg, calibrated=self.mapper.calibrated,
+            processing_hz=self.process_hz, process_tick=tick,
+            processed_monotonic_s=processed_at, raw_samples_skipped=self.raw_samples_skipped,
+            processing_deadlines_missed=deadline_misses,
+            source_clock='python.time.monotonic:PC_WS_receipt',
+            processing_clock='python.time.perf_counter:scheduler')
+
+
+def next_processing_deadline(previous, now, period):
+    """Skip elapsed deadlines rather than executing a catch-up burst."""
+    following = previous + period
+    missed = 0
+    if following <= now:
+        missed = int((now - following) / period) + 1
+        following = now + period
+    return following, missed
+
+
+def run_clocked_observation(args, observation, websocket_module):
+    """Opt-in dry-run only; CSV rows are processed new samples, not all WS messages."""
+    mapper = OmniVelocityMapper(OmniVelocityConfig(calibration_s=args.calibration_seconds))
+    started = time.monotonic()
+    process = ClockedOmniProcessor(mapper, args.process_hz, started + args.start_delay_seconds)
+    reader = LatestOmniReader(args.omni_url, websocket_module)
+    csv_file = None
+    writer = None
+    extra_fields = ['raw_sample_sequence', 'processing_hz', 'process_tick',
+                    'processed_monotonic_s', 'raw_samples_skipped', 'processing_deadlines_missed',
+                    'source_clock', 'processing_clock', 'csv_row_kind']
+    if args.csv:
+        args.csv.parent.mkdir(parents=True, exist_ok=True)
+        csv_file = args.csv.open('x', newline='', encoding='utf-8')
+        writer = csv.writer(csv_file)
+        writer.writerow(OMNI_CSV_HEADER + extra_fields)
+    print('[OMNI CLOCKED OBSERVATION] processing %.3f Hz; raw WS receipt independent; '
+          'only new samples published; no command/discovery transport' % args.process_hz, flush=True)
+    print('[OMNI FRAME] world mx/my -> body vx/vy using current absolute armYaw; '
+          'yaw 0: +mx forward, +my left. Speed scale/limits unchanged.', flush=True)
+    print('[CSV] processed-new samples only, original raw JSON/timestamp preserved; '
+          'raw_samples_skipped reports samples superseded before processing', flush=True)
+    period = 1. / args.process_hz
+    started_perf = deadline = time.perf_counter()
+    ticks = missed = 0
+    reader_error = None
+    last_transport_status = None
+    last_transport_print = -math.inf
+    reader.thread.start()
+    try:
+        while True:
+            now_perf = time.perf_counter()
+            remaining = args.duration_seconds - (now_perf - started_perf) if args.duration_seconds else None
+            if remaining is not None and remaining <= 0:
+                break
+            delay = deadline - now_perf
+            if delay > 0:
+                time.sleep(min(delay, remaining) if remaining is not None else delay)
+            if args.duration_seconds and time.perf_counter() - started_perf >= args.duration_seconds:
+                break
+            sample, received, reader_error = reader.snapshot()
+            transport = reader.transport_status()
+            if transport['status'] != last_transport_status and (
+                    time.perf_counter() - last_transport_print >= .5):
+                print('[OMNI CONNECTION] ' + json.dumps(transport, allow_nan=False), flush=True)
+                last_transport_status = transport['status']
+                last_transport_print = time.perf_counter()
+            values = process.process(sample, ticks, time.monotonic(), missed)
+            if values is not None:
+                # The envelope time is raw receipt time, never the scheduler tick.
+                observation.publish(values, sample.received_monotonic_s)
+                if writer is not None:
+                    velocity = (values['vx'], values['vy'], values['yaw_rate'])
+                    row = omni_csv_row(sample.received_monotonic_s, started, sample.sequence,
+                        *sample.values, velocity, mapper, sample.raw_json_text)
+                    writer.writerow(row + [values.get(key, 'processed_new_raw_sample') for key in extra_fields])
+                    csv_file.flush()
+            ticks += 1
+            if reader_error or (args.max_samples and received >= args.max_samples):
+                break
+            deadline, skipped = next_processing_deadline(deadline, time.perf_counter(), period)
+            missed += skipped
+    finally:
+        processing_elapsed = time.perf_counter() - started_perf
+        reader.close()
+        observation.close()
+        if csv_file is not None:
+            csv_file.close()
+    _, received, _ = reader.snapshot()
+    summary = dict(processing_hz=args.process_hz, process_ticks=ticks,
+                   processed_samples=process.processed_samples, raw_samples_received=received,
+                   raw_samples_skipped=process.raw_samples_skipped,
+                   processing_deadlines_missed=missed, elapsed_perf_s=processing_elapsed,
+                   reader_thread_stopped=not reader.thread.is_alive(), reader_error=reader_error,
+                   connection=reader.transport_status())
+    print('[OMNI CLOCKED SUMMARY] ' + json.dumps(summary, allow_nan=False), flush=True)
+    if reader_error:
+        raise RuntimeError(reader_error)
+    return summary
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--relay-token", default="")
@@ -221,12 +474,29 @@ def main() -> None:
     parser.add_argument("--duration-seconds", type=float, default=0.0)
     parser.add_argument("--max-samples", type=int, default=0,
                         help=argparse.SUPPRESS)
+    parser.add_argument('--process-hz', type=float, default=0.,
+                        help='0 keeps event-driven mapping; 10..120 enables clocked observation only')
     args = parser.parse_args()
+    if (not math.isfinite(args.process_hz) or
+            (args.process_hz != 0 and not 10 <= args.process_hz <= 120)):
+        raise ValueError('process-hz must be zero or finite 10..120')
+    if args.process_hz and (not args.dry_run or os.environ.get('G1_OBSERVATION_TAP') != '1'):
+        raise ValueError('process-hz requires --dry-run and G1_OBSERVATION_TAP=1')
+    observation = None
+    if os.environ.get('G1_OBSERVATION_TAP') == '1':
+        if not args.dry_run:
+            raise ValueError('Observation tap requires --dry-run; motor command transport stays disabled')
+        import importlib.util
+        tap_path = Path(__file__).resolve().parents[2]/'tools/g1_observation_tap.py'
+        spec = importlib.util.spec_from_file_location('omni_observation_tap', tap_path)
+        tap_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(tap_module)
+        observation = tap_module.ObservationTap('omni')
     if not args.dry_run and (not args.relay_token.isascii() or
             not args.relay_token.isalnum() or
             not 16 <= len(args.relay_token) <= 128):
         raise ValueError("live mode requires a valid relay token")
-    if args.duration_seconds < 0.0:
+    if not math.isfinite(args.duration_seconds) or args.duration_seconds < 0.0:
         raise ValueError("duration seconds")
     if not 0.0 <= args.start_delay_seconds <= 300.0:
         raise ValueError("start delay seconds")
@@ -234,6 +504,14 @@ def main() -> None:
         import websocket
     except ImportError as exc:
         raise RuntimeError("Install websocket-client in the selected Python environment") from exc
+
+    if args.process_hz:
+        if not 0.1 <= args.calibration_seconds <= 10.0:
+            raise ValueError('calibration seconds')
+        if args.max_samples < 0:
+            raise ValueError('max samples')
+        run_clocked_observation(args, observation, websocket)
+        return
 
     discovery = None if args.dry_run else make_listener(args.discovery_port)
     target: tuple[str, int] | None = None
@@ -263,6 +541,10 @@ def main() -> None:
     print(f"[OMNI] connected {args.omni_url}; preparation delay "
           f"{args.start_delay_seconds:.1f} s, then calibrating for "
           f"{mapper.config.calibration_s:.1f} s", flush=True)
+    print('[OMNI FRAME] world mx/my -> body vx/vy using current absolute armYaw; '
+          'yaw 0: +mx forward, +my left. Speed scale/limits unchanged.', flush=True)
+    if observation:
+        print('[OBSERVATION] sample copy -> localhost:55071; no G1 command transport', flush=True)
     while True:
         readable = []
         if discovery is not None:
@@ -297,6 +579,13 @@ def main() -> None:
             velocity = (0.0, 0.0, 0.0)
         else:
             velocity = mapper.update(movement_x, movement_y, yaw, now)
+        if observation:
+            observation.publish(dict(source_origin='omni_connect_readonly',
+                sample_sequence=sample_count, mx=movement_x, my=movement_y,
+                arm_yaw_deg=yaw, omni_yaw_rate_deg_s=mapper.yaw_rate_raw_deg_s,
+                vx=velocity[0], vy=velocity[1], yaw_rate=velocity[2],
+                yaw_diff_deg=mapper.yaw_from_origin_deg,
+                yaw_step_diff_deg=mapper.yaw_step_diff_deg, calibrated=mapper.calibrated), now)
         if outbound is not None and target is not None:
             outbound.sendto(encode_command(session, sequence, now, velocity,
                                            args.relay_token), target)
@@ -324,6 +613,8 @@ def main() -> None:
                                        (0.0, 0.0, 0.0),
                                        args.relay_token), target)
     ws.close()
+    if observation:
+        observation.close()
     if csv_file is not None:
         csv_file.close()
 

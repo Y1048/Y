@@ -1,0 +1,140 @@
+{
+  "data_kind": "actual_Quest_and_Omni_input_PC_localhost_only_not_measured_G1",
+  "source_prefixes": {
+    "receiver": {
+      "path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\input_local_live\\20260921_152630_958214\\received_observation.jsonl",
+      "prefix_bytes": 44827661,
+      "sha256": "2b5c0c659e74139f44b9e80e8f68905eef65010d8bc37068f79881ff6ef138d6",
+      "incomplete_tail_bytes_ignored": 0
+    },
+    "arm": {
+      "path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\bimanual\\unity_20260921_152631_628857.jsonl",
+      "prefix_bytes": 31457752,
+      "sha256": "4414c44e1a573f20bb56943a871fcf5da03e256370edbf5cd3c539d7da1e2095",
+      "incomplete_tail_bytes_ignored": 0
+    },
+    "omni": {
+      "path": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\omni_gateway_readonly\\omni_observation_20260921_152631_589019.csv",
+      "prefix_bytes": 2327834,
+      "sha256": "5334b51f5b44b6673c8e7046b977348297589b25dbaef254853d0efb6c79d3cb",
+      "incomplete_tail_bytes_ignored": 0
+    }
+  },
+  "receiver_analysis_cutoff_monotonic_s": 23446.359,
+  "receiver_sequence_first": 0,
+  "receiver_sequence_last": 15655,
+  "received_packets": 15656,
+  "receiver_hz": 59.99877357984409,
+  "receiver_interarrival_s": {
+    "min": 0.014999999999417923,
+    "p50": 0.01599999999962165,
+    "p95": 0.030999999999039574,
+    "max": 0.030999999999039574
+  },
+  "receiver_hash_matches": 15656,
+  "exact_arm_copies": 15544,
+  "exact_omni_copies": 15647,
+  "mismatches": {},
+  "receiver_missing_packets": 0,
+  "receiver_unordered_packets": 0,
+  "receiver_rejects": 0,
+  "receiver_log_dropped_max": 0,
+  "receiver_log_errors": [],
+  "both_fresh_packets": 15544,
+  "both_fresh_with_active_tracking_packets": 991,
+  "both_fresh_with_active_tracking_and_omni_movement_packets": 0,
+  "status_counts": [
+    {
+      "arm": "WAIT",
+      "omni": "WAIT",
+      "count": 9
+    },
+    {
+      "arm": "WAIT",
+      "omni": "FRESH_LIVE",
+      "count": 103
+    },
+    {
+      "arm": "FRESH_LIVE",
+      "omni": "FRESH_LIVE",
+      "count": 15544
+    }
+  ],
+  "pc_source_ages_s": {
+    "arm": {
+      "min": 0.0,
+      "p50": 0.0,
+      "p95": 0.01600000000325963,
+      "max": 0.0319999999992433
+    },
+    "omni": {
+      "min": 0.0,
+      "p50": 0.030999999999039574,
+      "p95": 0.07800000000133878,
+      "max": 0.21900000000096043
+    }
+  },
+  "independent_source_age_difference_s": {
+    "min": 0.0,
+    "p50": 0.01600000000325963,
+    "p95": 0.0779999999977008,
+    "max": 0.20300000000133878
+  },
+  "omni_ranges": {
+    "mx": {
+      "min": -0.05,
+      "p50": -0.05,
+      "p95": -0.05,
+      "max": -0.05
+    },
+    "my": {
+      "min": 0.27,
+      "p50": 0.27,
+      "p95": 0.27,
+      "max": 0.27
+    },
+    "arm_yaw_deg": {
+      "min": 112.37,
+      "p50": 112.58,
+      "p95": 112.68,
+      "max": 112.79
+    },
+    "vx": {
+      "min": 0.0,
+      "p50": 0.0,
+      "p95": 0.0,
+      "max": 0.0
+    },
+    "vy": {
+      "min": 0.0,
+      "p50": 0.0,
+      "p95": 0.0,
+      "max": 0.0
+    },
+    "yaw_rate": {
+      "min": 0.0,
+      "p50": 0.0,
+      "p95": 0.0,
+      "max": 0.0
+    }
+  },
+  "omni_world_bias": {
+    "x": -0.05,
+    "y": 0.27,
+    "calibration_samples": 24
+  },
+  "independent_body_mapping_checks": 6757,
+  "independent_body_mapping_abs_max_error": 0.0,
+  "omni_processed_new_hz": 28.322673031026252,
+  "omni_processed_sample_gap_s": {
+    "min": 0.0,
+    "p50": 0.030999999999039574,
+    "p95": 0.07800000000133878,
+    "max": 0.21900000000096043
+  },
+  "omni_raw_samples_skipped_before_processing": 16456,
+  "same_instant_sensor_acquisition_claimed": false,
+  "g1_receipt_validated": false,
+  "motor_output": false,
+  "recommended_hardware_gains": null
+}

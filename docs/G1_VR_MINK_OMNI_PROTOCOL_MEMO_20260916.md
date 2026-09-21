@@ -70,7 +70,7 @@ Unity 화면
 | Mink → Arm Relay | UTF-8 JSON 객체 `g1.mink.cycle.live.v1` | `joints`는 오른팔 22~28번의 절대 목표각 7개, 단위 rad; `clearance_m`는 최소 충돌 여유 m |
 | Arm Relay → G1 | 위 Mink JSON에 `relay_token` 문자열을 추가 | 관절 배열과 단위는 변경하지 않음. relay가 schema·session·sequence·freshness를 검증한 뒤 G1 `5014`로 전달 |
 | G1 → PC | UTF-8 JSON 객체 `g1.mink.cycle.ack.v1` | 로봇 cycle 상태 문자열과 해당 session/epoch/sequence. relay가 받은 ACK를 PC loopback `5015`로 전달 |
-| Omni Connect → Omni Gateway | WebSocket text JSON | `movementXY=[mx,my]`: 정규화 입력, `mx=오른쪽 양수`, `my=전진 양수`; `armYaw`: degree |
+| Omni Connect → Omni Gateway | WebSocket text JSON | `movementXY=[mx,my]`: 월드 이동 벡터, 현재 계약상 yaw 0에서 `mx=전진`, `my=왼쪽`; `armYaw`: degree |
 | G1 → Omni Gateway | UDP JSON 객체 `g1.velocity.discovery.v1` | G1 식별자, `velocity_port` 정수, 증가 sequence, 실행별 token. UDP datagram의 실제 송신 IP를 G1 주소로 사용 |
 | Omni Gateway → G1 | UDP JSON 객체 `g1.velocity.command.v1` | `velocity=[vx,vy,yaw_rate]`; `vx,vy` m/s, `yaw_rate` rad/s |
 | G1 카메라 → Unity | TCP binary: 24-byte big-endian header 뒤 JPEG 원본 bytes | header=`magic(4) + version(u32) + sequence(u32) + timestamp_ns(u64) + jpeg_size(u32)`; magic=`G1CM`, version=`1` |
@@ -199,8 +199,8 @@ relay는 위 패킷을 검증한 뒤 실행별 token을 추가한다. 나머지 
 }
 ```
 
-- `movementXY[0]`: 오른쪽 양수의 정규화 lateral 입력.
-- `movementXY[1]`: 전진 양수의 정규화 forward 입력.
+- `movementXY[0:2]`: 월드 기준 이동 벡터 `mx,my` (무차원).
+- 2026-09-21 사용자 입력 계약: yaw 0에서 `mx→전진`, `my→왼쪽`, 양의 yaw는 +X→+Y.
 - `armYaw`: degree. Gateway가 연속 샘플 차이를 시간으로 나눠 회전 속도를 만든다.
 - Omni 원본에는 프로젝트용 session, sequence, source timestamp가 없다. Gateway가
   수신 시 monotonic timestamp와 sequence를 부여한다.
@@ -320,16 +320,22 @@ yaw_rate = clamp(low_pass(yaw_gain × delta_yaw / dt))
 arm을 돌리는 동안 G1이 같은 방향으로 회전하고, arm이 멈추면 회전 명령도 0으로
 수렴한다. G1의 실제 yaw 피드백은 사용하지 않으므로 회전량은 대략적으로 일치한다.
 
-`movementXY`는 현재 기록상 이미 `X=오른쪽`, `Y=전방`인 이동 벡터다. 여기에
-`armYaw` 회전을 다시 적용하지 않고 다음처럼 축, 부호, 영점과 크기만 보정한다.
+2026-09-21 수정: `movementXY`는 사용자가 확인한 월드 기준 이동 벡터로 취급한다.
+현재 **절대** `armYaw`로 역회전한 뒤 몸체 전진·왼쪽 축별 deadzone과 scale을 적용한다.
+이전의 단순 축 교환·부호 반전은 사용하지 않는다.
 
 ```text
-vx = forward_gain × deadzone(movementXY.y - forward_zero)
-vy = -lateral_gain × deadzone(movementXY.x - lateral_zero)
+x = mx - zero_x
+y = my - zero_y
+theta = radians(current_armYaw)
+vx = forward_gain × deadzone(cos(theta) × x + sin(theta) × y)
+vy = lateral_gain × deadzone(-sin(theta) × x + cos(theta) × y)
 ```
 
-`forward_zero`와 `lateral_zero`는 시작 시 정지 샘플의 평균으로 정한다. Omni의
-오른쪽 양수 X를 G1 정책의 왼쪽 양수 Y로 바꾸기 위해 lateral 부호를 반전한다. 통신 재연결 때는 이동
-영점과 이전 yaw 샘플을 다시 잡고, 보정이 끝나기 전까지 이동 목표는 0으로 둔다.
+`zero_x/zero_y`는 시작 1초의 정지 샘플 평균이다. 방향 정렬 calibration은 필요 없으며,
+이동 영점 평균은 별도로 유지한다. 시작각을 뺀 상대 yaw만으로 월드 벡터를 변환하지 않는다.
+기존 `vx/vy` 필드 및 `velocity=[vx,vy,yaw_rate]` 앞 두 값에 변환 결과를 담는다.
+scale/상한 0.8 m/s, yaw-rate 처리, 원본 CSV는 유지한다. 센서 축·부호와 실제 G1 이동은
+이번 수학·프로토콜 시험만으로 검증됐다고 주장하지 않는다.
 
 독립 Omni Gateway와 UDP 자동 발견 계약은 구현했으며 합성 입력 기반 PC 오프라인 시험을 통과했다. 실제 Omni 연결 시험과 G1 배포·실행은 아직 하지 않았다. Omni 경로에서는 UDP `5016`과 기존 키패드용 Velocity Relay를 사용하지 않는다. Gateway가 보정과 검증을 마친 이동 목표를 자동 발견된 G1의 UDP `5017`로 직접 전송한다.

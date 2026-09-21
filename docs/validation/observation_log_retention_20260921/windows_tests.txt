@@ -1,0 +1,59 @@
+test_active_unregistered_and_pinned_bytes_are_excluded_from_budget (backend.tests.test_g1_observation_log_retention.RetentionTests.test_active_unregistered_and_pinned_bytes_are_excluded_from_budget) ... ok
+test_all_three_names_supported_and_near_matches_rejected (backend.tests.test_g1_observation_log_retention.RetentionTests.test_all_three_names_supported_and_near_matches_rejected) ... ok
+test_byte_budget_deletes_oldest_until_under_limit (backend.tests.test_g1_observation_log_retention.RetentionTests.test_byte_budget_deletes_oldest_until_under_limit) ... ok
+test_dangling_pin_symlink_protects_raw (backend.tests.test_g1_observation_log_retention.RetentionTests.test_dangling_pin_symlink_protects_raw) ... skipped "symlink creation unavailable: [WinError 1314] 클라이언트가 필요한 권한을 가지고 있지 않습니다: 'C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\tmp32r0uy74\\\\absent' -> 'C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\tmp32r0uy74\\\\unity_20260921_123456_000001.jsonl.keep'"
+test_deletion_batch_is_bounded_and_continues_next_pass (backend.tests.test_g1_observation_log_retention.RetentionTests.test_deletion_batch_is_bounded_and_continues_next_pass) ... ok
+test_duplicate_marker_fields_are_rejected (backend.tests.test_g1_observation_log_retention.RetentionTests.test_duplicate_marker_fields_are_rejected) ... ok
+test_existing_stale_lock_skips_registration_and_maintenance (backend.tests.test_g1_observation_log_retention.RetentionTests.test_existing_stale_lock_skips_registration_and_maintenance) ... ok
+test_failed_raw_unlink_preserves_raw_and_marker (backend.tests.test_g1_observation_log_retention.RetentionTests.test_failed_raw_unlink_preserves_raw_and_marker) ... ok
+test_hardlinked_raw_and_marker_are_rejected (backend.tests.test_g1_observation_log_retention.RetentionTests.test_hardlinked_raw_and_marker_are_rejected) ... ok
+test_incomplete_scan_deletes_nothing (backend.tests.test_g1_observation_log_retention.RetentionTests.test_incomplete_scan_deletes_nothing) ... ok
+test_invalid_and_oversized_markers_preserve_raw (backend.tests.test_g1_observation_log_retention.RetentionTests.test_invalid_and_oversized_markers_preserve_raw) ... ok
+test_invalid_bounds_do_not_delete_and_python38_syntax_parses (backend.tests.test_g1_observation_log_retention.RetentionTests.test_invalid_bounds_do_not_delete_and_python38_syntax_parses) ... ok
+test_late_pin_and_late_modification_preserve_raw (backend.tests.test_g1_observation_log_retention.RetentionTests.test_late_pin_and_late_modification_preserve_raw) ... ok
+test_late_pin_or_invalid_candidate_does_not_delete_newer_logs (backend.tests.test_g1_observation_log_retention.RetentionTests.test_late_pin_or_invalid_candidate_does_not_delete_newer_logs) ... ok
+test_modified_raw_is_preserved_and_cannot_be_reregistered (backend.tests.test_g1_observation_log_retention.RetentionTests.test_modified_raw_is_preserved_and_cannot_be_reregistered) ... ok
+test_nonrecursive_scan_and_strict_basenames (backend.tests.test_g1_observation_log_retention.RetentionTests.test_nonrecursive_scan_and_strict_basenames) ... ok
+test_old_raw_timestamp_does_not_expire_a_new_completion (backend.tests.test_g1_observation_log_retention.RetentionTests.test_old_raw_timestamp_does_not_expire_a_new_completion) ... ok
+test_only_expired_completed_log_and_its_marker_are_removed (backend.tests.test_g1_observation_log_retention.RetentionTests.test_only_expired_completed_log_and_its_marker_are_removed) ... ok
+test_parent_traversal_paths_are_not_normalized_into_authorization (backend.tests.test_g1_observation_log_retention.RetentionTests.test_parent_traversal_paths_are_not_normalized_into_authorization) ... ok
+test_pinned_before_registration_is_not_registered (backend.tests.test_g1_observation_log_retention.RetentionTests.test_pinned_before_registration_is_not_registered) ... ok
+test_registration_is_idempotent_and_does_not_extend_retention (backend.tests.test_g1_observation_log_retention.RetentionTests.test_registration_is_idempotent_and_does_not_extend_retention) ... ok
+test_same_size_replacement_is_preserved (backend.tests.test_g1_observation_log_retention.RetentionTests.test_same_size_replacement_is_preserved) ... ok
+test_schema_tampering_never_authorizes_deletion (backend.tests.test_g1_observation_log_retention.RetentionTests.test_schema_tampering_never_authorizes_deletion) ... ok
+test_symlink_directory_and_ancestor_are_rejected (backend.tests.test_g1_observation_log_retention.RetentionTests.test_symlink_directory_and_ancestor_are_rejected) ... skipped "symlink creation unavailable: [WinError 1314] 클라이언트가 필요한 권한을 가지고 있지 않습니다: 'C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\tmp747i6vn1\\\\target' -> 'C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\tmp747i6vn1\\\\link'"
+test_symlink_raw_or_marker_cannot_delete_external_target (backend.tests.test_g1_observation_log_retention.RetentionTests.test_symlink_raw_or_marker_cannot_delete_external_target) ... skipped "symlink creation unavailable: [WinError 1314] 클라이언트가 필요한 권한을 가지고 있지 않습니다: 'C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\tmpu77oiovs\\\\external-data' -> 'C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\tmpu77oiovs\\\\unity_20260921_123456_000009.jsonl'"
+test_windows_reparse_attribute_is_rejected_without_symlink_bit (backend.tests.test_g1_observation_log_retention.RetentionTests.test_windows_reparse_attribute_is_rejected_without_symlink_bit) ... ok
+test_ctrl_c_preserves_log_when_child_remains_running (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_ctrl_c_preserves_log_when_child_remains_running) ... ok
+test_ctrl_c_registers_only_after_child_finishes_its_bounded_wait (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_ctrl_c_registers_only_after_child_finishes_its_bounded_wait) ... ok
+test_maintenance_precedes_launch_and_registration_follows_confirmed_exit (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_maintenance_precedes_launch_and_registration_follows_confirmed_exit) ... ok
+test_no_registration_when_launch_fails (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_no_registration_when_launch_fails) ... ok
+test_only_local_log_producers_expose_a_log_path (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_only_local_log_producers_expose_a_log_path) ... ok
+test_send_and_remote_receive_wrappers_never_call_pc_retention (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_send_and_remote_receive_wrappers_never_call_pc_retention) ... ok
+test_wait_result_alone_does_not_register_an_unconfirmed_child (backend.tests.test_g1_log_retention_integration.LauncherRetentionTests.test_wait_result_alone_does_not_register_an_unconfirmed_child) ... ok
+test_missing_or_broken_helper_preserves_logs_and_does_not_stop_observation (backend.tests.test_g1_log_retention_integration.OptionalHelperTests.test_missing_or_broken_helper_preserves_logs_and_does_not_stop_observation) ... ok
+test_injected_sink_without_owned_path_never_registers_a_file (backend.tests.test_g1_log_retention_integration.ReceiverRetentionTests.test_injected_sink_without_owned_path_never_registers_a_file) ... ok
+test_real_file_is_registered_only_after_writer_flush_close_and_join (backend.tests.test_g1_log_retention_integration.ReceiverRetentionTests.test_real_file_is_registered_only_after_writer_flush_close_and_join) ... ok
+test_receiver_maintains_before_timer_socket_binding_and_writer_start (backend.tests.test_g1_log_retention_integration.ReceiverRetentionTests.test_receiver_maintains_before_timer_socket_binding_and_writer_start) ... ok
+test_timed_out_writer_remains_unregistered_until_it_really_closes (backend.tests.test_g1_log_retention_integration.ReceiverRetentionTests.test_timed_out_writer_remains_unregistered_until_it_really_closes) ... ok
+test_write_flush_or_close_failure_prevents_closed_registration (backend.tests.test_g1_log_retention_integration.ReceiverRetentionTests.test_write_flush_or_close_failure_prevents_closed_registration) ... ok
+test_100hz_display_repeats_one_snapshot_ages_it_and_never_bursts_after_slow_write (backend.tests.test_g1_observation_audit.AuditTests.test_100hz_display_repeats_one_snapshot_ages_it_and_never_bursts_after_slow_write) ... ok
+test_ack_requires_peer_session_sequence_and_exact_digest (backend.tests.test_g1_observation_audit.AuditTests.test_ack_requires_peer_session_sequence_and_exact_digest) ... ok
+test_bad_values_and_wrong_order_size (backend.tests.test_g1_observation_audit.AuditTests.test_bad_values_and_wrong_order_size) ... ok
+test_blocked_stdout_does_not_block_real_udp_ack_or_grow_display_queue (backend.tests.test_g1_observation_audit.AuditTests.test_blocked_stdout_does_not_block_real_udp_ack_or_grow_display_queue) ... ok
+test_contract_separate_from_control (backend.tests.test_g1_observation_audit.AuditTests.test_contract_separate_from_control) ... ok
+test_display_rate_validation_accepts_100_and_rejects_outside_range_before_binding (backend.tests.test_g1_observation_audit.AuditTests.test_display_rate_validation_accepts_100_and_rejects_outside_range_before_binding) ... ok
+test_equal_source_clock_tick_allows_new_sequence_without_renewing_source_age (backend.tests.test_g1_observation_audit.AuditTests.test_equal_source_clock_tick_allows_new_sequence_without_renewing_source_age) ... ok
+test_live_loopback_pairs_both_sources_then_marks_old_values_stale (backend.tests.test_g1_observation_audit.AuditTests.test_live_loopback_pairs_both_sources_then_marks_old_values_stale) ... ok
+test_live_source_strict_contract_and_exact_joint_order (backend.tests.test_g1_observation_audit.AuditTests.test_live_source_strict_contract_and_exact_joint_order) ... ok
+test_loopback_real_udp_ack_and_recorded_packet_hash (backend.tests.test_g1_observation_audit.AuditTests.test_loopback_real_udp_ack_and_recorded_packet_hash) ... ok
+test_receiver_display_ages_wait_and_packet_without_cross_host_clock_subtraction (backend.tests.test_g1_observation_audit.AuditTests.test_receiver_display_ages_wait_and_packet_without_cross_host_clock_subtraction) ... ok
+test_receiver_mock_never_labels_external_ik_as_measured_g1_or_cpp_output (backend.tests.test_g1_observation_audit.AuditTests.test_receiver_mock_never_labels_external_ik_as_measured_g1_or_cpp_output) ... ok
+test_slow_log_sink_is_bounded_and_reports_drops (backend.tests.test_g1_observation_audit.AuditTests.test_slow_log_sink_is_bounded_and_reports_drops) ... ok
+test_source_order_restart_clock_and_freshness_cannot_be_refreshed_by_resend (backend.tests.test_g1_observation_audit.AuditTests.test_source_order_restart_clock_and_freshness_cannot_be_refreshed_by_resend) ... ok
+test_worker_commands_are_observation_only_without_executing_them (backend.tests.test_g1_observation_pipeline.ObservationLauncherTests.test_worker_commands_are_observation_only_without_executing_them) ... ok
+
+----------------------------------------------------------------------
+Ran 54 tests in 8.062s
+
+OK (skipped=3)

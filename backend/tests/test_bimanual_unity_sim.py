@@ -14,6 +14,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
 from g1_bimanual_unity_sim import UnityCycle, PairedHandFilter, decode, BASIS, SCHEMA, mink
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 
 
@@ -169,7 +170,7 @@ class CycleTests(unittest.TestCase):
         self.assertEqual(stages,
                          ['near_hands_stop', 'separate_left', 'safe_waypoint', 'home', 'complete'])
         self.assertGreaterEqual(minimum, sim.clearance_m)
-        self.assertLessEqual(maximum_acceleration, np.deg2rad(60.) + 1e-5)
+        self.assertLessEqual(maximum_acceleration, JOINT_ACCELERATION_LIMIT_RAD_S2 + 1e-5)
         self.assertEqual(np.max(np.abs(sim.velocity)), 0.)
         np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
 

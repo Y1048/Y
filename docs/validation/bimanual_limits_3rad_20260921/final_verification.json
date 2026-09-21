@@ -1,0 +1,44 @@
+{
+  "installed": {
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_limits.py": "8685f9df91b70f3bd6f77ef8ea24eb7ddb8bd622f26881914566b82362e18ba5",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_sim.py": "9ea9354b2a6e51b9755ff464028f53804bbc875117240b5cd6d0531bf51c2067",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_motion_policy.py": "739c1650ea89a2cc39dd7f9fa3721b728946b78e657f48d2490ef174077b300f",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_return.py": "b2887be3bdc1bd3263dbb1767f3fb3d0a89fd63d1702a86160afc575027310a4",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_runtime.py": "079fbbaebd0f5d00c70dca3ef6f4bca9632fa85f70f7fac071541d77285c074c",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_session_report.py": "182aecc86e36f4b2524deb4b315fd77b718961adcfaf170f319684021e8826d5",
+    "MuJoCo_G1_Controller\\scripts\\g1_bimanual_udp_cycle.py": "52640e4eee8d88ef9d435a92ec3a56d074dcedc0eac3e46b3fff910f2835e5f4",
+    "tools\\bimanual_preflight.py": "d4b334557027ba625984ae47c6fd4e263e1cec28e0b2b3854b012bc1926dfa9e",
+    "docs\\G1_LIVE_INPUT_OBSERVATION_20260921.md": "b35a716790db2ebeeb711c39a645609e7ea90c5d9febf6982426f12657ff8f6c",
+    "backend\\tests\\test_bimanual_sim.py": "37c49cd8119b1e68f52321a362d92168716488a792d01617905e85246850a970",
+    "backend\\tests\\test_bimanual_return.py": "366b4de96ab1a5717005eef3bbe8248e7bb74bd834772d36a6d0472216eceee1",
+    "backend\\tests\\test_bimanual_motion_quality.py": "941f4d5244f3a1fde4d7847a8204ff6bbe4f80d6c0043c80c9d0ebbf35cb20e8",
+    "backend\\tests\\test_bimanual_marker_feedback.py": "47ad0def0feca70647e231a4a01b0d52a2dfc60b4716ae31d9212b6d1939f39e",
+    "backend\\tests\\test_bimanual_boundaries.py": "7ec74c8d66263ab26e24de1b6723a0952cac9f964f178becd05f626655d3dcf9",
+    "backend\\tests\\test_bimanual_near_hands_sweep.py": "a2b3093612ffd20d0fb9b8109bebdadada64b8c20cfa8c2f44ccc861cc8f86ec",
+    "backend\\tests\\test_bimanual_quest_reengage.py": "3b16b65a3372c6f9a8295155700dc44014c045f051eb3eb9b9ac8990783ccdce",
+    "backend\\tests\\test_bimanual_recorded_session.py": "acc7125a348db018e22084b52f978fe6f5e5d892c164bb61d90aa23fbe9fbd3f",
+    "backend\\tests\\test_bimanual_unity_sim.py": "85eb715512ee29cb251695e538710ca14ff8352fefbc720bcc83db78f79a69e3",
+    "backend\\tests\\test_bimanual_runtime.py": "03d2c03047af774065173ddfcbd037f9d472955f411345276100889be343c441",
+    "backend\\tests\\test_bimanual_session_report.py": "80eecf6bf32e8fa3e3f4f0c7793079314a1109f1d78dc836a1a2943818b405d3",
+    "backend\\tests\\bimanual_replay_profiles.py": "895ec554b84fbc5562e6fc86132f67a5c3f86b9ca884ca1fe39cbf739c66391b"
+  },
+  "full_suite": {
+    "tests": 116,
+    "passed": 115,
+    "failed": 1
+  },
+  "final_failed_case_rerun": {
+    "passed": true,
+    "recorded_ticks": 3433,
+    "generated_completion_ticks": 65,
+    "return_seconds": 6.833333333333333
+  },
+  "every_final_test_passed_across_runs": true,
+  "full_suite_repeated_after_test_window_change": false,
+  "runtime_limits_confirmed": [
+    3.0,
+    3.0
+  ],
+  "hardware_validated": false,
+  "recommended_hardware_gains": null
+}

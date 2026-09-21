@@ -1,0 +1,163 @@
+{
+  "data_kind": "actual_Omni_operator_input_and_G1_observation_receipt",
+  "g1": {
+    "g1_log": "C:\\Users\\user\\Documents\\Codex\\2026-09-16\\d\\work\\g1-integration\\logs\\test_results\\input_observation_live_20260921\\g1_received_134949.jsonl",
+    "file_sha256": "3ebf05ee07d9235fd0b5a62acd09430e57682733a98e3c04e36eb20f5d4ded8c",
+    "rows": 3364,
+    "received": 3364,
+    "kinds": {
+      "received_observation": 3364
+    },
+    "span_s": 56.04818995400001,
+    "receive_hz": 60.001937667569436,
+    "sequence_range": [
+      168,
+      3531
+    ],
+    "sequence_skip_before_first_record": 168,
+    "missing_inside_received_window": 0,
+    "ordered_all": true,
+    "packet_digest_mismatch": 0,
+    "max_log_drop": 0,
+    "both_fresh": 3364,
+    "omni_status": {
+      "FRESH_LIVE": 3364
+    },
+    "omni_source_matches": 3364,
+    "omni_source_mismatches": 0,
+    "omni_source_unmatched": 0,
+    "omni_unique_samples": 1748,
+    "omni_raw_sequence_range": [
+      329,
+      7351
+    ],
+    "omni_ranges": {
+      "mx": [
+        -0.2,
+        0.99
+      ],
+      "my": [
+        -0.27,
+        0.39
+      ],
+      "arm_yaw_deg": [
+        28.09,
+        195.81
+      ],
+      "vx": [
+        -0.16811594202898553,
+        0.26666666666666666
+      ],
+      "vy": [
+        -0.7785507246376812,
+        0.11710144927536231
+      ],
+      "yaw_rate": [
+        -1.6,
+        1.6
+      ],
+      "yaw_diff_deg": [
+        -84.57,
+        83.14999999999998
+      ]
+    },
+    "omni_nonzero_snapshots": 2246,
+    "omni_meaningful_polarities_unique": {
+      "vx": {
+        "positive": 206,
+        "negative": 6
+      },
+      "vy": {
+        "positive": 7,
+        "negative": 777
+      },
+      "yaw_rate": {
+        "positive": 125,
+        "negative": 215
+      }
+    },
+    "yaw_saturated_unique": 31,
+    "unity_input_status": {
+      "WAIT": 3364
+    },
+    "cpp_command_sent_any": false
+  },
+  "omni_pc_snapshot": {
+    "file": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\omni_gateway_readonly\\omni_observation_20260921_134946_064568.csv",
+    "snapshot_complete_rows": 5710,
+    "snapshot_sha256": "7269044e526b876646b06f3aa6d53640eec20c6bb0431ec9382a825caebf4c43",
+    "span_s": 179.93699999999808,
+    "raw_first": 0,
+    "raw_last": 22169,
+    "configured_hz": [
+      "60.0"
+    ],
+    "compute_tick_hz": 59.998999738820245,
+    "new_processed_samples_hz": 31.727771386652332,
+    "processing_deadline_misses": 0,
+    "ranges": {
+      "mx": [
+        -0.2,
+        0.99
+      ],
+      "my": [
+        -0.27,
+        0.39
+      ],
+      "arm_yaw_deg": [
+        28.09,
+        195.81
+      ],
+      "vx": [
+        -0.16811594202898553,
+        0.26666666666666666
+      ],
+      "vy": [
+        -0.7785507246376812,
+        0.11710144927536231
+      ],
+      "yaw_rate": [
+        -1.6,
+        1.6
+      ],
+      "yaw_diff_deg": [
+        -84.57,
+        83.14999999999998
+      ]
+    },
+    "nonzero_rows": {
+      "mx": 1008,
+      "my": 1006,
+      "vx": 488,
+      "vy": 919,
+      "yaw_rate": 418
+    },
+    "meaningful_polarities": {
+      "vx": {
+        "positive": 209,
+        "negative": 20
+      },
+      "vy": {
+        "positive": 7,
+        "negative": 786
+      },
+      "yaw_rate": {
+        "positive": 125,
+        "negative": 215
+      }
+    },
+    "calibrated_rows": 5677,
+    "max_input_gap_s": 0.2029999999977008,
+    "nonmonotonic": 0,
+    "raw_json_matches": true
+  },
+  "motor_output": false,
+  "simultaneous_arm_motion_this_session": false,
+  "limitations": [
+    "All3 velocity components show both signs, but physicaldirection labels/timing were not supplied; anatomy/direction accuracy not proven",
+    "Yaw command reached configured +/-1.6rad/s cap in31 unique received samples",
+    "PCsource continues beyond G1receive window; only matched3364received frames are verified onG1",
+    "Omni processing60Hz differs fromabout31.73Hz of processednew samples",
+    "Atreadback UDP55071 PCsender stopped whileOmni32123 andIK5020 remained; no processes started/stopped byanalysis"
+  ]
+}

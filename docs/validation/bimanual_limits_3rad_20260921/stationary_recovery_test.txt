@@ -1,0 +1,6 @@
+test_recovery_waits_for_checked_stationary_acceleration_before_replan (test_bimanual_return.StagedReturnTests.test_recovery_waits_for_checked_stationary_acceleration_before_replan) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.154s
+
+OK

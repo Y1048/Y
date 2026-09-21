@@ -1,0 +1,105 @@
+test_all_fourteen_limits_and_checked_stop_use_three_radians (backend.tests.test_bimanual_sim.BimanualTests.test_all_fourteen_limits_and_checked_stop_use_three_radians) ... ok
+test_bounding_sphere_exclusion_is_conservative (backend.tests.test_bimanual_sim.BimanualTests.test_bounding_sphere_exclusion_is_conservative) ... ok
+test_broadphase_matches_full_clearance_decision (backend.tests.test_bimanual_sim.BimanualTests.test_broadphase_matches_full_clearance_decision) ... ok
+test_checked_tail_stops_on_infeasible_qp_without_reset (backend.tests.test_bimanual_sim.BimanualTests.test_checked_tail_stops_on_infeasible_qp_without_reset) ... ok
+test_clearance_guard_rejects_interior_and_latches (backend.tests.test_bimanual_sim.BimanualTests.test_clearance_guard_rejects_interior_and_latches) ... ok
+test_crossed_targets_keep_sampled_clearance (backend.tests.test_bimanual_sim.BimanualTests.test_crossed_targets_keep_sampled_clearance) ... ok
+test_kinematic_clearance_matches_full_forward (backend.tests.test_bimanual_sim.BimanualTests.test_kinematic_clearance_matches_full_forward) ... ok
+test_kinematic_clearance_nonzero_path_skips_contact_promotion (backend.tests.test_bimanual_sim.BimanualTests.test_kinematic_clearance_nonzero_path_skips_contact_promotion) ... ok
+test_kinematic_clearance_promotes_zero_distance_to_contact_path (backend.tests.test_bimanual_sim.BimanualTests.test_kinematic_clearance_promotes_zero_distance_to_contact_path) ... ok
+test_missing_nonfinite_and_quaternion (backend.tests.test_bimanual_sim.BimanualTests.test_missing_nonfinite_and_quaternion) ... ok
+test_no_transport_in_entrypoint (backend.tests.test_bimanual_sim.BimanualTests.test_no_transport_in_entrypoint) ... ok
+test_nonfinite_clearance_rejects_new_plan (backend.tests.test_bimanual_sim.BimanualTests.test_nonfinite_clearance_rejects_new_plan) ... ok
+test_order_and_hand_pairs (backend.tests.test_bimanual_sim.BimanualTests.test_order_and_hand_pairs) ... ok
+test_reach_return_reengage (backend.tests.test_bimanual_sim.BimanualTests.test_reach_return_reengage) ... ok
+test_recorded_unity_failure_replay (backend.tests.test_bimanual_sim.BimanualTests.test_recorded_unity_failure_replay) ... ok
+test_both_launchers_use_validated_runtime (backend.tests.test_bimanual_runtime.RuntimeTests.test_both_launchers_use_validated_runtime) ... ok
+test_cannot_switch_preloaded_engine (backend.tests.test_bimanual_runtime.RuntimeTests.test_cannot_switch_preloaded_engine) ... ok
+test_core_guard_precedes_model_preparation (backend.tests.test_bimanual_runtime.RuntimeTests.test_core_guard_precedes_model_preparation) ... ok
+test_default_project_engine_is_selected (backend.tests.test_bimanual_runtime.RuntimeTests.test_default_project_engine_is_selected) ... ok
+test_environment_missing_engine_has_no_fallback (backend.tests.test_bimanual_runtime.RuntimeTests.test_environment_missing_engine_has_no_fallback) ... ok
+test_explicit_engine_wins_and_children_inherit_it (backend.tests.test_bimanual_runtime.RuntimeTests.test_explicit_engine_wins_and_children_inherit_it) ... ok
+test_explicit_missing_engine_has_no_fallback (backend.tests.test_bimanual_runtime.RuntimeTests.test_explicit_missing_engine_has_no_fallback) ... ok
+test_installed_validated_engine_needs_no_local_root (backend.tests.test_bimanual_runtime.RuntimeTests.test_installed_validated_engine_needs_no_local_root) ... ok
+test_matching_package_and_native_are_required (backend.tests.test_bimanual_runtime.RuntimeTests.test_matching_package_and_native_are_required) ... ok
+test_metadata_is_simulation_only_and_hashes_source (backend.tests.test_bimanual_runtime.RuntimeTests.test_metadata_is_simulation_only_and_hashes_source) ... ok
+test_report_launcher_uses_validated_runtime_without_sim_launcher (backend.tests.test_bimanual_runtime.RuntimeTests.test_report_launcher_uses_validated_runtime_without_sim_launcher) ... ok
+test_report_mode_propagates_runner_exit_code (backend.tests.test_bimanual_runtime.RuntimeTests.test_report_mode_propagates_runner_exit_code) ... ok
+test_startup_failure_does_not_import_runner (backend.tests.test_bimanual_runtime.RuntimeTests.test_startup_failure_does_not_import_runner) ... ok
+Recorded simulation replay: ticks=209 braking=0 p95_ms=4.48 max_ms=7.06
+[BIMANUAL STARTUP] engine_begin perf_counter_ns=21962342438400
+test_validation_does_not_import_runner (backend.tests.test_bimanual_runtime.RuntimeTests.test_validation_does_not_import_runner) ... ok
+test_bimanual_motion_quality (unittest.loader._FailedTest.test_bimanual_motion_quality) ... ERROR
+STAGED_RETURN {"reason": "tracking_lost", "ticks": 356, "simulation_s": 5.933333333333334, "old_simulation_s": 10.733333333333333, "old_observed_wall_s": 11.156000000000859, "stages": [[1, "safe_waypoint"], [213, "home"], [356, "complete"]], "minimum_clearance_mm": 40.372503023006544, "peak_speed_deg_s": 41.272304838050616, "max_output_acceleration_deg_s2": 58.777690037050135, "replans": 0}
+STAGED_RETURN {"reason": "pinch", "ticks": 321, "simulation_s": 5.35, "old_simulation_s": 9.833333333333334, "old_observed_wall_s": 10.25, "stages": [[1, "safe_waypoint"], [178, "home"], [321, "complete"]], "minimum_clearance_mm": 39.13975976508173, "peak_speed_deg_s": 36.96774560421232, "max_output_acceleration_deg_s2": 62.15036609005878, "replans": 0}
+test_actual_return_start_fixtures_visit_waypoint_and_finish (backend.tests.test_bimanual_return.StagedReturnTests.test_actual_return_start_fixtures_visit_waypoint_and_finish) ... ok
+test_collision_rejection_uses_checked_stop_instead_of_publishing_proposal (backend.tests.test_bimanual_return.StagedReturnTests.test_collision_rejection_uses_checked_stop_instead_of_publishing_proposal) ... ok
+test_complete_return_does_not_restart_and_reengage_is_possible (backend.tests.test_bimanual_return.StagedReturnTests.test_complete_return_does_not_restart_and_reengage_is_possible) ... ok
+test_full_cycle_pinch_return_inactive_rearm_and_reengage (backend.tests.test_bimanual_return.StagedReturnTests.test_full_cycle_pinch_return_inactive_rearm_and_reengage) ... ok
+test_invalid_waypoint_never_bypasses_joint_guards (backend.tests.test_bimanual_return.StagedReturnTests.test_invalid_waypoint_never_bypasses_joint_guards) ... ok
+test_near_hands_checked_sweep_rejection_can_switch_to_opposite_candidate (backend.tests.test_bimanual_return.StagedReturnTests.test_near_hands_checked_sweep_rejection_can_switch_to_opposite_candidate) ... ok
+test_near_hands_mirror_chooses_right_side (backend.tests.test_bimanual_return.StagedReturnTests.test_near_hands_mirror_chooses_right_side) ... ok
+test_near_hands_rejected_left_fails_closed_when_right_probe_is_unsafe (backend.tests.test_bimanual_return.StagedReturnTests.test_near_hands_rejected_left_fails_closed_when_right_probe_is_unsafe) ... ok
+test_near_hands_return_stops_separates_and_finishes (backend.tests.test_bimanual_return.StagedReturnTests.test_near_hands_return_stops_separates_and_finishes) ... ok
+test_near_hands_trigger_uses_inter_arm_clearance_only (backend.tests.test_bimanual_return.StagedReturnTests.test_near_hands_trigger_uses_inter_arm_clearance_only) ... ok
+test_nonfinite_return_proposal_uses_checked_tail_and_faults_at_rest (backend.tests.test_bimanual_return.StagedReturnTests.test_nonfinite_return_proposal_uses_checked_tail_and_faults_at_rest) ... ok
+test_profile_and_waypoint_match_original_right_arm (backend.tests.test_bimanual_return.StagedReturnTests.test_profile_and_waypoint_match_original_right_arm) ... ok
+test_return_generator_exception_brakes_before_fault (backend.tests.test_bimanual_return.StagedReturnTests.test_return_generator_exception_brakes_before_fault) ... ok
+test_right_home_trajectory_matches_original_limiter (backend.tests.test_bimanual_return.StagedReturnTests.test_right_home_trajectory_matches_original_limiter) ... ok
+test_right_waypoint_trajectory_matches_original_limiter (backend.tests.test_bimanual_return.StagedReturnTests.test_right_waypoint_trajectory_matches_original_limiter) ... ok
+test_timeout_brakes_before_fault (backend.tests.test_bimanual_return.StagedReturnTests.test_timeout_brakes_before_fault) ... ok
+test_engage_offset_first_step_remains_acceleration_bounded (backend.tests.test_bimanual_marker_feedback.MarkerFeedbackTests.test_engage_offset_first_step_remains_acceleration_bounded) ... ok
+test_engage_residual_is_in_real_goal_and_latched_per_cycle (backend.tests.test_bimanual_marker_feedback.MarkerFeedbackTests.test_engage_residual_is_in_real_goal_and_latched_per_cycle) ... ok
+test_inactive_braking_and_blocked_do_not_advertise_target (backend.tests.test_bimanual_marker_feedback.MarkerFeedbackTests.test_inactive_braking_and_blocked_do_not_advertise_target) ... ok
+test_invalid_engage_offsets_rejected (backend.tests.test_bimanual_marker_feedback.MarkerFeedbackTests.test_invalid_engage_offsets_rejected) ... ok
+test_marker_is_requested_goal_and_feedback_does_not_change_motion (backend.tests.test_bimanual_marker_feedback.MarkerFeedbackTests.test_marker_is_requested_goal_and_feedback_does_not_change_motion) ... ok
+test_torso_projection_is_shown_instead_of_impossible_raw_goal (backend.tests.test_bimanual_marker_feedback.MarkerFeedbackTests.test_torso_projection_is_shown_instead_of_impossible_raw_goal) ... ok
+test_known_solver_exception_uses_tail_and_can_resume (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_known_solver_exception_uses_tail_and_can_resume) ... ok
+test_long_loss_returns_at_zero_speed_then_reengages (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_long_loss_returns_at_zero_speed_then_reengages) ... ok
+test_loss_immediately_after_engage_checks_stationary_hold (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_loss_immediately_after_engage_checks_stationary_hold) ... ok
+test_missing_moving_tail_is_fault_not_velocity_reset (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_missing_moving_tail_is_fault_not_velocity_reset) ... ok
+test_nonfinite_solver_result_uses_checked_tail (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_nonfinite_solver_result_uses_checked_tail) ... ok
+test_programming_error_is_not_hidden_as_solver_failure (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_programming_error_is_not_hidden_as_solver_failure) ... ok
+test_solver_exception_without_tail_fails_closed (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_solver_exception_without_tail_fails_closed) ... ok
+CONTINUITY left 1 max_output_accel_deg_s2= 171.88733853927383
+CONTINUITY left 6 max_output_accel_deg_s2= 171.88733853927383
+CONTINUITY left 20 max_output_accel_deg_s2= 171.88733853927383
+CONTINUITY right 1 max_output_accel_deg_s2= 171.88733853927383
+CONTINUITY right 6 max_output_accel_deg_s2= 171.88733853927383
+CONTINUITY right 20 max_output_accel_deg_s2= 171.88733853927383
+test_transient_loss_and_recovery_are_output_continuous (backend.tests.test_bimanual_boundaries.OutputContinuityTests.test_transient_loss_and_recovery_are_output_continuous) ... ok
+test_backend_generation_and_feedback_order_are_explicit (backend.tests.test_bimanual_boundaries.ProtocolBoundaryTests.test_backend_generation_and_feedback_order_are_explicit) ... ok
+test_brackets_in_strings_do_not_count_as_depth (backend.tests.test_bimanual_boundaries.ProtocolBoundaryTests.test_brackets_in_strings_do_not_count_as_depth) ... ok
+test_engage_origin_and_filter_share_normalized_rotation (backend.tests.test_bimanual_boundaries.ProtocolBoundaryTests.test_engage_origin_and_filter_share_normalized_rotation) ... ok
+test_large_numbers_and_deep_json_are_value_errors (backend.tests.test_bimanual_boundaries.ProtocolBoundaryTests.test_large_numbers_and_deep_json_are_value_errors) ... ok
+test_parse_rejections_do_not_modify_cycle (backend.tests.test_bimanual_boundaries.ProtocolBoundaryTests.test_parse_rejections_do_not_modify_cycle) ... ok
+test_mapping_same_frame_both_hands (backend.tests.test_bimanual_unity_sim.CycleTests.test_mapping_same_frame_both_hands) ... ok
+test_near_hands_tracking_lost_cycle_returns_ready (backend.tests.test_bimanual_unity_sim.CycleTests.test_near_hands_tracking_lost_cycle_returns_ready) ... ok
+test_pinch_return_ignores_early_engage_then_rearms (backend.tests.test_bimanual_unity_sim.CycleTests.test_pinch_return_ignores_early_engage_then_rearms) ... ok
+test_real_loopback_synthetic_sender (backend.tests.test_bimanual_unity_sim.CycleTests.test_real_loopback_synthetic_sender) ... ok
+test_session_change_returns_and_blocked_is_not_ready (backend.tests.test_bimanual_unity_sim.CycleTests.test_session_change_returns_and_blocked_is_not_ready) ... ok
+test_startup_active_requires_inactive_edge (backend.tests.test_bimanual_unity_sim.CycleTests.test_startup_active_requires_inactive_edge) ... ok
+test_tracking_grace_timeout_and_reordering (backend.tests.test_bimanual_unity_sim.CycleTests.test_tracking_grace_timeout_and_reordering) ... ok
+test_validation_nonfinite_missing_duplicates (backend.tests.test_bimanual_unity_sim.CycleTests.test_validation_nonfinite_missing_duplicates) ... ok
+test_representative_boundary_returns_preserve_limits (backend.tests.test_bimanual_near_hands_sweep.NearHandsSweepTests.test_representative_boundary_returns_preserve_limits) ... ok
+NEAR_HANDS_BOUNDARY_RETURNS [{"final_state": "ready", "reason": "", "stages": ["separate_left", "safe_waypoint", "home", "complete"], "minimum_clearance_mm": 7.092191953245362, "max_acceleration_deg_s2": 50.55741830951558, "ticks": 457, "start_inter_arm_mm": 7.092191953245362, "expected_near_hands": true}, {"final_state": "ready", "reason": "", "stages": ["separate_left", "safe_waypoint", "home", "complete"], "minimum_clearance_mm": 10.243065333116965, "max_acceleration_deg_s2": 50.45924622781938, "ticks": 456, "start_inter_arm_mm": 10.243065333116965, "expected_near_hands": true}, {"final_state": "ready", "reason": "", "stages": ["safe_waypoint", "home", "complete"], "minimum_clearance_mm": 15.106155206205496, "max_acceleration_deg_s2": 50.02180040055754, "ticks": 310, "start_inter_arm_mm": 22.398446536165128, "expected_near_hands": false}, {"final_state": "ready", "reason": "", "stages": ["safe_waypoint", "home", "complete"], "minimum_clearance_mm": 16.477615490992736, "max_acceleration_deg_s2": 49.09054299330773, "ticks": 307, "start_inter_arm_mm": 47.224781080618214, "expected_near_hands": false}]
+NEAR_HANDS_SWEEP {"seed": 20260920, "safe_samples": 320, "near_samples": 160, "ordinary_samples": 160, "threshold_fraction": 0.2951253054328338, "safe_lower_fraction": 0.28489868044654365, "closest_threshold_margin_mm": 0.058463932029498636, "minimum_global_clearance_mm": 5.063977115917031}
+test_threshold_trigger_classification_320_safe_samples (backend.tests.test_bimanual_near_hands_sweep.NearHandsSweepTests.test_threshold_trigger_classification_320_safe_samples) ... ok
+
+======================================================================
+ERROR: test_bimanual_motion_quality (unittest.loader._FailedTest.test_bimanual_motion_quality)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_bimanual_motion_quality
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\unittest\loader.py", line 162, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Documents\Codex\2026-09-16\d\work\g1-integration\backend\tests\test_bimanual_motion_quality.py", line 12, in <module>
+    from test_bimanual_unity_sim import packet
+ModuleNotFoundError: No module named 'test_bimanual_unity_sim'
+
+
+----------------------------------------------------------------------
+Ran 75 tests in 31.670s
+
+FAILED (errors=1)

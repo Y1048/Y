@@ -15,6 +15,7 @@ import run_mink_g1_right_arm_prototype as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
 from g1_bimanual_return import BimanualReturnMotion
+from g1_bimanual_limits import JOINT_VELOCITY_LIMIT_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2
 
 
 class BimanualSimulation:
@@ -66,7 +67,7 @@ class BimanualSimulation:
                      lm_damping=1e-5) for side in ("left", "right")}
         self.home_targets = {s: self.config.get_transform_frame_to_world(
             s + "_wrist_yaw_link", "body") for s in self.tasks}
-        self.caps = np.tile(np.radians([90]*4 + [180]*3), 2)
+        self.caps = np.full(14, JOINT_VELOCITY_LIMIT_RAD_S)
         self.limits = [mink.ConfigurationLimit(self.model),
             mink.VelocityLimit(self.model, dict(zip(self.names, self.caps))),
             mink.CollisionAvoidanceLimit(self.model,
@@ -200,7 +201,7 @@ class BimanualSimulation:
         if not returning:
             # Shared relative-distance braking headroom from the single-arm
             # policy. For an inter-arm row, both arms contribute acceleration.
-            normal_acceleration = .25*(np.abs(cg[:, self.dofs]) @ np.full(len(self.dofs), np.radians(60.)))
+            normal_acceleration = .25*(np.abs(cg[:, self.dofs]) @ np.full(len(self.dofs), JOINT_ACCELERATION_LIMIT_RAD_S2))
             remaining = np.maximum(0., np.where(np.isfinite(ch),
                 (ch-collision.bound_relaxation)*self.dt/collision.gain, 0.))
             stopping_speed = .5*(np.sqrt((normal_acceleration*self.dt)**2 +
@@ -211,14 +212,14 @@ class BimanualSimulation:
         problem.h = np.r_[problem.h, collision_h]
         # Mink solves joint displacement, not velocity.
         eye = np.eye(self.model.nv)[self.dofs]
-        dv = np.radians(60) * self.dt
+        dv = JOINT_ACCELERATION_LIMIT_RAD_S2 * self.dt
         hi = (self.velocity[self.dofs] + dv) * self.dt
         lo = (self.velocity[self.dofs] - dv) * self.dt
         problem.G = np.vstack([problem.G, eye, -eye])
         problem.h = np.concatenate([problem.h, hi, -lo])
         if not returning:
             # Approach hard joint limits with braking headroom, not nonzero speed.
-            a = np.radians(60.)
+            a = JOINT_ACCELERATION_LIMIT_RAD_S2
             q = self.config.q[self.qids]
             speed = lambda d: .8*(np.sqrt((a*self.dt)**2 + 2*a*np.maximum(0., d))-a*self.dt)
             problem.G = np.vstack([problem.G, eye, -eye])
@@ -306,7 +307,7 @@ class BimanualSimulation:
         Validate every dt and at most .25 degree substeps. This is not a
         continuous collision proof or a physical robot braking model.
         """
-        dv = np.radians(60) * self.dt
+        dv = JOINT_ACCELERATION_LIMIT_RAD_S2 * self.dt
         if (not np.isfinite(first_velocity).all()
                 or np.any(np.abs(first_velocity[self.dofs]) > self.caps + 1e-6)
                 or np.any(np.abs(first_velocity-self.velocity) > dv + 1e-6)):

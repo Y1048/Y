@@ -1,0 +1,37 @@
+{
+  "data_kind": "generated_and_loopback_websocket_fixtures",
+  "tests": [
+    {
+      "modules": [
+        "backend.tests.test_g1_observation_tap",
+        "hardware.g1_arm_bridge.test_g1_omni_velocity_gateway"
+      ],
+      "passed": 22,
+      "elapsed_s": 0.107
+    },
+    {
+      "modules": [
+        "hardware.g1_arm_bridge.test_g1_omni_clocked_observation"
+      ],
+      "passed": 14,
+      "elapsed_s": 1.22
+    },
+    {
+      "modules": [
+        "backend.tests.test_g1_omni_transport_recovery"
+      ],
+      "passed": 2,
+      "elapsed_s": 3.353
+    }
+  ],
+  "total_passed": 38,
+  "actual_omni_validation": false,
+  "g1_changed": false,
+  "hardware_output": false,
+  "local_diagnostic": {
+    "time": "2026-09-21 13:33:55 KST",
+    "tcp_32123_listening": false,
+    "omni_named_process_found": false
+  },
+  "runtime_syntax_pass": true
+}

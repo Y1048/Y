@@ -16,8 +16,11 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_unity_sim import UnityCycle, decode
+from backend.tests.bimanual_replay_profiles import (
+    RECORDED_ACCELERATION_RAD_S2, historical_recording_profile)
 
 FIXTURE = ROOT / 'backend/tests/fixtures/bimanual_staged_session_20260918.json.gz'
 FIXTURE_SHA256 = 'a7410f6433fa5f18c73fbcc23880ca14213f78e4accc1e70e46e2e6ffc855341'
@@ -53,9 +56,19 @@ class RecordedStagedSessionTests(unittest.TestCase):
         self.assertEqual(states[-1]['return_motion']['settle_elapsed_s'], .5)
 
     def test_recorded_tracking_braking_and_staged_return(self):
-        fixture = load_fixture()
+        with historical_recording_profile() as sim:
+            self._replay(sim, exact_recording=True)
+
+    def test_current_profile_preserves_recorded_cycle_and_bounds(self):
         sim = BimanualSimulation()
+        np.testing.assert_array_equal(sim.caps, np.full(14, JOINT_VELOCITY_LIMIT_RAD_S))
+        self._replay(sim, exact_recording=False)
+
+    def _replay(self, sim, *, exact_recording):
+        fixture = load_fixture()
         cycle = UnityCycle(sim)
+        acceleration_limit = (RECORDED_ACCELERATION_RAD_S2 if exact_recording
+                              else JOINT_ACCELERATION_LIMIT_RAD_S2)
         self.assertEqual(sim.dt, fixture['source_run']['simulation_dt_s'])
         previous_velocity = np.zeros(14)
         peak_velocity = np.zeros(14)
@@ -64,23 +77,47 @@ class RecordedStagedSessionTests(unittest.TestCase):
         actions, stages, reasons = Counter(), [], Counter()
         timing = []
         return_started = ready_at = None
+        generated_completion_ticks = 0
         frozen = np.ones(sim.model.nq, dtype=bool)
         frozen[sim.qids] = False
-        for row in fixture['records']:
+
+        def replay_records():
+            yield from fixture['records']
+            if exact_recording:
+                return
+            # The recording ends at the old profile's completed return. Give
+            # the new profile fixed-dt clock ticks, without inventing input or
+            # recorded q, within the existing return's total duration budget.
+            remaining_ticks = max(0, int(np.ceil(
+                sim.return_motion.maximum_duration_s / sim.dt))
+                - sim.return_motion.elapsed_ticks)
+            last_recorded_time = fixture['records'][-1]['now']
+            for index in range(remaining_ticks):
+                self.assertIn(cycle.state, ('returning', 'ready'),
+                              sim.return_motion.diagnostics())
+                if cycle.state == 'ready':
+                    return
+                yield dict(kind='generated_completion',
+                           now=last_recorded_time + (index + 1) * sim.dt)
+
+        for row in replay_records():
             if row['kind'] == 'input':
                 packet = decode(json.dumps(row['packet'], allow_nan=False).encode('utf-8'))
                 self.assertEqual(cycle.receive(packet, row['now']), row['accepted'])
                 continue
+            generated_tick = row['kind'] == 'generated_completion'
+            generated_completion_ticks += int(generated_tick)
             before = sim.config.q.copy()
             start = time.perf_counter()
             cycle.tick(row['now'])
             timing.append((time.perf_counter() - start) * 1000)
-            self.assertEqual(cycle.state, row['state'], (row['now'], cycle.reason))
-            self.assertEqual(cycle.last_tick_action, row['tick_action'])
+            if exact_recording:
+                self.assertEqual(cycle.state, row['state'], (row['now'], cycle.reason))
+                self.assertEqual(cycle.last_tick_action, row['tick_action'])
             velocity = (sim.config.q[sim.qids] - before[sim.qids]) / sim.dt
             np.testing.assert_allclose(velocity, sim.velocity[sim.dofs], atol=1e-10, rtol=0)
             acceleration = float(np.max(np.abs(velocity - previous_velocity)) / sim.dt)
-            self.assertLessEqual(acceleration, np.deg2rad(60.) + 1e-5)
+            self.assertLessEqual(acceleration, acceleration_limit + 1e-5)
             self.assertTrue(np.all(np.abs(velocity) <= sim.caps + 1e-6))
             self.assertTrue(np.all(sim.config.q[sim.qids] >= sim.ranges[:, 0] - 1e-8))
             self.assertTrue(np.all(sim.config.q[sim.qids] <= sim.ranges[:, 1] + 1e-8))
@@ -89,10 +126,12 @@ class RecordedStagedSessionTests(unittest.TestCase):
             self.assertTrue(np.isfinite(clearance))
             self.assertGreaterEqual(clearance, sim.clearance_m)
             minimum_clearance = min(minimum_clearance, clearance)
-            q_delta = float(np.max(np.abs(sim.config.q[sim.qids] - np.asarray(row['q_rad']))))
-            # A small tolerance permits solver rounding, not changed motion.
-            self.assertLessEqual(q_delta, 5e-6, row['now'])
-            max_q_delta = max(max_q_delta, q_delta)
+            if not generated_tick:
+                q_delta = float(np.max(np.abs(sim.config.q[sim.qids] - np.asarray(row['q_rad']))))
+                if exact_recording:
+                    # A small tolerance permits solver rounding, not changed motion.
+                    self.assertLessEqual(q_delta, 5e-6, row['now'])
+                max_q_delta = max(max_q_delta, q_delta)
             max_acceleration = max(max_acceleration, acceleration)
             peak_velocity = np.maximum(peak_velocity, np.abs(velocity))
             previous_velocity = velocity
@@ -106,15 +145,19 @@ class RecordedStagedSessionTests(unittest.TestCase):
                 return_started = row['now']
             if cycle.state == 'ready' and return_started is not None:
                 ready_at = row['now']
-        self.assertEqual(stages, ['safe_waypoint', 'home', 'complete'])
-        self.assertEqual(actions['tracking_braking'], 20)
-        self.assertGreater(sum(reasons.values()), 0)
+        self.assertEqual(stages, ['safe_waypoint', 'home', 'complete'],
+                         sim.return_motion.diagnostics())
+        if exact_recording:
+            self.assertEqual(actions['tracking_braking'], 20)
+            self.assertGreater(sum(reasons.values()), 0)
+        self.assertGreater(actions['tracking'], 0)
         self.assertEqual(sim.return_motion.replans, 0)
         self.assertEqual(cycle.state, 'ready')
         self.assertEqual(np.max(np.abs(sim.velocity)), 0.)
         np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
         self.assertEqual(sim.return_motion.settled_ticks * sim.dt, .5)
-        report = dict(simulation_only=True, state_ticks=len(timing), actions=dict(actions),
+        report = dict(simulation_only=True, exact_recording=exact_recording,
+            state_ticks=len(timing) - generated_completion_ticks, actions=dict(actions),
             tracking_braking_reasons=dict(reasons), stages=stages,
             recorded_return_wall_s=ready_at - return_started,
             return_simulation_s=sim.return_motion.elapsed_ticks * sim.dt,
@@ -124,6 +167,10 @@ class RecordedStagedSessionTests(unittest.TestCase):
             maximum_logged_q_difference_rad=max_q_delta,
             replay_tick_p95_ms=float(np.percentile(timing, 95)),
             replay_tick_max_ms=max(timing))
+        if not exact_recording:
+            report['generated_completion_ticks'] = generated_completion_ticks
+            report['generated_completion_simulation_s'] = generated_completion_ticks * sim.dt
+            report['return_clock_s_including_generated_ticks'] = report.pop('recorded_return_wall_s')
         print('RECORDED_STAGED_SESSION ' + json.dumps(report, allow_nan=False), flush=True)
 
 

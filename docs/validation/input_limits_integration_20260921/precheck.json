@@ -1,0 +1,166 @@
+{
+  "source_head": "31a5df6a304b897deda9c79f09124d297eb514da",
+  "runtime_parity": [
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py",
+      "source_sha256": "8685f9df91b70f3bd6f77ef8ea24eb7ddb8bd622f26881914566b82362e18ba5",
+      "runtime_sha256": "8685f9df91b70f3bd6f77ef8ea24eb7ddb8bd622f26881914566b82362e18ba5",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py",
+      "source_sha256": "739c1650ea89a2cc39dd7f9fa3721b728946b78e657f48d2490ef174077b300f",
+      "runtime_sha256": "739c1650ea89a2cc39dd7f9fa3721b728946b78e657f48d2490ef174077b300f",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_return.py",
+      "source_sha256": "b2887be3bdc1bd3263dbb1767f3fb3d0a89fd63d1702a86160afc575027310a4",
+      "runtime_sha256": "b2887be3bdc1bd3263dbb1767f3fb3d0a89fd63d1702a86160afc575027310a4",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py",
+      "source_sha256": "079fbbaebd0f5d00c70dca3ef6f4bca9632fa85f70f7fac071541d77285c074c",
+      "runtime_sha256": "079fbbaebd0f5d00c70dca3ef6f4bca9632fa85f70f7fac071541d77285c074c",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py",
+      "source_sha256": "182aecc86e36f4b2524deb4b315fd77b718961adcfaf170f319684021e8826d5",
+      "runtime_sha256": "182aecc86e36f4b2524deb4b315fd77b718961adcfaf170f319684021e8826d5",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py",
+      "source_sha256": "9ea9354b2a6e51b9755ff464028f53804bbc875117240b5cd6d0531bf51c2067",
+      "runtime_sha256": "9ea9354b2a6e51b9755ff464028f53804bbc875117240b5cd6d0531bf51c2067",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_udp_cycle.py",
+      "source_sha256": "52640e4eee8d88ef9d435a92ec3a56d074dcedc0eac3e46b3fff910f2835e5f4",
+      "runtime_sha256": "52640e4eee8d88ef9d435a92ec3a56d074dcedc0eac3e46b3fff910f2835e5f4",
+      "equal": true
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+      "source_sha256": "cd2dc3acf30766d47b035d658679737b532c2455591d6788c2e7a5096df7a6fa",
+      "runtime_sha256": "cd2dc3acf30766d47b035d658679737b532c2455591d6788c2e7a5096df7a6fa",
+      "equal": true
+    },
+    {
+      "path": "tools/G1_INPUT_RECEIVE_AUDIT.py",
+      "source_sha256": "acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b",
+      "runtime_sha256": "acd30b233117b02c4da2bdbb7815264fe29bbbd7b61abc59591641339eb0071b",
+      "equal": true
+    },
+    {
+      "path": "tools/g1_observation_tap.py",
+      "source_sha256": "0283969106dbf0a609f11c3a476e9a9c4bb834a7b3a8b598e42e5f02ed8d2501",
+      "runtime_sha256": "0283969106dbf0a609f11c3a476e9a9c4bb834a7b3a8b598e42e5f02ed8d2501",
+      "equal": true
+    },
+    {
+      "path": "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
+      "source_sha256": "db285dd6c137fbdee3dd87a694713bc155dd66e1c1fbe6e5363551fe1e515af5",
+      "runtime_sha256": "db285dd6c137fbdee3dd87a694713bc155dd66e1c1fbe6e5363551fe1e515af5",
+      "equal": true
+    },
+    {
+      "path": "tools/G1_VR_TELEOP_LAUNCH.py",
+      "source_sha256": "c41bd81f5f3bec6c2e783d525608356298e1bf3f9517051c9bcd114e2d074a51",
+      "runtime_sha256": "c41bd81f5f3bec6c2e783d525608356298e1bf3f9517051c9bcd114e2d074a51",
+      "equal": true
+    },
+    {
+      "path": "tools/START_G1_VR_TELEOP.bat",
+      "source_sha256": "2e013349ae2b29d3d48ab8312177862f3c9ef5fdcd6724977b78beccf6c5cb41",
+      "runtime_sha256": "2e013349ae2b29d3d48ab8312177862f3c9ef5fdcd6724977b78beccf6c5cb41",
+      "equal": true
+    },
+    {
+      "path": "hardware/g1_arm_bridge/g1_omni_velocity_gateway.py",
+      "source_sha256": "d9172773a493e16935b06be70b4dd6bd29e0607f3e580ba7e4a02b084b7fc79f",
+      "runtime_sha256": "d9172773a493e16935b06be70b4dd6bd29e0607f3e580ba7e4a02b084b7fc79f",
+      "equal": true
+    }
+  ],
+  "all_equal": true,
+  "latest_local_arm_log": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\bimanual\\unity_20260921_145051_277248.jsonl",
+  "latest_arm_state_counts": {
+    "ready": 3186,
+    "tracking": 3044,
+    "returning": 587
+  },
+  "latest_arm_has_new_limits": false,
+  "latest_arm_return_limits": {
+    "waypoint_rad": [
+      0.17453292519943295,
+      0.6108652381980153,
+      -0.0,
+      1.2217304763960306,
+      -0.0,
+      0.0,
+      -0.0,
+      0.17453292519943295,
+      -0.6108652381980153,
+      0.0,
+      1.2217304763960306,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "velocity_rad_s": [
+      1.5707963267948966,
+      1.5707963267948966,
+      1.5707963267948966,
+      1.5707963267948966,
+      3.141592653589793,
+      3.141592653589793,
+      3.141592653589793,
+      1.5707963267948966,
+      1.5707963267948966,
+      1.5707963267948966,
+      1.5707963267948966,
+      3.141592653589793,
+      3.141592653589793,
+      3.141592653589793
+    ],
+    "acceleration_rad_s2": [
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976,
+      1.0471975511965976
+    ],
+    "jerk_rad_s3": [
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28,
+      1.28
+    ],
+    "settle_s": 0.5
+  },
+  "hardware_validation": false,
+  "recommended_hardware_gains": null
+}

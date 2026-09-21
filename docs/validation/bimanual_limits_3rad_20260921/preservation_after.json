@@ -1,0 +1,31 @@
+{
+  "source": {
+    "preserved_count": 308,
+    "expected_changes": [
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_udp_cycle.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_sim.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_session_report.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_runtime.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_return.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_motion_policy.py",
+      "tools\\bimanual_preflight.py"
+    ]
+  },
+  "runtime": {
+    "preserved_count": 297,
+    "expected_changes": [
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_udp_cycle.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_sim.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_session_report.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_runtime.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_return.py",
+      "MuJoCo_G1_Controller/scripts\\g1_bimanual_motion_policy.py",
+      "tools\\bimanual_preflight.py"
+    ]
+  },
+  "runtime_all_14_velocity_rad_s": 3.0,
+  "runtime_all_14_acceleration_rad_s2": 3.0,
+  "real_gain_changes": false,
+  "hardware_execution": false,
+  "original_fixtures_rewritten": false
+}

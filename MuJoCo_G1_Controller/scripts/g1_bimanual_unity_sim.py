@@ -2,6 +2,7 @@
 import argparse
 import json
 import math
+import os
 import socket
 import time
 import uuid
@@ -294,15 +295,28 @@ def main():
     parser.add_argument('--port', type=int, default=5020)
     parser.add_argument('--headless', action='store_true')
     parser.add_argument('--seconds', type=float, default=0, help='0: until viewer closes/Ctrl+C')
+    parser.add_argument('--compute-hz', type=float, default=None,
+                        help='Observation clock; must match the validated 60 Hz simulation timestep.')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535 or not math.isfinite(args.seconds) or args.seconds < 0:
         parser.error('Invalid port/duration')
+    if args.compute_hz is not None and (args.compute_hz != 60 or
+            os.environ.get('G1_OBSERVATION_TAP') != '1'):
+        parser.error('--compute-hz 60 requires the observation-only launcher')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     startup_stage('model_begin')
     sim = BimanualSimulation()
     startup_stage('model_ready')
     cycle = UnityCycle(sim)
+    observation = None
+    if os.environ.get('G1_OBSERVATION_TAP') == '1':
+        import importlib.util
+        tap_path = Path(__file__).resolve().parents[2]/'tools/g1_observation_tap.py'
+        spec = importlib.util.spec_from_file_location('bimanual_observation_tap', tap_path)
+        tap_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(tap_module)
+        observation = tap_module.ObservationTap('arm')
     viewer = None
     if not args.headless:
         import mujoco.viewer
@@ -316,6 +330,9 @@ def main():
             if hasattr(socket, 'SIO_UDP_CONNRESET'):
                 sock.ioctl(socket.SIO_UDP_CONNRESET, False)
             log.write(json.dumps(dict(kind='run', simulation_dt_s=sim.dt,
+                compute_hz=1./sim.dt,
+                loop_clock='perf_counter' if observation else 'monotonic',
+                source_timestamp_clock='monotonic',
                 motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
                 return_policy=sim.return_motion.policy,
                 return_profile=dict(waypoint_rad=sim.return_motion.waypoint.tolist(),
@@ -329,12 +346,21 @@ def main():
             log.flush()
             startup_stage('listener_ready')
             print(f'SIMULATION ONLY: Unity -> 127.0.0.1:{args.port}; no G1 output', flush=True)
+            if observation:
+                print('Observation copy -> localhost:55071 (simulation IK, no motor output)', flush=True)
             start = time.monotonic()
             peer = None
             previous_state = None
             previous_tick = None
+            previous_tick_clock = None
+            deadline = time.perf_counter()
+            deadline_misses = 0
+            compute_tick = 0
             first_feedback = True
             while not viewer or viewer.is_running():
+                if observation:
+                    time.sleep(max(0., deadline-time.perf_counter()))
+                loop_clock = time.perf_counter()
                 now = time.monotonic()
                 if args.seconds and now - start >= args.seconds:
                     break
@@ -361,6 +387,20 @@ def main():
                 cycle.tick(now)
                 control_tick_ms = (time.perf_counter()-tick_started)*1000
                 feedback = cycle.feedback()
+                if observation:
+                    generated_at = time.monotonic()
+                    observation.publish(dict(
+                        source_origin='bimanual_ik_simulation', simulation_only=True,
+                        joint_indices=list(range(15, 29)), joint_names=feedback['joint_names'],
+                        left_q_rad=feedback['q_rad'][:7], right_q_rad=feedback['q_rad'][7:],
+                        state=cycle.state, reason=cycle.reason, session=cycle.session,
+                        sequence=cycle.sequence, feedback_sequence=feedback['feedback_sequence'],
+                        compute_hz=1./sim.dt, compute_tick=compute_tick,
+                        deadline_misses=deadline_misses,
+                        unity_input_age_s=None if cycle.received is None else generated_at-cycle.received,
+                        unity_input_status='WAIT' if cycle.received is None else
+                            ('FRESH' if generated_at-cycle.received <= .75 else 'STALE')),
+                        generated_at)
                 if peer:
                     try:
                         sock.sendto(json.dumps(feedback).encode(), peer)
@@ -371,16 +411,25 @@ def main():
                         pass
                 log.write(json.dumps(dict(kind='state', monotonic_s=now,
                     control_tick_ms=control_tick_ms,
-                    loop_period_ms=None if previous_tick is None else (now-previous_tick)*1000,
+                    compute_tick=compute_tick, deadline_misses=deadline_misses,
+                    loop_period_ms=(None if previous_tick_clock is None else
+                        (loop_clock-previous_tick_clock)*1000) if observation else
+                        (None if previous_tick is None else (now-previous_tick)*1000),
                     **feedback, **cycle.diagnostics(now)), allow_nan=False)+'\n')
                 previous_tick = now
+                previous_tick_clock = loop_clock
+                compute_tick += 1
                 if cycle.state != previous_state:
                     print(f'[BIMANUAL SIM] {cycle.state}: {cycle.reason}', flush=True)
                     previous_state = cycle.state
                     log.flush()
                 if viewer:
                     viewer.sync()
-                time.sleep(max(0, sim.dt - (time.monotonic()-now)))
+                if observation:
+                    deadline, missed = tap_module.next_deadline(deadline, time.perf_counter(), sim.dt)
+                    deadline_misses += missed
+                else:
+                    time.sleep(max(0, sim.dt - (time.monotonic()-now)))
             log.write(json.dumps(dict(kind='shutdown', simulation_only=True,
                 backend_id=cycle.backend_id, state=cycle.state))+'\n')
             log.flush()
@@ -388,6 +437,8 @@ def main():
     except KeyboardInterrupt:
         print('Simulation closed; no hardware owner exists here.')
     finally:
+        if observation:
+            observation.close()
         if viewer:
             viewer.close()
 

@@ -10,6 +10,7 @@ from unittest.mock import patch
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'MuJoCo_G1_Controller/scripts'))
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 import g1_bimanual_sim as module
 from g1_bimanual_sim import BimanualSimulation, targets_from_json, mink, mujoco
 
@@ -26,6 +27,33 @@ class BimanualTests(unittest.TestCase):
                  'mink_' + side + '_rubber_hand_collision') for side in ('left', 'right')]
         self.assertIn(tuple(sorted(hands)), [tuple(sorted(p)) for p in s.pairs])
         self.assertGreater(s.clearance(s.home), .005)
+
+    def test_all_fourteen_limits_and_checked_stop_use_three_radians(self):
+        s = self.s
+        self.assertEqual(JOINT_VELOCITY_LIMIT_RAD_S, 3.0)
+        self.assertEqual(JOINT_ACCELERATION_LIMIT_RAD_S2, 3.0)
+        np.testing.assert_array_equal(s.caps, np.full(14, 3.0))
+        np.testing.assert_array_equal(s.return_motion.acceleration_limits, np.full(14, 3.0))
+        for policy in s.motion.values():
+            np.testing.assert_array_equal(policy.acceleration_limits, np.full(7, 3.0))
+        # Isolate the discrete limit boundary from the independent geometry guard.
+        wrist = s.motion['right'].dofs[4]
+        s.velocity[wrist] = 2.96
+        proposed = s.velocity.copy()
+        proposed[wrist] = 3.0
+        with patch.object(s, 'clearance', return_value=.2):
+            plan, reason = s.checked_stop_plan(proposed)
+            self.assertIsNotNone(plan, reason)
+            previous = s.velocity.copy()
+            for _, velocity in plan:
+                self.assertLessEqual(np.max(np.abs(velocity-previous))/s.dt, 3.0+1e-6)
+                previous = velocity
+            self.assertEqual(np.max(np.abs(previous)), 0.)
+            proposed[wrist] = 3.001
+            self.assertEqual(s.checked_stop_plan(proposed), (None, 'velocity_acceleration'))
+            s.velocity[wrist] = 0.
+            proposed[wrist] = 3.0*s.dt + .001
+            self.assertEqual(s.checked_stop_plan(proposed), (None, 'velocity_acceleration'))
 
     def test_no_transport_in_entrypoint(self):
         tree = ast.parse(Path(module.__file__).read_text())
@@ -74,7 +102,7 @@ class BimanualTests(unittest.TestCase):
             moved = np.maximum(moved, np.abs((s.config.q-s.home)[s.qids]))
             if not accepted:
                 break
-            self.assertLessEqual(np.max(np.abs(s.velocity-old_v)), np.radians(60)*s.dt+1e-6)
+            self.assertLessEqual(np.max(np.abs(s.velocity-old_v)), JOINT_ACCELERATION_LIMIT_RAD_S2*s.dt+1e-6)
             self.assertTrue(np.all(np.abs(s.velocity[s.dofs]) <= s.caps+1e-6))
         self.assertGreaterEqual(minimum, .005)
         self.assertGreater(np.max(moved[:7]), .05)
@@ -95,7 +123,7 @@ class BimanualTests(unittest.TestCase):
             for _ in range(100):
                 previous = self.s.velocity.copy()
                 self.assertTrue(self.s.step(targets))
-                self.assertLessEqual(np.max(np.abs(self.s.velocity-previous)), np.radians(60)*self.s.dt+1e-6)
+                self.assertLessEqual(np.max(np.abs(self.s.velocity-previous)), JOINT_ACCELERATION_LIMIT_RAD_S2*self.s.dt+1e-6)
                 self.assertGreaterEqual(self.s.clearance(self.s.config.q), .005)
         self.assertEqual(np.max(np.abs(self.s.velocity)), 0)
         self.assertTrue(self.s.step(targets))
@@ -187,7 +215,7 @@ class BimanualTests(unittest.TestCase):
                 timing.append((time.perf_counter()-start)*1000)
                 states.add(cycle.state)
                 self.assertNotEqual(cycle.state, 'blocked', cycle.reason)
-                self.assertLessEqual(np.max(np.abs(self.s.velocity-old_v)), np.radians(60)*self.s.dt+1e-6)
+                self.assertLessEqual(np.max(np.abs(self.s.velocity-old_v)), JOINT_ACCELERATION_LIMIT_RAD_S2*self.s.dt+1e-6)
                 self.assertTrue(np.all(np.abs(self.s.velocity[self.s.dofs]) <= self.s.caps+1e-6))
                 self.assertTrue(np.all(self.s.config.q[self.s.qids] >= self.s.ranges[:,0]-1e-8))
                 self.assertTrue(np.all(self.s.config.q[self.s.qids] <= self.s.ranges[:,1]+1e-8))

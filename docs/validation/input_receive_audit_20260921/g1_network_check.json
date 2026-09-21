@@ -1,0 +1,24 @@
+{
+  "g1_host": "192.168.123.164",
+  "pc_host": "192.168.123.99",
+  "port": 55070,
+  "remote_directory": "/home/unitree/g1_input_audit_20260921_7e83c4",
+  "source_sha256": "6311023207936f2632c9ada42b92bceacfbc6430074bce56fe261f4c606ebbce",
+  "sent_packets": 247,
+  "g1_received_packets": 247,
+  "pc_verified_ack_count": 246,
+  "sequence_gaps": 0,
+  "ordered": true,
+  "source_status": {
+    "arm": "HISTORICAL",
+    "omni": "HISTORICAL"
+  },
+  "last_packet_received_but_pc_exited_before_ack_poll": true,
+  "live_sensor_validation": false,
+  "motor_acceptance": "NOT_CHECKED",
+  "running_g1_log": "/home/unitree/g1_input_audit_20260921_7e83c4/input_receive_20260921_110559.jsonl",
+  "running_sessions": {
+    "g1_ssh_receiver": "13859",
+    "pc_sender": "13027"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "runtime": "C:\\Users\\user\\Desktop\\G1_Teleop_Project",
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\live_observation_20260921_114415",
+  "files": [
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+      "before_sha256": "2bc59b84083fb3bf010b19937fdc2f8e909b15bf6fc9a81b0ed882bd91ed9a4e",
+      "installed_sha256": "57394533986c69bf6596a2d889b67060ec1572caf39ba7f188afd568286b6276"
+    },
+    {
+      "path": "hardware/g1_arm_bridge/g1_omni_velocity_gateway.py",
+      "before_sha256": "7f3cb701d27d9e68968fd2f5a2f1aa1b6a41f116b2b9f0b19a4a2499b4bcad61",
+      "installed_sha256": "8a22ff31587bab41752f3e26ca9deb1b8d726ca1d7dadc0f33251a1587c7cacb"
+    },
+    {
+      "path": "tools/G1_INPUT_RECEIVE_AUDIT.py",
+      "before_sha256": "6311023207936f2632c9ada42b92bceacfbc6430074bce56fe261f4c606ebbce",
+      "installed_sha256": "c398502bb06c21ed80af3c1305fab91e47d907c557793758dc8f314c08e21dfb"
+    },
+    {
+      "path": "tools/g1_observation_tap.py",
+      "before_sha256": null,
+      "installed_sha256": "02109ecee41d57a02991cb9b76a43d27e3aa3ef35030691d2bcabaccc55abe43"
+    },
+    {
+      "path": "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
+      "before_sha256": null,
+      "installed_sha256": "1afc0695b05182a87eab20a3d00947a8c61a8c1dbdc7e9393d688ea2c908834a"
+    },
+    {
+      "path": "tools/START_G1_INPUT_OBSERVATION.bat",
+      "before_sha256": null,
+      "installed_sha256": "459fddf91e75af9fe891163ea7532b5945b12e13f9711996680c0611a7717a9a"
+    },
+    {
+      "path": "docs/G1_LIVE_INPUT_OBSERVATION_20260921.md",
+      "before_sha256": null,
+      "installed_sha256": "a62090630ba126824960ceb39acb42a112d453fe6eca9136a6edf35e596ebbb1"
+    }
+  ],
+  "hardware_controller_files_changed": false
+}

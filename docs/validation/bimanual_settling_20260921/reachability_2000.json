@@ -1,0 +1,1150 @@
+{
+  "data_kind": "synthetic_endpoint_search",
+  "hardware_validated": false,
+  "seed": 20260921,
+  "position_only": false,
+  "rotation_residual_scale_m": 0.15,
+  "acceptance": {
+    "position_m": 0.001,
+    "rotation_rad": 0.017453292519943295,
+    "clearance_m": 0.005
+  },
+  "cases": [
+    {
+      "name": "rotation_y_minus45",
+      "solutions": [
+        {
+          "start": 0,
+          "solver_success": true,
+          "evaluations": 1403,
+          "position_error_m": 0.01442568461853914,
+          "rotation_error_rad": 0.02730014788842976,
+          "clearance_m": 0.03239975680529623,
+          "joint_rad": [
+            -0.004740434378715303,
+            -0.28104772978954456,
+            -1.2905492668232397,
+            1.4074891097173254,
+            -1.1821225350400186,
+            -1.1429511801441303,
+            0.1399860700131145
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 1,
+          "solver_success": true,
+          "evaluations": 1372,
+          "position_error_m": 0.014425684695682976,
+          "rotation_error_rad": 0.027300146099423196,
+          "clearance_m": 0.032399769333007276,
+          "joint_rad": [
+            -0.004739584958332913,
+            -0.28104767910521705,
+            -1.2905398145555593,
+            1.4074885433156126,
+            -1.1821131027837963,
+            -1.1429503842613098,
+            0.13998603840790988
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 2,
+          "solver_success": true,
+          "evaluations": 1427,
+          "position_error_m": 0.01442568475659235,
+          "rotation_error_rad": 0.027300144696934828,
+          "clearance_m": 0.03239979802508807,
+          "joint_rad": [
+            -0.004738600342261718,
+            -0.2810477920879084,
+            -1.2905284835785442,
+            1.407488179168036,
+            -1.1821020968297828,
+            -1.1429494975830596,
+            0.13998567000110854
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 3,
+          "solver_success": true,
+          "evaluations": 1491,
+          "position_error_m": 0.01442568445581085,
+          "rotation_error_rad": 0.027300151736901465,
+          "clearance_m": 0.032399817939465836,
+          "joint_rad": [
+            -0.004739482321339904,
+            -0.28104824492750186,
+            -1.2905374745026368,
+            1.4074894557323288,
+            -1.182111722432328,
+            -1.1429504119847054,
+            0.13998497798991688
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 4,
+          "solver_success": true,
+          "evaluations": 184,
+          "position_error_m": 0.04279793106774076,
+          "rotation_error_rad": 1.206794278409758,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.18752198219003058,
+            -0.5413721166798438,
+            1.570796326794896,
+            1.0883953478040778,
+            -1.9722199999999994,
+            -1.614429999999375,
+            1.6144299999999994
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 5,
+          "solver_success": true,
+          "evaluations": 143,
+          "position_error_m": 0.40002344161430187,
+          "rotation_error_rad": 0.7235821170868281,
+          "clearance_m": -0.11232553354374522,
+          "joint_rad": [
+            2.6703999999959365,
+            1.5881999999999998,
+            -1.5707963224148074,
+            2.094395102393195,
+            0.820987291031552,
+            0.2755970440017602,
+            -0.9660918985738943
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 6,
+          "solver_success": true,
+          "evaluations": 1452,
+          "position_error_m": 0.014425684767867812,
+          "rotation_error_rad": 0.027300144420535168,
+          "clearance_m": 0.03239979014940893,
+          "joint_rad": [
+            -0.004739002941734746,
+            -0.2810477925971354,
+            -1.2905330129856338,
+            1.4074884109175336,
+            -1.1821065638479131,
+            -1.1429498712436226,
+            0.13998574145637604
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 7,
+          "solver_success": true,
+          "evaluations": 1429,
+          "position_error_m": 0.014425684853658778,
+          "rotation_error_rad": 0.0273001423485584,
+          "clearance_m": 0.03239976195316804,
+          "joint_rad": [
+            -0.0047411780902913364,
+            -0.2810479713969207,
+            -1.2905571968588028,
+            1.4074899467906452,
+            -1.1821308098928154,
+            -1.1429519413519544,
+            0.13998570102459965
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 8,
+          "solver_success": true,
+          "evaluations": 1488,
+          "position_error_m": 0.014425684850946885,
+          "rotation_error_rad": 0.0273001424569773,
+          "clearance_m": 0.032399818123589684,
+          "joint_rad": [
+            -0.004739486505211534,
+            -0.281048249045372,
+            -1.2905375520778402,
+            1.4074894727511413,
+            -1.182111803601734,
+            -1.1429504344294839,
+            0.139984971724851
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 9,
+          "solver_success": true,
+          "evaluations": 1493,
+          "position_error_m": 0.014425684323052777,
+          "rotation_error_rad": 0.02730015480570198,
+          "clearance_m": 0.03239973090484571,
+          "joint_rad": [
+            -0.004741305035824339,
+            -0.2810476221476823,
+            -1.2905592475806762,
+            1.4074894178014807,
+            -1.1821321733312171,
+            -1.1429519464849887,
+            0.1399864520065268
+          ],
+          "acceptable": false
+        }
+      ],
+      "acceptable_endpoints": 0,
+      "endpoint_qp_zero_velocity": {
+        "minimum_normalized_slack": 0.01632273586656963,
+        "closest_constraints": [
+          {
+            "original_row": 548,
+            "category": "acceleration",
+            "slack_rad_s": 0.01632273586656963
+          },
+          {
+            "original_row": 550,
+            "category": "acceleration",
+            "slack_rad_s": 0.016498097256294135
+          },
+          {
+            "original_row": 538,
+            "category": "acceleration",
+            "slack_rad_s": 0.017248768402615192
+          },
+          {
+            "original_row": 533,
+            "category": "acceleration",
+            "slack_rad_s": 0.017299600208466916
+          },
+          {
+            "original_row": 549,
+            "category": "acceleration",
+            "slack_rad_s": 0.017408404694006348
+          },
+          {
+            "original_row": 537,
+            "category": "acceleration",
+            "slack_rad_s": 0.017452897771345004
+          },
+          {
+            "original_row": 532,
+            "category": "acceleration",
+            "slack_rad_s": 0.01745308870226839
+          },
+          {
+            "original_row": 531,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          },
+          {
+            "original_row": 526,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          },
+          {
+            "original_row": 530,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          }
+        ],
+        "velocity_rad_s": [
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          2.0381767490232643e-07,
+          0.00015369231147637494,
+          -0.0011305566533736633,
+          -4.488782593694451e-05,
+          -0.0009551952636491577,
+          3.947485982877931e-07,
+          0.00020452411732810064
+        ],
+        "right_task_jacobian_singular_values": [
+          1.7738858984121522,
+          1.6871077630590643,
+          1.1041437141034243,
+          0.23395404424671748,
+          0.13977833992021976,
+          0.003977894263458637
+        ]
+      }
+    },
+    {
+      "name": "translation_y_minus50mm",
+      "solutions": [
+        {
+          "start": 0,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097382459944299,
+          "rotation_error_rad": 0.008861004570212131,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08548229111549165,
+            -0.4029583157333304,
+            -1.4288997941864943,
+            1.397356524434942,
+            -1.3873118843237977,
+            -0.3172561200137457,
+            0.20558556617530443
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 1,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097382320329188,
+          "rotation_error_rad": 0.008861028218742685,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08546915306142262,
+            -0.40295420628422873,
+            -1.4287616804351533,
+            1.397345441952874,
+            -1.3871710044503263,
+            -0.3172433710232009,
+            0.20558878334612835
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 2,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097383544038792,
+          "rotation_error_rad": 0.008861039102518396,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08540000948318267,
+            -0.4029723756314516,
+            -1.4279858960552398,
+            1.397366203688992,
+            -1.3863939966472356,
+            -0.3171808391721596,
+            0.20556336210225187
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 3,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097382651670148,
+          "rotation_error_rad": 0.008861021814876678,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.0854561085424894,
+            -0.4029548415654634,
+            -1.4286188061653233,
+            1.3973438166810783,
+            -1.387027040037206,
+            -0.31723128053840366,
+            0.20558686850493146
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 4,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097382537787564,
+          "rotation_error_rad": 0.008861024736988432,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08545992416857053,
+            -0.4029543220071566,
+            -1.428660990185233,
+            1.3973436275233864,
+            -1.387069435885945,
+            -0.31723477573030556,
+            0.2055877795814028
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 5,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097381750396252,
+          "rotation_error_rad": 0.008861056379271027,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.0854778891265457,
+            -0.4029607575624793,
+            -1.4288487795024867,
+            1.3973603898273983,
+            -1.3872608880611064,
+            -0.3172522036023069,
+            0.2055829910711409
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 6,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.01309738165068903,
+          "rotation_error_rad": 0.00886104063000617,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08549805299135968,
+            -0.4029535764096505,
+            -1.429077312314352,
+            1.3973505741540193,
+            -1.3874892905988268,
+            -0.3172702512014676,
+            0.20559222590148182
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 7,
+          "solver_success": true,
+          "evaluations": 187,
+          "position_error_m": 0.0755413233585942,
+          "rotation_error_rad": 1.400422760286967,
+          "clearance_m": 0.02766530930017468,
+          "joint_rad": [
+            -0.1605998778945832,
+            -0.22331580476920465,
+            -1.5707963267927738,
+            0.7355097728961046,
+            1.9722199999978771,
+            -1.6144299999472451,
+            -1.61442999999999
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 8,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.013097382509560497,
+          "rotation_error_rad": 0.008861032537696597,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08545506555779542,
+            -0.4029585162298619,
+            -1.428602886422211,
+            1.397350891194329,
+            -1.38701214444007,
+            -0.3172306955692669,
+            0.20558297793852756
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 9,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.01309738457549814,
+          "rotation_error_rad": 0.008861030789741531,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.08536009165894856,
+            -0.4029724996838402,
+            -1.427550883185513,
+            1.3973575175268518,
+            -1.3859549655680963,
+            -0.3171436120170572,
+            0.20555954425494405
+          ],
+          "acceptable": false
+        }
+      ],
+      "acceptable_endpoints": 0,
+      "endpoint_qp_zero_velocity": {
+        "minimum_normalized_slack": 0.016831927980207568,
+        "closest_constraints": [
+          {
+            "original_row": 548,
+            "category": "acceleration",
+            "slack_rad_s": 0.016831927980207568
+          },
+          {
+            "original_row": 550,
+            "category": "acceleration",
+            "slack_rad_s": 0.016843900320712115
+          },
+          {
+            "original_row": 533,
+            "category": "acceleration",
+            "slack_rad_s": 0.017387645766296207
+          },
+          {
+            "original_row": 538,
+            "category": "acceleration",
+            "slack_rad_s": 0.01739684944838505
+          },
+          {
+            "original_row": 546,
+            "category": "acceleration",
+            "slack_rad_s": 0.017445966293006716
+          },
+          {
+            "original_row": 537,
+            "category": "acceleration",
+            "slack_rad_s": 0.017448747510086363
+          },
+          {
+            "original_row": 549,
+            "category": "acceleration",
+            "slack_rad_s": 0.017449019912455364
+          },
+          {
+            "original_row": 530,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          },
+          {
+            "original_row": 525,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          },
+          {
+            "original_row": 528,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          }
+        ],
+        "velocity_rad_s": [
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -7.326226936576374e-06,
+          6.564675364708365e-05,
+          -0.0006213645397357232,
+          -4.272607487926563e-06,
+          -0.000609392199231176,
+          4.545009856928494e-06,
+          5.644307155824033e-05
+        ],
+        "right_task_jacobian_singular_values": [
+          1.7716725878482769,
+          1.4976021221485158,
+          1.3506168498042046,
+          0.24838746733737394,
+          0.22845725285687857,
+          0.002698140185770122
+        ]
+      }
+    },
+    {
+      "name": "translation_z_minus50mm",
+      "solutions": [
+        {
+          "start": 0,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.03686416407087158,
+          "rotation_error_rad": 0.02423111460989145,
+          "clearance_m": 0.028733567371637868,
+          "joint_rad": [
+            -0.08071087914430967,
+            -0.23531183329892816,
+            -1.4514346191688587,
+            1.3977925179386232,
+            -1.4709430479460266,
+            -0.3128349796217038,
+            0.028209353414819293
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 1,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.0368641641758273,
+          "rotation_error_rad": 0.024231130680664605,
+          "clearance_m": 0.02873394049794648,
+          "joint_rad": [
+            -0.08070154879009644,
+            -0.2353158155930115,
+            -1.4513251947877444,
+            1.3977989639535067,
+            -1.4708349753225118,
+            -0.31282616358916404,
+            0.028205126635730972
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 2,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.036864163915848576,
+          "rotation_error_rad": 0.024231128517938082,
+          "clearance_m": 0.02873380809117874,
+          "joint_rad": [
+            -0.08070979902035226,
+            -0.23531479176259604,
+            -1.45141910507845,
+            1.3977982291843472,
+            -1.4709282099113439,
+            -0.31283398459457895,
+            0.028206568924469332
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 3,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.036864164036183145,
+          "rotation_error_rad": 0.024231094550340115,
+          "clearance_m": 0.028732839513473347,
+          "joint_rad": [
+            -0.08071993883542847,
+            -0.23530334025777647,
+            -1.4515461016504423,
+            1.3977770686215665,
+            -1.4710518590153083,
+            -0.31284345078840253,
+            0.02821812551652079
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 4,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.036864167065191314,
+          "rotation_error_rad": 0.024231081917115666,
+          "clearance_m": 0.02873429619931367,
+          "joint_rad": [
+            -0.08064271731972016,
+            -0.23531558653389098,
+            -1.4506641676932568,
+            1.3977893003657378,
+            -1.4701776883232525,
+            -0.3127703792953316,
+            0.028201080946357947
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 5,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.03686416677658785,
+          "rotation_error_rad": 0.024231041611230523,
+          "clearance_m": 0.028733191492865278,
+          "joint_rad": [
+            -0.08066528848300988,
+            -0.23530345509525424,
+            -1.450931765928974,
+            1.3977687356639679,
+            -1.470440571414135,
+            -0.3127916200384034,
+            0.028214649204415243
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 6,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.036864162254004476,
+          "rotation_error_rad": 0.024231110204617937,
+          "clearance_m": 0.028732380153223235,
+          "joint_rad": [
+            -0.08076746553294896,
+            -0.23530119168905578,
+            -1.4520828199667835,
+            1.3977801754017893,
+            -1.47158533882849,
+            -0.31288853177528453,
+            0.0282232359339216
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 7,
+          "solver_success": true,
+          "evaluations": 311,
+          "position_error_m": 0.1307289113031511,
+          "rotation_error_rad": 1.7476274846802438,
+          "clearance_m": 0.03875066554802338,
+          "joint_rad": [
+            -0.21884286101101527,
+            -0.36431544923472436,
+            -1.5707963267948954,
+            2.0943950975480736,
+            1.9722199999940961,
+            1.6144299999999991,
+            1.6144299999502523
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 8,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.036864165347227015,
+          "rotation_error_rad": 0.024231090622348263,
+          "clearance_m": 0.028733337784456928,
+          "joint_rad": [
+            -0.0806844472064725,
+            -0.23530683904078534,
+            -1.451143155572802,
+            1.3977784632729475,
+            -1.4706516513071881,
+            -0.312809803234988,
+            0.028212680513824757
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 9,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.03686416612848062,
+          "rotation_error_rad": 0.024231068628386632,
+          "clearance_m": 0.028733314815250453,
+          "joint_rad": [
+            -0.08067196792999051,
+            -0.2353055508459519,
+            -1.4510044196782839,
+            1.397773959459666,
+            -1.4705134727307776,
+            -0.31279797359177947,
+            0.02821292318373682
+          ],
+          "acceptable": false
+        }
+      ],
+      "acceptable_endpoints": 0,
+      "endpoint_qp_zero_velocity": {
+        "minimum_normalized_slack": 0.015881488410786116,
+        "closest_constraints": [
+          {
+            "original_row": 550,
+            "category": "acceleration",
+            "slack_rad_s": 0.015881488410786116
+          },
+          {
+            "original_row": 548,
+            "category": "acceleration",
+            "slack_rad_s": 0.01588686573320405
+          },
+          {
+            "original_row": 533,
+            "category": "acceleration",
+            "slack_rad_s": 0.01718594466664184
+          },
+          {
+            "original_row": 537,
+            "category": "acceleration",
+            "slack_rad_s": 0.017398460585631766
+          },
+          {
+            "original_row": 549,
+            "category": "acceleration",
+            "slack_rad_s": 0.017400549211959458
+          },
+          {
+            "original_row": 538,
+            "category": "acceleration",
+            "slack_rad_s": 0.017406460387921836
+          },
+          {
+            "original_row": 532,
+            "category": "acceleration",
+            "slack_rad_s": 0.01743075659875295
+          },
+          {
+            "original_row": 539,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          },
+          {
+            "original_row": 528,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          },
+          {
+            "original_row": 531,
+            "category": "acceleration",
+            "slack_rad_s": 0.017453292519943292
+          }
+        ],
+        "velocity_rad_s": [
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          2.253592119034446e-05,
+          0.0002673478533014506,
+          -0.0015664267867392424,
+          -5.274330798383359e-05,
+          -0.0015718041091571757,
+          5.483193431152557e-05,
+          4.6832132021456296e-05
+        ],
+        "right_task_jacobian_singular_values": [
+          1.7751183190612203,
+          1.5103967329164678,
+          1.3431838843882704,
+          0.2473866419947421,
+          0.23287198145290375,
+          0.0011066482980298014
+        ]
+      }
+    },
+    {
+      "name": "control_home",
+      "solutions": [
+        {
+          "start": 0,
+          "solver_success": true,
+          "evaluations": 1,
+          "position_error_m": 0.0,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            0.17453292519943295,
+            -0.3839724354387525,
+            0.0,
+            0.9599310885968813,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 1,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 1.0067255294710542e-09,
+          "rotation_error_rad": 1.6135713870169555e-09,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            0.15247208552292874,
+            -0.4885590061743012,
+            0.3354017090458486,
+            0.9830416718236383,
+            0.33298557251812416,
+            -0.03474871269494369,
+            -0.09360051289202077
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 2,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 6.457793570156124e-10,
+          "rotation_error_rad": 1.0552639002519486e-09,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            0.17211339452556693,
+            -0.4115934225590432,
+            0.08405330125883627,
+            0.9650208839957773,
+            0.08451262137459402,
+            -0.004903190943643053,
+            -0.02494124567898054
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 3,
+          "solver_success": true,
+          "evaluations": 37,
+          "position_error_m": 1.2118257228641695e-16,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            0.15544766791567954,
+            -0.48068848963087196,
+            0.3079475206329563,
+            0.9809343955046134,
+            0.30622783760426914,
+            -0.030516788043405914,
+            -0.0866397550782086
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 4,
+          "solver_success": true,
+          "evaluations": 42,
+          "position_error_m": 8.475091760436377e-11,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.03880896348704991,
+          "joint_rad": [
+            -0.20299788671776153,
+            -0.3579526259372987,
+            0.1670821592359621,
+            1.8812855590091506,
+            0.14099441766936727,
+            -0.5422711840096491,
+            0.024951732440889007
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 5,
+          "solver_success": true,
+          "evaluations": 101,
+          "position_error_m": 3.4949461938925325e-12,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.1842345037591574,
+            -0.4526878198790302,
+            -0.5685877991359314,
+            1.8579976538468437,
+            -0.6513417061888453,
+            -0.49058968528267544,
+            -0.10063292288609499
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 6,
+          "solver_success": true,
+          "evaluations": 153,
+          "position_error_m": 0.06535098377056885,
+          "rotation_error_rad": 1.4020429762691584,
+          "clearance_m": 0.0019863965725440223,
+          "joint_rad": [
+            -0.16000597225823615,
+            -0.03201047519724427,
+            -1.5707963267909115,
+            0.5566898745304052,
+            1.9722199999845724,
+            -1.6144299999999991,
+            -1.614429999999872
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 7,
+          "solver_success": true,
+          "evaluations": 44,
+          "position_error_m": 2.1333418898502866e-11,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            0.1373858620877494,
+            -0.5210924488903369,
+            0.45536059302624304,
+            0.9924105564656727,
+            0.44867725894446747,
+            -0.055523783991222,
+            -0.12222837013159568
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 8,
+          "solver_success": true,
+          "evaluations": 1141,
+          "position_error_m": 3.1051270890990445e-10,
+          "rotation_error_rad": 3.1695919981426803e-10,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            0.0038001136366235203,
+            -0.6437168687629942,
+            1.155578910079124,
+            1.0385791462527798,
+            1.0904907167679527,
+            -0.21961079634668076,
+            -0.22982028860820974
+          ],
+          "acceptable": true
+        }
+      ],
+      "acceptable_endpoints": 8
+    },
+    {
+      "name": "control_translation_x_plus50mm",
+      "solutions": [
+        {
+          "start": 0,
+          "solver_success": true,
+          "evaluations": 28,
+          "position_error_m": 6.530018938813138e-10,
+          "rotation_error_rad": 3.046692612335144e-10,
+          "clearance_m": 0.03830573494714322,
+          "joint_rad": [
+            -0.13315660484245934,
+            -0.3520547684452044,
+            -0.19018958260625268,
+            1.3357314514741607,
+            -0.22023519456494497,
+            -0.0746069851620408,
+            0.02503109421400326
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 1,
+          "solver_success": true,
+          "evaluations": 46,
+          "position_error_m": 3.0715446509726496e-12,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.15287404760611156,
+            -0.3917315267469214,
+            0.1368677098240156,
+            1.3906522085160389,
+            0.10337306674937716,
+            -0.1063953269150678,
+            -0.005432572158276468
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 2,
+          "solver_success": true,
+          "evaluations": 69,
+          "position_error_m": 1.130354890513578e-11,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04031324750081943,
+          "joint_rad": [
+            -0.1412016642178764,
+            -0.37707215740807765,
+            -0.0014536230500140149,
+            1.3627055466675573,
+            -0.03307928791524628,
+            -0.08871789947554032,
+            0.0053067681035245395
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 3,
+          "solver_success": true,
+          "evaluations": 35,
+          "position_error_m": 8.367013474187918e-10,
+          "rotation_error_rad": 3.4397803970852987e-10,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.16869665386388258,
+            -0.3960441564888123,
+            0.21626058857395847,
+            1.4276726635854258,
+            0.18079629553347823,
+            -0.12923473883377207,
+            -0.007805512332074127
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 4,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.00038916155178931504,
+          "rotation_error_rad": 0.0001037993535829879,
+          "clearance_m": 0.04029415981947229,
+          "joint_rad": [
+            -0.21126035466268828,
+            -0.37638804387336633,
+            -0.021093600017274245,
+            1.5316359884257489,
+            -0.05992635933231489,
+            -0.1877926132534696,
+            0.0024681602510329636
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 5,
+          "solver_success": true,
+          "evaluations": 120,
+          "position_error_m": 1.557809707541677e-09,
+          "rotation_error_rad": 4.987295622854514e-10,
+          "clearance_m": 0.037739320536532374,
+          "joint_rad": [
+            -0.21169486862330147,
+            -0.34960587738002497,
+            -0.6230492472095764,
+            1.5048380493678661,
+            -0.660345484251255,
+            -0.17348388964610986,
+            0.014115412579119878
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 6,
+          "solver_success": true,
+          "evaluations": 188,
+          "position_error_m": 0.1051405505301116,
+          "rotation_error_rad": 1.6520914901557375,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.3675368418957207,
+            -0.40742987174976714,
+            -1.5707963267898595,
+            2.0943951023705876,
+            1.9722199999999948,
+            1.614429999965375,
+            1.6144299996724862
+          ],
+          "acceptable": false
+        },
+        {
+          "start": 7,
+          "solver_success": true,
+          "evaluations": 106,
+          "position_error_m": 8.461185240143855e-11,
+          "rotation_error_rad": 0.0,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.16902100362189185,
+            -0.3959510702555588,
+            0.21619740067195567,
+            1.42847675239529,
+            0.18070331520225236,
+            -0.12969786605203867,
+            -0.007727566223656698
+          ],
+          "acceptable": true
+        },
+        {
+          "start": 8,
+          "solver_success": false,
+          "evaluations": 2000,
+          "position_error_m": 0.0007930902329607047,
+          "rotation_error_rad": 0.000378255167325555,
+          "clearance_m": 0.04037250302300654,
+          "joint_rad": [
+            -0.21326880828692774,
+            -0.4923382456254232,
+            1.3027607653571924,
+            1.3713988246701725,
+            1.2515758273245792,
+            -0.16852831535150606,
+            -0.07523802290429878
+          ],
+          "acceptable": true
+        }
+      ],
+      "acceptable_endpoints": 8
+    }
+  ],
+  "limitation": "Endpoint search is not a path planner. Failure to find a solution is not proof of impossibility.",
+  "source_sha256": {
+    "g1_bimanual_sim.py": "e511ac7f95b1df7913ba1b523ee6b9ff318b8823f14df52162aa69b5d8b44c02",
+    "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe"
+  }
+}

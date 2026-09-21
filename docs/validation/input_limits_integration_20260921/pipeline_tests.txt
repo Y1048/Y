@@ -1,0 +1,8 @@
+test_worker_commands_are_observation_only_without_executing_them (test_g1_observation_pipeline.ObservationLauncherTests.test_worker_commands_are_observation_only_without_executing_them) ... ok
+GENERATED_CLOCKED_PIPELINE {"data_kind": "synthetic_Unity_and_WebSocket_loopback_not_measured_G1", "joint_limit_rad_s": 3.0, "joint_limit_rad_s2": 3.0, "max_joint_speed_rad_s": [0.05473390061856098, 0.25443082008710705, 0.028626283018687877, 0.27987591548510604, 0.0026233230971742074, 0.07443403234319405, 0.05062658558277325, 0.054733900618627596, 0.25443082008710705, 0.028626283018690375, 0.27987591548510604, 0.0026233230972120825, 0.07443403234333082, 0.05062658558277949], "max_joint_acceleration_rad_s2": [0.28085803779664964, 0.5630733270998833, 0.1930315563830845, 0.5913941824541524, 0.047842039940950966, 0.3314855742622691, 0.26218494581931456, 0.2808580377969494, 0.5630733270998833, 0.19303155638313446, 0.5913941824541524, 0.047842039940188326, 0.3314855742652917, 0.26218494581932705], "exact_joint_copies": 419, "exact_omni_copies": 415, "independent_world_to_body_checks": 113, "ik_observed_hz": 59.997186414193806, "ik_deadline_misses": 0, "received_packets": 420, "receive_observed_hz": 59.98568360772585, "display_frames": 801, "display_observed_hz": 100.0, "repeated_display_frames": 381, "displayed_source_sequences_preserved": true}
+test_generated_unity_and_fake_omni_reach_observation_receiver_together (test_g1_observation_pipeline.ObservationPipelineTests.test_generated_unity_and_fake_omni_reach_observation_receiver_together) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 12.304s
+
+OK

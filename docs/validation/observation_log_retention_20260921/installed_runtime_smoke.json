@@ -1,0 +1,20 @@
+{
+  "installed_pc_actual_child_exit_and_closed_marker": true,
+  "data_kind": "temporary generated fixture only",
+  "fresh_log_preserved": true,
+  "maintenance_result": {
+    "deleted_files": 0,
+    "deleted_bytes": 0,
+    "remaining_managed_bytes": 19,
+    "scanned_files": 1,
+    "managed_files": 1,
+    "protected_files": 0,
+    "skipped_files": 0,
+    "errors": [],
+    "error_count": 0,
+    "lock_busy": false,
+    "scan_limit_reached": false,
+    "delete_limit_reached": false,
+    "retry_needed": false
+  }
+}

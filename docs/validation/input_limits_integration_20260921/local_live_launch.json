@@ -1,0 +1,66 @@
+{
+  "started_local": "20260921_152630_958214",
+  "destination": "127.0.0.1:55070",
+  "g1_connected": false,
+  "hardware_output": false,
+  "receiver_log": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\input_local_live\\20260921_152630_958214\\received_observation.jsonl",
+  "workers": {
+    "receive": {
+      "pid": 38940,
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "-u",
+        "-B",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\G1_INPUT_RECEIVE_AUDIT.py",
+        "receive",
+        "--bind",
+        "127.0.0.1",
+        "--allow-peer",
+        "127.0.0.1",
+        "--print-hz",
+        "100",
+        "--log",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\input_local_live\\20260921_152630_958214\\received_observation.jsonl"
+      ]
+    },
+    "send": {
+      "pid": 28640,
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "-u",
+        "-B",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\G1_INPUT_OBSERVATION_LAUNCH.py",
+        "--worker",
+        "send",
+        "--host",
+        "127.0.0.1"
+      ]
+    },
+    "omni": {
+      "pid": 47344,
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "-u",
+        "-B",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\G1_INPUT_OBSERVATION_LAUNCH.py",
+        "--worker",
+        "omni",
+        "--host",
+        "127.0.0.1"
+      ]
+    },
+    "arm": {
+      "pid": 51724,
+      "command": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "-u",
+        "-B",
+        "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\tools\\G1_INPUT_OBSERVATION_LAUNCH.py",
+        "--worker",
+        "arm",
+        "--host",
+        "127.0.0.1"
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<unittest.suite.TestSuite tests=[<unittest.loader._FailedTest testMethod=RecordedSessionTests>]>
+RecordedSessionTests (unittest.loader._FailedTest.RecordedSessionTests) ... ERROR
+
+======================================================================
+ERROR: RecordedSessionTests (unittest.loader._FailedTest.RecordedSessionTests)
+----------------------------------------------------------------------
+AttributeError: module 'test_bimanual_recorded_session' has no attribute 'RecordedSessionTests'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

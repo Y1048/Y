@@ -1,0 +1,9 @@
+{
+  "lines": 96,
+  "display_rate_hz": 49.84260230850081,
+  "arm_status": "HISTORICAL",
+  "omni_status": "HISTORICAL",
+  "g1_rx": "UNVERIFIED",
+  "fixture": "existing historical PC logs; no hardware/network execution",
+  "tests": "4 unittest cases passed before display scheduling adjustment"
+}

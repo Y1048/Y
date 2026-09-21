@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "path": "tools/G1_INPUT_RECEIVE_AUDIT.py",
+      "previous_sha256": "c398502bb06c21ed80af3c1305fab91e47d907c557793758dc8f314c08e21dfb",
+      "installed_sha256": "e9b34184ca0a52b36ba2d14a3ff513654e0909ad3785792189663f7fcca56267"
+    },
+    {
+      "path": "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
+      "previous_sha256": "1afc0695b05182a87eab20a3d00947a8c61a8c1dbdc7e9393d688ea2c908834a",
+      "installed_sha256": "27efce45f71c04c922ace4b78f1178e9d9cfd8c5a72bf72d20ab42912167d056"
+    },
+    {
+      "path": "docs/G1_LIVE_INPUT_OBSERVATION_20260921.md",
+      "previous_sha256": "a62090630ba126824960ceb39acb42a112d453fe6eca9136a6edf35e596ebbb1",
+      "installed_sha256": "09cfb83905153da46537a9a7a337d8ff4f3eff696bde273726ec150154eeb260"
+    }
+  ],
+  "g1_receiver": "/home/unitree/g1_input_audit_20260921_7e83c4/G1_INPUT_RECEIVE_AUDIT.py",
+  "g1_receiver_sha256": "e9b34184ca0a52b36ba2d14a3ff513654e0909ad3785792189663f7fcca56267",
+  "g1_previous_backup": "G1_INPUT_RECEIVE_AUDIT.before_live_20260921.py",
+  "hardware_output": false
+}

@@ -1,0 +1,74 @@
+{
+  "scope": "Offline kinematic simulation; no sockets, DDS, SDK or robot command execution",
+  "runtime": {"python": "3.11", "mujoco": "3.12.0"},
+  "historical_fixtures_modified": false,
+  "before_stationary_recovery_fix": {
+    "modules": ["backend.tests.test_bimanual_recorded_session", "backend.tests.test_bimanual_quest_reengage"],
+    "tests_run": 6,
+    "tests_passed": 5,
+    "tests_failed": 1,
+    "wall_seconds": 71.151,
+    "historical_exact_replay": {
+      "profile": "90 degrees/s proximal, 180 degrees/s wrist, 60 degrees/s^2 acceleration",
+      "staged_session_ticks": 3433,
+      "quest_reengage_ticks": 2927,
+      "maximum_logged_q_difference_rad_both": 0.0,
+      "both_passed": true
+    },
+    "current_3rad_profile_quest": {
+      "passed": true,
+      "completed_pinch_return_reengage_cycles": 2,
+      "minimum_clearance_m": 0.005000339101860107,
+      "max_output_acceleration_deg_s2": 171.88733853928682,
+      "maximum_logged_q_difference_rad": 1.1317187850988666
+    },
+    "current_3rad_profile_staged_session": {
+      "passed": false,
+      "tick_velocity_acceleration_range_clearance_assertions_passed": true,
+      "actual_return_stages": ["safe_waypoint", "fault"],
+      "expected_return_stages": ["safe_waypoint", "home", "complete"],
+      "fault_reason": "return_path_blocked:return_joint_range",
+      "replans": 3,
+      "fault_elapsed_simulation_s": 5.266666666666667
+    }
+  },
+  "return_start_state": {
+    "recorded_clock_s": 17999.515,
+    "joint_order": "left seven then right seven: shoulder pitch, roll, yaw, elbow, wrist roll, pitch, yaw",
+    "q_rad": [-0.29886968725107876, 0.4794344444691299, -0.18704841179398027, 0.20585000163317857, -0.14056473313887008, -0.05354252470094142, 0.07781305644953432, -0.3769132276422794, -0.8539800739847074, 0.535482221220583, 0.3108396239180971, 0.6222278130111933, -0.30256364270834063, -0.34047810523428074],
+    "velocity_rad_s": [0, 0, 0, -0.0595333786834589, 0, 0, 0, 0, 0, 0, -0.029393367374499574, 0, 0, 0],
+    "acceleration_rad_s2": [0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0],
+    "clearance_m": 0.04766161261735214,
+    "inter_arm_clearance_m": 0.2
+  },
+  "first_return_rejection": {
+    "reason": "return_joint_range",
+    "recorded_clock_s": 18000.453,
+    "joint": "right_elbow_joint",
+    "current_q_rad": 1.34386559328105,
+    "current_velocity_rad_s": 2.136747373366239,
+    "current_acceleration_rad_s2": 1.86933333333279,
+    "proposed_velocity_rad_s": 2.167547373366241,
+    "offending_checked_tail_tick": 33,
+    "offending_tail_q_rad": 2.0960166486324825,
+    "upper_range_rad": 2.0943951023931953,
+    "rejected_tail_was_not_applied": true
+  },
+  "after_stationary_recovery_fix_isolated_start_state_check": {
+    "passed": true,
+    "input": "return_start_state above applied to a fresh BimanualSimulation; up to 1200 return-only ticks",
+    "assertions": ["finite-difference acceleration <= 3 rad/s^2 + 1e-5", "velocity <= 3 rad/s + 1e-6", "joint ranges with 1e-8 rad tolerance", "clearance >= 5 mm each tick", "ready reached"],
+    "actual_ticks": 410,
+    "state": "ready",
+    "stage": "complete",
+    "elapsed_simulation_s": 6.833333333333333,
+    "settle_elapsed_s": 0.5,
+    "maximum_acceleration_rad_s2": 3.0000000000000027,
+    "minimum_clearance_m": 0.040372503023006545,
+    "maximum_home_error_rad": 1.1102230246251565e-16,
+    "final_replans": 0,
+    "retained_rejected_reason": "return_joint_range",
+    "fault_reason": ""
+  },
+  "final_consolidated_test_result": "Recorded separately by the parent task; this file preserves intermediate failure and isolated recovery evidence, not a final suite pass claim."
+}

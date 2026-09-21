@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 
 from g1_bimanual_runtime import load_engine
+from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = ROOT / "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py"
@@ -124,7 +125,7 @@ def verify_logged_limits(rows):
     if abs(sim.return_motion.near_hands_threshold_m - 0.012) > 1e-12:
         raise AssertionError("near-hands threshold changed")
     np.testing.assert_allclose(
-        sim.return_motion.acceleration_limits, np.deg2rad(60.0),
+        sim.return_motion.acceleration_limits, JOINT_ACCELERATION_LIMIT_RAD_S2,
         atol=1e-12, rtol=0)
 
     states = [row for row in rows
@@ -150,7 +151,7 @@ def verify_logged_limits(rows):
         previous_q, previous_velocity = q14, velocity
     if minimum < sim.clearance_m - 1e-8:
         raise AssertionError(f"clearance violated: {minimum}")
-    if maximum_acceleration > np.deg2rad(60.0) + 1e-3:
+    if maximum_acceleration > JOINT_ACCELERATION_LIMIT_RAD_S2 + 1e-3:
         raise AssertionError(
             f"acceleration violated: {np.rad2deg(maximum_acceleration)}")
     return minimum, maximum_acceleration

@@ -1,5 +1,17 @@
 # 다른 PC에서 입력·카메라 실행
 
+
+## 2026-09-21 기본 실행의 자동 의존성 복구
+
+최신 브랜치를 pull한 뒤 `tools\START_G1_VR_TELEOP.bat`을 실행하면, 네트워크/SSH/작업 프로세스를 시작하기 **전에** 해당 프로젝트 `.venv-teleop`을 검사한다.
+- Python 3.11 x64 및 프로젝트 venv 경로 확인
+- `requirements-teleop.txt`의 모든 고정 버전, 실제 import, `pip check` 확인
+- 빈 venv/누락/버전 불일치라면 프로젝트 venv에 전체 requirements 설치 후 재검증
+- 설치 실패/인터넷 미연결이면 실행 차단. 다운로드가 가능한 상태에서 동일 BAT를 다시 실행
+- 이미 정상이라면 설치하지 않음. `--check-only`는 설치 없이 검사만 수행
+
+가상환경이 없을 때 생성하려면 Windows Python Launcher의 `py -3.11`이 필요하다. 패키지 다운로드 연결도 필요하다. Unity/Meta Link/Omni Connect 설치나 G1 수신 성공을 이 검사가 보장하지는 않는다. `.venv-teleop`은 Git으로 복사하지 않고 각 PC에서 구성한다. 아래 별도 SETUP 안내는 수동 설치 및 기존 WSL 카메라 경로 준비용으로 유지한다.
+
 ## 현재 기본 카메라 경로
 
 ```text

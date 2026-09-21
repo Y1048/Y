@@ -151,7 +151,7 @@ class PortableTests(unittest.TestCase):
                     mock.patch.object(setup.subprocess, 'run') as run, \
                     mock.patch.object(setup, 'camera_run') as camera:
                 setup.main()
-                self.assertEqual(2, run.call_count)
+                self.assertEqual(3, run.call_count)
                 self.assertIn('g1_portable_environment.py', run.call_args.args[0][-1])
                 camera.assert_called_once_with('--check-only', '192.168.123.164')
 

@@ -1,8 +1,16 @@
 @echo off
 setlocal
 cd /d "%~dp0.."
-if not exist ".venv-teleop\Scripts\python.exe" (
-    echo [SETUP REQUIRED] Run tools\SETUP_G1_VR_TELEOP.bat once on this PC.
+set "DEP_CHECK="
+for %%A in (%*) do if /I "%%~A"=="--check-only" set "DEP_CHECK=--check-only"
+if exist ".venv-teleop\Scripts\python.exe" (
+    ".venv-teleop\Scripts\python.exe" -I -B tools\g1_teleop_dependencies.py %DEP_CHECK%
+) else (
+    py -3.11 -I -B tools\g1_teleop_dependencies.py %DEP_CHECK%
+)
+if errorlevel 1 (
+    echo [START BLOCKED] Dependency check failed. No teleop workers started.
+    echo Check network access and Python 3.11 x64, then run this BAT again.
     pause
     exit /b 1
 )

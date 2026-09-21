@@ -24,6 +24,8 @@ def main():
     if not python.is_file():
         raise RuntimeError('Run tools/SETUP_G1_VR_TELEOP.bat once to create the local environment')
     subprocess.run([str(python), '-m', 'pip', 'check'], check=True)
+    subprocess.run([str(python), '-I', '-B', str(ROOT / 'tools/g1_teleop_dependencies.py'),
+                    '--probe'], check=True)
     env = os.environ.copy()
     env['G1_BIMANUAL_ENGINE_ROOT'] = str(venv / 'Lib/site-packages')
     subprocess.run([str(python), '-B', str(ROOT / 'tools/g1_portable_environment.py')],

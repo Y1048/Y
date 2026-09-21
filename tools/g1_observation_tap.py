@@ -10,6 +10,7 @@ import socket
 import uuid
 
 ADDRESS = ('127.0.0.1', 55071)
+UNITY_HEADING_ADDRESS = ('127.0.0.1', 55072)
 SCHEMA = 'g1.observation.source.v1'
 
 
@@ -32,6 +33,7 @@ class ObservationTap:
         self.sequence = 0
         self.dropped = 0
         self.error = None
+        self.visual_dropped = 0
         self.sock = None
         if os.environ.get('G1_OBSERVATION_TAP') == '1':
             try:
@@ -60,6 +62,18 @@ class ObservationTap:
             if len(raw) > 6000:
                 raise ValueError('observation packet budget')
             self.sock.sendto(raw, ADDRESS)
+            if self.stream == 'omni' and os.environ.get('G1_OMNI_UNITY_HEADING') == '1':
+                # Independent view-only copy. Failure must not change audit delivery.
+                try:
+                    yaw = values['arm_yaw_deg']
+                    if type(yaw) not in (int, float) or not math.isfinite(yaw):
+                        raise ValueError('heading')
+                    view = json.dumps(dict(schema='g1.omni.unity.heading.v1',
+                        session=self.session, sample=[sequence, source_monotonic_s, yaw]),
+                        allow_nan=False, separators=(',', ':')).encode('utf-8')
+                    self.sock.sendto(view, UNITY_HEADING_ADDRESS)
+                except (OSError, KeyError, ValueError, TypeError):
+                    self.visual_dropped += 1
             return True
         except (OSError, ValueError, TypeError, OverflowError):
             self.dropped += 1

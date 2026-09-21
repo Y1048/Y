@@ -20,6 +20,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     public bool show_head_camera_pip = true;
     public int head_camera_tcp_port = G1HeadCameraPiP.DefaultTcpPort;
     public bool show_ambient_operator_environment = true;
+    public bool follow_omni_body_heading = true;
 
     public bool IsPositionLocked { get; private set; }
     public bool IsInitialAlignmentApplied { get; private set; }
@@ -63,6 +64,12 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
             head_camera_pip = G1HeadCameraPiP.Create(
                 xr_center_eye,
                 head_camera_tcp_port);
+        }
+        if (follow_omni_body_heading && xr_center_eye != null)
+        {
+            var bodyHeading = gameObject.AddComponent<G1OmniBodyHeading>();
+            bodyHeading.Initialize(this, ambient_operator_environment == null
+                ? null : ambient_operator_environment.transform);
         }
     }
 

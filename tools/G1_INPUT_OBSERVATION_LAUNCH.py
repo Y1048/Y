@@ -42,6 +42,7 @@ def engine_environment():
     env = os.environ.copy()
     # Only children started by this launcher receive the opt-in observation tap.
     env['G1_OBSERVATION_TAP'] = '1'
+    env['G1_OMNI_UNITY_HEADING'] = '1'
     if not env.get('G1_BIMANUAL_ENGINE_ROOT'):
         candidates = [ROOT/'.venv-teleop/Lib/site-packages',
                       ROOT/'logs/diagnostics/mujoco_versions/3.12.0']

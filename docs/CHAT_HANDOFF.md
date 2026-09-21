@@ -1,3 +1,10 @@
+## 2026-09-21 Omni 몸 회전의 Unity 반영
+
+`docs/OMNI_UNITY_BODY_HEADING_20260921.md` 참고. Omni yaw를 loopback55072로 별도 전달한다.
+XR와 주변환경에 inverse body yaw를 적용해 fixed-base IK 좌표를 유지하며 작업방향 회전을 표시한다.
+전체 G1Teleop C# 컴파일, production gate20 assertion, Python28 테스트 통과.
+Quest/Omni 실착 및 양팔 목표 유지 체감은 미확인. 실제 로봇 제어/PD 변경 없음.
+
 ## 2026-09-21 자동 네트워크 선택 및 설치 검증 완료
 
 `START_G1_VR_TELEOP.bat`은 유선주소 192.168.123.164:22 우선, 불가 시 폐쇄망 192.168.10.165:22를 선택한다.

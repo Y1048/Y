@@ -18,6 +18,22 @@ SPEC.loader.exec_module(tap_module)
 
 
 class ObservationTapTests(unittest.TestCase):
+    def test_omni_view_copy_is_separate_and_failure_does_not_affect_audit(self):
+        socket_factory = self.enabled()
+        sock = socket_factory.return_value
+        with patch.dict(os.environ, {'G1_OMNI_UNITY_HEADING': '1'}):
+            tap = tap_module.ObservationTap('omni')
+            self.addCleanup(tap.close)
+            self.assertTrue(tap.publish({'arm_yaw_deg': 112.}, 10.))
+            calls = sock.sendto.call_args_list
+            self.assertEqual(tap_module.ADDRESS, calls[-2].args[1])
+            self.assertEqual(('127.0.0.1', 55072), calls[-1].args[1])
+            self.assertEqual([0, 10., 112.], json.loads(calls[-1].args[0])['sample'])
+            sock.sendto.side_effect = [None, OSError('Unity absent')]
+            self.assertTrue(tap.publish({'arm_yaw_deg': 113.}, 10.02))
+            self.assertEqual(0, tap.dropped)
+            self.assertEqual(1, tap.visual_dropped)
+
     def test_compute_deadlines_skip_missed_slots_without_catchup(self):
         period = 1./60.
         deadline, missed = tap_module.next_deadline(10., 10.008, period)

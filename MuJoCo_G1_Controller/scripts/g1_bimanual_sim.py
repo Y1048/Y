@@ -1,4 +1,5 @@
 """Isolated, kinematic two-arm Mink experiment. No transport or motor output."""
+from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S
 import argparse
 import json
 import tempfile
@@ -67,7 +68,7 @@ class BimanualSimulation:
                      lm_damping=1e-5) for side in ("left", "right")}
         self.home_targets = {s: self.config.get_transform_frame_to_world(
             s + "_wrist_yaw_link", "body") for s in self.tasks}
-        self.caps = np.full(14, JOINT_VELOCITY_LIMIT_RAD_S)
+        self.caps = np.asarray(JOINT_VELOCITY_LIMITS_RAD_S, dtype=float)
         self.limits = [mink.ConfigurationLimit(self.model),
             mink.VelocityLimit(self.model, dict(zip(self.names, self.caps))),
             mink.CollisionAvoidanceLimit(self.model,

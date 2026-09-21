@@ -14,7 +14,7 @@ from test_bimanual_unity_sim import packet
 import numpy as np
 import json
 from collections import Counter
-from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
+from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation, mink
 
 
@@ -212,7 +212,7 @@ class MotionQualityTests(unittest.TestCase):
         self.assertEqual(set(sim.motion),{'left','right'})
         self.assertEqual(sim.clearance_m,.005)
         self.assertEqual(sim.limits[2].minimum_distance_from_collisions,.006)
-        np.testing.assert_allclose(sim.caps,np.full(14, JOINT_VELOCITY_LIMIT_RAD_S))
+        np.testing.assert_allclose(sim.caps,np.asarray(JOINT_VELOCITY_LIMITS_RAD_S))
         for side,policy in sim.motion.items():
             np.testing.assert_allclose(policy.acceleration_limits,np.full(7, JOINT_ACCELERATION_LIMIT_RAD_S2))
             rows,bounds=policy.yaw_velocity_bounds()

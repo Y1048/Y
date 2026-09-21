@@ -10,7 +10,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "MuJoCo_G1_Controller/scripts"))
-from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
+from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_unity_sim import UnityCycle, decode
 from backend.tests.bimanual_replay_profiles import (
@@ -69,7 +69,7 @@ class QuestReengageReplayTests(unittest.TestCase):
 
     def test_current_profile_preserves_two_cycles_and_bounds(self):
         sim = BimanualSimulation()
-        np.testing.assert_array_equal(sim.caps, np.full(14, JOINT_VELOCITY_LIMIT_RAD_S))
+        np.testing.assert_array_equal(sim.caps, np.asarray(JOINT_VELOCITY_LIMITS_RAD_S))
         self._replay(sim, exact_recording=False)
 
     def _replay(self, sim, *, exact_recording):

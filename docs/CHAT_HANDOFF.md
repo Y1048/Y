@@ -1857,3 +1857,10 @@ Live inventory showed Omni venv redirector PID14424 parenting base Python PID114
 
 
 2026-09-21: Verified runtime camera helper/launcher hashes equal source; SSH default confirmed. Corrected camera architecture documentation; legacy WSL instructions explicitly labeled. No runtime changes or hardware execution this turn.
+
+
+## 2026-09-21 Bilateral limits restored and measured-view lag inspected
+User requested rollback: each arm shoulder/elbow 90 deg/s, wrist 180 deg/s; all 14 joints acceleration 60 deg/s^2. Shared limits drive tracking, checked stopping, return, runtime metadata and per-joint replay validation. No PD, robot controller, joint range, Unity measured-state filter or motor output changes. Historical logs/results preserved.
+Runtime four Python files installed with hash verification and backup logs/backups/rollback_90_180_60_20260921_180317. Restart the running START_G1_VR_TELEOP manager with Enter, then launch the BAT again to load new limits.
+Actual LowState log logs/test_results/lowstate_view/20260921_175243_47944.jsonl, last 6000 records: receive interval p50 16ms / p95 31ms / max172ms; source interval p50 17.1ms / p95 17.4ms / max20.6ms; sequence gaps0. Relative additional transport age p50 11.8ms / p95 19.7ms / max166.9ms. This is not synchronized end-to-end sensor-to-display latency. Occasional jitter observed, sustained accumulating backlog not observed. Unity perceived latency not measured. Read-only two-second source probe returned117 samples; no motor command.
+Offline checks: sim/motion-quality/reengage run 33 passed +8 subtests, with one obsolete 3rad profile assertion failing. After adapting that boundary fixture to the requested profile, targeted profile/report/return/recorded-session run40 passed +57 subtests. Numerical stopping-limit fixture isolates geometry/travel ranges; separate normal geometry regression retained. Live Quest feel after restart remains operator verification; no hardware safety validation claimed.

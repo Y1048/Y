@@ -138,10 +138,11 @@ class SessionReportTests(unittest.TestCase):
 
     def test_current_replay_uses_current_limits_and_checks_speed_and_acceleration(self):
         # This tests replay validation only; the stub starts no simulator or transport.
-        for speed, acceleration, passed in ((3.0, 3.0, True), (3.001, 0.0, False),
-                                             (0.1, 3.001, False)):
+        for speed, acceleration, passed in ((1.5707963267948966, 1.0471975511965976, True), (1.572, 0.0, False),
+                                             (0.1, 1.049, False)):
             sim = SimpleNamespace(
-                dofs=report.np.arange(14), qids=report.np.arange(14), dt=report.SIM_DT,
+                caps=report.np.asarray(report.JOINT_VELOCITY_LIMITS_RAD_S),
+            dofs=report.np.arange(14), qids=report.np.arange(14), dt=report.SIM_DT,
                 velocity=report.np.full(14, speed - acceleration * report.SIM_DT),
                 config=SimpleNamespace(q=report.np.zeros(14)), clearance_m=0.01,
                 clearance=lambda q: 0.02,
@@ -165,12 +166,13 @@ class SessionReportTests(unittest.TestCase):
                 self.assertEqual(replay['comparison'], 'different_motion_limits')
                 self.assertEqual(replay['current_validation']['passed'], passed)
                 self.assertEqual(replay['validation_motion_limits'], dict(
-                    source='current_code', velocity_rad_s=[3.0] * 14,
-                    acceleration_rad_s2=[3.0] * 14))
+                    source='current_code', velocity_rad_s=list(report.JOINT_VELOCITY_LIMITS_RAD_S),
+                    acceleration_rad_s2=[report.JOINT_ACCELERATION_LIMIT_RAD_S2] * 14))
 
     def _replay_states(self, logged_states, current_states, *, same_profile=False,
                        q_difference=0.0, reason_difference=False):
         sim = SimpleNamespace(
+            caps=report.np.asarray(report.JOINT_VELOCITY_LIMITS_RAD_S),
             dofs=report.np.arange(14), qids=report.np.arange(14), dt=report.SIM_DT,
             velocity=report.np.zeros(14),
             config=SimpleNamespace(q=report.np.full(14, q_difference)), clearance_m=0.01,
@@ -190,9 +192,9 @@ class SessionReportTests(unittest.TestCase):
             'g1_bimanual_unity_sim': SimpleNamespace(UnityCycle=lambda model: cycle, decode=None)}
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'session.jsonl'
-            run = dict(kind='run')
+            run = dict(kind='run', motion_limits=dict(velocity_rad_s=3.0, acceleration_rad_s2=3.0))
             if same_profile:
-                run['motion_limits'] = dict(velocity_rad_s=3.0, acceleration_rad_s2=3.0)
+                run['motion_limits'] = dict(velocity_rad_s=list(report.JOINT_VELOCITY_LIMITS_RAD_S), acceleration_rad_s2=report.JOINT_ACCELERATION_LIMIT_RAD_S2)
             rows = [run] + [dict(
                 kind='state', state=state,
                 reason='pinch' if state in ('returning', 'ready') else '',
@@ -207,7 +209,7 @@ class SessionReportTests(unittest.TestCase):
             ['tracking', 'ready'], ['ready', 'tracking'], q_difference=0.1,
             reason_difference=True)
         self.assertEqual(replay['comparison'], 'different_motion_limits')
-        self.assertEqual(replay['recorded_motion_limits']['source'], 'legacy_defaults')
+        self.assertEqual(replay['recorded_motion_limits']['source'], 'run.motion_limits')
         self.assertEqual(replay['state_mismatches'], 2)
         self.assertEqual(replay['reason_mismatches'], 2)
         self.assertEqual(replay['maximum_logged_q_difference_rad'], 0.1)

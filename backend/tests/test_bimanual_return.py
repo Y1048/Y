@@ -9,7 +9,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'MuJoCo_G1_Controller/scripts'))
 sys.path.insert(0, str(ROOT/'backend/tests'))
-from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
+from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation, base, mink
 from g1_bimanual_return import BimanualReturnMotion, RuckigJointMotionLimiter
 from g1_mink_return_cycle import SAFE_RIGHT_ARM_RAD
@@ -96,7 +96,7 @@ class StagedReturnTests(unittest.TestCase):
         np.testing.assert_allclose(np.rad2deg(policy.waypoint[:7]), [10,35,0,70,0,0,0])
         np.testing.assert_allclose(policy.jerk_limits, base.RIGHT_ARM_MAX_JERK_RAD_S3)
         np.testing.assert_allclose(policy.acceleration_limits, JOINT_ACCELERATION_LIMIT_RAD_S2)
-        np.testing.assert_allclose(sim.caps, np.full(14, JOINT_VELOCITY_LIMIT_RAD_S))
+        np.testing.assert_allclose(sim.caps, np.asarray(JOINT_VELOCITY_LIMITS_RAD_S))
         self.assertEqual(policy.settle_s, .5)
         self.assertEqual(policy.policy, 'bimanual_staged_return_v2')
         self.assertEqual(policy.near_hands_threshold_m, .012)

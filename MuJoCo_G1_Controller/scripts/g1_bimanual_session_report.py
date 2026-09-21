@@ -3,6 +3,7 @@
 Static analysis does not replay control. --replay uses the validated simulator
 selected by g1_bimanual_runtime.py. No Unity, G1, DDS, SSH or motor output.
 """
+from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S
 import argparse
 from collections import Counter
 import gzip
@@ -60,7 +61,7 @@ def _recorded_motion_limits(run):
 def _current_motion_limits():
     return dict(
         source='current_code',
-        velocity_rad_s=[JOINT_VELOCITY_LIMIT_RAD_S] * 14,
+        velocity_rad_s=list(JOINT_VELOCITY_LIMITS_RAD_S),
         acceleration_rad_s2=[JOINT_ACCELERATION_LIMIT_RAD_S2] * 14)
 
 
@@ -366,6 +367,7 @@ def replay_session(path):
     q_mismatch_max = 0.0
     minimum_clearance = 0.2
     maximum_speed = 0.0
+    maximum_speed_ratio = 0.0
     maximum_acceleration = 0.0
     state_rows = 0
     input_rows = 0
@@ -423,6 +425,7 @@ def replay_session(path):
                     sim.config.q[sim.qids] - np.asarray(logged_q, dtype=float)))))
             acceleration = np.rad2deg(np.abs(
                 (sim.velocity[sim.dofs] - before_velocity) / sim.dt))
+            maximum_speed_ratio = max(maximum_speed_ratio, float(np.max(np.abs(sim.velocity[sim.dofs]) / sim.caps)))
             maximum_speed = max(maximum_speed, float(np.max(np.rad2deg(np.abs(
                 sim.velocity[sim.dofs])))))
             maximum_acceleration = max(maximum_acceleration, float(np.max(acceleration)))
@@ -447,7 +450,7 @@ def replay_session(path):
         current_failures.append('blocked_state_observed')
     if minimum_clearance < sim.clearance_m:
         current_failures.append('clearance_limit_exceeded')
-    if maximum_speed > math.degrees(JOINT_VELOCITY_LIMIT_RAD_S) + 1e-4:
+    if maximum_speed_ratio > 1.0 + 1e-6:
         current_failures.append('output_speed_limit_exceeded')
     if maximum_acceleration > (math.degrees(JOINT_ACCELERATION_LIMIT_RAD_S2)
                                + ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2):
@@ -524,7 +527,7 @@ def markdown_report(report):
             f"- Exact replay passed: {replay['exact_replay_passed'] if replay['exact_replay_passed'] is not None else 'not comparable'}",
             f"- Current validation passed: {replay['current_validation']['passed']}",
             f"- Current validation failures: {', '.join(replay['current_validation']['failures']) or 'none'}",
-            f"- Validation limits: current code, {JOINT_VELOCITY_LIMIT_RAD_S:g} rad/s and "
+            f"- Validation limits: current code, shoulder/elbow 90 deg/s, wrist 180 deg/s and "
             f"{JOINT_ACCELERATION_LIMIT_RAD_S2:g} rad/s^2",
             f"- Max logged-q difference: {replay['maximum_logged_q_difference_rad']:.9g} rad",
             f"- Minimum sampled clearance: {replay['minimum_sampled_clearance_mm']:.6f} mm",

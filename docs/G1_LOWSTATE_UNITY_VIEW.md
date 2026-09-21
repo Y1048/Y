@@ -29,3 +29,6 @@ Unity 로봇 모델은 전체29축 실측값을 적용한다. 파란 사용자 �
 23 Python tests /18 subtests PASS. 실제 G1에서2초117개29축 표본, CRC/순서 PASS.
 PC loopback55073에 실측5개 도착/형식 검증 PASS. No motor/mode command.
 Unity Play 정지 확인 후 노트북 설치; 움직임 표시/체감은 아직 미검증이다.
+
+
+2026-09-21 latency inspection: PC receipt median16ms, p95 31ms, max172ms across latest6000 samples, no sequence gaps. Relative age is not total robot-to-screen latency. No display filtering change. IK target limits restored to shoulder/elbow90 deg/s, wrist180 deg/s, acceleration60 deg/s^2; these do not limit measured-state visualization.

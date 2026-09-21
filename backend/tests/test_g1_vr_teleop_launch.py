@@ -113,7 +113,7 @@ class OrchestrationTests(unittest.TestCase):
         stack.enter_context(redirect_stdout(io.StringIO()))
         stack.enter_context(mock.patch.object(launcher, 'select_robot_host',
                                              side_effect=lambda host: HOST if host == 'auto' else host))
-        stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=list(rows)))
+        stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=list(rows) + ([[sys.executable, str(ROOT/'tools/G1_CAMERA_LAUNCH.py'), '--robot-host', HOST]] if camera else [])))
         camera_mock = stack.enter_context(mock.patch.object(launcher, 'camera_running', return_value=camera))
         environment = {'G1_OBSERVATION_TAP': '1', 'TEST_ONLY': '1'}
         stack.enter_context(mock.patch.object(launcher.observation, 'engine_environment', return_value=environment))
@@ -124,6 +124,7 @@ class OrchestrationTests(unittest.TestCase):
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
         result = launcher.main(['--show-consoles'] + list(args))
         run.assert_not_called()
+        camera_mock.assert_not_called()  # Default SSH must never inspect WSL.
         return result, spawn, check, camera_mock, environment
 
     def test_fresh_start_creates_exactly_five_observation_and_camera_windows(self):
@@ -209,6 +210,10 @@ class PreflightTests(unittest.TestCase):
                     launcher.preflight([worker], {})
                 sock.bind.assert_called_once_with(('127.0.0.1', port))
                 run.assert_not_called()
+
+    def test_ssh_camera_preflight_never_requires_wsl(self):
+        with mock.patch.object(launcher.shutil, 'which', side_effect=lambda name: 'ssh.exe' if name=='ssh.exe' else None), mock.patch.object(launcher, 'camera_run', side_effect=AssertionError('WSL must not run')), mock.patch.object(launcher.subprocess, 'run', side_effect=AssertionError('No subprocess required')):
+            launcher.preflight(['camera'], {})
 
     def test_reused_workers_do_not_probe_their_occupied_udp_ports(self):
         with mock.patch.object(launcher.shutil, 'which', return_value='available.exe'), \

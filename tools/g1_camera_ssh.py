@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 import socket
+import shutil
 import struct
 import subprocess
 import sys
@@ -59,6 +60,12 @@ def read_packet(stream):
     if not jpeg.startswith(b'\xff\xd8') or not jpeg.endswith(b'\xff\xd9'):
         raise RuntimeError('Invalid JPEG frame')
     return raw + jpeg
+
+
+def check_environment():
+    if not shutil.which('ssh.exe'):
+        raise RuntimeError('Windows OpenSSH client (ssh.exe) is required')
+    print('[CAMERA CHECK] SSH transport ready locally; WSL is not required. G1 images not tested.', flush=True)
 
 
 def run(host):

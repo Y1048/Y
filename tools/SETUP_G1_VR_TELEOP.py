@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--pc-only', action='store_true', help='Prepare IK/Omni without WSL camera')
+    parser.add_argument('--camera-transport', choices=('ssh', 'wsl'), default='ssh')
     args = parser.parse_args()
     if os.name != 'nt' or sys.version_info[:2] != (3, 11):
         raise RuntimeError('Use Windows x64 Python 3.11: py -3.11')
@@ -30,7 +31,10 @@ def main():
     env['G1_BIMANUAL_ENGINE_ROOT'] = str(venv / 'Lib/site-packages')
     subprocess.run([str(python), '-B', str(ROOT / 'tools/g1_portable_environment.py')],
                    env=env, cwd=ROOT, check=True)
-    if not args.pc_only:
+    if not args.pc_only and args.camera_transport == 'ssh':
+        from g1_camera_ssh import check_environment
+        check_environment()
+    if not args.pc_only and args.camera_transport == 'wsl':
         if not args.check_only:
             if sys.getwindowsversion().build < 22621:
                 raise RuntimeError('Camera mirrored networking requires Windows 11 22H2 or newer')

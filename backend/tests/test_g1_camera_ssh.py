@@ -8,12 +8,24 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools'))
 import g1_camera_ssh as camera
 import g1_ssh_login as login
+import G1_CAMERA_LAUNCH as launcher
 
 class CameraTests(unittest.TestCase):
     def test_low_bandwidth_remote_rate_without_reencoding(self):
         self.assertIn('frame_period_s = 0.5', camera.REMOTE)
         self.assertIn('frame_period_s-(time.monotonic()-start)', camera.REMOTE)
         self.assertNotIn('cv2', camera.REMOTE)
+
+    def test_ssh_setup_and_check_never_use_wsl_or_robot(self):
+        for flag in ('--setup', '--check-only'):
+            with self.subTest(flag=flag), patch.object(sys, 'argv', ['camera', flag]), patch.object(launcher, 'camera_run', side_effect=AssertionError('WSL')), patch.object(camera, 'run', side_effect=AssertionError('Robot')), patch.object(camera, 'check_environment') as check:
+                launcher.main()
+                check.assert_called_once()
+
+    def test_explicit_wsl_check_still_uses_legacy_path(self):
+        with patch.object(sys, 'argv', ['camera','--transport','wsl','--check-only']), patch.object(launcher, 'camera_run') as run:
+            launcher.main()
+            run.assert_called_once_with('--check-only','auto')
 
     def test_valid_packet_roundtrip(self):
         jpeg=b'\xff\xd8data\xff\xd9'

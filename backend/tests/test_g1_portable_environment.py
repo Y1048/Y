@@ -153,7 +153,7 @@ class PortableTests(unittest.TestCase):
                 setup.main()
                 self.assertEqual(3, run.call_count)
                 self.assertIn('g1_portable_environment.py', run.call_args.args[0][-1])
-                camera.assert_called_once_with('--check-only', '192.168.123.164')
+                camera.assert_not_called()
 
     def test_launch_bats_use_own_checkout_environment(self):
         for name in ('START_G1_VR_TELEOP', 'START_G1_CAMERA_TO_UNITY', 'START_G1_INPUT_OBSERVATION'):

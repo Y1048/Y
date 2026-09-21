@@ -122,6 +122,7 @@ def running_workers(rows, root, host):
 
 
 def camera_running():
+    # Legacy WSL diagnostic only; never called by default SSH orchestration.
     result = subprocess.run(
         wsl_prefix() + ['bash', '-lc',
          "pgrep -af '[p]ython.*g1_camera_tcp_bridge[.]py'"],
@@ -144,7 +145,7 @@ def camera_running():
 
 
 def preflight(missing, env):
-    for executable in ('ssh.exe', 'wsl.exe'):
+    for executable in ('ssh.exe',):
         if not shutil.which(executable):
             raise RuntimeError(executable + ' is missing')
     for worker, port in (('send', 55071), ('arm', 5020)):
@@ -161,7 +162,8 @@ def preflight(missing, env):
     if 'arm' in missing:
         subprocess.run([sys.executable, '-B', str(ROOT / 'tools/g1_portable_environment.py')], cwd=ROOT, env=env, check=True)
     if 'camera' in missing:
-        camera_run('--check-only', '192.168.123.164')
+        from g1_camera_ssh import check_environment
+        check_environment()
     if not (ROOT / 'tools/START_G1_CAMERA_TO_UNITY.bat').is_file():
         raise RuntimeError('Existing camera BAT is missing')
 
@@ -192,7 +194,7 @@ def main(argv=None):
         raise RuntimeError('Duplicate camera launchers; preserve existing sessions')
     if camera_rows and option(camera_rows[0], '--robot-host') != args.host:
         raise RuntimeError('Existing camera targets another host; preserved')
-    has_camera = bool(camera_rows) or camera_running()
+    has_camera = bool(camera_rows)
     plan = launch_plan(existing, has_camera, args.no_receiver)
     env = observation.engine_environment()
     preflight(plan, env)

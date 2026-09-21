@@ -14,8 +14,11 @@ def main():
     parser.add_argument('--transport', choices=('ssh', 'wsl'), default='ssh')
     args = parser.parse_args()
     host = args.robot_host if args.setup or args.check_only else select_robot_host(args.robot_host)
-    if not args.setup and not args.check_only and args.transport == 'ssh':
-        from g1_camera_ssh import run
+    if args.transport == 'ssh':
+        from g1_camera_ssh import run, check_environment
+        check_environment()
+        if args.setup or args.check_only:
+            return
         return run(host)
     camera_run('--setup' if args.setup else '--check-only' if args.check_only else '--run', host)
 

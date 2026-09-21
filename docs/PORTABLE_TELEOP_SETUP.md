@@ -29,13 +29,13 @@ G1 시스템 Python3와 기존 unitree_sdk2py를 사용하며 SSH stdin 실행�
 카메라 코드는 모터 명령이나 입력 수신 포트를 사용하지 않는다.
 통합 배치는 G1_INPUT_RECEIVE_AUDIT.py 수신기를 실행/재사용하지 않는다.
 
-설치/check-only에는 WSL 의존성 검사가 남아 있지만 기본 영상 전송은 WSL을 거치지 않는다.
+기본 실행·설치·check-only는 WSL을 실행하거나 검사하지 않는다. Windows OpenSSH와 프로젝트 Python 의존성만 로컬 검사하며, G1 영상 수신 여부는 별도다.
 --transport wsl은 이전 경로 진단용이며, 현재 노트북의 새 CycloneDDS 초기화 crash는 미해결이다.
 기본 SSH 경로로 실제 G1 JPEG 수신은 확인했다. Unity 최종 화면 표시는 별도 확인이 필요하다.
 
 
 이 문서는 이전 인계의 **노트북 고정 카메라 경로/venv 안내를 대체**한다.
-대상은 Windows 11 22H2 이상 x64 + 최신 WSL2 Linux 환경이다.
+기본 SSH 경로의 대상은 Windows x64 + Python 3.11 + OpenSSH다. WSL2/mirrored networking은 명시적으로 WSL 카메라를 선택할 때만 필요하다.
 모든 OS에서 무설치 실행하는 패키지는 아니다. PC마다 최초 설치는 필요하다.
 
 ## 실행 순서
@@ -47,7 +47,7 @@ G1 시스템 Python3와 기존 unitree_sdk2py를 사용하며 SSH stdin 실행�
 ```
 
 이 작업은 프로젝트 안 `.venv-teleop`에 고정 버전 IK/Omni 패키지를 설치한다.
-카메라 소스는 Windows Git으로 지정 리비전만 내려받아 WSL에 전달한다. WSL의 GitHub 연결이 느린 환경도 고려했다.
+기본 설치는 WSL이나 `.wslconfig`를 변경하지 않는다. 이전 WSL 카메라 준비가 필요할 때만 `SETUP_G1_VR_TELEOP.bat --camera-transport wsl`을 사용한다. WSL 카메라 실행은 `START_G1_CAMERA_TO_UNITY.bat --transport wsl`로 명시한다. 기본 SSH 카메라와 동시에 실행하지 않는다.
 WSL에는 사용자 전용 `~/.local/share/g1-teleop-camera` 아래 Python 3.11,
 CycloneDDS, Unitree Python SDK를 설치한다. Python 시스템 환경을 변경하지 않는다.
 이미 설치돼 있으면 재사용한다. SDK와 CycloneDDS 소스 리비전은 고정하며,

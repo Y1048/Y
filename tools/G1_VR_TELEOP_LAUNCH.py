@@ -151,6 +151,7 @@ def main(argv=None):
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--no-receiver', action='store_true',
                         help='Keep a G1 receive window started separately, e.g. on another PC.')
+    parser.add_argument('--show-consoles', action='store_true', help='Show legacy diagnostic windows')
     args = parser.parse_args(argv)
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', args.host):
         parser.error('host must be a hostname or IPv4 address')
@@ -167,6 +168,17 @@ def main(argv=None):
     print('[START] ' + (', '.join(plan) or 'none; existing processes are kept'))
     if args.check_only:
         print('PASS: launch plan checked; no workers, camera SDK initialization or SSH login. Auto mode probes TCP 22 only.')
+        return 0
+    if not args.show_consoles:
+        from g1_quiet_observation import run_workers
+        if 'camera' in plan:
+            subprocess.Popen(['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat',
+                              '--robot-host', args.host], cwd=ROOT, env=env,
+                             creationflags=subprocess.CREATE_NEW_CONSOLE)
+        workers = [worker for worker in plan if worker != 'camera']
+        if workers:
+            return run_workers(ROOT, workers, args.host, env)
+        print('Existing workers kept. Close their original windows to stop them.')
         return 0
     for worker in plan:
         command = (['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', args.host]

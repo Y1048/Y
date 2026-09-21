@@ -100,7 +100,7 @@ class OrchestrationTests(unittest.TestCase):
         spawn = stack.enter_context(mock.patch.object(launcher.subprocess, 'Popen'))
         run = stack.enter_context(mock.patch.object(launcher.subprocess, 'run',
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
-        result = launcher.main(list(args))
+        result = launcher.main(['--show-consoles'] + list(args))
         run.assert_not_called()
         return result, spawn, check, camera_mock, environment
 

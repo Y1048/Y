@@ -1799,3 +1799,7 @@ G1 수신창을 직접 열었으면 `--no-receiver`로 PC3개 창만 실행한�
 Unity/C# 수정 없음. Omni Connect(32123)가 이 작업 시점에는 열려 있지 않았으므로
 사용자가 연결 후 실제 센서입력을 확인해야 한다. 명령/해석은
 `docs/G1_LIVE_INPUT_OBSERVATION_20260921.md`에 모두 기록했다.
+
+
+## 2026-09-21 Quiet teleop launcher
+START_G1_VR_TELEOP now hides newly started local send/Omni/arm consoles by default and writes output to logs/test_results/teleop_background/<session>/*.log. SSH receive authentication remains visible, then its console is hidden after remote stdout begins; failures restore it. A small manager console remains: Enter/Ctrl+C stops only workers started by that invocation. Camera window is unchanged. Existing processes are reused, not hidden or terminated. --show-consoles restores legacy diagnostic windows. Do not close the manager with X; use Enter so child cleanup runs. No motor-control changes. Offline tests: 19 passed plus 17 subtests; no live SSH/camera/VR run, Windows terminal-host hide behavior still needs operator verification. Laptop runtime patched narrowly with backup; unrelated portability differences preserved.

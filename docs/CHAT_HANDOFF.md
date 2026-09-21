@@ -1803,3 +1803,7 @@ Unity/C# 수정 없음. Omni Connect(32123)가 이 작업 시점에는 열려 �
 
 ## 2026-09-21 Quiet teleop launcher
 START_G1_VR_TELEOP now hides newly started local send/Omni/arm consoles by default and writes output to logs/test_results/teleop_background/<session>/*.log. SSH receive authentication remains visible, then its console is hidden after remote stdout begins; failures restore it. A small manager console remains: Enter/Ctrl+C stops only workers started by that invocation. Camera window is unchanged. Existing processes are reused, not hidden or terminated. --show-consoles restores legacy diagnostic windows. Do not close the manager with X; use Enter so child cleanup runs. No motor-control changes. Offline tests: 19 passed plus 17 subtests; no live SSH/camera/VR run, Windows terminal-host hide behavior still needs operator verification. Laptop runtime patched narrowly with backup; unrelated portability differences preserved.
+
+
+## 2026-09-21 Per-PC SSH enrollment
+Integrated START_G1_VR_TELEOP verifies dedicated per-user SSH key before spawning a new receiver. First-run OpenSSH password prompt registers only public key, then verifies BatchMode login; no password persistence. check-only skips enrollment. Details: docs/G1_SSH_AUTO_LOGIN.md. Offline: 36 tests + 41 subtests passed. Actual G1 enrollment not run. Laptop runtime patched with backups preserving unrelated changes.

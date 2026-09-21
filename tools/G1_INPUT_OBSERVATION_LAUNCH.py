@@ -9,6 +9,7 @@ import shutil
 import socket
 import subprocess
 import sys
+from g1_ssh_login import identity_options
 from g1_portable_environment import select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +22,7 @@ DISPLAY_HZ = 100
 def worker_command(worker, host, stamp):
     python = [sys.executable, '-u', '-B']
     if worker == 'receive':
-        return ['ssh.exe', '-t', 'unitree@'+host,
+        return ['ssh.exe', '-t'] + identity_options() + ['unitree@'+host,
                 'cd '+REMOTE_DIR+' && python3 -u G1_INPUT_RECEIVE_AUDIT.py receive --print-hz '+str(DISPLAY_HZ)]
     if worker == 'send':
         return python + [str(ROOT/'tools/G1_INPUT_RECEIVE_AUDIT.py'),

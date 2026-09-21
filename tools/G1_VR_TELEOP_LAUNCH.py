@@ -10,6 +10,7 @@ import shutil
 import socket
 import subprocess
 import sys
+from g1_ssh_login import ensure_login
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
 from g1_portable_environment import wsl_prefix, camera_run, select_robot_host
@@ -169,6 +170,8 @@ def main(argv=None):
     if args.check_only:
         print('PASS: launch plan checked; no workers, camera SDK initialization or SSH login. Auto mode probes TCP 22 only.')
         return 0
+    if 'receive' in plan:
+        ensure_login(args.host)
     if not args.show_consoles:
         from g1_quiet_observation import run_workers
         if 'camera' in plan:

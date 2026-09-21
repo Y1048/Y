@@ -473,13 +473,18 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
                 - previous_body_tracking_wrist_position;
             Vector3 head_step = TrackedHeadPosition
                 - previous_body_tracking_head_position;
-            EstimatedBodyTranslation += GetCommonBodyTranslationStep(
+            Vector3 candidateBodyTranslation = EstimatedBodyTranslation + GetCommonBodyTranslationStep(
                 wrist_step,
                 head_step,
                 body_translation_minimum_step,
                 body_translation_direction_cosine,
                 body_translation_magnitude_ratio_minimum,
                 body_translation_residual_tolerance);
+            // Selected common steps alone can accumulate a permanent bias when
+            // the return motion fails the common-motion classifier. Bound the
+            // estimate to the current displacement from the engage head anchor.
+            EstimatedBodyTranslation = BoundBodyTranslation(
+                candidateBodyTranslation, TrackedHeadPosition - neutral_head_position);
             previous_body_tracking_wrist_position = TrackedWristPosition;
             previous_body_tracking_head_position = TrackedHeadPosition;
 
@@ -589,6 +594,17 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         return current_wrist_position
             - neutral_wrist_position_value
             - estimated_body_translation;
+    }
+
+    public static Vector3 BoundBodyTranslation(Vector3 candidate, Vector3 headDisplacement)
+    {
+        float squaredDistance = headDisplacement.sqrMagnitude;
+        if (squaredDistance <= 1e-10f) return Vector3.zero;
+        // Head-only motion cannot create compensation from a zero estimate.
+        // No component perpendicular to, opposite to, or larger than observed
+        // head displacement survives. Returning to the anchor clears drift.
+        float fraction = Mathf.Clamp01(Vector3.Dot(candidate, headDisplacement) / squaredDistance);
+        return headDisplacement * fraction;
     }
 
     public static Vector3 GetCommonBodyTranslationStep(

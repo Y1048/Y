@@ -185,6 +185,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             official_g1_object = Instantiate(prefab_value, preview_root);
             official_g1_object.name = "G1_29DoF_Official";
             official_g1_rig = official_g1_object.GetComponent<G1OfficialRig>();
+            official_g1_object.AddComponent<G1LowStateLegView>();
             ApplyFallbackPosture();
             official_g1_object.SetActive(false);
         }

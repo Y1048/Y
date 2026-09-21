@@ -21,6 +21,8 @@ DISPLAY_HZ = 100
 
 def worker_command(worker, host, stamp):
     python = [sys.executable, '-u', '-B']
+    if worker == 'lowstate':
+        return python + [str(ROOT/'tools/g1_lowstate_view.py'), '--host', host]
     if worker == 'receive':
         return ['ssh.exe', '-t'] + identity_options() + ['unitree@'+host,
                 'cd '+REMOTE_DIR+' && python3 -u G1_INPUT_RECEIVE_AUDIT.py receive --print-hz '+str(DISPLAY_HZ)]
@@ -34,7 +36,7 @@ def worker_command(worker, host, stamp):
                          str(ROOT/'logs/test_results/omni_gateway_readonly'/('omni_observation_'+stamp+'.csv'))]
     if worker == 'arm':
         return python + [str(ROOT/'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py'),
-                         '--mode', 'unity', '--compute-hz', str(COMPUTE_HZ), '--output',
+                         '--mode', 'unity', '--headless', '--compute-hz', str(COMPUTE_HZ), '--output',
                          str(ROOT/'logs/test_results/bimanual'/('unity_'+stamp+'.jsonl'))]
     raise ValueError('worker')
 
@@ -73,7 +75,7 @@ def preflight(env):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
-    parser.add_argument('--worker', choices=WORKERS)
+    parser.add_argument('--worker', choices=WORKERS + ('lowstate',))
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--no-receiver', action='store_true',
                         help='Start PC sources/sender only; keep your existing G1 receive console.')

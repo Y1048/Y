@@ -1,3 +1,7 @@
+## 2026-09-21 All-joint LowState observation / leg visualization / headless IK
+
+See docs/G1_LOWSTATE_UNITY_VIEW.md. Integrated launcher adds read-only lowstate worker, keeps remote audit receiver disabled, and uses --headless for IK. Collect29 joints, display only legs0..11, keep IK arms/root position. Whole G1Teleop compile PASS;23 tests/18 subtests PASS. Actual read-only G1 sample117 CRC/order PASS and5 loopback packets PASS. Runtime installed after Play-stop confirmation; Unity visual behavior not yet verified.
+
 ## 2026-09-21 G1 audit receiver removed from integrated launch
 
 User reserves G1 port ownership for their upper controller. START_G1_VR_TELEOP now NEVER starts or reuses G1_INPUT_RECEIVE_AUDIT.py receive, including --show-consoles and compatibility --no-receiver. Remote receiver discovery/registration calls removed from this launcher; SSH camera still uses key login and remote camera-only Python. PC send/Omni/arm paths and packet formats unchanged; future upper-controller integration deferred. Separate legacy observation scripts remain for explicit diagnostics only, not integrated launch. Verified G1 UDP55070 was already FREE; no remote process needed termination. Runtime launcher backed up and installed. Offline launcher tests:18 passed /17 subtests. No motor/control-mode operations.

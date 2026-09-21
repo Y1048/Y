@@ -10,11 +10,13 @@ import shutil
 import socket
 import subprocess
 import sys
+from g1_ssh_login import ensure_login
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
 from g1_portable_environment import wsl_prefix, camera_run, select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
+INTEGRATED_WORKERS = observation.WORKERS + ('lowstate',)
 
 
 def windows_arguments(command_line):
@@ -81,6 +83,7 @@ def option(argv, flag):
 def running_workers(rows, root, host):
     """Recognize active children, not launch windows waiting after a child exits."""
     paths = {
+        'lowstate': root / 'tools/g1_lowstate_view.py',
         'send': root / 'tools/G1_INPUT_RECEIVE_AUDIT.py',
         'omni': root / 'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py',
         'arm': root / 'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py',
@@ -101,11 +104,13 @@ def running_workers(rows, root, host):
             if normalize(path) not in [normalize(arg) for arg in argv[1:]]:
                 continue
             valid = {
+                'lowstate': option(argv, '--host') == host,
                 'send': 'send-live' in argv and option(argv, '--host') == host
                         and option(argv, '--send-hz') == str(observation.COMPUTE_HZ),
                 'omni': '--dry-run' in argv and option(argv, '--process-hz') == str(observation.COMPUTE_HZ),
                 'arm': option(argv, '--mode') == 'unity'
-                       and option(argv, '--compute-hz') == str(observation.COMPUTE_HZ),
+                       and option(argv, '--compute-hz') == str(observation.COMPUTE_HZ)
+                       and '--headless' in argv,
             }[worker]
             if not valid:
                 raise RuntimeError('An existing %s process has different options. '
@@ -162,7 +167,7 @@ def preflight(missing, env):
 
 
 def launch_plan(existing, has_camera, no_receiver=False):
-    return [worker for worker in observation.WORKERS if worker != 'receive' and worker not in existing] + ([] if has_camera else ['camera'])
+    return [worker for worker in INTEGRATED_WORKERS if worker != 'receive' and worker not in existing] + ([] if has_camera else ['camera'])
 
 
 def main(argv=None):
@@ -197,6 +202,8 @@ def main(argv=None):
     if args.check_only:
         print('PASS: launch plan checked; no workers, camera SDK initialization or SSH login. Auto mode probes TCP 22 only.')
         return 0
+    if 'lowstate' in plan:
+        ensure_login(args.host)
     if not args.show_consoles:
         from g1_quiet_observation import run_workers
         if 'camera' in plan:

@@ -41,14 +41,35 @@ def process_arguments():
              "[Console]::OutputEncoding=[Text.UTF8Encoding]::new(); "
              "@(Get-CimInstance Win32_Process | Where-Object { "
              "$_.Name -in @('python.exe','pythonw.exe','ssh.exe') } | "
-             "Select-Object -ExpandProperty CommandLine) | ConvertTo-Json -Compress")
+             "Select-Object ProcessId,ParentProcessId,ExecutablePath,CommandLine) | ConvertTo-Json -Compress")
     result = subprocess.run(['powershell.exe', '-NoProfile', '-Command', query],
                             capture_output=True, text=True, encoding='utf-8',
                             check=True, timeout=15, creationflags=subprocess.CREATE_NO_WINDOW)
     rows = json.loads(result.stdout or '[]') or []
-    if isinstance(rows, str):
+    if isinstance(rows, dict):
         rows = [rows]
-    return [windows_arguments(row) for row in rows if row]
+    return collapse_venv_redirectors(rows, ROOT)
+
+
+def collapse_venv_redirectors(rows, root):
+    """Count a Windows venv redirector + its identical child once, not unrelated copies."""
+    parsed = [(row, windows_arguments(row['CommandLine'])) for row in rows
+              if row.get('CommandLine')]
+    by_pid = {row['ProcessId']: (row, argv) for row, argv in parsed}
+    normalize = lambda value: str(value).replace('\\', '/').casefold()
+    redirector = normalize(root / '.venv-teleop/Scripts/python.exe')
+    suppressed = set()
+    for row, argv in parsed:
+        parent = by_pid.get(row.get('ParentProcessId'))
+        if parent is None:
+            continue
+        parent_row, parent_argv = parent
+        if (normalize(parent_row.get('ExecutablePath') or '') == redirector
+                and Path(row.get('ExecutablePath') or '').name.casefold() == 'python.exe'
+                and normalize(row.get('ExecutablePath') or '') != redirector
+                and argv[1:] == parent_argv[1:]):
+            suppressed.add(parent_row['ProcessId'])
+    return [argv for row, argv in parsed if row['ProcessId'] not in suppressed]
 
 
 def option(argv, flag):

@@ -1828,3 +1828,7 @@ START_G1_VR_TELEOP now hides newly started local send/Omni/arm consoles by defau
 
 ## 2026-09-21 Per-PC SSH enrollment
 Integrated START_G1_VR_TELEOP verifies dedicated per-user SSH key before spawning a new receiver. First-run OpenSSH password prompt registers only public key, then verifies BatchMode login; no password persistence. check-only skips enrollment. Details: docs/G1_SSH_AUTO_LOGIN.md. Offline: 36 tests + 41 subtests passed. Actual G1 enrollment not run. Laptop runtime patched with backups preserving unrelated changes.
+
+
+## 2026-09-21 Windows venv duplicate-worker false positive fixed
+Live inventory showed Omni venv redirector PID14424 parenting base Python PID11440 with identical arguments/CSV. Process inventory now retains PID/PPID/executable and collapses only the exact project .venv-teleop redirector and its identical base-Python child. Independent duplicate workers still fail closed. 20 tests / 17 subtests passed. Runtime launcher backed up and installed; read-only live recognition passed without starting/stopping workers. No robot commands.

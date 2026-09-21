@@ -83,6 +83,27 @@ class WorkerRecognitionTests(unittest.TestCase):
                          launcher.running_workers(parsed, root, HOST))
 
 
+class RedirectorTests(unittest.TestCase):
+    def test_only_identical_parent_child_pair_collapses(self):
+        root = Path('C:/project')
+        base = 'C:/Python311/python.exe'
+        venv = str(root / '.venv-teleop/Scripts/python.exe')
+        rows = [dict(ProcessId=1, ParentProcessId=0, ExecutablePath=venv, CommandLine='parent'),
+                dict(ProcessId=2, ParentProcessId=1, ExecutablePath=base, CommandLine='child')]
+        commands = {'parent':[venv,'gateway.py','--csv','one.csv'],
+                    'child':[base,'gateway.py','--csv','one.csv']}
+        with mock.patch.object(launcher, 'windows_arguments', side_effect=commands.__getitem__):
+            self.assertEqual([commands['child']], launcher.collapse_venv_redirectors(rows,root))
+            rows[1]['ParentProcessId']=99
+            self.assertEqual(2,len(launcher.collapse_venv_redirectors(rows,root)))
+            rows[1]['ParentProcessId']=1
+            commands['child'][-1]='different.csv'
+            self.assertEqual(2,len(launcher.collapse_venv_redirectors(rows,root)))
+            commands['child'][-1]='one.csv'
+            rows[0]['ExecutablePath']='C:/other/.venv-teleop/Scripts/python.exe'
+            self.assertEqual(2,len(launcher.collapse_venv_redirectors(rows,root)))
+
+
 @unittest.skipUnless(os.name == 'nt', 'Windows visible-console launcher')
 class OrchestrationTests(unittest.TestCase):
     def invoke(self, rows=(), camera=False, args=(), preflight_error=None):

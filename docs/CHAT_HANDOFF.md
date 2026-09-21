@@ -1,3 +1,24 @@
+## 2026-09-21 노트북 실행본 이식성 동기화 완료
+
+이 기록이 아래의 "dirty Desktop runtime에 미설치" 안내를 대체한다. 원격을 fetch하고
+`codex/g1-laptop-sync-20260917`의 `30dc8a546a1d32cff10a5c4e18e65b42c08ad4ff`와 canonical source가 일치함을 확인했다.
+노트북 `C:/Users/user/Desktop/G1_Teleop_Project`에 사용자 승인으로 실행/설치/카메라 관련 13개 파일과 .gitignore 로컬환경 제외 규칙을 반영했다.
+기존 파일 백업: `logs/backups/portable_runtime_20260921_170246/manifest.json`.
+13개 source 파일 SHA256 일치, 다른 Unity/IK/hardware 코드 181개 SHA256 보존 확인.
+Desktop Git branch/reset/clean/pull은 수행하지 않았다. 기존 dirty 수정은 유지한다.
+
+노트북 프로젝트에서 `py -3.11 -B tools/SETUP_G1_VR_TELEOP.py --pc-only` 실행으로
+`.venv-teleop` 신규 설치, pip check 및 전체 IK import/model construction 통과.
+`cmd.exe /d /c tools\SETUP_G1_VR_TELEOP.bat --check-only`도 통과: Windows 의존성과 WSL camera SDK import만 확인했다.
+기존 WSL 전용 camera 환경 재사용, running `wslinfo --networking-mode`=mirrored 확인; 설정/재시작 없음.
+오프라인 pytest: test_g1_portable_environment, test_g1_vr_teleop_launch, test_g1_ssh_login,
+test_g1_quiet_observation, test_g1_observation_tap 합계 49 passed / 41 subtests passed.
+
+이제 노트북에서도 옵션 없는 START_G1_VR_TELEOP는 유선주소 우선/폐쇄망 fallback이며,
+명시적 --host는 해당 주소를 사용한다. WSL 기본 배포판 또는 G1_WSL_DISTRO를 사용한다.
+G1 SSH/키등록, SDK/DDS 초기화, 카메라 영상, VR 실착, 모터 실행은 이번 검증에서 하지 않았다.
+새 PC도 최신 브랜치 checkout과 최초 setup/device 연결은 필요하다.
+
 ## 2026-09-21 Omni 몸 회전의 Unity 반영
 
 `docs/OMNI_UNITY_BODY_HEADING_20260921.md` 참고. Omni yaw를 loopback55072로 별도 전달한다.

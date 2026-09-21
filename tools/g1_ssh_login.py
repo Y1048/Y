@@ -52,3 +52,35 @@ def ensure_login(host):
     if not probe(host):
         raise RuntimeError('Public key registration finished but key login could not be verified')
     print('[SSH] This PC is enrolled. Future launches use key login.', flush=True)
+
+
+def remote_receiver_running(host, remote_dir):
+    """Reuse only the identified audit receiver; unknown UDP owners block launch."""
+    import json
+    code = r"""
+import subprocess, re, json, os
+rows=subprocess.check_output(['ss','-H','-lunp','sport = :55070']).decode()
+if not rows.strip():
+    print(json.dumps([]))
+else:
+    pids=set(re.findall(r'pid=(\d+)',rows))
+    if not pids: raise RuntimeError('UDP55070 owner is not inspectable')
+    result=[]
+    for pid in pids:
+        args=open('/proc/'+pid+'/cmdline','rb').read().decode().strip('\0').split('\0')
+        result.append({'args':args,'cwd':os.readlink('/proc/'+pid+'/cwd')})
+    print(json.dumps(result))
+"""
+    result = subprocess.run(['ssh.exe']+identity_options()+['-T','-o','BatchMode=yes',
+        '-o','ConnectTimeout=5','unitree@'+host,'python3 -'],
+        input=code, capture_output=True, text=True, check=True, timeout=15)
+    rows=json.loads(result.stdout)
+    if not rows:return False
+    if len(rows)!=1:raise RuntimeError('Multiple remote UDP55070 owners; preserved')
+    row=rows[0];args=row['args']
+    scripts=[i for i,arg in enumerate(args) if Path(arg).name=='G1_INPUT_RECEIVE_AUDIT.py']
+    if (row['cwd']!=remote_dir or len(scripts)!=1
+            or args[scripts[0]+1:]!=['receive','--print-hz','100']):
+        raise RuntimeError('UDP55070 belongs to another process/configuration; preserved')
+    print('[KEEP] Verified existing G1 observation receiver; no duplicate SSH receiver started.')
+    return True

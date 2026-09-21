@@ -11,8 +11,12 @@ def main():
     mode.add_argument('--check-only', action='store_true')
     mode.add_argument('--setup', action='store_true')
     parser.add_argument('--robot-host', default='auto')
+    parser.add_argument('--transport', choices=('ssh', 'wsl'), default='ssh')
     args = parser.parse_args()
     host = args.robot_host if args.setup or args.check_only else select_robot_host(args.robot_host)
+    if not args.setup and not args.check_only and args.transport == 'ssh':
+        from g1_camera_ssh import run
+        return run(host)
     camera_run('--setup' if args.setup else '--check-only' if args.check_only else '--run', host)
 
 

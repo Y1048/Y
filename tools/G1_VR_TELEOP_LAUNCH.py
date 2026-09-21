@@ -10,7 +10,7 @@ import shutil
 import socket
 import subprocess
 import sys
-from g1_ssh_login import ensure_login
+from g1_ssh_login import ensure_login, remote_receiver_running
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
 from g1_portable_environment import wsl_prefix, camera_run, select_robot_host
@@ -180,8 +180,15 @@ def main(argv=None):
     if os.name != 'nt':
         raise RuntimeError('Use this launcher on Windows')
     args.host = select_robot_host(args.host)
-    existing = running_workers(process_arguments(), ROOT, args.host)
-    has_camera = camera_running()
+    process_rows = process_arguments()
+    existing = running_workers(process_rows, ROOT, args.host)
+    camera_rows = [row for row in process_rows if any(
+        arg.replace('\\','/').endswith('tools/G1_CAMERA_LAUNCH.py') for arg in row)]
+    if len(camera_rows) > 1:
+        raise RuntimeError('Duplicate camera launchers; preserve existing sessions')
+    if camera_rows and option(camera_rows[0], '--robot-host') != args.host:
+        raise RuntimeError('Existing camera targets another host; preserved')
+    has_camera = bool(camera_rows) or camera_running()
     plan = launch_plan(existing, has_camera, args.no_receiver)
     env = observation.engine_environment()
     preflight(plan, env)
@@ -193,6 +200,8 @@ def main(argv=None):
         return 0
     if 'receive' in plan:
         ensure_login(args.host)
+        if remote_receiver_running(args.host, observation.REMOTE_DIR):
+            plan.remove('receive')
     if not args.show_consoles:
         from g1_quiet_observation import run_workers
         if 'camera' in plan:

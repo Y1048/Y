@@ -119,6 +119,7 @@ class OrchestrationTests(unittest.TestCase):
         stack.enter_context(mock.patch.object(launcher.observation, 'engine_environment', return_value=environment))
         check = stack.enter_context(mock.patch.object(launcher, 'preflight', side_effect=preflight_error))
         stack.enter_context(mock.patch.object(launcher, 'ensure_login'))
+        stack.enter_context(mock.patch.object(launcher, 'remote_receiver_running', return_value=False))
         spawn = stack.enter_context(mock.patch.object(launcher.subprocess, 'Popen'))
         run = stack.enter_context(mock.patch.object(launcher.subprocess, 'run',
                                                    side_effect=AssertionError('Unexpected subprocess execution')))

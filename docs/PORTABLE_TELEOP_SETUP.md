@@ -1,3 +1,5 @@
+> 2026-09-21 更新: Camera execution defaults to SSH JPEG transport using G1 system Python3 + existing unitree_sdk2py on eth0. The camera image crosses SSH; WSL DDS is no longer the default runtime transport. Setup/check-only WSL imports remain legacy dependency checks. --transport wsl is diagnostic only and currently aborts in its new local CycloneDDS build on this notebook. Actual SSH JPEG receipt verified; final Unity display awaits Play.
+
 # 다른 PC에서 입력·카메라 실행
 
 이 문서는 이전 인계의 **노트북 고정 카메라 경로/venv 안내를 대체**한다.

@@ -1,3 +1,11 @@
+## 2026-09-21 Camera SSH transport and remote receiver reuse
+
+Default camera runtime now reads VideoClient.GetImageSample on G1 eth0 via a temporary `python3 -u -` SSH stdin script and forwards unchanged G1CM framed JPEG to Windows Unity 127.0.0.1:5011. No remote files/packages are installed, no mode/motor command. The existing remote system SDK must be installed. SSH key login is verified. SDK stdout is redirected to stderr so binary frames stay intact. Logs: logs/test_results/camera_ssh. Optional --transport wsl is retained only for diagnosis; new local CycloneDDS 0.10.2 build aborted at Domain initialization with buffer overflow on this host. Older existing library avoided crash but closed-network VideoClient returned3102. The legacy WSL failure is not repaired; default runtime bypasses it. Setup/check-only still check existing WSL dependencies, not live DDS.
+
+Remote receiver failure was UDP55070 already owned by the existing audit receiver (PID12372 when inspected). Integrated launcher now verifies remote ss owner PID, /proc command and cwd after key login and reuses only the exact expected receiver; unknown owners are preserved and block launch. Subsequent live probe showed the old receiver had exited; no process was killed by this investigation.
+
+Actual verification: G1 camera returned code0/JPEG223618 and223877 bytes over its internal eth0; SSH binary path received 10 valid G1CM/JPEG packets, total2134925 JPEG bytes in1.984s including setup. Unity TCP5011 was no longer listening during final test, so screen appearance is NOT verified. Initial camera SDK crashed before opening a stream; the earlier Unity listener had been present. No motors or modes touched. Offline tests:30 passed,17 subtests (camera framing, receive identity validation, launcher, auth, quiet workers). Runtime files backed up under logs/backups/camera_ssh_* and installed.
+
 ## 2026-09-21 노트북 실행본 이식성 동기화 완료
 
 이 기록이 아래의 "dirty Desktop runtime에 미설치" 안내를 대체한다. 원격을 fetch하고

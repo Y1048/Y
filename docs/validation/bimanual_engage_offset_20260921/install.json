@@ -1,0 +1,18 @@
+{
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_engage_offset_20260921_095215",
+  "files": [
+    {
+      "file": "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+      "installed_sha256": "2bc59b84083fb3bf010b19937fdc2f8e909b15bf6fc9a81b0ed882bd91ed9a4e"
+    },
+    {
+      "file": "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs",
+      "installed_sha256": "e289ab1811ceebbad233bf2503d8815680cb6b5f9b5c488052f04d7b085a6f40"
+    },
+    {
+      "file": "backend/tests/test_bimanual_marker_feedback.py",
+      "installed_sha256": "859850dece23d59ac15ccc0babacf64bb46cfb06c34e0ec74c27c5e2a2422322"
+    }
+  ],
+  "quest_visual_check": false
+}

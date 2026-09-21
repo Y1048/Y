@@ -88,6 +88,12 @@ def decode(raw):
             raise ValueError('quaternion')
         if np.max(np.abs(hand['position_m'])) > 10:
             raise ValueError('position')
+        if 'engage_offset_m' in hand:
+            offset = hand['engage_offset_m']
+            if (not isinstance(offset, list) or len(offset) != 3 or any(
+                    type(v) not in (int, float) or not math.isfinite(v) for v in offset)
+                    or np.linalg.norm(offset) > .15):
+                raise ValueError('engage_offset')
     return x
 
 
@@ -154,6 +160,7 @@ class UnityCycle:
         self.packet = None
         self.armed = False
         self.origins = None
+        self.engage_offsets = {s: np.zeros(3) for s in ('left', 'right')}
         self.loss_since = None
         self.reason = ''
         self.pose_filter = PairedHandFilter()
@@ -184,6 +191,10 @@ class UnityCycle:
                 self.origins = {s: (hand['position_m'].copy(),
                     mink.SO3(hand['quaternion_wxyz']).as_matrix())
                     for s, hand in self.pose_filter.hands.items()}
+                # Capture once per engage; later packets cannot move this origin.
+                # Missing offsets retain the historical relative mapping for replay.
+                self.engage_offsets = {s: np.array(packet[s].get('engage_offset_m', [0., 0., 0.]), dtype=float)
+                                       for s in ('left', 'right')}
                 self.armed = False
                 self.state = 'tracking'
                 self.reason = ''
@@ -223,7 +234,8 @@ class UnityCycle:
                     home = self.sim.home_targets[side]
                     delta_r = mink.SO3(np.array(hand['quaternion_wxyz'])).as_matrix() @ origin_r.T
                     robot_r = BASIS @ delta_r @ BASIS.T @ home.rotation().as_matrix()
-                    position = home.translation() + BASIS @ (np.array(hand['position_m']) - origin_p)
+                    position = home.translation() + BASIS @ (
+                        np.array(hand['position_m']) - origin_p + self.engage_offsets[side])
                     goals[side] = mink.SE3.from_rotation_and_translation(mink.SO3.from_matrix(robot_r), position)
                 self.last_tick_action = 'tracking'
                 self.sim.step(goals)
@@ -262,6 +274,18 @@ class UnityCycle:
         if isinstance(self.sim, BimanualSimulation):
             result.update(joint_names=self.sim.names,
                           q_rad=self.sim.config.q[self.sim.qids].tolist())
+            # Display the goal actually supplied to IK (filtered/projected),
+            # not FK of the current command. This is not a reachability claim.
+            valid = (self.state == 'tracking' and self.last_tick_action == 'tracking'
+                     and self.sim.state == 'tracking'
+                     and all(p.approach_rate_s > 0 and
+                             np.isfinite(p.effective_target_position).all()
+                             for p in self.sim.motion.values()))
+            result['ik_target_valid'] = valid
+            for side in ('left', 'right'):
+                position = self.sim.motion[side].effective_target_position
+                delta = BASIS.T @ (position-self.sim.home_targets[side].translation())
+                result[side+'_ik_target_operator_delta'] = delta.tolist() if valid else None
         return result
 
 

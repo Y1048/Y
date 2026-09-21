@@ -1,0 +1,422 @@
+{
+  "schema": "g1.bimanual.single_arm.comparison.v1",
+  "data_kind": "synthetic_fixed_targets",
+  "hardware_validated": false,
+  "ticks": 360,
+  "cases": [
+    {
+      "name": "rotation_x_-1",
+      "single": {
+        "minimum_clearance_mm": 40.40621600868772,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 34.0,
+        "acceleration_peak_deg_s2": 60.00000000000065,
+        "final_position_error_mm": 0.20157909326558224,
+        "mean_position_error_mm": 1.2255181014251841,
+        "peak_position_error_mm": 2.3110719101719517,
+        "final_rotation_error_deg": 0.188065015876567,
+        "mean_rotation_error_deg": 9.312035226525401,
+        "peak_rotation_error_deg": 44.959451728165725
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 40.37250302300654,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 33.999999999999986,
+        "acceleration_peak_deg_s2": 60.00000000000054,
+        "final_position_error_mm": 0.20157909326564397,
+        "mean_position_error_mm": 1.2255181014252008,
+        "peak_position_error_mm": 2.3110719101719517,
+        "final_rotation_error_deg": 0.18806501587655,
+        "mean_rotation_error_deg": 9.312035226525401,
+        "peak_rotation_error_deg": 44.959451728165725
+      },
+      "peak_joint_difference_deg": 1.0623052636088146e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "rotation_x_+1",
+      "single": {
+        "minimum_clearance_mm": 39.2567758115172,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 33.99999999999994,
+        "acceleration_peak_deg_s2": 60.00000000000047,
+        "final_position_error_mm": 0.24047157709277012,
+        "mean_position_error_mm": 1.2038770615649352,
+        "peak_position_error_mm": 2.3037160934465097,
+        "final_rotation_error_deg": 0.1880275397353498,
+        "mean_rotation_error_deg": 9.311957473306697,
+        "peak_rotation_error_deg": 44.95945297068189
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 39.2567758115172,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 33.99999999999994,
+        "acceleration_peak_deg_s2": 60.00000000000047,
+        "final_position_error_mm": 0.24047157709244804,
+        "mean_position_error_mm": 1.2038770615649381,
+        "peak_position_error_mm": 2.3037160934465097,
+        "final_rotation_error_deg": 0.18802753973536906,
+        "mean_rotation_error_deg": 9.3119574733067,
+        "peak_rotation_error_deg": 44.95945297068189
+      },
+      "peak_joint_difference_deg": 3.1976501628763832e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "rotation_y_-1",
+      "single": {
+        "minimum_clearance_mm": 39.87283574583401,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 33.11973448041737,
+        "acceleration_peak_deg_s2": 60.000000000000654,
+        "final_position_error_mm": 14.898460108233278,
+        "mean_position_error_mm": 11.76763665742288,
+        "peak_position_error_mm": 14.898460108233278,
+        "final_rotation_error_deg": 1.8107270792516463,
+        "mean_rotation_error_deg": 11.566731635581087,
+        "peak_rotation_error_deg": 44.95009131385976
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 39.87283574583398,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 33.11973448041739,
+        "acceleration_peak_deg_s2": 60.000000000000774,
+        "final_position_error_mm": 14.898460108233381,
+        "mean_position_error_mm": 11.767636657422877,
+        "peak_position_error_mm": 14.898460108233381,
+        "final_rotation_error_deg": 1.8107270792516137,
+        "mean_rotation_error_deg": 11.566731635581082,
+        "peak_rotation_error_deg": 44.95009131385976
+      },
+      "peak_joint_difference_deg": 5.088887490341627e-14,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "rotation_y_+1",
+      "single": {
+        "minimum_clearance_mm": 40.37579931179417,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 33.059157840793034,
+        "acceleration_peak_deg_s2": 60.00000000000047,
+        "final_position_error_mm": 2.4261327794786784,
+        "mean_position_error_mm": 4.614405843011741,
+        "peak_position_error_mm": 8.255160895046266,
+        "final_rotation_error_deg": 0.27982409622114957,
+        "mean_rotation_error_deg": 9.744497724951156,
+        "peak_rotation_error_deg": 44.95009129718333
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 40.37250302300654,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 33.059157840792956,
+        "acceleration_peak_deg_s2": 60.00000000000047,
+        "final_position_error_mm": 2.426132779478114,
+        "mean_position_error_mm": 4.614405843011794,
+        "peak_position_error_mm": 8.255160895046304,
+        "final_rotation_error_deg": 0.27982409622113685,
+        "mean_rotation_error_deg": 9.744497724951167,
+        "peak_rotation_error_deg": 44.95009129718333
+      },
+      "peak_joint_difference_deg": 1.7811106216195693e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "rotation_z_-1",
+      "single": {
+        "minimum_clearance_mm": 38.95841060171258,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 31.13169068092403,
+        "acceleration_peak_deg_s2": 60.00000000000123,
+        "final_position_error_mm": 0.38101136732851415,
+        "mean_position_error_mm": 2.7045995330116566,
+        "peak_position_error_mm": 7.7421429720437756,
+        "final_rotation_error_deg": 0.18859815178218317,
+        "mean_rotation_error_deg": 9.297444945272089,
+        "peak_rotation_error_deg": 44.95986504524706
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 38.958410601712636,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 31.131690680923935,
+        "acceleration_peak_deg_s2": 60.000000000000846,
+        "final_position_error_mm": 0.3810113673285102,
+        "mean_position_error_mm": 2.704599533011633,
+        "peak_position_error_mm": 7.7421429720437756,
+        "final_rotation_error_deg": 0.18859815178221534,
+        "mean_rotation_error_deg": 9.297444945272094,
+        "peak_rotation_error_deg": 44.95986504524706
+      },
+      "peak_joint_difference_deg": 2.56432221192996e-13,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "rotation_z_+1",
+      "single": {
+        "minimum_clearance_mm": 12.346496360171596,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 31.061039776101982,
+        "acceleration_peak_deg_s2": 60.000000000000846,
+        "final_position_error_mm": 0.33828173421089147,
+        "mean_position_error_mm": 2.5677328611522485,
+        "peak_position_error_mm": 7.761326924773851,
+        "final_rotation_error_deg": 0.18846980532706545,
+        "mean_rotation_error_deg": 9.294471841856055,
+        "peak_rotation_error_deg": 44.959865001658976
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 12.346496360171702,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 31.061039776101996,
+        "acceleration_peak_deg_s2": 60.000000000000846,
+        "final_position_error_mm": 0.33828173421082786,
+        "mean_position_error_mm": 2.567732861152258,
+        "peak_position_error_mm": 7.761326924773851,
+        "final_rotation_error_deg": 0.18846980532707808,
+        "mean_rotation_error_deg": 9.294471841856053,
+        "peak_rotation_error_deg": 44.959865001658976
+      },
+      "peak_joint_difference_deg": 2.7074471725958186e-13,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "translation_x_-1",
+      "single": {
+        "minimum_clearance_mm": 40.265450313066246,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 8.817776852954575,
+        "acceleration_peak_deg_s2": 60.00000000000031,
+        "final_position_error_mm": 0.20919268360046256,
+        "mean_position_error_mm": 8.745960660468315,
+        "peak_position_error_mm": 49.848609387430336,
+        "final_rotation_error_deg": 0.011216140528862228,
+        "mean_rotation_error_deg": 0.051482010382333715,
+        "peak_rotation_error_deg": 0.23827513209703652
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 40.26545031306618,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 8.817776852954548,
+        "acceleration_peak_deg_s2": 60.00000000000025,
+        "final_position_error_mm": 0.20919268360101578,
+        "mean_position_error_mm": 8.745960660471388,
+        "peak_position_error_mm": 49.848609387430336,
+        "final_rotation_error_deg": 0.011216140528875219,
+        "mean_rotation_error_deg": 0.05148201038233897,
+        "peak_rotation_error_deg": 0.2382751320970377
+      },
+      "peak_joint_difference_deg": 3.368207407669864e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "translation_x_+1",
+      "single": {
+        "minimum_clearance_mm": 40.3543687500857,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 9.093826300510015,
+        "acceleration_peak_deg_s2": 60.00000000000096,
+        "final_position_error_mm": 2.0881604838982715,
+        "mean_position_error_mm": 10.051873216249705,
+        "peak_position_error_mm": 49.84864024372968,
+        "final_rotation_error_deg": 0.012624684602574323,
+        "mean_rotation_error_deg": 0.03211848830796984,
+        "peak_rotation_error_deg": 0.22046933671014654
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 40.35436875008606,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 9.093826300510015,
+        "acceleration_peak_deg_s2": 60.000000000000696,
+        "final_position_error_mm": 2.0881604838665924,
+        "mean_position_error_mm": 10.051873216314746,
+        "peak_position_error_mm": 49.84864024372968,
+        "final_rotation_error_deg": 0.012624684603169936,
+        "mean_rotation_error_deg": 0.03211848830822779,
+        "peak_rotation_error_deg": 0.22046933671014654
+      },
+      "peak_joint_difference_deg": 1.4874341051066356e-10,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "translation_y_-1",
+      "single": {
+        "minimum_clearance_mm": 40.40734356298621,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 15.378200256375226,
+        "acceleration_peak_deg_s2": 60.000000000001016,
+        "final_position_error_mm": 13.82223008707733,
+        "mean_position_error_mm": 18.755983849411386,
+        "peak_position_error_mm": 49.87229732197211,
+        "final_rotation_error_deg": 0.19984357230074268,
+        "mean_rotation_error_deg": 0.1566695257203942,
+        "peak_rotation_error_deg": 0.19984357230074268
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 40.37250302300654,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 15.378200256374772,
+        "acceleration_peak_deg_s2": 60.00000000000099,
+        "final_position_error_mm": 13.822230087076948,
+        "mean_position_error_mm": 18.755983849410136,
+        "peak_position_error_mm": 49.87229732197211,
+        "final_rotation_error_deg": 0.19984357230087485,
+        "mean_rotation_error_deg": 0.15666952572049195,
+        "peak_rotation_error_deg": 0.19984357230087485
+      },
+      "peak_joint_difference_deg": 7.124442486478277e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "translation_y_+1",
+      "single": {
+        "minimum_clearance_mm": 31.314621567939064,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 14.302473470420484,
+        "acceleration_peak_deg_s2": 60.00000000000166,
+        "final_position_error_mm": 0.7635486612291003,
+        "mean_position_error_mm": 9.534850568964735,
+        "peak_position_error_mm": 49.87226562875431,
+        "final_rotation_error_deg": 0.025082065896112716,
+        "mean_rotation_error_deg": 0.056410200066721664,
+        "peak_rotation_error_deg": 0.128159360018511
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 31.314621567937746,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 14.302473470421095,
+        "acceleration_peak_deg_s2": 60.00000000000166,
+        "final_position_error_mm": 0.7635486612285723,
+        "mean_position_error_mm": 9.534850568965194,
+        "peak_position_error_mm": 49.87226562875431,
+        "final_rotation_error_deg": 0.02508206589610537,
+        "mean_rotation_error_deg": 0.05641020006670506,
+        "peak_rotation_error_deg": 0.12815936001849382
+      },
+      "peak_joint_difference_deg": 3.9311655862889066e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "translation_z_-1",
+      "single": {
+        "minimum_clearance_mm": 37.06472390558455,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 22.000000000000007,
+        "acceleration_peak_deg_s2": 60.00000000000028,
+        "final_position_error_mm": 37.71551111459285,
+        "mean_position_error_mm": 39.29494060590502,
+        "peak_position_error_mm": 49.93343665269071,
+        "final_rotation_error_deg": 0.42611438032844307,
+        "mean_rotation_error_deg": 0.30297401806113533,
+        "peak_rotation_error_deg": 0.42611438032844307
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 37.06472390558456,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 21.999999999999982,
+        "acceleration_peak_deg_s2": 60.000000000000185,
+        "final_position_error_mm": 37.71551111459276,
+        "mean_position_error_mm": 39.294940605905005,
+        "peak_position_error_mm": 49.93343665269071,
+        "final_rotation_error_deg": 0.4261143803284489,
+        "mean_rotation_error_deg": 0.3029740180611325,
+        "peak_rotation_error_deg": 0.4261143803284489
+      },
+      "peak_joint_difference_deg": 3.1296658065601004e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    },
+    {
+      "name": "translation_z_+1",
+      "single": {
+        "minimum_clearance_mm": 40.40717677204499,
+        "statuses": {
+          "trajectory_following": 360
+        },
+        "speed_peak_deg_s": 24.999999999999986,
+        "acceleration_peak_deg_s2": 60.00000000000028,
+        "final_position_error_mm": 1.2445947822544374,
+        "mean_position_error_mm": 13.263956561486005,
+        "peak_position_error_mm": 49.93337687670664,
+        "final_rotation_error_deg": 0.044133353543123276,
+        "mean_rotation_error_deg": 0.07926874653396002,
+        "peak_rotation_error_deg": 0.14721909846482492
+      },
+      "bimanual": {
+        "minimum_clearance_mm": 40.37250302300654,
+        "statuses": {
+          "tracking": 360
+        },
+        "speed_peak_deg_s": 24.999999999999993,
+        "acceleration_peak_deg_s2": 60.00000000000028,
+        "final_position_error_mm": 1.2445947822551373,
+        "mean_position_error_mm": 13.263956561487678,
+        "peak_position_error_mm": 49.93337687670664,
+        "final_rotation_error_deg": 0.04413335354312838,
+        "mean_rotation_error_deg": 0.079268746533943,
+        "peak_rotation_error_deg": 0.14721909846482348
+      },
+      "peak_joint_difference_deg": 8.730622600617354e-12,
+      "idle_left_peak_excursion_deg": 0.0,
+      "final_state": "tracking"
+    }
+  ],
+  "source_sha256": {
+    "g1_bimanual_sim.py": "e511ac7f95b1df7913ba1b523ee6b9ff318b8823f14df52162aa69b5d8b44c02",
+    "g1_bimanual_motion_policy.py": "8e0f6870c48a9e5b0ccc2f2a163fdee99777bb8620c3a92e10f780cf86181bfe",
+    "g1_upstream_mink_tracking.py": "fe0ab3273bb6a470fe5d982aa9d00faa7b106e25358ff5d610b7f806444b5ba3",
+    "g1_standard_mink_planner.py": "7d6cb78dbfb2ef488897961c4c2e4fff68cd64add7c5bce02b3c9e675210f784"
+  }
+}

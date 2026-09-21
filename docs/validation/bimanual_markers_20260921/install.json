@@ -1,0 +1,27 @@
+{
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_markers_20260921_093535",
+  "files": [
+    {
+      "file": "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+      "previous_sha256": "004469ccfd5c3af65aed4bcd4c7322ea7d728de04c87e5af7a8c17f4324690d8",
+      "installed_sha256": "f9e15550ff133bcf00f9aec225433dce4949ef03f73f105cd270dc9039f3207d"
+    },
+    {
+      "file": "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs",
+      "previous_sha256": "d92d7d6177da17e1cab50efb7aead3e8c9bff9701be1fced3e1c367f8cbd6a3e",
+      "installed_sha256": "b37a22b6848cef7720fe9230dc28c0b0bdfc15bd8af891626d3504337231bf00"
+    },
+    {
+      "file": "Unity_G1_VR/Assets/G1Teleop/G1UnityRightArmPreview.cs",
+      "previous_sha256": "90f0c92a8b9e1efd324b987aa627cebce61f1d82a70b8cf65b1edeb01ef14ce0",
+      "installed_sha256": "ee5b99ca5d0e5f0ddadcd221c9d9f36a5555f199d62ba7b38a9be8dc5ef9b95f"
+    },
+    {
+      "file": "backend/tests/test_bimanual_marker_feedback.py",
+      "previous_sha256": null,
+      "installed_sha256": "725740abc9a42b62c4d409dbe47b3826cffe2b115b6e61daa9d901ef7ad840b2"
+    }
+  ],
+  "unity_play_stopped_by_user": true,
+  "quest_visual_check": false
+}

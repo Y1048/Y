@@ -1,0 +1,310 @@
+{
+  "source": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\Unity_G1_VR\\Logs\\Editor.log",
+  "data_kind": "measured_Unity_diagnostics",
+  "rows": [
+    {
+      "side": "L",
+      "gap_cm": 6.07,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.08,
+        -0.28,
+        0.11
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.41,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 4.12,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.25,
+        -1.56,
+        -2.08
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 4.8,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.47,
+        -1.73,
+        -1.11
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 6.21,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.52,
+        -0.11,
+        -0.16
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.43,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        -0.39,
+        -0.14,
+        -0.08
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 6.02,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        -0.1,
+        -0.17,
+        0.02
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.38,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.0,
+        0.0,
+        0.03
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 6.0,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        -0.11,
+        -0.13,
+        -0.05
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.38,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.0,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 5.87,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        -0.41,
+        -0.09,
+        -0.14
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.4,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        -0.41,
+        -0.11,
+        0.02
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 6.04,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        -0.09,
+        0.27,
+        -0.49
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.38,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.07,
+        -0.02,
+        -0.03
+      ]
+    },
+    {
+      "side": "L",
+      "gap_cm": 6.12,
+      "calibration_cm": [
+        2.34,
+        4.26,
+        3.79
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.12,
+        -0.12,
+        0.0
+      ]
+    },
+    {
+      "side": "R",
+      "gap_cm": 5.3,
+      "calibration_cm": [
+        -1.17,
+        4.49,
+        -2.76
+      ],
+      "input_processing_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "backend_processing_cm": [
+        0.06,
+        -0.12,
+        -0.03
+      ]
+    }
+  ]
+}

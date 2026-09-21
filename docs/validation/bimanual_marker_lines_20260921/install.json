@@ -1,0 +1,14 @@
+{
+  "backup": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\backups\\bimanual_marker_lines_20260921_094602",
+  "files": [
+    {
+      "file": "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs",
+      "installed_sha256": "f2bf875ec7b30980088b8ce10f48aaa1bbf4ab86f7edc87a329ff0cdeb19b8d9"
+    },
+    {
+      "file": "Unity_G1_VR/Assets/G1Teleop/G1UnityRightArmPreview.cs",
+      "installed_sha256": "6281d90fe83a563aada92602b386755f4703e85e640626ada8e8199ec5e4876c"
+    }
+  ],
+  "quest_visual_check": false
+}

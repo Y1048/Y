@@ -1,0 +1,53 @@
+{
+  "session": "C:\\Users\\user\\Desktop\\G1_Teleop_Project\\logs\\test_results\\bimanual\\unity_20260921_095254_4149346.jsonl",
+  "data_kind": "Quest operator input with simulated bimanual robot; not measured G1",
+  "state_counts": {
+    "ready": 1950,
+    "tracking": 908,
+    "returning": 275
+  },
+  "transitions": [
+    {
+      "state": "ready",
+      "reason": "",
+      "monotonic_s": 3169.437
+    },
+    {
+      "state": "tracking",
+      "reason": "",
+      "monotonic_s": 3191.593
+    },
+    {
+      "state": "returning",
+      "reason": "pinch",
+      "monotonic_s": 3208.109
+    },
+    {
+      "state": "ready",
+      "reason": "pinch",
+      "monotonic_s": 3213.0
+    }
+  ],
+  "marker_gap_cm_last_7_pairs": {
+    "left": [
+      0.25,
+      0.07,
+      0.06,
+      0.06,
+      5.9,
+      0.07,
+      0.21
+    ],
+    "right": [
+      0.11,
+      0.1,
+      0.09,
+      0.12,
+      5.96,
+      0.3,
+      0.06
+    ]
+  },
+  "transient_gap_cause": "not established",
+  "hardware_validation": false
+}

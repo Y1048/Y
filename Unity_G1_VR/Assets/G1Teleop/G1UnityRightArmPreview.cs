@@ -90,6 +90,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private Material axis_z_material;
     private Material mapping_line_material;
     private LineRenderer mapping_line;
+    private LineRenderer left_mapping_line;
     private Renderer target_hand_renderer;
     private Transform inspection_panel;
     private Transform inspection_target_marker;
@@ -233,6 +234,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
         mapped_hand_axes = CreateOrientationAxes("mapped_quest_command_axes");
         target_hand_axes = CreateOrientationAxes("g1_feasible_motion_target_axes");
         mapping_line = CreateMappingLine();
+        left_mapping_line = CreateMappingLine();
+        left_mapping_line.name = "left_g1_wrist_to_ik_goal";
+        left_mapping_line.gameObject.SetActive(false);
         CreateInspectionDemoVisuals();
     }
 
@@ -649,6 +653,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateTrackingMarkers()
     {
+        if (left_mapping_line != null) left_mapping_line.gameObject.SetActive(false);
         if (UsesBimanualSimulation)
         {
             UpdateBimanualTrackingMarkers();
@@ -799,13 +804,34 @@ public class G1UnityRightArmPreview : MonoBehaviour
         tracked_hand_marker.position = hand_binder.TrackedWristPosition;
         tracked_hand_marker.rotation = hand_binder.TrackedWristRotation;
         bool active = bimanual_simulation.IsTracking;
-        target_hand_marker.position = active ? hand_binder.target_transform.position : hand_binder.EngagementTargetPosition;
+        Vector3 ikPosition;
+        bool ikAvailable = bimanual_simulation.TryGetIkTarget(false, out ikPosition);
+        target_hand_marker.gameObject.SetActive(!active || ikAvailable);
+        target_hand_axes.gameObject.SetActive(show_orientation_axes && (!active || ikAvailable));
+        target_hand_marker.position = active && ikAvailable ? ikPosition : hand_binder.EngagementTargetPosition;
         target_hand_marker.rotation = active ? hand_binder.MappedHandRotation : hand_binder.EngagementTargetRotation;
+        target_hand_axes.SetPositionAndRotation(target_hand_marker.position, target_hand_marker.rotation);
         tracked_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TrackedMarkerDiameter;
         target_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TargetMarkerDiameter;
         target_hand_renderer.material.color = G1BimanualSimulationSender.AlignmentColor(active, hand_binder.IsAlignmentReady);
         var wrist = GetRobotPositionReference();
         if (wrist != null) robot_wrist_marker.SetPositionAndRotation(wrist.position, wrist.rotation);
+        bool rightLineVisible = active && ikAvailable && wrist != null;
+        mapping_line.gameObject.SetActive(rightLineVisible);
+        if (rightLineVisible)
+        {
+            mapping_line.SetPosition(0, wrist.position);
+            mapping_line.SetPosition(1, ikPosition);
+        }
+        Vector3 leftGoal;
+        bool leftGoalAvailable = bimanual_simulation.TryGetIkTarget(true, out leftGoal);
+        bool leftLineVisible = active && left_wrist_reference != null && leftGoalAvailable;
+        left_mapping_line.gameObject.SetActive(leftLineVisible);
+        if (leftLineVisible)
+        {
+            left_mapping_line.SetPosition(0, left_wrist_reference.position);
+            left_mapping_line.SetPosition(1, leftGoal);
+        }
     }
 
     private Transform GetRobotPositionReference()

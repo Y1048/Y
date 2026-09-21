@@ -1220,3 +1220,115 @@ report의 acceleration comparison만 기존 controller regression과 같은 `+1e
 
 near-hands recovery는 이번 실착 세션에서 발동하지 않았으며 기존 offline/replay 검증으로 남는다.
 fixed-base Quest→Unity→MuJoCo normal operator flow는 이 checkpoint에서 완료로 본다.
+
+## 2026-09-21 오른팔 단독/양팔 IK 비교 확장
+
+`docs/BIMANUAL_SINGLE_ARM_COMPARISON_20260921.md`와 재현 도구
+`backend/tools/compare_bimanual_single_arm.py`를 추가했다.
+왼팔 home 유지, 오른팔 3축 ±45도 회전 및 3축 ±50mm 이동을 각 360틱 실행했다.
+12개 모두 단독/양팔 관절 궤적 최대 차이 1.48744e-10도, 왼팔 변화 0도,
+BLOCKED 0, 전체 최소 sampled clearance 12.3465mm였다.
+다만 Y -45도 회전(14.898mm), Y -50mm 이동(13.822mm), Z -50mm 이동(37.716mm)은
+두 방식 모두 6초 후 위치 오차가 남았다. 동등성은 확인했지만 추종 정확도 합격을
+주장하지 않는다. 다음은 이 세 목표의 활성 제약/정착/도달 가능성 분석이다.
+synthetic offline 데이터이며 새 Quest 또는 G1 검증이 아니다.
+제어기/runtime/gain 변경 없음. 12사례 비교 및 결과 검사를 실행했고,
+기존 전체 96개 회귀는 이번 작업에서 다시 실행하지 않았다.
+
+## 2026-09-21 양팔 초록 목표 표시 수정
+
+**이 최초 수정은 아래의 IK 입력 목표 표시 수정으로 대체됐다. 사용자가 초록원이
+손목에 붙어 목표로 보이지 않는다고 지적했으며, FK 표시를 요구 충족으로 취급하지 않는다.**
+
+사용자가 초록원/파란원이 함께 움직인다고 보고했다. 양팔 Unity 표시가 raw binder
+target을 초록원에 사용하고 있었고, 기존 upstream 오른팔 경로는 수락된 IK 관절
+자세의 FK 손목 위치를 사용했다. 이번에는 양팔 feedback에
+`accepted_target_valid`, `left_accepted_target_operator_delta`,
+`right_accepted_target_operator_delta`를 추가하고 양팔 초록 표시에 연결했다.
+delta는 `BASIS.T @ (accepted_wrist_position - home_wrist_position)`이며 단위는 m이다.
+Unity는 engage 기준 위치와 OperatorHeading으로 world 위치를 복원한다.
+파란색/하늘색은 실제 추적 손목, 초록색은 수락된 IK 위치다. 이 위치를 최종 목표에
+대한 도달 가능성 예측 또는 실제 G1 측정 위치로 해석하면 안 된다.
+inactive/returning/blocked/braking, 오래된 feedback 또는 필드 누락 시 추종 초록원을
+숨기며 raw 목표로 대체하지 않는다. engage 전 안내 표시는 유지한다.
+
+source marker tests 2/2, protocol/loopback tests 8/8, Unity 참조 Roslyn 컴파일
+exit 0/error 0, runtime marker tests 2/2를 실제 실행했다. 전체 96개 회귀는 미실행.
+제어 solver/gain/trajectory는 변경하지 않았고 feedback의 q/velocity/tail 불변을 검사했다.
+Play 정지 사용자 확인 후 runtime 4파일을 백업/설치하고 SHA-256 일치를 확인했다.
+백업: `logs/backups/bimanual_markers_20260921_093535/`.
+설치 및 컴파일 증거: `docs/validation/bimanual_markers_20260921/`.
+새 Python Input 재시작 및 Unity 재컴파일 후 Quest 화면 확인은 남아 있다.
+앞선 단독/양팔 비교에서 공통 오차가 컸던 3방향의 원인 분석도 다음 항목으로 유지한다.
+
+## 2026-09-21 초록원을 IK 입력 목표로 정정
+
+FK 기반 첫 수정은 사용자가 요구한 목표 표시가 아니었다. 현재 소스는
+`ArmMotionPolicy.effective_target_position`을 사용한다. 이는 PairedHandFilter와
+몸통 내부 목표 투영을 거쳐 실제 wrist task에 설정한 위치다. 현재 손목 위치나
+checked look-ahead의 FK가 아니며, 최종 도달 가능성을 보장하지 않는다.
+파란원은 측정 손목, 초록원은 처리된 IK 요청 목표다. 자유 공간에서 느리게 움직이면
+둘이 겹치는 것이 정상이며, 지연 중에는 로봇 손목과 목표가 분리된다.
+목표는 몸통 투영 때 raw 손 위치와 달라질 수 있지만 팔 간 충돌/관절 제한 때문에
+실제로 도달하지 못할 수도 있다. 이 한계를 사용자에게 명시했다.
+
+feedback 필드는 `ik_target_valid`, `left_ik_target_operator_delta`,
+`right_ik_target_operator_delta`로 변경했다. 정상 입력으로 목표를 갱신했지만 QP가
+감속 중인 경우에도 목표 표시를 유지한다. 입력 소실 감속, 복귀/blocked/ready에서는
+추종 목표를 제공하지 않는다. 오래된 FK 버전 feedback을 새 표시로 해석하지 않는다.
+source 테스트 3개 PASS: 5cm 요청 목표와 1틱 후 손목 분리, torso 투영,
+상태별 무효 처리, feedback 생성의 제어상태 불변. 실제 Unity 참조 C# 컴파일 exit 0.
+실행 프로젝트 반영 및 사용자 화면 확인 상태는 후속 기록 참조.
+
+Play 정지 확인 후 이전 설치 hash와 runtime 4파일이 일치하는 것을 검사하고 설치했다.
+백업 `logs/backups/bimanual_ik_goal_20260921_094014/`, 설치/컴파일 증거
+`docs/validation/bimanual_ik_goal_20260921/`. runtime marker 3/3 및 source protocol
+8/8 PASS. 새 Python 프로세스와 Unity 재컴파일 이후 Quest 시각 확인은 아직 남아 있다.
+
+## 2026-09-21 양팔 손목-목표 연결선과 좌표 오차 진단
+
+사용자가 도달 가능한 곳에서도 raw 파란 손목과 초록 IK 목표 사이에 오차가 있고
+손목-목표 선이 사라졌다고 보고했다. 양팔 경로의
+`SetActualTrackingObjectsActive(visible, false)`가 연결선을 끄는 것을 확인했다.
+현재 소스는 양팔 각각 실제 표시 robot wrist → backend IK goal 연결선을 표시한다.
+target 누락/stale/비tracking 때 숨기며 단독 표시 경로는 유지한다.
+
+좌표 오차의 구조적 원인은 raw wrist와 engage 상대 목표의 기준점 차이가 가능하다는 점이다.
+`CalibratedWristPosition`과 `EngagementTargetPosition`은 같은 위치로 강제되지 않는다.
+따라서 도달 가능한 목표라도 raw 실제 손과 green target의 일치를 보장하지 않는다.
+sender에는 movement scale/몸 이동 보정이 있고 backend에는 60ms 위치 필터와 몸통
+투영이 있다. 사용자의 이번 오차에 각 요인이 얼마나 기여했는지는 아직 실측 미확정.
+좌표를 임의로 바꿔 오차를 숨기지 않고 `[BIMANUAL TARGET]`에 calibration,
+input_processing, backend_processing 3D 벡터(cm)와 전체 gap 크기를 기록하도록 추가했다.
+세 벡터의 합은 green minus raw이며 벡터 크기끼리의 합으로 해석하지 않는다.
+
+Unity 실제 참조 Roslyn 컴파일 exit 0/error 0. 제어/IK/필터 값 변경 없음.
+runtime 반영과 정지 상태 사용자 확인은 후속 기록을 따른다.
+
+사용자는 손을 멈추고 기다려도 오차가 남는다고 확인했다. 필터 지연만으로는 설명되지
+않으며 기준점/몸 이동 보정/목표 투영의 실제 기여를 다음 로그로 구분해야 한다.
+Play 정지 확인 후 이전 설치 hash 보존을 확인하고 C# 2파일을 runtime에 설치했다.
+`docs/validation/bimanual_marker_lines_20260921/install.json`에 백업/설치 hash 기록.
+화면 확인 및 새 `[BIMANUAL TARGET]` 로그 계측은 남아 있고 오차 해결 완료를 주장하지 않는다.
+
+## 2026-09-21 실제 진단 후 engage 위치 잔여 보정
+
+사용자 재시험 Editor 로그에서 고정 engage 차이를 계측했다: L 6.1634cm / R 5.3988cm.
+마지막 실제 green/raw 간격은 L 6.12cm / R 5.30cm였으며 input_processing=0이었다.
+`docs/BIMANUAL_ENGAGE_OFFSET_20260921.md`에 원인/실제 표본/수정 의미를 기록했다.
+Unity hand packet에 `engage_offset_m`를 추가하고 Python이 engage 시 한 번 포착하여
+실제 IK 위치 목표에 더한다. 단순 marker 이동이 아닌 simulation 위치 매핑 변경이다.
+누락 필드는 0으로 이전 fixture/클라이언트 동작을 유지한다. 원점 변경을 임의의
+후속 packet이 유발하지 않도록 cycle 동안 offset을 고정한다. 복귀 home/한계는 유지한다.
+
+source 전체 bimanual suite **102/102 PASS** (93.713s), runtime 신규 관련 tests **6/6 PASS**,
+Unity 참조 C# 컴파일 exit 0/error 0. 이전 recorded replay의 관절값 최대 차이는 0 rad.
+Play 정지 사용자 확인 후 runtime 3파일을 백업/설치하고 hash를 대조했다.
+백업 `logs/backups/bimanual_engage_offset_20260921_095215/`.
+시험/설치 증거 `docs/validation/bimanual_engage_offset_20260921/`.
+수정 후 Quest 화면 정착 오차 확인은 아직 필요하다. Python 재시작과 Unity 재컴파일이
+모두 필요하며, 기존 프로세스는 새 mapping을 적용하지 않는다. 실제 G1 실행 없음.
+
+## 2026-09-21 보정 후 operator 로그 확인
+
+`unity_20260921_095254_4149346.jsonl`에서 READY → TRACKING → RETURNING(pinch) → READY, BLOCKED 0. Unity 최신 7개 marker 진단 쌍 중 6쌍은 각 손 0.06~0.30cm, 마지막 L 0.21cm/R 0.06cm. 기존 지속적인 기준점 차이는 크게 감소했다. 다만 중간 1쌍에서 L 5.90cm/R 5.96cm 일시 간격이 있으며 원인은 확정하지 않았다. 모든 순간 오차가 해결됐다고 주장하지 않는다. `docs/validation/bimanual_engage_offset_20260921/operator_check.json` 참조. 이번 확인은 기존 로그 분석이며 테스트 재실행/실제 G1 계측은 하지 않았다.

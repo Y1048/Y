@@ -42,6 +42,43 @@ public class G1BimanualSimulationSender : MonoBehaviour
     public float[] LatestJoints { get; private set; }
     public string[] LatestJointNames { get; private set; }
     public bool HasFreshJoints => LatestJoints != null && Time.realtimeSinceStartupAsDouble-lastFeedback < .75;
+    private bool ikTargetValid;
+    private Vector3 leftIkDelta, rightIkDelta;
+
+    public bool TryGetIkTarget(bool left, out Vector3 position)
+    {
+        var binder = left ? leftBinder : rightBinder;
+        position = Vector3.zero;
+        if (!IsTracking || !HasFreshJoints || !ikTargetValid || binder == null) return false;
+        position = binder.EngagementTargetPosition + binder.OperatorHeading *
+            (left ? leftIkDelta : rightIkDelta);
+        return true;
+    }
+
+    private static bool ValidDelta(float[] values)
+    {
+        if (values == null || values.Length != 3) return false;
+        foreach (float value in values)
+            if (float.IsNaN(value) || float.IsInfinity(value)) return false;
+        return true;
+    }
+
+    private void LogTargetOffset(bool left)
+    {
+        Vector3 goal;
+        if (!TryGetIkTarget(left, out goal)) return;
+        var binder = left ? leftBinder : rightBinder;
+        // Vector sum: calibration + sender processing + backend processing.
+        // Never shift a marker away from the goal merely to hide this gap.
+        Vector3 calibration = binder.EngagementTargetPosition - binder.CalibratedWristPosition;
+        Vector3 input = binder.OperatorHeading * binder.OperatorTargetDelta -
+            (binder.TrackedWristPosition - binder.CalibratedWristPosition);
+        Vector3 backend = binder.OperatorHeading *
+            ((left ? leftIkDelta : rightIkDelta) - binder.OperatorTargetDelta);
+        Debug.Log(string.Format("[BIMANUAL TARGET] {0} gap_cm={1:F2} calibration_cm={2} input_processing_cm={3} backend_processing_cm={4}",
+            left ? "L" : "R", Vector3.Distance(goal, binder.TrackedWristPosition)*100,
+            (calibration*100).ToString("F2"), (input*100).ToString("F2"), (backend*100).ToString("F2")));
+    }
 
     public static bool IsSimulationSceneLoaded()
     {
@@ -64,6 +101,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         public bool tracked;
         public float[] position_m = new float[3];
+        public float[] engage_offset_m = new float[3];
         public float[] quaternion_wxyz = new float[] { 1, 0, 0, 0 };
     }
     [Serializable] private class Packet
@@ -91,6 +129,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         public string reason;
         public string[] joint_names;
         public float[] q_rad;
+        public bool ik_target_valid;
+        public float[] left_ik_target_operator_delta;
+        public float[] right_ik_target_operator_delta;
     }
 
     private UdpClient client;
@@ -163,7 +204,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         // Suppress Windows UDP ICMP reset when Python is not running yet.
         if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
             client.Client.IOControl((IOControlCode)(-1744830452), new byte[] { 0 }, null);
-        leftMarker = MakeMarker("Left engage / raw target");
+        leftMarker = MakeMarker("Left engage / IK goal");
         leftMarker.GetComponent<Renderer>().material.color = Color.green;
         if (useExistingScene)
         {
@@ -211,6 +252,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
         output.tracked = binder != null && binder.IsTrackingValid;
         if (!output.tracked) return false;
         Vector3 p = binder.OperatorTargetDelta;
+        Vector3 engageOffset = binder.IsCalibrated
+            ? Quaternion.Inverse(binder.OperatorHeading) *
+                (binder.CalibratedWristPosition - binder.EngagementTargetPosition)
+            : Vector3.zero;
+        output.engage_offset_m = new[] { engageOffset.x, engageOffset.y, engageOffset.z };
         Quaternion q = Quaternion.Inverse(binder.OperatorHeading) * binder.TrackedWristRotation;
         output.position_m = new[] { p.x, p.y, p.z };
         output.quaternion_wxyz = new[] { q.w, q.x, q.y, q.z };
@@ -269,6 +315,16 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     Debug.Log("[BIMANUAL SIM] backend restarted; fresh alignment required.");
                 }
                 if (ValidJoints(feedback)) { LatestJoints = feedback.q_rad; LatestJointNames = feedback.joint_names; }
+                ikTargetValid = feedback.ik_target_valid &&
+                    ValidDelta(feedback.left_ik_target_operator_delta) &&
+                    ValidDelta(feedback.right_ik_target_operator_delta);
+                if (ikTargetValid)
+                {
+                    var l = feedback.left_ik_target_operator_delta;
+                    var r = feedback.right_ik_target_operator_delta;
+                    leftIkDelta = new Vector3(l[0], l[1], l[2]);
+                    rightIkDelta = new Vector3(r[0], r[1], r[2]);
+                }
                 backendState = feedback.state;
                 feedbackSequence = feedback.sequence;
                 lastFeedback = now;
@@ -302,8 +358,14 @@ public class G1BimanualSimulationSender : MonoBehaviour
         // Fixed headset-heading frame; no live head motion injected into wrist goals.
         Vector3 leftZone = origin + heading * new Vector3(-.22f, -.24f, .38f);
         Vector3 rightZone = origin + heading * new Vector3(.22f, -.24f, .38f);
-        leftMarker.transform.position = useExistingScene && leftBinder != null
-            ? (active ? leftBinder.target_transform.position : leftBinder.EngagementTargetPosition) : leftZone;
+        if (useExistingScene && leftBinder != null)
+        {
+            Vector3 ikPosition;
+            bool available = TryGetIkTarget(true, out ikPosition);
+            leftMarker.SetActive(!active || available);
+            leftMarker.transform.position = active && available ? ikPosition : leftBinder.EngagementTargetPosition;
+        }
+        else leftMarker.transform.position = leftZone;
         if (rightMarker != null) rightMarker.transform.position = rightZone;
         bool tracked = useExistingScene ? ReadBinder(leftBinder, packet.left) : ReadHand(leftHand, leftWrist, packet.left);
         tracked = (useExistingScene ? ReadBinder(rightBinder, packet.right) : ReadHand(rightHand, rightWrist, packet.right)) && tracked;
@@ -383,6 +445,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
                     rightBinder.EngagementState, rightBinder.AlignmentPositionError*100, rightBinder.EngagementProgress));
                 lastDiagnostic = now;
+                LogTargetOffset(true);
+                LogTargetOffset(false);
             }
         }
         packet.engage = active;

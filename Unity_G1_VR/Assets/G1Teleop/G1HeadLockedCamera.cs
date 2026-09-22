@@ -27,6 +27,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     public bool IsHeadTrackingReady { get; private set; }
     public Vector3 LastPositionCorrection { get; private set; }
     public float LastYawCorrectionDegrees { get; private set; }
+    public G1OmniBodyHeading OmniBodyHeading { get; private set; }
     public Transform TrackingSpace => xr_tracking_space != null
         ? xr_tracking_space
         : xr_center_eye == null
@@ -67,9 +68,8 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         }
         if (follow_omni_body_heading && xr_center_eye != null)
         {
-            var bodyHeading = gameObject.AddComponent<G1OmniBodyHeading>();
-            bodyHeading.Initialize(this, ambient_operator_environment == null
-                ? null : ambient_operator_environment.transform);
+            OmniBodyHeading = gameObject.AddComponent<G1OmniBodyHeading>();
+            OmniBodyHeading.Initialize(this);
         }
     }
 

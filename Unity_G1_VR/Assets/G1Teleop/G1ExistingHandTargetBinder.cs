@@ -537,12 +537,14 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
-        Vector3 current_wrist_position = tracked_wrist_transform.position;
+        Vector3 current_wrist_position = CorrectInputPosition(
+            tracked_wrist_transform.position);
         TrackedWristPosition = current_wrist_position;
-        SourceWristRotation = tracked_wrist_transform.rotation;
+        SourceWristRotation = CorrectInputRotation(
+            tracked_wrist_transform.rotation);
         IsAnatomicalRotationUsed = false;
         Quaternion current_wrist_rotation = GetAnatomicalHandRotation(
-            tracked_wrist_transform.rotation);
+            SourceWristRotation);
         TrackedWristRotation = current_wrist_rotation;
         TrackedHandPosition = GetPalmCenterPosition();
     }
@@ -551,10 +553,10 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     {
         TrackedHeadPosition = reference_transform == null
             ? Vector3.zero
-            : reference_transform.position;
+            : CorrectInputPosition(reference_transform.position);
         TrackedHeadRotation = reference_transform == null
             ? Quaternion.identity
-            : reference_transform.rotation;
+            : CorrectInputRotation(reference_transform.rotation);
     }
 
     private void UpdateHeadMotionDiagnostics()
@@ -756,10 +758,11 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return fallback_rotation;
         }
 
-        Vector3 finger_direction =
-            middle_finger_base_transform.position - TrackedWristPosition;
-        Vector3 palm_across =
-            index_finger_base_transform.position - pinky_finger_base_transform.position;
+        Vector3 finger_direction = CorrectInputPosition(
+            middle_finger_base_transform.position) - TrackedWristPosition;
+        Vector3 palm_across = CorrectInputPosition(
+            index_finger_base_transform.position) - CorrectInputPosition(
+                pinky_finger_base_transform.position);
         if (finger_direction.sqrMagnitude < 0.000001f
             || palm_across.sqrMagnitude < 0.000001f)
         {
@@ -833,7 +836,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             {
                 return Vector3.Lerp(
                     TrackedWristPosition,
-                    bone_value.Transform.position,
+                    CorrectInputPosition(bone_value.Transform.position),
                     0.50f);
             }
         }
@@ -892,13 +895,38 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return Quaternion.identity;
         }
 
-        Vector3 forward_value = Vector3.ProjectOnPlane(reference_transform.forward, Vector3.up);
+        // TrackedHeadRotation has the display/body yaw removed by
+        // G1OmniBodyHeading. Capture the engagement frame from that input pose,
+        // not from the rotated render-space transform.
+        Vector3 forward_value = Vector3.ProjectOnPlane(
+            TrackedHeadRotation * Vector3.forward,
+            Vector3.up);
         if (forward_value.sqrMagnitude < 0.0001f)
         {
             return Quaternion.identity;
         }
 
         return Quaternion.LookRotation(forward_value.normalized, Vector3.up);
+    }
+
+    private Vector3 CorrectInputPosition(Vector3 displayed_world_position)
+    {
+        G1OmniBodyHeading heading = head_camera_alignment == null
+            ? null
+            : head_camera_alignment.OmniBodyHeading;
+        return heading == null
+            ? displayed_world_position
+            : heading.CorrectInputPosition(displayed_world_position);
+    }
+
+    private Quaternion CorrectInputRotation(Quaternion displayed_world_rotation)
+    {
+        G1OmniBodyHeading heading = head_camera_alignment == null
+            ? null
+            : head_camera_alignment.OmniBodyHeading;
+        return heading == null
+            ? displayed_world_rotation
+            : heading.CorrectInputRotation(displayed_world_rotation);
     }
 
     private void LogStatus(bool active_value)

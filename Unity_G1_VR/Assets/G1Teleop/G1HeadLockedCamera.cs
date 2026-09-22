@@ -2,8 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// 시작할 때 XR TrackingSpace의 수평 방향과 위치를 G1 머리 마운트에 맞춘다.
-/// 이후에는 Quest의 회전은 그대로 두고 카메라 위치만 G1 머리 마운트에 고정한다.
-/// G1 루트에 base pose가 적용되면 카메라도 머리 마운트와 함께 이동한다.
+/// 이후에는 Quest tracking space를 고정하고 손과 머리의 원본 이동을 유지한다.
+/// 로봇만 Omni yaw로 회전하며 카메라 위치를 다시 로봇에 붙이지 않는다.
 /// </summary>
 [DefaultExecutionOrder(10000)]
 public sealed class G1HeadLockedCamera : MonoBehaviour
@@ -34,6 +34,8 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
             ? null
             : xr_center_eye.parent;
 
+    private Vector3 stableHeadPosition;
+    private Quaternion stableHeadRotation;
     private float head_tracking_valid_since = -1.0f;
     private G1HeadCameraPiP head_camera_pip;
     private G1AmbientOperatorEnvironment ambient_operator_environment;
@@ -41,6 +43,8 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     private void OnEnable()
     {
         IsInitialAlignmentApplied = false;
+        lock_position = false; // Keep the aligned Quest world fixed after startup.
+        head_tracking_stable_duration = Mathf.Max(1.0f, head_tracking_stable_duration);
         ResetHeadTrackingReadiness();
         if (head_camera_pip != null)
         {
@@ -176,13 +180,18 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         }
 
         float current_time = Time.unscaledTime;
-        if (head_tracking_valid_since < 0.0f)
+        if (head_tracking_valid_since < 0.0f ||
+            Vector3.Distance(stableHeadPosition, xr_center_eye.localPosition) > .02f ||
+            Quaternion.Angle(stableHeadRotation, xr_center_eye.localRotation) > 2f)
         {
             head_tracking_valid_since = current_time;
+            stableHeadPosition = xr_center_eye.localPosition;
+            stableHeadRotation = xr_center_eye.localRotation;
         }
 
         IsHeadTrackingReady = current_time - head_tracking_valid_since
-            >= Mathf.Max(0.0f, head_tracking_stable_duration);
+            >= Mathf.Max(1.0f, head_tracking_stable_duration)
+            && (!follow_omni_body_heading || (OmniBodyHeading != null && OmniBodyHeading.HasStableSample));
         return IsHeadTrackingReady;
     }
 

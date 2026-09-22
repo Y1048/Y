@@ -36,6 +36,8 @@ class BimanualSimulation:
                           rgba="0 0 0 0")
             tree.write(path, encoding="unicode")
             self.model = mujoco.MjModel.from_xml_path(str(path))
+        self.base_yaw_rad = 0.
+        self.base_rotation = np.eye(3)
         self.names = base.g1.LEFT_ARM_JOINTS + base.g1.RIGHT_ARM_JOINTS
         ids = [base._joint_id(self.model, name) for name in self.names]
         self.qids = self.model.jnt_qposadr[ids]
@@ -46,6 +48,11 @@ class BimanualSimulation:
         self.home = base._initial_configuration(self.model)
         self.config = mink.Configuration(self.model)
         self.config.update(self.home)
+        free_ids = np.flatnonzero(self.model.jnt_type == mujoco.mjtJoint.mjJNT_FREE)
+        if len(free_ids) != 1:
+            raise ValueError('Expected one prescribed G1 base joint')
+        self.base_qadr = int(self.model.jnt_qposadr[free_ids[0]])
+        self.initial_base_pose = self.home[self.base_qadr:self.base_qadr+7].copy()
         self.check_data = mujoco.MjData(self.model)
         controlled = base.g1.LEFT_ARM_BODY_NAMES | base.g1.RIGHT_ARM_BODY_NAMES
         pairs, geom_ids = base._build_collision_pairs(self.model, controlled)
@@ -136,8 +143,43 @@ class BimanualSimulation:
                 nearest = distance
         return .2 if nearest is None else nearest
 
+    def set_base_yaw(self, yaw):
+        """Prescribed Omni base pose; not a joint and never optimized by IK."""
+        if not np.isfinite(yaw):
+            raise ValueError('base_yaw')
+        if yaw == self.base_yaw_rad:
+            return
+        rotation = mink.SO3.exp(np.array([0., 0., yaw]))
+        self.base_yaw_rad = float(yaw)
+        delta_rotation = rotation.as_matrix() @ self.base_rotation.T
+        self.base_rotation = rotation.as_matrix()
+        address = self.base_qadr
+        pose = np.r_[self.base_rotation @ self.initial_base_pose[:3],
+            (rotation @ mink.SO3(self.initial_base_pose[3:])).wxyz]
+        self.home[address:address+7] = pose
+        q = self.config.q.copy()
+        q[address:address+7] = pose
+        self.config.update(q)
+        # Cached stopping tails contain complete qpos, including the prescribed base.
+        # A common yaw preserves self-collision distances and arm velocity bounds.
+        for candidate, _ in self.brake_plan:
+            candidate[address:address+7] = pose
+        self.check_data.qpos[address:address+7] = pose
+        mujoco.mj_forward(self.model, self.check_data)
+        for policy in self.motion.values():
+            policy.posture_reference[address:address+7] = pose
+            policy.posture_task.set_target(policy.posture_reference)
+            policy.distance_probe_data.qpos[address:address+7] = pose
+            policy.elbow_task.world_to_base = self.base_rotation.T
+            if policy._elbow_reference_q is not None:
+                policy._elbow_reference_q[address:address+7] = pose
+                policy._reference_wrist_position = delta_rotation @ policy._reference_wrist_position
+                policy._reference_elbow_position = delta_rotation @ policy._reference_elbow_position
+            if policy.elbow_task.target_position is not None:
+                policy.elbow_task.target_position = delta_rotation @ policy.elbow_task.target_position
+
     def step(self, targets=None, *, returning=False):
-        """Both wrist poses in robot frame; return is a checked staged joint trajectory.
+        """Both wrist poses in MuJoCo world; return is a checked staged joint trajectory.
 
         Accept steps only with a checked stopping tail. Infeasible/unsafe QP
         results follow the previous tail; no valid tail latches blocked.

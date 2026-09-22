@@ -29,8 +29,6 @@ public static class G1OmniHeadingStateTests
         Check(G1OmniHeadingState.Delta(359, 1) == -2);
         Check(G1OmniHeadingState.ToUnityYawDelta(30) == -30); // G1 left -> Unity left
         Check(G1OmniHeadingState.ToUnityYawDelta(-30) == 30); // G1 right -> Unity right
-        Check(G1OmniHeadingState.TrackingCorrectionDegrees(-47, -84) == 37);
-        Check(G1OmniHeadingState.TrackingCorrectionDegrees(-47, -47) == 0);
         Console.WriteLine("PASS: " + count + " production heading-gate assertions");
     }
 }

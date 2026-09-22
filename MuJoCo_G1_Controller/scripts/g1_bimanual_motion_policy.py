@@ -16,6 +16,7 @@ class ElbowClearanceTask(mink.Task):
         super().__init__(cost=np.array([8., 8.]), gain=gain, lm_damping=0.)
         self.body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, side + '_elbow_link')
         self.target_position = None
+        self.world_to_base = np.eye(3)
 
     def set_target(self, transform):
         self.target_position = np.asarray(transform.translation()).copy()
@@ -23,12 +24,12 @@ class ElbowClearanceTask(mink.Task):
     def compute_error(self, configuration):
         if self.target_position is None:
             raise ValueError('Elbow height target is not set')
-        return configuration.data.xpos[self.body_id, 1:3]-self.target_position[1:3]
+        return (self.world_to_base @ (configuration.data.xpos[self.body_id]-self.target_position))[1:3]
 
     def compute_jacobian(self, configuration):
         jacobian = np.zeros((3, configuration.model.nv))
         mujoco.mj_jacBody(configuration.model, configuration.data, jacobian, None, self.body_id)
-        return jacobian[1:3]
+        return (self.world_to_base @ jacobian)[1:3]
 
 class ShoulderComfortTask(mink.Task):
     """Soft roll/yaw excursion bands; does not create new joint limits."""
@@ -108,6 +109,7 @@ class ArmMotionPolicy:
         current_pose = self.configuration.get_transform_frame_to_world(self.side + '_wrist_yaw_link', 'body')
         goal, self.target_projected = self._project_target_outside_torso(goal, current_pose.translation())
         self.effective_target_position = goal.translation().copy()
+        self.effective_target_rotation = goal.rotation().as_matrix().copy()
         self.target_projection_distance_m = float(np.linalg.norm(self.effective_target_position-self.raw_target_position))
         self.wrist_task.set_target(goal)
         self._update_orientation_priority(current_q, goal, clearance)
@@ -298,7 +300,8 @@ class ArmMotionPolicy:
             # Anchor the lift to the captured engage posture, not the latest
             # elbow height. Repeated activation must never ratchet it upward.
             position = elbow.translation().copy()
-            position[1] = self._reference_elbow_position[1]
+            lateral = self.elbow_task.world_to_base[1]
+            position += lateral * np.dot(lateral, self._reference_elbow_position-position)
             position[2] = min(self._reference_elbow_position[2]+.08, shoulder.translation()[2]-.04)
             if position[2] > elbow.translation()[2]+.005:
                 self.elbow_task.set_target(base._matrix_to_se3(elbow.rotation().as_matrix(), position))

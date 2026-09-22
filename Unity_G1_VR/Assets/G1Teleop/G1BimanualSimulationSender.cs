@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>Opt-in paired wrist input. Fixed loopback destination, simulation schema only.</summary>
-[DefaultExecutionOrder(-20000)]
+[DefaultExecutionOrder(500)]
 public class G1BimanualSimulationSender : MonoBehaviour
 {
     public const float TrackedMarkerDiameter = .060f;
@@ -42,15 +42,40 @@ public class G1BimanualSimulationSender : MonoBehaviour
     public bool HasFreshJoints => LatestJoints != null && Time.realtimeSinceStartupAsDouble-lastFeedback < .75;
     private bool ikTargetValid;
     private Vector3 leftIkDelta, rightIkDelta;
+    private bool worldTargetValid;
+    private Vector3 leftWorldTarget, rightWorldTarget;
+    private Quaternion rightWorldRotation;
+    private G1OmniBodyHeading Omni => rightBinder == null || rightBinder.head_camera_alignment == null
+        ? null : rightBinder.head_camera_alignment.OmniBodyHeading;
 
     public bool TryGetIkTarget(bool left, out Vector3 position)
     {
         var binder = left ? leftBinder : rightBinder;
         position = Vector3.zero;
         if (!IsTracking || !HasFreshJoints || !ikTargetValid || binder == null) return false;
+        if (useExistingScene && !worldTargetValid) return false;
+        if (worldTargetValid)
+        {
+            position = left ? leftWorldTarget : rightWorldTarget;
+            return true;
+        }
         position = binder.EngagementTargetPosition + binder.OperatorHeading *
             (left ? leftIkDelta : rightIkDelta);
         return true;
+    }
+
+    public bool TryGetRightIkRotation(out Quaternion rotation)
+    {
+        rotation = rightWorldRotation;
+        return IsTracking && HasFreshJoints && worldTargetValid;
+    }
+
+    private static bool ValidRotation(float[] q)
+    {
+        if (q == null || q.Length != 4) return false;
+        float norm = 0;
+        foreach (float v in q) { if (float.IsNaN(v) || float.IsInfinity(v)) return false; norm += v*v; }
+        return Mathf.Abs(norm-1) < .001f;
     }
 
     private static bool ValidDelta(float[] values)
@@ -66,16 +91,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
         Vector3 goal;
         if (!TryGetIkTarget(left, out goal)) return;
         var binder = left ? leftBinder : rightBinder;
-        // Vector sum: calibration + sender processing + backend processing.
-        // Never shift a marker away from the goal merely to hide this gap.
-        Vector3 calibration = binder.EngagementTargetPosition - binder.CalibratedWristPosition;
-        Vector3 input = binder.OperatorHeading * binder.OperatorTargetDelta -
-            (binder.TrackedWristPosition - binder.CalibratedWristPosition);
-        Vector3 backend = binder.OperatorHeading *
-            ((left ? leftIkDelta : rightIkDelta) - binder.OperatorTargetDelta);
-        Debug.Log(string.Format("[BIMANUAL TARGET] {0} gap_cm={1:F2} calibration_cm={2} input_processing_cm={3} backend_processing_cm={4}",
-            left ? "L" : "R", Vector3.Distance(goal, binder.TrackedWristPosition)*100,
-            (calibration*100).ToString("F2"), (input*100).ToString("F2"), (backend*100).ToString("F2")));
+        Debug.Log(string.Format("[BIMANUAL TARGET] {0} frame=omni_world_v1 yaw_deg={1:F1} gap_cm={2:F2} raw={3} ik={4}",
+            left ? "L" : "R", Omni == null ? 0 : Omni.OperatorBodyYawDegrees,
+            Vector3.Distance(goal, binder.TrackedWristPosition)*100,
+            binder.TrackedWristPosition.ToString("F3"), goal.ToString("F3")));
     }
 
     public static bool IsSimulationSceneLoaded()
@@ -104,13 +123,15 @@ public class G1BimanualSimulationSender : MonoBehaviour
     }
     [Serializable] private class Packet
     {
-        public string schema = "g1.bimanual.unity.sim.v1";
+        public string schema = "g1.bimanual.unity.sim.v2";
         public bool simulation_only = true;
         public string session;
         public long sequence;
         public double sender_time_s;
         public bool engage;
         public bool return_home;
+        public string input_frame = "omni_world_v1";
+        public float base_yaw_rad;
         public HandPacket left = new HandPacket();
         public HandPacket right = new HandPacket();
     }
@@ -128,6 +149,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         public string[] joint_names;
         public float[] q_rad;
         public bool ik_target_valid;
+        public float[] left_ik_target_world_m, right_ik_target_world_m;
+        public float[] right_ik_target_world_wxyz;
+        public string input_frame;
         public float[] left_ik_target_operator_delta;
         public float[] right_ik_target_operator_delta;
     }
@@ -249,13 +273,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         output.tracked = binder != null && binder.IsTrackingValid;
         if (!output.tracked) return false;
-        Vector3 p = binder.OperatorTargetDelta;
-        Vector3 engageOffset = binder.IsCalibrated
-            ? Quaternion.Inverse(binder.OperatorHeading) *
-                (binder.CalibratedWristPosition - binder.EngagementTargetPosition)
-            : Vector3.zero;
-        output.engage_offset_m = new[] { engageOffset.x, engageOffset.y, engageOffset.z };
-        Quaternion q = Quaternion.Inverse(binder.OperatorHeading) * binder.TrackedWristRotation;
+        // Already aligned at Play: send absolute wrist pose in that world.
+        Vector3 p = binder.TrackedWristPosition;
+        Quaternion q = binder.TrackedWristRotation;
+        output.engage_offset_m = new float[3];
         output.position_m = new[] { p.x, p.y, p.z };
         output.quaternion_wxyz = new[] { q.w, q.x, q.y, q.z };
         return true;
@@ -316,7 +337,20 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 ikTargetValid = feedback.ik_target_valid &&
                     ValidDelta(feedback.left_ik_target_operator_delta) &&
                     ValidDelta(feedback.right_ik_target_operator_delta);
-                if (ikTargetValid)
+                worldTargetValid = feedback.input_frame == "omni_world_v1" && feedback.ik_target_valid
+                    && ValidRotation(feedback.right_ik_target_world_wxyz) && ValidDelta(feedback.left_ik_target_world_m)
+                    && ValidDelta(feedback.right_ik_target_world_m);
+                if (worldTargetValid)
+                {
+                    var l = feedback.left_ik_target_world_m;
+                    var r = feedback.right_ik_target_world_m;
+                    leftWorldTarget = new Vector3(l[0], l[1], l[2]);
+                    rightWorldTarget = new Vector3(r[0], r[1], r[2]);
+                    var q = feedback.right_ik_target_world_wxyz;
+                    rightWorldRotation = new Quaternion(q[1], q[2], q[3], q[0]);
+                    ikTargetValid = true;
+                }
+                if (ikTargetValid && ValidDelta(feedback.left_ik_target_operator_delta) && ValidDelta(feedback.right_ik_target_operator_delta))
                 {
                     var l = feedback.left_ik_target_operator_delta;
                     var r = feedback.right_ik_target_operator_delta;
@@ -372,6 +406,15 @@ public class G1BimanualSimulationSender : MonoBehaviour
             leftTrackedMarker.SetActive(packet.left.tracked);
             if (packet.left.tracked) leftTrackedMarker.transform.SetPositionAndRotation(
                 leftBinder.DisplayedWristPosition, leftBinder.DisplayedWristRotation);
+        }
+        bool omniReady = Omni != null && Omni.IsReady;
+        packet.schema = useExistingScene ? "g1.bimanual.unity.sim.v2" : "g1.bimanual.unity.sim.v1";
+        packet.input_frame = useExistingScene ? "omni_world_v1" : "legacy_relative";
+        packet.base_yaw_rad = Omni == null ? 0 : -(float)Omni.OperatorBodyYawDegrees * Mathf.Deg2Rad;
+        if (useExistingScene && !omniReady)
+        {
+            packet.left.tracked = packet.right.tracked = tracked = false;
+            if (active) { active = false; returnPending = true; mustLeaveZones = true; ResetBinders(); }
         }
         bool inZones = useExistingScene
             ? tracked && leftBinder.IsAlignmentReady && rightBinder.IsAlignmentReady
@@ -469,6 +512,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
             Status += string.Format("\nL: {0} {1:F1}cm {2:P0} | R: {3} {4:F1}cm {5:P0}",
                 leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
                 rightBinder.EngagementState, rightBinder.AlignmentPositionError*100, rightBinder.EngagementProgress);
+        if (useExistingScene && !omniReady)
+            Status = Omni == null ? "WAIT: Omni alignment" : Omni.Status;
+        else if (useExistingScene && !active) Status = "ALIGNED: release external hold\n" + Status;
         UpdateStatusBar(fresh, pinch);
     }
 
@@ -555,10 +601,15 @@ public class G1BimanualSimulationSender : MonoBehaviour
         }
         UpdateHandStatus(leftStatus, "왼손", leftBinder, packet.left.tracked, leftReadyUntil);
         UpdateHandStatus(rightStatus, "오른손", rightBinder, packet.right.tracked, rightReadyUntil);
+        if (useExistingScene && (Omni == null || !Omni.IsReady))
+        {
+            cycleStatus.text = Omni == null ? "Omni 수신 대기" : Omni.Status;
+            return;
+        }
         cycleStatus.text = !fresh ? "시뮬레이션 수신 대기" : backendState == "blocked" ? "중단: PC 로그 확인"
             : backendState == "returning" || returnPending ? "초기자세 복귀 중"
             : active ? "양팔 조작 중 · pinch로 복귀" : mustLeaveZones ? "손을 목표 밖으로 옮겨 재준비"
-            : pinch ? "pinch를 풀어 주세요" : "한 손씩 정렬 · 준비 4초 유지 · 시뮬레이션";
+            : pinch ? "pinch를 풀어 주세요" : "정렬 완료 · 외부 고정 해제 후 한 손씩 목표에 정렬";
     }
 
     private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL IK INPUT | " + Status); }

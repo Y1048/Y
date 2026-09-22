@@ -2009,3 +2009,13 @@ The user changed `Y1048/Y` to public. A credential-helper-disabled, noninteracti
 
 ## 2026-09-22 Promote laptop checkpoint to main
 After fetching the current remote, `origin/main...origin/codex/g1-laptop-sync-20260917` was `0 113`: main had no unique commits and the laptop branch was 113 commits ahead. The clean canonical worktree was fast-forwarded to the remote laptop branch, switched to `main`, and the operational clone/pull/push instructions plus `VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1` were changed to use `main`. Historical documents keep their original branch references as provenance.
+
+
+## 2026-09-22 Omni world upper-body IK
+
+User requested Omni-driven Unity and IK base rotation, with one Play-time heading alignment.
+Implementation and operating procedure: [OMNI_WORLD_UPPER_BODY_20260922.md](OMNI_WORLD_UPPER_BODY_20260922.md).
+World input uses simulation schema v2; restart both Unity Play and the bimanual backend.
+No physical G1 command/transport or Omni locomotion mapping was changed or executed.
+External hold button is not electronically observed; wait for the alignment-complete UI before release.
+Offline tests and C# compilation passed; headset validation remains pending.

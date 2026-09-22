@@ -328,7 +328,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         if (head_camera_alignment == null
-            || !head_camera_alignment.IsHeadTrackingReady)
+            || !head_camera_alignment.IsInitialAlignmentApplied)
         {
             engagement_frame_initialization_duration = 0.0f;
             EngagementState = "waiting-for-head-tracking";
@@ -346,10 +346,9 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
     private void CaptureEngagementFrame()
     {
-        // 방 안의 절대 좌표가 아니라 캡처 시점의 머리 위치와 yaw를 기준으로 고정한다.
-        // 고개를 돌려도 이미 engage된 팔 목표가 같이 회전하지 않도록 하는 기준 프레임이다.
-        OperatorOrigin = reference_transform == null ? Vector3.zero : reference_transform.position;
-        OperatorHeading = GetReferenceYawRotation();
+        // Play-time alignment owns the world frame; engage only calibrates hand correspondence.
+        OperatorOrigin = Vector3.zero;
+        OperatorHeading = Quaternion.identity; // Play-time aligned world; never recapture head yaw on engage.
         EngagementFrameRevision++;
         IsEngagementFrameLocked = true;
         UpdateEngagementTargetPose();
@@ -892,27 +891,6 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         bool semantic_frame_available = !use_anatomical_hand_frame
             || IsAnatomicalFrameValid;
         return tracking_available && semantic_frame_available;
-    }
-
-    private Quaternion GetReferenceYawRotation()
-    {
-        if (!use_reference_yaw || reference_transform == null)
-        {
-            return Quaternion.identity;
-        }
-
-        // TrackedHeadRotation has the display/body yaw removed by
-        // G1OmniBodyHeading. Capture the engagement frame from that input pose,
-        // not from the rotated render-space transform.
-        Vector3 forward_value = Vector3.ProjectOnPlane(
-            TrackedHeadRotation * Vector3.forward,
-            Vector3.up);
-        if (forward_value.sqrMagnitude < 0.0001f)
-        {
-            return Quaternion.identity;
-        }
-
-        return Quaternion.LookRotation(forward_value.normalized, Vector3.up);
     }
 
     private Vector3 CorrectInputPosition(Vector3 displayed_world_position)

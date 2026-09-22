@@ -369,10 +369,13 @@ public class G1UnityRightArmPreview : MonoBehaviour
         }
 
         // Apply measured FK before wrist markers/target error lines are positioned.
-        if (measured_view != null && measured_view.ApplyMeasuredPose()) return;
+        if (!UsesBimanualSimulation && measured_view != null && measured_view.ApplyMeasuredPose()) return;
 
         if (UsesBimanualSimulation)
         {
+            var omni = head_camera_alignment == null ? null : head_camera_alignment.OmniBodyHeading;
+            if (official_g1_object != null && robot_anchored && omni != null)
+                official_g1_object.transform.SetPositionAndRotation(Vector3.zero, omni.BaseRotation);
             if (bimanual_simulation.HasFreshJoints)
                 for (int i=0; i<14; ++i)
                     official_g1_rig.ApplyJointPosition(bimanual_simulation.LatestJointNames[i], bimanual_simulation.LatestJoints[i]);
@@ -829,6 +832,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
         Quaternion targetRotation = active
             ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
+        if (active && bimanual_simulation.TryGetRightIkRotation(out Quaternion ikRotation))
+            targetRotation = ikRotation;
         target_hand_marker.position = hand_binder.DisplayInputPosition(targetPosition);
         target_hand_marker.rotation = hand_binder.DisplayInputRotation(targetRotation);
         target_hand_axes.SetPositionAndRotation(target_hand_marker.position, target_hand_marker.rotation);

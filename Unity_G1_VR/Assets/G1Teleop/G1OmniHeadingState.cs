@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-/// <summary>View-only heading gate. No Unity transforms, IK, or robot transport.</summary>
+/// <summary>Omni input validation and unwrapped yaw; no transforms or robot transport.</summary>
 public sealed class G1OmniHeadingState
 {
     public const double StaleSeconds = .25;
@@ -19,11 +19,6 @@ public sealed class G1OmniHeadingState
     // the view transform must use the opposite sign to show the same body turn.
     public static double ToUnityYawDelta(double omniYawDelta)
         => -omniYawDelta;
-
-    public static double TrackingCorrectionDegrees(
-        double measuredRobotYawDelta,
-        double operatorBodyYawDelta)
-        => measuredRobotYawDelta - operatorBodyYawDelta;
 
     private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 

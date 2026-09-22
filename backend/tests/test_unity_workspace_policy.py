@@ -232,9 +232,9 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertIn("DisplayInputPosition(ikPosition)", preview)
         self.assertIn("public Vector3 DisplayInputPosition", heading)
         self.assertIn("public Quaternion DisplayInputRotation", heading)
-        self.assertIn("UpdateMeasuredBaseHeading();", heading)
-        self.assertIn("TrackingCorrectionDegrees(", heading)
-        self.assertIn("MeasuredRobotYawDegrees", heading)
+        self.assertNotIn("UpdateMeasuredBaseHeading", heading)
+        self.assertNotIn("TrackingCorrectionDegrees", heading)
+        self.assertIn("BaseRotation", heading)
         self.assertNotIn("FollowRobotBaseFromCalibration", preview)
 
     def test_cyan_quest_wrist_uses_display_pose_without_changing_command_pose(self):

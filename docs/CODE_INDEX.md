@@ -79,24 +79,24 @@ py -3.11 backend/tools/build_code_index.py --check
 | [Unity_G1_VR/Assets/Editor/G1ExistingSceneSetup.cs](../Unity_G1_VR/Assets/Editor/G1ExistingSceneSetup.cs) | 431 | 목록 확인 | - | `84c6850d4c57` |
 | [Unity_G1_VR/Assets/Editor/G1MinkFkParityValidator.cs](../Unity_G1_VR/Assets/Editor/G1MinkFkParityValidator.cs) | 134 | 목록 확인 | - | `3a842c8567a3` |
 | [Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs](../Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs) | 591 | 목록 확인 | - | `0cc491e3db1b` |
-| [Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs](../Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs) | 102 | 목록 확인 | - | `3bbea3f39c69` |
+| [Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs](../Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs) | 92 | 목록 확인 | - | `fd1e225def8d` |
 | [Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs](../Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs) | 638 | 목록 확인 | - | `927bbdef3657` |
 | [Unity_G1_VR/Assets/Editor/G1VRBuild.cs](../Unity_G1_VR/Assets/Editor/G1VRBuild.cs) | 67 | 목록 확인 | - | `d5ced46ea9fc` |
 | [Unity_G1_VR/Assets/G1Teleop/G1AmbientOperatorEnvironment.cs](../Unity_G1_VR/Assets/G1Teleop/G1AmbientOperatorEnvironment.cs) | 222 | 목록 확인 | - | `dc216d1edcfc` |
 | [Unity_G1_VR/Assets/G1Teleop/G1BimanualFeedbackGate.cs](../Unity_G1_VR/Assets/G1Teleop/G1BimanualFeedbackGate.cs) | 40 | 목록 확인 | - | `b9e12ce1162f` |
-| [Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs) | 590 | 목록 확인 | - | `cb8a5a593bca` |
+| [Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs) | 588 | 목록 확인 | - | `9a89db62fe7e` |
 | [Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs](../Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs) | 962 | 입출력 확인 | - | `f6ec8a550b1e` |
 | [Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs) | 539 | 입출력 확인 | - | `bc934ede5e0e` |
 | [Unity_G1_VR/Assets/G1Teleop/G1HandUdpDiagnostics.cs](../Unity_G1_VR/Assets/G1Teleop/G1HandUdpDiagnostics.cs) | 98 | 목록 확인 | - | `40a96eb5264c` |
-| [Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs) | 651 | 목록 확인 | - | `8a6a1a0d9764` |
-| [Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs) | 287 | 목록 확인 | - | `98f5ac0bf5bf` |
+| [Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs) | 652 | 목록 확인 | - | `9fcbda59e81b` |
+| [Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs) | 288 | 목록 확인 | - | `e6b5bc0732e9` |
 | [Unity_G1_VR/Assets/G1Teleop/G1JointNode.cs](../Unity_G1_VR/Assets/G1Teleop/G1JointNode.cs) | 18 | 목록 확인 | - | `93bf9cf822c3` |
 | [Unity_G1_VR/Assets/G1Teleop/G1KeypadLocomotionUdpSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1KeypadLocomotionUdpSender.cs) | 251 | 목록 확인 | - | `db7096654b3d` |
 | [Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs](../Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs) | 280 | 목록 확인 | - | `9e2777c84b13` |
 | [Unity_G1_VR/Assets/G1Teleop/G1LowStateLegView.cs](../Unity_G1_VR/Assets/G1Teleop/G1LowStateLegView.cs) | 100 | 목록 확인 | - | `d560f0a9416c` |
 | [Unity_G1_VR/Assets/G1Teleop/G1OfficialRig.cs](../Unity_G1_VR/Assets/G1Teleop/G1OfficialRig.cs) | 375 | 목록 확인 | - | `db28be0dcd81` |
-| [Unity_G1_VR/Assets/G1Teleop/G1OmniBodyHeading.cs](../Unity_G1_VR/Assets/G1Teleop/G1OmniBodyHeading.cs) | 150 | 목록 확인 | - | `9e3b851ad792` |
-| [Unity_G1_VR/Assets/G1Teleop/G1OmniHeadingState.cs](../Unity_G1_VR/Assets/G1Teleop/G1OmniHeadingState.cs) | 51 | 목록 확인 | - | `d21a28e7a1a0` |
+| [Unity_G1_VR/Assets/G1Teleop/G1OmniBodyHeading.cs](../Unity_G1_VR/Assets/G1Teleop/G1OmniBodyHeading.cs) | 105 | 목록 확인 | - | `95ec4689277c` |
+| [Unity_G1_VR/Assets/G1Teleop/G1OmniHeadingState.cs](../Unity_G1_VR/Assets/G1Teleop/G1OmniHeadingState.cs) | 46 | 목록 확인 | - | `43571574c2ee` |
 | [Unity_G1_VR/Assets/G1Teleop/G1RobotStateUdpReceiver.cs](../Unity_G1_VR/Assets/G1Teleop/G1RobotStateUdpReceiver.cs) | 798 | 입출력 확인 | - | `9f4b122b5e9d` |
 | [Unity_G1_VR/Assets/G1Teleop/G1UnityRightArmPreview.cs](../Unity_G1_VR/Assets/G1Teleop/G1UnityRightArmPreview.cs) | 1050 | 입출력 확인 | - | `2e5fcdec8b71` |
 | [Unity_G1_VR/Assets/G1Teleop/G1WristSourceCompatibility.cs](../Unity_G1_VR/Assets/G1Teleop/G1WristSourceCompatibility.cs) | 50 | 목록 확인 | - | `3124aab0e080` |
@@ -125,7 +125,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [backend/tests/BimanualEngageGateTest.cs](../backend/tests/BimanualEngageGateTest.cs) | 32 | 목록 확인 | - | `2a05b9a1edc9` |
 | [backend/tests/BimanualFeedbackGateTest.cs](../backend/tests/BimanualFeedbackGateTest.cs) | 35 | 목록 확인 | - | `3c00a1369e89` |
 | [backend/tests/bimanual_replay_profiles.py](../backend/tests/bimanual_replay_profiles.py) | 29 | 목록 확인 | historical_recording_profile | `895ec554b84f` |
-| [backend/tests/csharp/G1OmniHeadingStateTests.cs](../backend/tests/csharp/G1OmniHeadingStateTests.cs) | 37 | 목록 확인 | - | `38ce0425a4ec` |
+| [backend/tests/csharp/G1OmniHeadingStateTests.cs](../backend/tests/csharp/G1OmniHeadingStateTests.cs) | 34 | 목록 확인 | - | `36f1f4de84fd` |
 | [backend/tests/fixtures/bimanual_return_near_hands_20260918.json](../backend/tests/fixtures/bimanual_return_near_hands_20260918.json) | 636 | 목록 확인 | - | `e6f50f455377` |
 | [backend/tests/fixtures/bimanual_return_starts_20260918.json](../backend/tests/fixtures/bimanual_return_starts_20260918.json) | 127 | 목록 확인 | - | `a62fa392b291` |
 | [backend/tests/fixtures/mink_elbow_boundary_20260909.json](../backend/tests/fixtures/mink_elbow_boundary_20260909.json) | 63 | 목록 확인 | - | `1b246fcb026b` |
@@ -148,7 +148,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [backend/tests/test_capture_output_isolation.py](../backend/tests/test_capture_output_isolation.py) | 67 | 목록 확인 | test_same_second_names_are_unique, test_existing_outputs_never_overwritten | `26ddd4192a13` |
 | [backend/tests/test_code_index.py](../backend/tests/test_code_index.py) | 42 | 목록 확인 | CodeIndexTests | `bfd86a963b9d` |
 | [backend/tests/test_dds_firewall_rollback.py](../backend/tests/test_dds_firewall_rollback.py) | 128 | 목록 확인 | test_transaction, test_adapter_selection, run_mock | `dfd424d7ff67` |
-| [backend/tests/test_diagnostic_exit_contract.py](../backend/tests/test_diagnostic_exit_contract.py) | 340 | 목록 확인 | test_camera_read_deadline_csharp_without_network, test_camera_cli_rejects_nonfinite_without_transport, test_network_final_state_is_verified, test_adapter_selection_is_unambiguous, test_network_capture_checks_native_failures (+4) | `e59e6f7055bd` |
+| [backend/tests/test_diagnostic_exit_contract.py](../backend/tests/test_diagnostic_exit_contract.py) | 351 | 목록 확인 | test_camera_read_deadline_csharp_without_network, test_camera_play_stop_never_waits_on_receiver_task, test_camera_cli_rejects_nonfinite_without_transport, test_network_final_state_is_verified, test_adapter_selection_is_unambiguous (+5) | `242bee7959d4` |
 | [backend/tests/test_ethernet_dns_transaction.py](../backend/tests/test_ethernet_dns_transaction.py) | 77 | 목록 확인 | test_dns_mode_recovery, test_snapshot_precedes_ip_changes | `6e24eb4209e8` |
 | [backend/tests/test_ethernet_transaction.py](../backend/tests/test_ethernet_transaction.py) | 105 | 목록 확인 | test_ethernet_transaction | `9842519e4878` |
 | [backend/tests/test_feasible_target_return.py](../backend/tests/test_feasible_target_return.py) | 79 | 목록 확인 | ReturnTests | `03d486001e63` |
@@ -166,7 +166,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [backend/tests/test_g1_quiet_observation.py](../backend/tests/test_g1_quiet_observation.py) | 52 | 목록 확인 | QuietTests | `cc779d373adf` |
 | [backend/tests/test_g1_ssh_login.py](../backend/tests/test_g1_ssh_login.py) | 56 | 목록 확인 | LoginTests | `1fca27bf0d14` |
 | [backend/tests/test_g1_teleop_dependencies.py](../backend/tests/test_g1_teleop_dependencies.py) | 60 | 목록 확인 | DependencyTests | `285271629dd5` |
-| [backend/tests/test_g1_vr_teleop_launch.py](../backend/tests/test_g1_vr_teleop_launch.py) | 326 | 목록 확인 | worker_row, WorkerRecognitionTests, UnityLaunchTests, RedirectorTests, OrchestrationTests (+2) | `b12dfcd6c02e` |
+| [backend/tests/test_g1_vr_teleop_launch.py](../backend/tests/test_g1_vr_teleop_launch.py) | 331 | 목록 확인 | worker_row, WorkerRecognitionTests, UnityLaunchTests, RedirectorTests, OrchestrationTests (+2) | `3368a64c8f34` |
 | [backend/tests/test_gate7_mujoco_feedback_receiver.py](../backend/tests/test_gate7_mujoco_feedback_receiver.py) | 120 | 목록 확인 | _payload, Gate7MujocoFeedbackReceiverTest | `f8f6c79ec65e` |
 | [backend/tests/test_gate7_simulation_feedback.py](../backend/tests/test_gate7_simulation_feedback.py) | 89 | 목록 확인 | Gate7SimulationFeedbackTest | `fc81a75e405d` |
 | [backend/tests/test_ik_visual_comparison.py](../backend/tests/test_ik_visual_comparison.py) | 112 | 목록 확인 | test_composite_goals_are_closed_multiaxis_pose_paths, test_invalid_standard_velocity_holds_pose_without_hiding_failure, test_playback_speed_preserves_fixed_steps_and_pause, test_comparison_keys_do_not_use_mujoco_shortcuts, test_comparison_reset_and_independent_joint_states | `8310646fbe68` |
@@ -215,7 +215,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [backend/tests/test_teleop_config.py](../backend/tests/test_teleop_config.py) | 154 | 목록 확인 | TeleopConfigTest | `c058e4abb9d3` |
 | [backend/tests/test_trajectory_ab.py](../backend/tests/test_trajectory_ab.py) | 66 | 목록 확인 | test_live_tracking_reaches_acceleration_limit_within_one_control_tick, test_forward_then_wrist_keeps_requested_position_fixed, test_candidate_bounds_and_stop_without_changing_baseline, test_candidate_rejects_nonfinite | `da3051704046` |
 | [backend/tests/test_unity_display_mode_launcher.py](../backend/tests/test_unity_display_mode_launcher.py) | 53 | 목록 확인 | UnityDisplayModeLauncherTests, ReadOnlyPreviewLauncherTests | `a1fbe7110ce4` |
-| [backend/tests/test_unity_workspace_policy.py](../backend/tests/test_unity_workspace_policy.py) | 257 | 목록 확인 | UnityWorkspacePolicyTest | `6d2a1600e83d` |
+| [backend/tests/test_unity_workspace_policy.py](../backend/tests/test_unity_workspace_policy.py) | 263 | 목록 확인 | UnityWorkspacePolicyTest | `f03a3bb36aaa` |
 | [backend/tests/test_upstream_mink_tracking.py](../backend/tests/test_upstream_mink_tracking.py) | 416 | 목록 확인 | UpstreamTrackingTests | `85206343c759` |
 | [backend/tests/test_virtual_center_kinematics_regression.py](../backend/tests/test_virtual_center_kinematics_regression.py) | 96 | 목록 확인 | VirtualCenterKinematicsRegressionTest | `0d2f1905a8bd` |
 | [backend/tests/test_virtual_center_orientation_policy.py](../backend/tests/test_virtual_center_orientation_policy.py) | 135 | 목록 확인 | VirtualCenterOrientationPolicyTest | `4ab5378be0b9` |
@@ -855,7 +855,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [tools/G1_ETHERNET_TRANSACTION.ps1](../tools/G1_ETHERNET_TRANSACTION.ps1) | 126 | 목록 확인 | - | `acf79f4cc8e0` |
 | [tools/G1_INPUT_OBSERVATION_LAUNCH.py](../tools/G1_INPUT_OBSERVATION_LAUNCH.py) | 131 | 목록 확인 | worker_command, engine_environment, preflight, main | `780d2da11eca` |
 | [tools/G1_INPUT_RECEIVE_AUDIT.py](../tools/G1_INPUT_RECEIVE_AUDIT.py) | 597 | 목록 확인 | _stdout_line, LatestOutput, _aged_payload, display_view, AsyncLog (+15) | `acd30b233117` |
-| [tools/G1_VR_TELEOP_LAUNCH.py](../tools/G1_VR_TELEOP_LAUNCH.py) | 314 | 목록 확인 | windows_arguments, process_arguments, collapse_venv_redirectors, option, option_casefold (+10) | `c679c8898309` |
+| [tools/G1_VR_TELEOP_LAUNCH.py](../tools/G1_VR_TELEOP_LAUNCH.py) | 318 | 목록 확인 | windows_arguments, process_arguments, collapse_venv_redirectors, option, option_casefold (+10) | `3ad1fb4ca67e` |
 | [tools/PREFLIGHT_BIMANUAL_QUEST_SIM.bat](../tools/PREFLIGHT_BIMANUAL_QUEST_SIM.bat) | 29 | 목록 확인 | - | `fde6c1d57d72` |
 | [tools/PREPARE_G1_GATE6_HOLD.bat](../tools/PREPARE_G1_GATE6_HOLD.bat) | 39 | 목록 확인 | - | `3153383c91bf` |
 | [tools/PRINT_G1_INPUTS_50HZ.bat](../tools/PRINT_G1_INPUTS_50HZ.bat) | 7 | 목록 확인 | - | `3d7b076d08e6` |
@@ -947,7 +947,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [tools/VIEW_G1_SAVED_LOWSTATE_MUJOCO.bat](../tools/VIEW_G1_SAVED_LOWSTATE_MUJOCO.bat) | 35 | 목록 확인 | - | `2169a22c9d3f` |
 | [tools/VIEW_G1_STARTUP_RECOVERY.bat](../tools/VIEW_G1_STARTUP_RECOVERY.bat) | 28 | 목록 확인 | - | `401c61f102ba` |
 | [tools/audit_ik_licenses.py](../tools/audit_ik_licenses.py) | 82 | 목록 확인 | collect, main | `4b2b83dbe7bc` |
-| [tools/bimanual_preflight.py](../tools/bimanual_preflight.py) | 205 | 목록 확인 | sha256, require, check_runtime_scene, check_source_installer, check_tool_contracts (+5) | `77cda54e91a2` |
+| [tools/bimanual_preflight.py](../tools/bimanual_preflight.py) | 205 | 목록 확인 | sha256, require, check_runtime_scene, check_source_installer, check_tool_contracts (+5) | `2af48db04afa` |
 | [tools/evaluate_g1_velocity_direction_mujoco.py](../tools/evaluate_g1_velocity_direction_mujoco.py) | 173 | 목록 확인 | sha256, gravity_orientation, yaw_from_quaternion, wrapped, step_policy (+2) | `9c1a358f0c47` |
 | [tools/g1_camera_ssh.py](../tools/g1_camera_ssh.py) | 115 | 목록 확인 | read_exact, read_packet, check_environment, run | `46724a85e7aa` |
 | [tools/g1_lowstate_view.py](../tools/g1_lowstate_view.py) | 103 | 목록 확인 | validate, run | `4a4e83208060` |

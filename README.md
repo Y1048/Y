@@ -1,4 +1,7 @@
-> 새 PC 최초 설치: [PORTABLE_TELEOP_SETUP.md](docs/PORTABLE_TELEOP_SETUP.md) → `tools/SETUP_G1_VR_TELEOP.bat`
+> **새 PC 전체 준비 목록:** [G1_TELEOP_NEW_PC_SETUP.md](G1_TELEOP_NEW_PC_SETUP.md)
+> (Quest, Meta Horizon Link, SteamVR, Omni Connect, Unity, Python, SSH, G1 네트워크 포함)
+>
+> 자동 설치기 상세: [PORTABLE_TELEOP_SETUP.md](docs/PORTABLE_TELEOP_SETUP.md) → `tools/SETUP_G1_VR_TELEOP.bat`
 
 # G1 VR Teleoperation
 

@@ -69,8 +69,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         if (follow_omni_body_heading && xr_center_eye != null)
         {
             OmniBodyHeading = gameObject.AddComponent<G1OmniBodyHeading>();
-            OmniBodyHeading.Initialize(this, ambient_operator_environment == null
-                ? null : ambient_operator_environment.transform);
+            OmniBodyHeading.Initialize(this);
         }
     }
 

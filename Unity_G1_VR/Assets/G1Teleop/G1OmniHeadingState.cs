@@ -20,6 +20,11 @@ public sealed class G1OmniHeadingState
     public static double ToUnityYawDelta(double omniYawDelta)
         => -omniYawDelta;
 
+    public static double TrackingCorrectionDegrees(
+        double measuredRobotYawDelta,
+        double operatorBodyYawDelta)
+        => measuredRobotYawDelta - operatorBodyYawDelta;
+
     private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 
     public bool Accept(string id, double[] sample, double receipt)

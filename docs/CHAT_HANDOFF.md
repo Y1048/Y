@@ -1,3 +1,15 @@
+## 2026-09-22 로그 기반 실측 G1 yaw 보정 복원
+
+사용자 재현 로그에서 Omni 상대 yaw는 세션 중 최대 약 +83.9도 뒤 종료 시 +0.07도로
+돌아왔고, 같은 세션 LowState IMU yaw는 시작 대비 +47.1도였다. Unity의 손/target은
+Omni yaw만, G1 모델은 실측 yaw를 따라 서로 갈라졌다. `8aecd7d`의 검증된 구조를
+복원해 XR tracking correction을 `measured G1 yaw - operator Omni yaw`로 계산한다.
+하늘색 Quest 손목과 초록색 IK/feasible target은 모두 같은 실측-yaw display frame을
+사용하고, binder는 그 실측 yaw를 제거한 body-relative pose만 IK/UDP에 전달한다.
+따라서 팔을 뻗은 채 몸통이 회전하면 목표는 G1 몸통과 함께 회전하며, Omni와 G1의
+응답 지연이 팔 이동으로 들어가지 않는다. 재현 세션은 simulation-only였고 send log도
+observation-only/motor acceptance NOT_CHECKED였다. 실제 명령 검증은 하지 않았다.
+
 ## 2026-09-22 Quest 손목과 IK target 표시 좌표 통일
 
 사용자 확인에서 하늘색 Quest 손목은 Omni yaw를 따라갔지만 초록색 IK/feasible target은

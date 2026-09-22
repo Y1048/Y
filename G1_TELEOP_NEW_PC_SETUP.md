@@ -117,8 +117,9 @@ cd C:\G1_Teleop_Project
 git status --short --branch
 ```
 
-GitHub 인증이 필요한 저장소라면 해당 PC의 GitHub 로그인 또는 credential을 먼저
-설정한다. 기존 작업 폴더가 dirty이면 `reset --hard`, `clean`, 강제 pull을 하지 않는다.
+현재 `Y1048/Y`는 공개 저장소이므로 새 PC에서 clone/fetch/pull할 때 GitHub 계정이나
+로그인이 필요 없다. 변경을 GitHub에 push할 때만 쓰기 권한이 있는 계정 인증이 필요하다.
+기존 작업 폴더가 dirty이면 `reset --hard`, `clean`, 강제 pull을 하지 않는다.
 다른 PC에서 이어받을 때는 다음 순서로 확인한다.
 
 ```powershell
@@ -258,4 +259,3 @@ PC에서 만든 원본 로그, `.venv-teleop`, Unity `Library`와 계정/장치 
 - [ ] `START_G1_VR_TELEOP.bat`이 Unity 프로젝트와 관찰 경로를 시작한다.
 - [ ] Unity Play에서 양손 marker, engage/pinch/re-engage, Omni 입력, 카메라를 확인했다.
 - [ ] 위 결과를 실제 G1 모터 제어 검증으로 오해하지 않는다.
-

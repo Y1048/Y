@@ -1963,3 +1963,5 @@ Verification: 25 production heading-state/correction assertions PASS; full Unity
 
 ## 2026-09-22 New-PC complete setup checklist
 Added root-visible `G1_TELEOP_NEW_PC_SETUP.md` covering hardware, Git/Python3.11/Unity6000.5.4f1/Meta Horizon Link/OpenSSH, SteamVR plus Omni Connect, project setup, OpenXR selection, G1 networking, first launch, diagnostics and completion criteria. It explicitly distinguishes SteamVR's Omni installer prerequisite from this Oculus-plugin project's required Meta active OpenXR runtime, and marks WSL/ADB/Android/Visual Studio as conditional rather than default requirements. The checklist also states that the integrated launcher is observation/input/camera only and does not validate or operate G1 motors.
+
+The user changed `Y1048/Y` to public. A credential-helper-disabled, noninteractive `git ls-remote` successfully read branch `codex/g1-laptop-sync-20260917` at `c1e32b6`; therefore clone/fetch/pull no longer require a GitHub account. Push still requires an authorized account. The root setup checklist was updated accordingly.

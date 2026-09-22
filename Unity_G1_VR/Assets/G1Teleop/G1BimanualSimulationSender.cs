@@ -31,13 +31,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private double leftReadyUntil = double.NegativeInfinity;
     private double rightReadyUntil = double.NegativeInfinity;
 
-    public enum ArmMode { RightArm, BimanualSimulation }
     public bool useExistingScene;
-    public ArmMode armMode = ArmMode.BimanualSimulation;
     public G1ExistingHandTargetBinder rightBinder;
     public G1ExistingHandTargetBinder leftBinder;
     public G1ExistingTargetUdpSender existingSender;
-    public bool UsesExistingScene => useExistingScene && armMode == ArmMode.BimanualSimulation;
+    public bool UsesExistingScene => useExistingScene;
     public bool IsTracking => active && backendState == "tracking";
     public float[] LatestJoints { get; private set; }
     public string[] LatestJointNames { get; private set; }

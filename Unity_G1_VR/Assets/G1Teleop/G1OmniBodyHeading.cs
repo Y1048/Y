@@ -5,9 +5,9 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// Separates operator body yaw from measured G1 body yaw. The XR display follows
-/// measured LowState base yaw while the hand binders can recover body-relative
-/// input poses without inheriting the display correction.
+/// Robot-centred rendering follows the operator's Omni body yaw immediately.
+/// The fixed-base preview remains in its robot frame while XR and surroundings
+/// rotate inversely; hand input is corrected back into that same robot frame.
 /// </summary>
 [DefaultExecutionOrder(-30000)]
 public sealed class G1OmniBodyHeading : MonoBehaviour
@@ -20,23 +20,18 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
     }
     private UdpClient receiver;
     private G1HeadLockedCamera alignment;
+    private Transform environment;
     private G1OmniHeadingState state = new G1OmniHeadingState();
-    private double measured_base_degrees;
-    private double previous_measured_base_yaw;
-    private double applied_tracking_correction;
-    private ulong measured_state_revision;
-    private bool measured_base_initialized;
+    private double applied_operator_yaw;
 
     public double OperatorBodyYawDegrees
         => G1OmniHeadingState.ToUnityYawDelta(state.Degrees);
-    public double MeasuredRobotYawDegrees => measured_base_degrees;
-    public double InputObservedBodyYawDegrees => measured_base_initialized
-        ? measured_base_degrees
-        : OperatorBodyYawDegrees;
+    public double InputObservedBodyYawDegrees => OperatorBodyYawDegrees;
 
-    public void Initialize(G1HeadLockedCamera cameraAlignment)
+    public void Initialize(G1HeadLockedCamera cameraAlignment, Transform surroundings)
     {
         alignment = cameraAlignment;
+        environment = surroundings;
         try
         {
             receiver = new UdpClient(AddressFamily.InterNetwork);
@@ -71,20 +66,16 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
             catch (ArgumentException) { /* malformed view-only packet */ }
         }
         if (!ready) return;
-        UpdateMeasuredBaseHeading();
-        double desired_correction = measured_base_initialized
-            ? G1OmniHeadingState.TrackingCorrectionDegrees(
-                measured_base_degrees,
-                OperatorBodyYawDegrees)
-            : 0.0;
-        double correction_delta = desired_correction - applied_tracking_correction;
-        if (correction_delta == 0) return;
-        Quaternion turn = Quaternion.AngleAxis((float)correction_delta, Vector3.up);
+        double operator_delta = state.Degrees - applied_operator_yaw;
+        if (operator_delta == 0) return;
+        Quaternion turn = Quaternion.AngleAxis(
+            (float)G1OmniHeadingState.ToUnityYawDelta(operator_delta), Vector3.up);
         Transform tracking = alignment.TrackingSpace;
         Vector3 eye = alignment.xr_center_eye.position;
         tracking.rotation = turn * tracking.rotation;
         tracking.position += eye - alignment.xr_center_eye.position;
-        applied_tracking_correction = desired_correction;
+        if (environment != null) environment.rotation = turn * environment.rotation;
+        applied_operator_yaw = state.Degrees;
     }
 
     public Vector3 CorrectInputPosition(Vector3 displayedWorldPosition)
@@ -105,42 +96,6 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         return Quaternion.AngleAxis(
             (float)-InputObservedBodyYawDegrees,
             Vector3.up) * displayedWorldRotation;
-    }
-
-    private void UpdateMeasuredBaseHeading()
-    {
-        G1RobotStateUdpReceiver hardware = alignment == null
-            || alignment.robot_preview == null
-            ? null
-            : alignment.robot_preview.hardware_state_receiver;
-        if (hardware == null
-            || !hardware.HasBasePoseState
-            || hardware.StateRevision == measured_state_revision)
-        {
-            return;
-        }
-
-        measured_state_revision = hardware.StateRevision;
-        Quaternion unity_rotation = G1UnityRightArmPreview.RobotQuaternionToUnity(
-            hardware.LatestBaseRotationRobot);
-        Vector3 forward = Vector3.ProjectOnPlane(
-            unity_rotation * Vector3.forward,
-            Vector3.up);
-        if (forward.sqrMagnitude < 0.000001f)
-        {
-            return;
-        }
-        double yaw = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
-        if (!measured_base_initialized)
-        {
-            previous_measured_base_yaw = yaw;
-            measured_base_initialized = true;
-            return;
-        }
-        measured_base_degrees += G1OmniHeadingState.Delta(
-            yaw,
-            previous_measured_base_yaw);
-        previous_measured_base_yaw = yaw;
     }
 
     private void OnDestroy()

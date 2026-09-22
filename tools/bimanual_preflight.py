@@ -44,7 +44,7 @@ def check_runtime_scene(runtime_root):
         encoding="utf-8")
     require("Assembly-CSharp::G1BimanualSimulationSender" in scene,
             "runtime SampleScene has no bimanual sender")
-    for field in ("  useExistingScene: 1", "  armMode: 1", "  port: 5020"):
+    for field in ("  useExistingScene: 1", "  port: 5020"):
         require(field in scene, f"runtime SampleScene missing {field.strip()}")
     build = (runtime_root / "Unity_G1_VR/ProjectSettings/EditorBuildSettings.asset").read_text(
         encoding="utf-8")
@@ -58,7 +58,7 @@ def check_source_installer():
     require('MenuItem("G1 Teleop/Arms/Use Both Arms")' in installer,
             "source bimanual scene installer is missing")
     require("dual.useExistingScene = true;" in installer and
-            "ArmMode.BimanualSimulation" in installer,
+            "Use Original Right Arm" not in installer,
             "source bimanual installer is incomplete")
 
 

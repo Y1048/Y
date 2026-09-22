@@ -96,10 +96,9 @@ class UnityLaunchTests(unittest.TestCase):
         row = [r'C:\Unity\Unity.exe', '-PROJECTPATH', str(launcher.UNITY_PROJECT)]
         self.assertTrue(launcher.unity_project_running([row]))
 
-    def test_duplicate_exact_project_is_refused(self):
+    def test_duplicate_exact_project_is_reused(self):
         row = [r'C:\Unity\Unity.exe', '-projectPath', str(launcher.UNITY_PROJECT)]
-        with self.assertRaisesRegex(RuntimeError, 'Duplicate Unity editors'):
-            launcher.unity_project_running([row, list(row)])
+        self.assertTrue(launcher.unity_project_running([row, list(row)]))
 
     def test_editor_resolution_prefers_valid_override(self):
         with tempfile.TemporaryDirectory() as temporary:

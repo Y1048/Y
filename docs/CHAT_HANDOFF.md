@@ -1,3 +1,18 @@
+## 2026-09-22 Both Arms 전용·Unity 종료/재사용·Omni 회전 수정
+
+`Use Original Right Arm` 메뉴와 `ArmMode.RightArm` 분기를 제거하고 `SampleScene`을
+`useExistingScene=1`, 양팔 binder, UDP 5020 구성으로 저장했다. Unity 진입 뒤 별도
+모드 선택 없이 Both Arms만 사용한다. `START_G1_VR_TELEOP.bat`은 동일 프로젝트의
+Unity 프로세스가 여러 개 감지되어도 기존 인스턴스를 재사용하며 새 창을 열지 않는다.
+
+Play 종료 시 카메라 TCP worker를 Unity 메인 스레드에서 `Task.Wait(250)`하던 경로를
+제거했다. 소켓을 먼저 닫아 worker를 깨우고 완료 continuation에서 cancellation token을
+정리하므로 `OnDisable`/`OnDestroy`가 즉시 반환한다. 기존 로그에서 종료 중 cancellation
+이중 정리 메시지도 확인됐다. Omni yaw 화면 처리는 실제 LowState yaw를 기다리는 최근
+분리를 되돌려, Omni 상대 yaw가 들어오면 XR tracking space와 주변 환경에 즉시 반영한다.
+손 입력은 같은 operator yaw를 역보정해 robot frame을 유지한다. 실제 G1/DDS는 실행하지
+않았다. Python 정적/런처 검사 132개와 18 subtest, Unity 전체 컴파일 및 프로젝트 validator가 통과했다.
+
 ## 2026-09-22 Omni 상대 yaw + 120도 이동 좌표 변환
 
 Omni `movement_x`(오른쪽 양수), `movement_y`(전진 양수)를 첫 유효 yaw 기준의

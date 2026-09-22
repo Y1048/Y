@@ -119,6 +119,33 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &267485915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7215171681461543761, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1503043332}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!114 &267485916 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7215171681461543774, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1503043332}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb7623a8f0b49cf4dbaa40aea4d4be64, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!4 &267485917 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2483171112402213428, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1503043332}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &411926152
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,6 +274,7 @@ GameObject:
   - component: {fileID: 539268367}
   - component: {fileID: 539268368}
   - component: {fileID: 539268369}
+  - component: {fileID: 539268370}
   m_Layer: 0
   m_Name: G1_Teleoperation_System
   m_TagString: Untagged
@@ -279,7 +307,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22a4ed705fa3eb64dbb4d479c3a71c9b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1ExistingTargetUdpSender
   hand_binder: {fileID: 539268365}
   state_receiver: {fileID: 539268367}
@@ -312,9 +340,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98483d1cd2b07a24982393524493bf90, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1UnityRightArmPreview
   hand_binder: {fileID: 539268365}
+  bimanual_simulation: {fileID: 539268370}
   target_sender: {fileID: 539268363}
   state_receiver: {fileID: 539268367}
   hardware_state_receiver: {fileID: 539268369}
@@ -334,7 +363,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fbdffac8678f7cd488bebb070fa76581, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1ExistingHandTargetBinder
   source_hand: {fileID: 1503043335}
   target_transform: {fileID: 539268355}
@@ -379,7 +408,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8f5abb53a666c7479a7b17b1daf1e79, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1RobotStateUdpReceiver
   udp_port: 5006
   state_timeout: 0.5
@@ -395,7 +424,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c912bf0c826844d28808e60a41de83dd, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1HeadLockedCamera
   xr_center_eye: {fileID: 1503043336}
   xr_tracking_space: {fileID: 1630365235}
@@ -406,6 +435,8 @@ MonoBehaviour:
   minimum_floor_head_height: 0.4
   show_head_camera_pip: 1
   head_camera_tcp_port: 5011
+  show_ambient_operator_environment: 1
+  follow_omni_body_heading: 1
 --- !u!114 &539268369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,12 +447,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8f5abb53a666c7479a7b17b1daf1e79, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::G1RobotStateUdpReceiver
   udp_port: 5010
   state_timeout: 0.5
   expected_state_source: g1_lowstate_read_only
   accept_packets_without_source: 0
+--- !u!114 &539268370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539268351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97c1758b1f64486cac07a5c1fd3cbaef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::G1BimanualSimulationSender
+  useExistingScene: 1
+  rightBinder: {fileID: 539268365}
+  leftBinder: {fileID: 1302454211}
+  existingSender: {fileID: 539268363}
+  head: {fileID: 1503043336}
+  leftHand: {fileID: 267485916}
+  rightHand: {fileID: 1503043337}
+  leftSkeleton: {fileID: 267485915}
+  rightSkeleton: {fileID: 1556345699}
+  port: 5020
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,6 +603,83 @@ Transform:
   m_Children:
   - {fileID: 411926156}
   - {fileID: 705507995}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1302454210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1302454212}
+  - component: {fileID: 1302454211}
+  m_Layer: 0
+  m_Name: G1_Left_Hand_Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1302454211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302454210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbdffac8678f7cd488bebb070fa76581, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::G1ExistingHandTargetBinder
+  source_hand: {fileID: 267485917}
+  target_transform: {fileID: 1302454212}
+  reference_transform: {fileID: 1503043336}
+  head_camera_alignment: {fileID: 539268368}
+  ovr_hand: {fileID: 267485916}
+  ovr_skeleton: {fileID: 267485915}
+  prefer_skeleton_wrist: 1
+  use_anatomical_hand_frame: 1
+  use_palm_center: 0
+  require_tracked_hand: 1
+  apply_position: 1
+  apply_rotation: 1
+  auto_calibrate_on_first_track: 1
+  require_alignment_to_engage: 1
+  require_orientation_alignment_to_engage: 0
+  use_reference_yaw: 1
+  preview_neutral_offset: {x: -0.22, y: -0.24, z: 0.48}
+  movement_scale: {x: 1, y: 1, z: 1}
+  position_offset: {x: 0, y: 0, z: 0}
+  position_smoothing: 1
+  auto_calibration_delay: 0.35
+  engagement_distance: 0.07
+  engagement_orientation_tolerance_degrees: 30
+  engagement_hold_duration: 0.35
+  engagement_position_stability: 0.015
+  engagement_rotation_stability_degrees: 10
+  engagement_frame_initialization_delay: 0.25
+  tracked_wrist_max_speed_mps: 5
+  tracked_wrist_min_step_allowance: 0.02
+  body_translation_minimum_step: 0.0005
+  body_translation_direction_cosine: 0.85
+  body_translation_magnitude_ratio_minimum: 0.55
+  body_translation_residual_tolerance: 0.012
+--- !u!4 &1302454212
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302454210}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1503043332
@@ -697,8 +827,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb7623a8f0b49cf4dbaa40aea4d4be64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!114 &1556345699 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7215171682644439250, guid: f54012181eacade4ea242c65f804720f, type: 3}
@@ -708,8 +838,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!4 &1630365235 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2483171112402191008, guid: f54012181eacade4ea242c65f804720f, type: 3}
@@ -722,3 +852,4 @@ SceneRoots:
   - {fileID: 1503043332}
   - {fileID: 539268355}
   - {fileID: 711970727}
+  - {fileID: 1302454212}

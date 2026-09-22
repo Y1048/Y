@@ -77,6 +77,17 @@ public static void Run() {
     assert receiver.count("frame_deadline))") == 2
 
 
+def test_camera_play_stop_never_waits_on_receiver_task():
+    source = (TOOLS.parents[1] / "Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs").read_text(
+        encoding="utf-8-sig")
+    stop = source.split("    private void StopReceiver()", 1)[1].split(
+        "    private void ConsumeNewestFrame()", 1)[0]
+    assert ".Wait(" not in stop
+    assert "active_client?.Close()" in stop
+    assert "tcp_listener?.Stop()" in stop
+    assert "ContinueWith" in stop
+
+
 @pytest.mark.parametrize("name,field", [
     (name, field) for name, fields in (
         ("g1_camera_tcp_bridge.py", ("fps", "camera_timeout", "connect_timeout", "reconnect_delay")),

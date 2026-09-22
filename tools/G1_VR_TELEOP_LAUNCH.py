@@ -95,7 +95,7 @@ def normalized_path(value):
 
 
 def unity_project_running(rows, project=UNITY_PROJECT):
-    """Identify only Unity instances that explicitly own this exact project."""
+    """Reuse any Unity instance that explicitly owns this exact project."""
     target = normalized_path(project)
     matches = []
     for argv in rows:
@@ -104,8 +104,6 @@ def unity_project_running(rows, project=UNITY_PROJECT):
         project_arg = option_casefold(argv, '-projectPath')
         if project_arg and normalized_path(project_arg) == target:
             matches.append(argv)
-    if len(matches) > 1:
-        raise RuntimeError('Duplicate Unity editors own Unity_G1_VR; close the extra editor first.')
     return bool(matches)
 
 

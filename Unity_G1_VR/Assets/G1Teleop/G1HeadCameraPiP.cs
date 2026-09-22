@@ -414,7 +414,11 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         }
 
         receiver_started = false;
-        receiver_cancellation?.Cancel();
+        CancellationTokenSource cancellation = receiver_cancellation;
+        receiver_cancellation = null;
+        Task task = receiver_task;
+        receiver_task = null;
+        cancellation?.Cancel();
         lock (state_lock)
         {
             active_client?.Close();
@@ -425,19 +429,16 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         tcp_listener?.Stop();
         tcp_listener = null;
 
-        if (receiver_task != null && !receiver_task.IsCompleted)
-        {
-            try
-            {
-                receiver_task.Wait(250);
-            }
-            catch (AggregateException)
-            {
-            }
-        }
-        receiver_task = null;
-        receiver_cancellation?.Dispose();
-        receiver_cancellation = null;
+        // Play-mode teardown runs on Unity's main thread. Closing the sockets
+        // unblocks Accept/Read; never synchronously wait here or the Editor can
+        // appear hung while the worker unwinds. Dispose only after completion.
+        if (task != null)
+            task.ContinueWith(_ => cancellation?.Dispose(),
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
+        else
+            cancellation?.Dispose();
         received_frame = false;
     }
 

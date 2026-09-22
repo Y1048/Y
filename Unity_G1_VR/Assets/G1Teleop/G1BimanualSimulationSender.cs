@@ -91,7 +91,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         Vector3 goal;
         if (!TryGetIkTarget(left, out goal)) return;
         var binder = left ? leftBinder : rightBinder;
-        Debug.Log(string.Format("[BIMANUAL TARGET] {0} frame=omni_world_v1 yaw_deg={1:F1} gap_cm={2:F2} raw={3} ik={4}",
+        Debug.Log(string.Format("[BIMANUAL TARGET] {0} frame=hmd_shoulder_world_v1 yaw_deg={1:F1} gap_cm={2:F2} raw={3} ik={4}",
             left ? "L" : "R", Omni == null ? 0 : Omni.OperatorBodyYawDegrees,
             Vector3.Distance(goal, binder.TrackedWristPosition)*100,
             binder.TrackedWristPosition.ToString("F3"), goal.ToString("F3")));
@@ -118,20 +118,29 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         public bool tracked;
         public float[] position_m = new float[3];
+        public float[] raw_position_m = new float[3];
         public float[] engage_offset_m = new float[3];
         public float[] quaternion_wxyz = new float[] { 1, 0, 0, 0 };
+        public float[] raw_quaternion_wxyz = new float[] { 1, 0, 0, 0 };
     }
     [Serializable] private class Packet
     {
-        public string schema = "g1.bimanual.unity.sim.v2";
+        public string schema = "g1.bimanual.unity.sim.v3";
         public bool simulation_only = true;
         public string session;
         public long sequence;
         public double sender_time_s;
         public bool engage;
         public bool return_home;
-        public string input_frame = "omni_world_v1";
+        public string input_frame = "hmd_shoulder_world_v1";
         public float base_yaw_rad;
+        public float[] quest_origin_world_m = new float[3];
+        public float[] hmd_world_m = new float[3];
+        public float[] unity_robot_root_position_m = new float[3];
+        public float[] unity_robot_root_wxyz = new float[] { 1, 0, 0, 0 };
+        public float[] unity_shoulder_center_m = new float[3];
+        public float[] unity_left_wrist_world_m = new float[3];
+        public float[] unity_right_wrist_world_m = new float[3];
         public HandPacket left = new HandPacket();
         public HandPacket right = new HandPacket();
     }
@@ -276,10 +285,39 @@ public class G1BimanualSimulationSender : MonoBehaviour
         // Already aligned at Play: send absolute wrist pose in that world.
         Vector3 p = binder.TrackedWristPosition;
         Quaternion q = binder.TrackedWristRotation;
+        Vector3 rawP = binder.DisplayedWristPosition;
+        Quaternion rawQ = binder.DisplayedWristRotation;
         output.engage_offset_m = new float[3];
         output.position_m = new[] { p.x, p.y, p.z };
         output.quaternion_wxyz = new[] { q.w, q.x, q.y, q.z };
+        output.raw_position_m = new[] { rawP.x, rawP.y, rawP.z };
+        output.raw_quaternion_wxyz = new[] { rawQ.w, rawQ.x, rawQ.y, rawQ.z };
         return true;
+    }
+
+    private static float[] V3(Vector3 value) => new[] { value.x, value.y, value.z };
+    private static float[] Q4(Quaternion value) => new[] { value.w, value.x, value.y, value.z };
+
+    private void UpdateWorldDiagnostics()
+    {
+        if (!useExistingScene || packet == null) return;
+        G1HeadLockedCamera camera = rightBinder == null ? null : rightBinder.head_camera_alignment;
+        G1OmniBodyHeading omni = camera == null ? null : camera.OmniBodyHeading;
+        if (camera != null && camera.xr_center_eye != null)
+            packet.hmd_world_m = V3(camera.xr_center_eye.position);
+        if (omni != null && omni.HasSpatialOrigin)
+            packet.quest_origin_world_m = V3(omni.QuestOriginWorld);
+        if (camera == null || camera.robot_preview == null) return;
+        if (camera.robot_preview.TryGetBimanualWorldFrame(
+            out Vector3 rootPosition, out Quaternion rootRotation,
+            out Vector3 shoulderCenter, out Vector3 leftWrist, out Vector3 rightWrist))
+        {
+            packet.unity_robot_root_position_m = V3(rootPosition);
+            packet.unity_robot_root_wxyz = Q4(rootRotation);
+            packet.unity_shoulder_center_m = V3(shoulderCenter);
+            packet.unity_left_wrist_world_m = V3(leftWrist);
+            packet.unity_right_wrist_world_m = V3(rightWrist);
+        }
     }
 
     private void ResetBinders()
@@ -337,7 +375,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 ikTargetValid = feedback.ik_target_valid &&
                     ValidDelta(feedback.left_ik_target_operator_delta) &&
                     ValidDelta(feedback.right_ik_target_operator_delta);
-                worldTargetValid = feedback.input_frame == "omni_world_v1" && feedback.ik_target_valid
+                worldTargetValid = feedback.input_frame == "hmd_shoulder_world_v1" && feedback.ik_target_valid
                     && ValidRotation(feedback.right_ik_target_world_wxyz) && ValidDelta(feedback.left_ik_target_world_m)
                     && ValidDelta(feedback.right_ik_target_world_m);
                 if (worldTargetValid)
@@ -408,9 +446,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 leftBinder.DisplayedWristPosition, leftBinder.DisplayedWristRotation);
         }
         bool omniReady = Omni != null && Omni.IsReady;
-        packet.schema = useExistingScene ? "g1.bimanual.unity.sim.v2" : "g1.bimanual.unity.sim.v1";
-        packet.input_frame = useExistingScene ? "omni_world_v1" : "legacy_relative";
+        packet.schema = useExistingScene ? "g1.bimanual.unity.sim.v3" : "g1.bimanual.unity.sim.v1";
+        packet.input_frame = useExistingScene ? "hmd_shoulder_world_v1" : "legacy_relative";
         packet.base_yaw_rad = Omni == null ? 0 : -(float)Omni.OperatorBodyYawDegrees * Mathf.Deg2Rad;
+        UpdateWorldDiagnostics();
         if (useExistingScene && !omniReady)
         {
             packet.left.tracked = packet.right.tracked = tracked = false;

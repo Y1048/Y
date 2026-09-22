@@ -1,5 +1,4 @@
 """Loopback-only Unity paired wrist input for the isolated kinematic simulator."""
-import copy
 import argparse
 import json
 import math
@@ -15,7 +14,8 @@ from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_runtime import runtime_metadata, startup_stage
 
 SCHEMA = 'g1.bimanual.unity.sim.v1'
-WORLD_SCHEMA = 'g1.bimanual.unity.sim.v2'
+WORLD_SCHEMA = 'g1.bimanual.unity.sim.v3'
+WORLD_FRAME = 'hmd_shoulder_world_v1'
 BASIS = np.array([[0., 0., 1.], [-1., 0., 0.], [0., 1., 0.]])
 
 
@@ -76,11 +76,11 @@ def decode(raw):
     if type(x.get('sender_time_s')) not in (int, float) or not math.isfinite(x['sender_time_s']) or x['sender_time_s'] < 0:
         raise ValueError('sender_time')
     frame = x.get('input_frame', 'legacy_relative')
-    if (x['schema'] == WORLD_SCHEMA) != (frame == 'omni_world_v1'):
+    if (x['schema'] == WORLD_SCHEMA) != (frame == WORLD_FRAME):
         raise ValueError('schema_frame_mismatch')
-    if frame not in ('legacy_relative', 'omni_world_v1'):
+    if frame not in ('legacy_relative', WORLD_FRAME):
         raise ValueError('input_frame')
-    if frame == 'omni_world_v1':
+    if frame == WORLD_FRAME:
         yaw = x.get('base_yaw_rad')
         if type(yaw) not in (int, float) or not math.isfinite(yaw) or abs(yaw) > 1e6:
             raise ValueError('base_yaw_rad')
@@ -106,20 +106,22 @@ def decode(raw):
                     type(v) not in (int, float) or not math.isfinite(v) for v in offset)
                     or np.linalg.norm(offset) > .15):
                 raise ValueError('engage_offset')
+        for key, length in (('raw_position_m', 3), ('raw_quaternion_wxyz', 4)):
+            if key in hand:
+                values = hand[key]
+                if (not isinstance(values, list) or len(values) != length or any(
+                        type(v) not in (int, float) or not math.isfinite(v) for v in values)):
+                    raise ValueError(key)
+    for key, length in (('quest_origin_world_m', 3), ('hmd_world_m', 3),
+                        ('unity_robot_root_position_m', 3), ('unity_robot_root_wxyz', 4),
+                        ('unity_shoulder_center_m', 3), ('unity_left_wrist_world_m', 3),
+                        ('unity_right_wrist_world_m', 3)):
+        if key in x:
+            values = x[key]
+            if (not isinstance(values, list) or len(values) != length or any(
+                    type(v) not in (int, float) or not math.isfinite(v) for v in values)):
+                raise ValueError(key)
     return x
-
-
-def world_packet_in_base(packet):
-    """Filter arm motion in the prescribed base frame, so body turns have no filter lag."""
-    result = copy.deepcopy(packet)
-    robot_rotation = mink.SO3.exp(np.array([0., 0., packet['base_yaw_rad']])).as_matrix()
-    unity_rotation = BASIS.T @ robot_rotation @ BASIS
-    for side in ('left', 'right'):
-        hand = result[side]
-        hand['position_m'] = (unity_rotation.T @ np.asarray(hand['position_m'])).tolist()
-        hand['quaternion_wxyz'] = mink.SO3.from_matrix(unity_rotation.T @
-            mink.SO3(np.asarray(hand['quaternion_wxyz'])).as_matrix()).wxyz.tolist()
-    return result
 
 
 class PairedHandFilter:
@@ -211,11 +213,10 @@ class UnityCycle:
             if self.state == 'tracking': self.start_return('input_frame_changed')
             return False
         self.input_frame = frame
-        self.world_input = frame == 'omni_world_v1'
+        self.world_input = frame == WORLD_FRAME
         if self.world_input:
             self.base_yaw_rad = packet['base_yaw_rad']
             self.sim.set_base_yaw(self.base_yaw_rad)
-            packet = world_packet_in_base(packet)
         elif isinstance(self.sim, BimanualSimulation):
             self.base_yaw_rad = 0.
             self.sim.set_base_yaw(0.)
@@ -241,7 +242,12 @@ class UnityCycle:
                 self.state = 'tracking'
                 self.reason = ''
         if self.state == 'tracking':
-            self.pose_filter.update(packet)
+            # This protocol already supplies a single aligned world target.
+            # Preserve it exactly; the arm motion policy performs command shaping.
+            if self.world_input:
+                self.pose_filter.reset(packet)
+            else:
+                self.pose_filter.update(packet)
         return True
 
     def start_return(self, reason):
@@ -274,15 +280,16 @@ class UnityCycle:
                     origin_p, origin_r = self.origins[side]
                     hand = self.pose_filter.hands[side]
                     home = self.sim.home_targets[side]
-                    delta_r = mink.SO3(np.array(hand['quaternion_wxyz'])).as_matrix() @ origin_r.T
+                    hand_r = mink.SO3(np.array(hand['quaternion_wxyz'])).as_matrix()
+                    delta_r = hand_r @ origin_r.T
                     robot_r = BASIS @ delta_r @ BASIS.T @ home.rotation().as_matrix()
                     position = home.translation() + BASIS @ (
                         np.array(hand['position_m']) - origin_p + self.engage_offsets[side])
                     if self.world_input:
-                        # Raw aligned hand position is the target, not an engage displacement.
-                        base_r = self.sim.base_rotation
-                        position = base_r @ (BASIS @ np.asarray(hand['position_m']))
-                        robot_r = base_r @ robot_r
+                        # One direct aligned-world conversion. The prescribed base
+                        # is already rotated before Mink receives this world goal.
+                        position = BASIS @ np.asarray(hand['position_m'])
+                        robot_r = BASIS @ hand_r @ BASIS.T
                     goals[side] = mink.SE3.from_rotation_and_translation(mink.SO3.from_matrix(robot_r), position)
                 self.last_tick_action = 'tracking'
                 self.sim.step(goals)
@@ -321,6 +328,12 @@ class UnityCycle:
         result['input_frame'] = self.input_frame
         self.feedback_sequence += 1
         if isinstance(self.sim, BimanualSimulation):
+            a = self.sim.base_qadr
+            base_pose = self.sim.config.q[a:a+7]
+            base_rotation = mink.SO3(base_pose[3:]).as_matrix()
+            result['mujoco_base_position_world_m'] = (BASIS.T @ base_pose[:3]).tolist()
+            result['mujoco_base_world_wxyz'] = mink.SO3.from_matrix(
+                BASIS.T @ base_rotation @ BASIS).wxyz.tolist()
             result.update(joint_names=self.sim.names,
                           q_rad=self.sim.config.q[self.sim.qids].tolist())
             # Display the goal actually supplied to IK (filtered/projected),
@@ -335,10 +348,18 @@ class UnityCycle:
                 position = self.sim.motion[side].effective_target_position
                 body_position = self.sim.base_rotation.T @ position if self.world_input else position
                 delta = BASIS.T @ (body_position-self.sim.home_targets[side].translation())
+                result[side+'_ik_target_base_m'] = (BASIS.T @ body_position).tolist() if valid else None
+                actual = self.sim.config.get_transform_frame_to_world(
+                    side+'_wrist_yaw_link', 'body')
+                result[side+'_actual_wrist_world_m'] = (BASIS.T @ actual.translation()).tolist()
+                result[side+'_actual_wrist_world_wxyz'] = mink.SO3.from_matrix(
+                    BASIS.T @ actual.rotation().as_matrix() @ BASIS).wxyz.tolist()
                 if self.world_input:
                     result[side+'_ik_target_world_m'] = (BASIS.T @ position).tolist() if valid else None
                     result[side+'_ik_target_world_wxyz'] = mink.SO3.from_matrix(BASIS.T @
                         self.sim.motion[side].effective_target_rotation @ BASIS).wxyz.tolist() if valid else None
+                    result[side+'_ik_position_error_m'] = float(np.linalg.norm(
+                        actual.translation()-position)) if valid else None
                 result[side+'_ik_target_operator_delta'] = delta.tolist() if valid else None
         return result
 

@@ -20,6 +20,11 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
     private double stableSince = double.NegativeInfinity, stableYaw, originYaw;
     private double sourceStamp;
     private bool faulted;
+    private Vector3 questOriginWorld;
+    private Vector3 robotShoulderOriginWorld;
+    public bool HasSpatialOrigin { get; private set; }
+    public Vector3 QuestOriginWorld => questOriginWorld;
+    public Vector3 RobotShoulderOriginWorld => robotShoulderOriginWorld;
     public bool IsAligned { get; private set; }
     public bool HasStableSample => !faulted && IsFresh &&
         Time.realtimeSinceStartupAsDouble - stableSince >= 1.0;
@@ -75,14 +80,42 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         }
         if (!IsAligned && HasStableSample && alignment != null && alignment.IsInitialAlignmentApplied)
         {
+            if (alignment.xr_center_eye == null
+                || alignment.robot_preview == null
+                || !alignment.robot_preview.TryGetBimanualWorldFrame(
+                    out _, out _, out robotShoulderOriginWorld, out _, out _))
+            {
+                return;
+            }
+            questOriginWorld = alignment.xr_center_eye.position;
+            HasSpatialOrigin = true;
             originYaw = state.Degrees;
             IsAligned = true;
-            Debug.Log("[OMNI ALIGNMENT] ALIGNED: release external hold. This button is not electronically observed.");
+            Debug.Log(string.Format(
+                "[OMNI ALIGNMENT] ALIGNED: HMD origin={0} -> G1 shoulder center={1}; release external hold.",
+                questOriginWorld.ToString("F3"), robotShoulderOriginWorld.ToString("F3")));
         }
     }
 
-    // Input and display now share the same once-aligned world coordinates.
-    public Vector3 CorrectInputPosition(Vector3 value) => value;
+    // One direct world transform: the Play-time HMD origin maps to the current
+    // G1 shoulder center. The rotating IK base interprets this world target.
+    public static Vector3 MapWorldPosition(
+        Vector3 quest_world_position,
+        Vector3 quest_origin_world,
+        Vector3 robot_shoulder_center_world)
+        => robot_shoulder_center_world + (quest_world_position - quest_origin_world);
+
+    public Vector3 CorrectInputPosition(Vector3 value)
+    {
+        if (!HasSpatialOrigin || alignment == null || alignment.robot_preview == null)
+        {
+            return value;
+        }
+        Vector3 shoulder = robotShoulderOriginWorld;
+        alignment.robot_preview.TryGetBimanualWorldFrame(
+            out _, out _, out shoulder, out _, out _);
+        return MapWorldPosition(value, questOriginWorld, shoulder);
+    }
     public Quaternion CorrectInputRotation(Quaternion value) => value;
     public Vector3 DisplayInputPosition(Vector3 value) => value;
     public Quaternion DisplayInputRotation(Quaternion value) => value;

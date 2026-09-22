@@ -232,6 +232,14 @@ public static class G1TeleopBatchValidator
     private static void ValidateBaseCoordinateMapping()
     {
         AssertVector(
+            G1OmniBodyHeading.MapWorldPosition(
+                new Vector3(-0.45f, 1.25f, 0.30f),
+                new Vector3(-0.10f, 1.60f, 0.05f),
+                new Vector3(0.00f, 1.30f, 0.00f)),
+            new Vector3(-0.35f, 0.95f, 0.25f),
+            "HMD-origin to shoulder-center world mapping is invalid.");
+
+        AssertVector(
             G1UnityRightArmPreview.RobotVectorToUnity(
                 new Vector3(1.0f, 2.0f, 3.0f)),
             new Vector3(-2.0f, 3.0f, 1.0f),

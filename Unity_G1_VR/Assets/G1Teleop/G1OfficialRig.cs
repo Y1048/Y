@@ -246,6 +246,24 @@ public class G1OfficialRig : MonoBehaviour
         return right_wrist_position_reference;
     }
 
+    public bool TryGetShoulderCenter(out Vector3 world_position)
+    {
+        if (joint_nodes.Count == 0)
+        {
+            RebuildJointCache();
+        }
+
+        if (joint_nodes.TryGetValue("left_shoulder_pitch_joint", out G1JointNode left)
+            && joint_nodes.TryGetValue("right_shoulder_pitch_joint", out G1JointNode right))
+        {
+            world_position = 0.5f * (left.transform.position + right.transform.position);
+            return true;
+        }
+
+        world_position = Vector3.zero;
+        return false;
+    }
+
     public Transform GetRightWristOrientationReference()
     {
         if (right_wrist_orientation_reference == null)

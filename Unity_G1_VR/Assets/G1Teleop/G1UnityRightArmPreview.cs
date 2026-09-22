@@ -108,6 +108,38 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     public float WristAlignmentError { get; private set; }
     public float RawHandVisualOffset { get; private set; }
+
+    public bool TryGetBimanualWorldFrame(
+        out Vector3 root_position,
+        out Quaternion root_rotation,
+        out Vector3 shoulder_center,
+        out Vector3 left_wrist_position,
+        out Vector3 right_wrist_position)
+    {
+        root_position = Vector3.zero;
+        root_rotation = Quaternion.identity;
+        shoulder_center = Vector3.zero;
+        left_wrist_position = Vector3.zero;
+        right_wrist_position = Vector3.zero;
+        if (official_g1_object == null || official_g1_rig == null
+            || !official_g1_rig.TryGetShoulderCenter(out shoulder_center))
+        {
+            return false;
+        }
+
+        root_position = official_g1_object.transform.position;
+        root_rotation = official_g1_object.transform.rotation;
+        if (left_wrist_reference != null)
+        {
+            left_wrist_position = left_wrist_reference.position;
+        }
+        Transform right = official_g1_rig.GetRightWristPositionReference();
+        if (right != null)
+        {
+            right_wrist_position = right.position;
+        }
+        return true;
+    }
     public float MuJoCoPositionError { get; private set; }
     public float UnityReplayError { get; private set; }
     public float CommandTransportError { get; private set; }

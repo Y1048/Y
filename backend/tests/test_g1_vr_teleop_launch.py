@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -83,6 +84,48 @@ class WorkerRecognitionTests(unittest.TestCase):
                          launcher.running_workers(parsed, root, HOST))
 
 
+class UnityLaunchTests(unittest.TestCase):
+    def test_exact_project_is_reused_and_other_project_is_ignored(self):
+        editor = r'C:\Program Files\Unity\Editor\Unity.exe'
+        exact = [editor, '-projectPath', str(launcher.UNITY_PROJECT)]
+        other = [editor, '-projectPath', str(ROOT / 'another-project')]
+        self.assertTrue(launcher.unity_project_running([exact, other]))
+        self.assertFalse(launcher.unity_project_running([other]))
+
+    def test_project_path_flag_is_case_insensitive(self):
+        row = [r'C:\Unity\Unity.exe', '-PROJECTPATH', str(launcher.UNITY_PROJECT)]
+        self.assertTrue(launcher.unity_project_running([row]))
+
+    def test_duplicate_exact_project_is_refused(self):
+        row = [r'C:\Unity\Unity.exe', '-projectPath', str(launcher.UNITY_PROJECT)]
+        with self.assertRaisesRegex(RuntimeError, 'Duplicate Unity editors'):
+            launcher.unity_project_running([row, list(row)])
+
+    def test_editor_resolution_prefers_valid_override(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            editor = Path(temporary) / 'Unity.exe'
+            editor.write_bytes(b'editor')
+            resolved = launcher.resolve_unity_editor({'UNITY_EXE': str(editor)})
+            self.assertEqual(editor.resolve(), resolved)
+
+    def test_missing_editor_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(RuntimeError, 'was not found'):
+                launcher.resolve_unity_editor({'ProgramFiles': temporary,
+                                               'USERPROFILE': temporary})
+
+    def test_start_uses_detached_editor_without_play_mode(self):
+        editor = Path(r'C:\Unity\Unity.exe')
+        with mock.patch.object(launcher.subprocess, 'Popen') as spawn:
+            launcher.start_unity(editor)
+        command = spawn.call_args.args[0]
+        self.assertEqual(str(editor), command[0])
+        self.assertEqual('-projectPath', command[1])
+        self.assertNotIn('-executeMethod', command)
+        self.assertEqual(ROOT, spawn.call_args.kwargs['cwd'])
+        self.assertTrue(spawn.call_args.kwargs['creationflags'] & subprocess.DETACHED_PROCESS)
+
+
 class RedirectorTests(unittest.TestCase):
     def test_only_identical_parent_child_pair_collapses(self):
         root = Path('C:/project')
@@ -106,32 +149,42 @@ class RedirectorTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == 'nt', 'Windows visible-console launcher')
 class OrchestrationTests(unittest.TestCase):
-    def invoke(self, rows=(), camera=False, args=(), preflight_error=None):
+    def invoke(self, rows=(), camera=False, unity=False, args=(), preflight_error=None):
         """Execute only the decision code; never enumerate or start real processes."""
         stack = ExitStack()
         self.addCleanup(stack.close)
         stack.enter_context(redirect_stdout(io.StringIO()))
         stack.enter_context(mock.patch.object(launcher, 'select_robot_host',
                                              side_effect=lambda host: HOST if host == 'auto' else host))
-        stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=list(rows) + ([[sys.executable, str(ROOT/'tools/G1_CAMERA_LAUNCH.py'), '--robot-host', HOST]] if camera else [])))
+        inventory = list(rows)
+        if camera:
+            inventory.append([sys.executable, str(ROOT/'tools/G1_CAMERA_LAUNCH.py'), '--robot-host', HOST])
+        if unity:
+            inventory.append([r'C:\Unity\Unity.exe', '-projectPath', str(launcher.UNITY_PROJECT)])
+        stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=inventory))
         camera_mock = stack.enter_context(mock.patch.object(launcher, 'camera_running', return_value=camera))
         environment = {'G1_OBSERVATION_TAP': '1', 'TEST_ONLY': '1'}
         stack.enter_context(mock.patch.object(launcher.observation, 'engine_environment', return_value=environment))
         check = stack.enter_context(mock.patch.object(launcher, 'preflight', side_effect=preflight_error))
         stack.enter_context(mock.patch.object(launcher, 'ensure_login'))
+        stack.enter_context(mock.patch.object(launcher, 'validate_unity_project'))
+        stack.enter_context(mock.patch.object(launcher, 'resolve_unity_editor',
+                                             return_value=Path(r'C:\Unity\Unity.exe')))
+        unity_start = stack.enter_context(mock.patch.object(launcher, 'start_unity'))
         spawn = stack.enter_context(mock.patch.object(launcher.subprocess, 'Popen'))
         run = stack.enter_context(mock.patch.object(launcher.subprocess, 'run',
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
         result = launcher.main(['--show-consoles'] + list(args))
         run.assert_not_called()
         camera_mock.assert_not_called()  # Default SSH must never inspect WSL.
-        return result, spawn, check, camera_mock, environment
+        return result, spawn, check, camera_mock, environment, unity_start
 
     def test_fresh_start_creates_exactly_five_observation_and_camera_windows(self):
-        result, spawn, check, _, environment = self.invoke()
+        result, spawn, check, _, environment, unity_start = self.invoke()
         self.assertEqual(0, result)
         check.assert_called_once_with(['send', 'omni', 'arm', 'lowstate', 'camera'], environment)
         self.assertEqual(5, spawn.call_count)
+        unity_start.assert_called_once()
         commands = [call.args[0] for call in spawn.call_args_list]
         self.assertEqual(['send', 'omni', 'arm', 'lowstate'],
                          [launcher.option(command, '--worker') for command in commands[:-1]])
@@ -147,13 +200,14 @@ class OrchestrationTests(unittest.TestCase):
 
     def test_all_running_produces_no_new_windows(self):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
-        result, spawn, check, _, environment = self.invoke(rows, camera=True)
+        result, spawn, check, _, environment, unity_start = self.invoke(rows, camera=True, unity=True)
         self.assertEqual(0, result)
         check.assert_called_once_with([], environment)
         spawn.assert_not_called()
+        unity_start.assert_not_called()
 
     def test_closed_network_host_reaches_observation_and_camera_launches(self):
-        result, spawn, _, _, _ = self.invoke(args=['--host', '192.168.10.165'])
+        result, spawn, _, _, _, _ = self.invoke(args=['--host', '192.168.10.165'])
         self.assertEqual(0, result)
         commands = [call.args[0] for call in spawn.call_args_list]
         for command in commands[:-1]:
@@ -161,7 +215,7 @@ class OrchestrationTests(unittest.TestCase):
         self.assertEqual('192.168.10.165', launcher.option(commands[-1], '--robot-host'))
 
     def test_partial_start_only_creates_missing_workers(self):
-        result, spawn, check, _, environment = self.invoke(
+        result, spawn, check, _, environment, _ = self.invoke(
             [worker_row('send'), worker_row('arm')], camera=True)
         self.assertEqual(0, result)
         check.assert_called_once_with(['omni', 'lowstate'], environment)
@@ -169,10 +223,16 @@ class OrchestrationTests(unittest.TestCase):
                          [launcher.option(call.args[0], '--worker') for call in spawn.call_args_list])
 
     def test_check_only_does_not_start_workers_camera_or_ssh(self):
-        result, spawn, check, _, _ = self.invoke(args=['--check-only'])
+        result, spawn, check, _, _, unity_start = self.invoke(args=['--check-only'])
         self.assertEqual(0, result)
         check.assert_called_once()
         spawn.assert_not_called()
+        unity_start.assert_not_called()
+
+    def test_no_unity_skips_resolution_and_launch(self):
+        result, _, _, _, _, unity_start = self.invoke(args=['--no-unity'])
+        self.assertEqual(0, result)
+        unity_start.assert_not_called()
 
     def test_conflicting_inventory_fails_before_any_spawn(self):
         with mock.patch.object(launcher, 'select_robot_host', return_value=HOST), \

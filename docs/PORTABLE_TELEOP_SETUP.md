@@ -55,8 +55,10 @@ CycloneDDS, Unitree Python SDK를 설치한다. Python 시스템 환경을 변�
 SDK는 공식 [Unitree 설치 방식](https://github.com/unitreerobotics/unitree_sdk2_python#installation)을 따른다.
 WSL Python은 [uv](https://docs.astral.sh/uv/getting-started/installation/)로 준비한다.
 
-설치 후 Unity Hub에서 **이 checkout의 `Unity_G1_VR`**을 열고 Play를 켠다.
-Meta Horizon Link의 Quest 연결과 Omni Connect의 Bluetooth 연결을 완료한다.
+설치 후 Meta Horizon Link의 Quest 연결과 Omni Connect의 Bluetooth 연결을 완료한다.
+통합 BAT가 **이 checkout의 `Unity_G1_VR`**을 Unity `6000.5.4f1`로 자동으로 연다.
+같은 프로젝트가 이미 열려 있으면 기존 Editor를 유지하고 중복 실행하지 않는다.
+씬 import/compile이 끝난 뒤 Play는 사용자가 직접 켠다.
 
 ```powershell
 # 설치/모델 검사만. 모터·카메라·SSH 실행 없음
@@ -67,11 +69,16 @@ Meta Horizon Link의 Quest 연결과 Omni Connect의 Bluetooth 연결을 완료�
 
 # 양팔 IK + Omni 관찰 + 카메라 통합 실행
 .\tools\START_G1_VR_TELEOP.bat
+
+# 진단용: Unity를 열지 않고 관찰 프로세스만 실행
+.\tools\START_G1_VR_TELEOP.bat --no-unity
 ```
 
 카메라 창을 이미 열었다면 통합 launcher는 같은 카메라를 추가 실행하지 않는다.
 G1이 없는 PC에서 IK/Omni 의존성만 준비할 때는 setup에 `--pc-only`를 붙인다.
 관찰기가 전송하는 것은 입력 관찰 패킷이며 이 배치파일은 모터 제어기를 실행하지 않는다.
+`--check-only`는 Unity 설치·프로젝트 버전을 검사하지만 Unity를 실행하지 않는다.
+관찰 manager를 종료해도 자동으로 연 Unity Editor는 종료하지 않는다.
 
 ## PC마다 필요한 최초 준비
 

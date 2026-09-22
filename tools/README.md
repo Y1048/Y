@@ -22,6 +22,11 @@
 
 ## Quest and Unity
 
+통합 관찰은 프로젝트 루트에서 `tools\START_G1_VR_TELEOP.bat`을 실행한다.
+Unity `6000.5.4f1`의 `Unity_G1_VR` 프로젝트도 자동으로 열며, 이미 같은 프로젝트가
+열려 있으면 재사용한다. Editor가 준비되면 Play는 사용자가 직접 켠다.
+Unity 없이 진단할 때만 `--no-unity`를 붙이고, `--check-only`는 Unity를 실행하지 않는다.
+
 ### Unity display source (explicit per Play session)
 
 - `START_VR_HAND_TO_MUJOCO.bat` and Quest recording/dry-run launchers select

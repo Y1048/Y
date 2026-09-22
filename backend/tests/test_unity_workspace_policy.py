@@ -232,6 +232,28 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
             preview,
         )
 
+    def test_cyan_quest_wrist_uses_display_pose_without_changing_command_pose(self):
+        binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(
+            encoding="utf-8"
+        )
+        preview = (TELEOP_ROOT / "G1UnityRightArmPreview.cs").read_text(
+            encoding="utf-8"
+        )
+        bimanual = (TELEOP_ROOT / "G1BimanualSimulationSender.cs").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            "DisplayedWristPosition = tracked_wrist_transform.position", binder
+        )
+        self.assertIn(
+            "TrackedWristPosition = current_wrist_position", binder
+        )
+        self.assertIn("hand_binder.DisplayedWristPosition", preview)
+        self.assertIn("hand_binder.DisplayedWristRotation", preview)
+        self.assertIn("leftBinder.DisplayedWristPosition", bimanual)
+        self.assertIn("leftBinder.DisplayedWristRotation", bimanual)
+
     def test_head_only_motion_is_not_subtracted_from_the_wrist(self):
         binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(
             encoding="utf-8"

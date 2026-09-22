@@ -1,3 +1,12 @@
+## 2026-09-22 하늘색 Quest 손목 표시의 Omni 회전 추종
+
+하늘색 `tracked_quest_wrist_marker`가 명령용 역보정 손목 pose를 사용해 Omni yaw를
+상쇄하고 있었다. binder에 XR render-space 원본 손목 위치/회전을 별도로 보존하고,
+오른손 preview와 양팔의 왼손 tracked marker만 이 표시 pose를 사용하도록 분리했다.
+`TrackedWristPosition/Rotation`과 UDP/IK 입력은 기존 robot-frame 보정을 유지하므로 표시
+수정이 팔 명령에 들어가지 않는다. 관련 테스트 16 passed, 1 skipped, Unity C# 컴파일은
+오류 0개(기존 경고 85개)였다. 실제 G1/DDS/Play mode는 실행하지 않았다.
+
 ## 2026-09-22 가상 손목 target의 G1 base 회전 추종
 
 실측 G1 모델의 base yaw는 Unity에 반영됐지만, 녹색 feasible wrist target은 calibration

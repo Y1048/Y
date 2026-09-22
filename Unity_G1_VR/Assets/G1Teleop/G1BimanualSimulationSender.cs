@@ -371,7 +371,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         {
             leftTrackedMarker.SetActive(packet.left.tracked);
             if (packet.left.tracked) leftTrackedMarker.transform.SetPositionAndRotation(
-                leftBinder.TrackedWristPosition, leftBinder.TrackedWristRotation);
+                leftBinder.DisplayedWristPosition, leftBinder.DisplayedWristRotation);
         }
         bool inZones = useExistingScene
             ? tracked && leftBinder.IsAlignmentReady && rightBinder.IsAlignmentReady

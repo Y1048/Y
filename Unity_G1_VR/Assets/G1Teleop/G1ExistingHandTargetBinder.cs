@@ -55,6 +55,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public Vector3 TrackedWristPosition { get; private set; }
     public Vector3 TrackedHandPosition { get; private set; }
     public Quaternion TrackedWristRotation { get; private set; } = Quaternion.identity;
+    public Vector3 DisplayedWristPosition { get; private set; }
+    public Quaternion DisplayedWristRotation { get; private set; } = Quaternion.identity;
     public Quaternion SourceWristRotation { get; private set; } = Quaternion.identity;
     public bool IsAnatomicalRotationUsed { get; private set; }
     public int EngagementFrameRevision { get; private set; }
@@ -537,6 +539,10 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
+        // Preserve the render-space pose for the cyan Quest wrist marker.
+        // The corrected pose below remains the only pose used for commands.
+        DisplayedWristPosition = tracked_wrist_transform.position;
+        DisplayedWristRotation = tracked_wrist_transform.rotation;
         Vector3 current_wrist_position = CorrectInputPosition(
             tracked_wrist_transform.position);
         TrackedWristPosition = current_wrist_position;

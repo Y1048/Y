@@ -743,11 +743,11 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
         if (tracking_visible)
         {
-            Vector3 raw_hand_position = hand_binder.TrackedWristPosition;
+            Vector3 raw_hand_position = hand_binder.DisplayedWristPosition;
             tracked_hand_marker.position = raw_hand_position;
-            tracked_hand_marker.rotation = hand_binder.TrackedWristRotation;
+            tracked_hand_marker.rotation = hand_binder.DisplayedWristRotation;
             tracked_hand_axes.position = raw_hand_position;
-            tracked_hand_axes.rotation = hand_binder.TrackedWristRotation;
+            tracked_hand_axes.rotation = hand_binder.DisplayedWristRotation;
 
             if (mapping_visible)
             {
@@ -814,8 +814,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
         SetActualTrackingObjectsActive(visible, false);
         SetTargetTrackingObjectsActive(visible, visible);
         if (!visible) return;
-        tracked_hand_marker.position = hand_binder.TrackedWristPosition;
-        tracked_hand_marker.rotation = hand_binder.TrackedWristRotation;
+        tracked_hand_marker.position = hand_binder.DisplayedWristPosition;
+        tracked_hand_marker.rotation = hand_binder.DisplayedWristRotation;
         bool active = bimanual_simulation.IsTracking;
         Vector3 ikPosition;
         bool ikAvailable = bimanual_simulation.TryGetIkTarget(false, out ikPosition);

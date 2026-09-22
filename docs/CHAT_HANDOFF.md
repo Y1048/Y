@@ -9,6 +9,11 @@
 runtime 미연결로 OVR plugin 초기화 실패도 있었지만, 관측된 10.8초 정지 구간은 backup
 scene 복원이었다. 실제 G1/DDS는 실행하지 않았다.
 
+설정 적용 뒤 재현 로그에서 backup scene 복원은 10.843초에서 0.068초로 감소했고
+Editor는 `Responding=True`로 돌아왔다. 동시에 보이는 두 `Unity.exe` 중 하나는 실제
+Editor, 다른 하나는 같은 프로젝트 경로를 쓰는 정상 `AssetImportWorkerHW0`였다. 런처가
+이 worker를 Editor 창으로 세지 않도록 `-adb2`/`-batchMode`/AssetImportWorker를 제외했다.
+
 ## 2026-09-22 Both Arms 전용·Unity 종료/재사용·Omni 회전 수정
 
 `Use Original Right Arm` 메뉴와 `ArmMode.RightArm` 분기를 제거하고 `SampleScene`을

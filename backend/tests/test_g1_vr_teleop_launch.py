@@ -100,6 +100,12 @@ class UnityLaunchTests(unittest.TestCase):
         row = [r'C:\Unity\Unity.exe', '-projectPath', str(launcher.UNITY_PROJECT)]
         self.assertTrue(launcher.unity_project_running([row, list(row)]))
 
+    def test_asset_import_worker_is_not_an_editor_window(self):
+        worker = [r'C:\Unity\Unity.exe', '-adb2', '-batchMode',
+                  '-name', 'AssetImportWorkerHW0', '-projectPath',
+                  str(launcher.UNITY_PROJECT)]
+        self.assertFalse(launcher.unity_project_running([worker]))
+
     def test_editor_resolution_prefers_valid_override(self):
         with tempfile.TemporaryDirectory() as temporary:
             editor = Path(temporary) / 'Unity.exe'

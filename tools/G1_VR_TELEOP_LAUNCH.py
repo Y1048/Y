@@ -101,6 +101,12 @@ def unity_project_running(rows, project=UNITY_PROJECT):
     for argv in rows:
         if not argv or Path(argv[0]).name.casefold() != 'unity.exe':
             continue
+        folded = [arg.casefold() for arg in argv]
+        # AssetImportWorker is another Unity.exe with the same project path,
+        # but it is a child worker rather than another editor window.
+        if '-adb2' in folded or '-batchmode' in folded or any(
+                arg.startswith('assetimportworker') for arg in folded):
+            continue
         project_arg = option_casefold(argv, '-projectPath')
         if project_arg and normalized_path(project_arg) == target:
             matches.append(argv)

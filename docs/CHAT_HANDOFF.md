@@ -1,3 +1,14 @@
+## 2026-09-22 Play 종료 응답 없음 2차 분석
+
+첫 수정 뒤 재현 로그에서 custom 카메라 task 대기는 더 이상 나타나지 않았다. 실제 긴
+구간은 Play 종료 시 `Temp/__Backupscenes/0.backup`을 메인 스레드에서 역직렬화하는
+과정으로, scene integration만 10.843초 걸렸다. 이 동안 Windows가 Editor를 응답 없음으로
+표시했다. Unity 6의 공식 fast play-mode scene reset을 사용하도록 Enter Play Mode Options를
+활성화하고 `DisableSceneReload`만 설정했다(`m_EnterPlayModeOptions=2`). Domain reload는
+유지하여 static 상태와 네트워크 lifecycle은 매 실행 초기화한다. 로그에는 Quest/Oculus
+runtime 미연결로 OVR plugin 초기화 실패도 있었지만, 관측된 10.8초 정지 구간은 backup
+scene 복원이었다. 실제 G1/DDS는 실행하지 않았다.
+
 ## 2026-09-22 Both Arms 전용·Unity 종료/재사용·Omni 회전 수정
 
 `Use Original Right Arm` 메뉴와 `ArmMode.RightArm` 분기를 제거하고 `SampleScene`을

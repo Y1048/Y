@@ -21,6 +21,12 @@ MINK_BASE_CONTROLLER = (
 
 
 class UnityWorkspacePolicyTest(unittest.TestCase):
+    def test_play_mode_uses_fast_scene_reset_with_domain_reload(self):
+        settings = (PROJECT_ROOT / "Unity_G1_VR/ProjectSettings/EditorSettings.asset").read_text(
+            encoding="utf-8")
+        self.assertIn("m_EnterPlayModeOptionsEnabled: 1", settings)
+        self.assertIn("m_EnterPlayModeOptions: 2", settings)
+
     def test_rotation_provenance_is_unique_and_observational(self):
         trace = (TELEOP_ROOT / "G1LiveTeleopTrace.cs").read_text(encoding="utf-8")
         binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(encoding="utf-8")

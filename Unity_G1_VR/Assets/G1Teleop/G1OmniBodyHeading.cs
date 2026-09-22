@@ -98,6 +98,26 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
             Vector3.up) * displayedWorldRotation;
     }
 
+    public Vector3 DisplayInputPosition(Vector3 correctedWorldPosition)
+    {
+        if (alignment == null || alignment.xr_center_eye == null)
+        {
+            return correctedWorldPosition;
+        }
+        Vector3 pivot = alignment.xr_center_eye.position;
+        Quaternion display = Quaternion.AngleAxis(
+            (float)InputObservedBodyYawDegrees,
+            Vector3.up);
+        return pivot + display * (correctedWorldPosition - pivot);
+    }
+
+    public Quaternion DisplayInputRotation(Quaternion correctedWorldRotation)
+    {
+        return Quaternion.AngleAxis(
+            (float)InputObservedBodyYawDegrees,
+            Vector3.up) * correctedWorldRotation;
+    }
+
     private void OnDestroy()
     {
         receiver?.Close(); receiver = null;

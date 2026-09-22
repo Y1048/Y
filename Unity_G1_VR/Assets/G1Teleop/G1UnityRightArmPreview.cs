@@ -102,8 +102,6 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private bool calibration_reference_captured;
     private bool previous_preview_calibrated;
     private Vector3 robot_wrist_at_calibration;
-    private Vector3 robot_base_position_at_calibration;
-    private Quaternion robot_base_rotation_at_calibration = Quaternion.identity;
     private ulong calibration_state_revision;
     private float alignment_log_timer;
     private float base_mirror_log_timer;
@@ -705,12 +703,14 @@ public class G1UnityRightArmPreview : MonoBehaviour
         Quaternion command_rotation = command_active
             ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
-        command_position = FollowRobotBaseFromCalibration(command_position);
-        command_rotation = FollowRobotBaseFromCalibration(command_rotation);
+        Vector3 displayed_command_position =
+            hand_binder.DisplayInputPosition(command_position);
+        Quaternion displayed_command_rotation =
+            hand_binder.DisplayInputRotation(command_rotation);
 
         // 초록 표식은 백엔드가 검증한 예측 자세만 표시한다. 응답이 없으면
         // 원래 손 목표를 도달 가능한 목표인 것처럼 대신 표시하지 않는다.
-        Vector3 command_target_position = command_position;
+        Vector3 command_target_position = displayed_command_position;
         if (command_active)
         {
             bool feasible_target_available = calibration_reference_captured
@@ -725,7 +725,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 show_orientation_axes && target_visible && feasible_target_available);
             if (feasible_target_available)
             {
-                command_target_position = FollowRobotBaseFromCalibration(
+                command_target_position = hand_binder.DisplayInputPosition(
                     robot_wrist_at_calibration
                         + hand_binder.OperatorHeading
                         * state_receiver.LatestFeasibleTargetOperatorDelta);
@@ -733,12 +733,12 @@ public class G1UnityRightArmPreview : MonoBehaviour
         }
 
         target_hand_marker.position = command_target_position;
-        target_hand_marker.rotation = command_rotation;
+        target_hand_marker.rotation = displayed_command_rotation;
         target_hand_axes.position = command_target_position;
-        target_hand_axes.rotation = command_rotation;
+        target_hand_axes.rotation = displayed_command_rotation;
         robot_wrist_marker.position = robot_position;
         robot_wrist_marker.rotation = robot_orientation_reference == null
-            ? command_rotation
+            ? displayed_command_rotation
             : robot_orientation_reference.rotation;
 
         if (tracking_visible)
@@ -751,8 +751,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
             if (mapping_visible)
             {
-                mapped_hand_axes.position = command_position;
-                mapped_hand_axes.rotation = hand_binder.MappedHandRotation;
+                mapped_hand_axes.position = displayed_command_position;
+                mapped_hand_axes.rotation = displayed_command_rotation;
                 mapping_line.startColor = Color.white;
                 mapping_line.endColor = Color.white;
                 mapping_line.SetPosition(0, raw_hand_position);
@@ -760,7 +760,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
             }
 
             WristAlignmentError = Vector3.Distance(command_position, robot_position);
-            RawHandVisualOffset = Vector3.Distance(raw_hand_position, command_position);
+            RawHandVisualOffset = Vector3.Distance(
+                raw_hand_position,
+                displayed_command_position);
             UpdateMotionDiagnostics(command_position);
 
             if (command_active)
@@ -821,8 +823,14 @@ public class G1UnityRightArmPreview : MonoBehaviour
         bool ikAvailable = bimanual_simulation.TryGetIkTarget(false, out ikPosition);
         target_hand_marker.gameObject.SetActive(!active || ikAvailable);
         target_hand_axes.gameObject.SetActive(show_orientation_axes && (!active || ikAvailable));
-        target_hand_marker.position = active && ikAvailable ? ikPosition : hand_binder.EngagementTargetPosition;
-        target_hand_marker.rotation = active ? hand_binder.MappedHandRotation : hand_binder.EngagementTargetRotation;
+        Vector3 targetPosition = active && ikAvailable
+            ? ikPosition
+            : hand_binder.EngagementTargetPosition;
+        Quaternion targetRotation = active
+            ? hand_binder.MappedHandRotation
+            : hand_binder.EngagementTargetRotation;
+        target_hand_marker.position = hand_binder.DisplayInputPosition(targetPosition);
+        target_hand_marker.rotation = hand_binder.DisplayInputRotation(targetRotation);
         target_hand_axes.SetPositionAndRotation(target_hand_marker.position, target_hand_marker.rotation);
         tracked_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TrackedMarkerDiameter;
         target_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TargetMarkerDiameter;
@@ -834,7 +842,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
         if (rightLineVisible)
         {
             mapping_line.SetPosition(0, wrist.position);
-            mapping_line.SetPosition(1, ikPosition);
+            mapping_line.SetPosition(1, hand_binder.DisplayInputPosition(ikPosition));
         }
         Vector3 leftGoal;
         bool leftGoalAvailable = bimanual_simulation.TryGetIkTarget(true, out leftGoal);
@@ -843,7 +851,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
         if (leftLineVisible)
         {
             left_mapping_line.SetPosition(0, left_wrist_reference.position);
-            left_mapping_line.SetPosition(1, leftGoal);
+            left_mapping_line.SetPosition(
+                1,
+                bimanual_simulation.leftBinder.DisplayInputPosition(leftGoal));
         }
     }
 
@@ -883,41 +893,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
             && robot_position_reference != null)
         {
             robot_wrist_at_calibration = robot_position_reference.position;
-            if (official_g1_object != null)
-            {
-                robot_base_position_at_calibration =
-                    official_g1_object.transform.position;
-                robot_base_rotation_at_calibration =
-                    official_g1_object.transform.rotation;
-            }
             calibration_state_revision = state_receiver == null ? 0 : state_receiver.StateRevision;
             calibration_reference_captured = true;
         }
-    }
-
-    private Vector3 FollowRobotBaseFromCalibration(Vector3 world_position)
-    {
-        if (!calibration_reference_captured || official_g1_object == null)
-        {
-            return world_position;
-        }
-
-        Quaternion base_delta = official_g1_object.transform.rotation
-            * Quaternion.Inverse(robot_base_rotation_at_calibration);
-        return official_g1_object.transform.position
-            + base_delta * (world_position - robot_base_position_at_calibration);
-    }
-
-    private Quaternion FollowRobotBaseFromCalibration(Quaternion world_rotation)
-    {
-        if (!calibration_reference_captured || official_g1_object == null)
-        {
-            return world_rotation;
-        }
-
-        Quaternion base_delta = official_g1_object.transform.rotation
-            * Quaternion.Inverse(robot_base_rotation_at_calibration);
-        return base_delta * world_rotation;
     }
 
     private void UpdateMotionDiagnostics(Vector3 command_position)

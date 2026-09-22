@@ -1,3 +1,13 @@
+## 2026-09-22 Quest 손목과 IK target 표시 좌표 통일
+
+사용자 확인에서 하늘색 Quest 손목은 Omni yaw를 따라갔지만 초록색 IK/feasible target은
+이전 실측-base 변환을 따라 서로 어긋났다. 초록색 command/feasible target과 양팔 target
+표시를 하늘색과 동일한 `G1OmniBodyHeading` render-space 변환으로 통일했다. 이는 아래의
+“가상 손목 target의 G1 base 회전 추종” 구현을 대체한다. 제어용 corrected pose와
+operator-frame delta, UDP/IK payload는 바꾸지 않아 표시 변환이 로봇 팔 명령에 재입력되지
+않는다. 의도한 표시 흐름은 하늘색 Quest 손목 → 초록색 IK 목표 → 분홍색 실측 G1 손목이다.
+실제 G1/DDS/Play mode는 실행하지 않았다.
+
 ## 2026-09-22 하늘색 Quest 손목 표시의 Omni 회전 추종
 
 하늘색 `tracked_quest_wrist_marker`가 명령용 역보정 손목 pose를 사용해 Omni yaw를

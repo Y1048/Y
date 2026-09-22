@@ -108,7 +108,9 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertIn('"tracked_quest_wrist_marker"', preview)
         self.assertIn('"g1_actual_wrist_marker"', preview)
         self.assertIn('"g1_feasible_motion_target_marker"', preview)
-        self.assertIn("Vector3 command_target_position = command_position", preview)
+        self.assertIn(
+            "Vector3 command_target_position = displayed_command_position", preview
+        )
         self.assertIn("state_receiver.LatestFeasibleTargetOperatorDelta", preview)
         self.assertIn("state_receiver.HasFeasibleTarget", preview)
         self.assertIn("state_receiver.LatestSessionId == target_sender.CurrentSessionId", preview)
@@ -217,20 +219,20 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertIn("IsInitialAlignmentApplied = true", camera)
         self.assertIn("LockTrackingSpacePosition", camera)
 
-    def test_virtual_wrist_target_follows_measured_robot_base_rotation(self):
+    def test_virtual_wrist_target_uses_same_display_frame_as_quest_wrist(self):
         preview = (TELEOP_ROOT / "G1UnityRightArmPreview.cs").read_text(
             encoding="utf-8"
         )
-
-        self.assertIn("robot_base_position_at_calibration", preview)
-        self.assertIn("robot_base_rotation_at_calibration", preview)
-        self.assertIn("FollowRobotBaseFromCalibration(command_position)", preview)
-        self.assertIn("FollowRobotBaseFromCalibration(command_rotation)", preview)
-        self.assertIn(
-            "official_g1_object.transform.rotation\n"
-            "            * Quaternion.Inverse(robot_base_rotation_at_calibration)",
-            preview,
+        heading = (TELEOP_ROOT / "G1OmniBodyHeading.cs").read_text(
+            encoding="utf-8"
         )
+
+        self.assertIn("DisplayInputPosition(command_position)", preview)
+        self.assertIn("DisplayInputRotation(command_rotation)", preview)
+        self.assertIn("DisplayInputPosition(ikPosition)", preview)
+        self.assertIn("public Vector3 DisplayInputPosition", heading)
+        self.assertIn("public Quaternion DisplayInputRotation", heading)
+        self.assertNotIn("FollowRobotBaseFromCalibration", preview)
 
     def test_cyan_quest_wrist_uses_display_pose_without_changing_command_pose(self):
         binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(

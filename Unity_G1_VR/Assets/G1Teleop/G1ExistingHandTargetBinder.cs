@@ -935,6 +935,26 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             : heading.CorrectInputRotation(displayed_world_rotation);
     }
 
+    public Vector3 DisplayInputPosition(Vector3 corrected_world_position)
+    {
+        G1OmniBodyHeading heading = head_camera_alignment == null
+            ? null
+            : head_camera_alignment.OmniBodyHeading;
+        return heading == null
+            ? corrected_world_position
+            : heading.DisplayInputPosition(corrected_world_position);
+    }
+
+    public Quaternion DisplayInputRotation(Quaternion corrected_world_rotation)
+    {
+        G1OmniBodyHeading heading = head_camera_alignment == null
+            ? null
+            : head_camera_alignment.OmniBodyHeading;
+        return heading == null
+            ? corrected_world_rotation
+            : heading.DisplayInputRotation(corrected_world_rotation);
+    }
+
     private void LogStatus(bool active_value)
     {
         log_timer += Time.deltaTime;

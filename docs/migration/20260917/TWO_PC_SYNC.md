@@ -1,19 +1,19 @@
 # 노트북·데스크톱 GitHub 동기화 규칙
 
-두 PC는 당분간 `codex/g1-laptop-sync-20260917` 브랜치를 공용 기준으로 사용한다. 기존 dirty 작업 폴더에 이 브랜치를 덮어쓰지 않고, 각 PC의 clean clone에서 작업한다.
+두 PC는 `main` 브랜치를 공용 기준으로 사용한다. 기존 dirty 작업 폴더에 `main`을 덮어쓰지 않고, 각 PC의 clean clone에서 작업한다.
 
 ## 작업을 시작할 때
 
 ```powershell
 git status --short --branch
 git fetch origin
-git rev-list --left-right --count HEAD...origin/codex/g1-laptop-sync-20260917
+git rev-list --left-right --count HEAD...origin/main
 ```
 
 로컬 변경이 없고 출력이 `0  N`이면 다음 명령으로 원격 변경을 받는다.
 
 ```powershell
-git pull --ff-only origin codex/g1-laptop-sync-20260917
+git pull --ff-only origin main
 ```
 
 로컬 수정·미추적 파일이 있으면 pull하지 않는다. 먼저 파일 목록과 원격 변경을 비교하고, 현재 작업을 별도 커밋 또는 별도 브랜치로 보존한다.
@@ -28,14 +28,14 @@ git add <이번에 수정한 파일>
 git diff --cached --check
 git diff --cached --stat
 git commit -m "변경 내용을 설명하는 메시지"
-git push origin codex/g1-laptop-sync-20260917
+git push origin main
 ```
 
 push 후 로컬과 원격 HEAD가 같은지 확인한다.
 
 ```powershell
 $local = (git rev-parse HEAD).Trim()
-$remote = ((git ls-remote origin refs/heads/codex/g1-laptop-sync-20260917) -split '\s+')[0]
+$remote = ((git ls-remote origin refs/heads/main) -split '\s+')[0]
 "LOCAL=$local"
 "REMOTE=$remote"
 if ($local -ne $remote) { throw 'Remote HEAD mismatch' }
@@ -50,9 +50,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\VERIFY_DESKTOP_S
 ## 다른 PC의 Codex에 전달할 문장
 
 ```text
-`codex/g1-laptop-sync-20260917` 브랜치에 새 변경사항이 push됐다.
+`main` 브랜치에 새 변경사항이 push됐다.
 먼저 git status와 git fetch origin을 실행하고 로컬 변경 여부를 확인해.
-clean 상태일 때만 git pull --ff-only origin codex/g1-laptop-sync-20260917을 실행해.
+clean 상태일 때만 git pull --ff-only origin main을 실행해.
 dirty 상태면 pull, reset, clean을 하지 말고 변경 파일과 원격 차이를 먼저 보고해.
 갱신 후 로컬 HEAD와 원격 HEAD 일치 여부를 확인하고
 docs/migration/20260917/README.md, TWO_PC_SYNC.md, docs/CHAT_HANDOFF.md를 다시 읽어.

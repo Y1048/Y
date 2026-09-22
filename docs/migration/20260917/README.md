@@ -48,7 +48,7 @@
 노트북과 데스크톱을 오가며 작업할 때는 반드시 [두 PC GitHub 동기화 규칙](TWO_PC_SYNC.md)을 따른다. 핵심은 작업 전 `fetch`와 clean 상태 확인, clean 상태에서만 `pull --ff-only`, 작업 후 작은 commit/push, 그리고 reset/clean/force push 금지다.
 
 ```powershell
-git clone --branch codex/g1-laptop-sync-20260917 https://github.com/Y1048/Y.git G1_Teleop_Source
+git clone --branch main https://github.com/Y1048/Y.git G1_Teleop_Source
 Set-Location .\G1_Teleop_Source
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1
 ```

@@ -10,8 +10,8 @@
 > `tools/START_G1_VR_TELEOP.bat`이며, 아래 기존 오른팔·물리제어 설명과 구분한다.
 > FOV/화면 배치는 유지한다. 설치 환경과 원본 로그는 Git만으로 이전되지 않는다.
 
-> **2026-09-18 laptop continuation:** Until this checkpoint is reviewed and
-> merged, clone branch `codex/g1-laptop-sync-20260917` and read
+> **2026-09-22 main checkpoint:** The reviewed laptop checkpoint is now on
+> `main`. Clone `main` and read
 > [`docs/migration/20260917/README.md`](docs/migration/20260917/README.md) and
 > [`docs/CHAT_HANDOFF.md`](docs/CHAT_HANDOFF.md) first. The lower-body policy is
 > now supplied by another developer; this repository preserves the previous

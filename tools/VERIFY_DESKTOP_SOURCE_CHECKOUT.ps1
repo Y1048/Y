@@ -3,7 +3,7 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$expectedBranch = 'codex/g1-laptop-sync-20260917'
+$expectedBranch = 'main'
 $expectedPolicySha256 = '463be0376c2c1f551b996d0bf9ab97833854f2cc098b9d4fea735f17ec2e9015'
 $required = @(
     'README.md',

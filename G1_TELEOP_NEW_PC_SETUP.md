@@ -112,7 +112,7 @@ PowerShell에서:
 
 ```powershell
 cd C:\
-git clone --branch codex/g1-laptop-sync-20260917 https://github.com/Y1048/Y.git G1_Teleop_Project
+git clone --branch main https://github.com/Y1048/Y.git G1_Teleop_Project
 cd C:\G1_Teleop_Project
 git status --short --branch
 ```
@@ -124,8 +124,8 @@ git status --short --branch
 
 ```powershell
 git fetch origin
-git rev-list --left-right --count HEAD...origin/codex/g1-laptop-sync-20260917
-git pull --ff-only origin codex/g1-laptop-sync-20260917
+git rev-list --left-right --count HEAD...origin/main
+git pull --ff-only origin main
 ```
 
 `0 0`이면 로컬과 원격이 같다. 로컬 변경이 있거나 양쪽 숫자가 모두 0이 아니면 먼저

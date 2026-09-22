@@ -2,8 +2,8 @@
 
 # 다른 데스크톱에서 이어받기 — 2026-09-21
 
-현재 브랜치는 `codex/g1-laptop-sync-20260917`, 저장소는 `https://github.com/Y1048/Y.git`이다.
-이 문서와 `docs/CHAT_HANDOFF.md` 상단이 과거 인계보다 우선한다. `main`은 변경하지 않는다.
+현재 기준 브랜치는 `main`, 저장소는 `https://github.com/Y1048/Y.git`이다.
+이 문서와 `docs/CHAT_HANDOFF.md`의 최신 항목이 과거 인계보다 우선한다.
 
 ## 현재 목표와 결정
 
@@ -41,19 +41,19 @@ PC localhost 수신15,656개에서 순번누락·역전·전달값불일치0, �
 git status --short --branch
 git worktree list
 git fetch origin
-git rev-list --left-right --count HEAD...origin/codex/g1-laptop-sync-20260917
+git rev-list --left-right --count HEAD...origin/main
 ```
 
 해당 브랜치이고 로컬이 clean하며 분기되지 않았을 때만:
 
 ```powershell
-git pull --ff-only origin codex/g1-laptop-sync-20260917
+git pull --ff-only origin main
 ```
 
 새 폴더로 받을 때:
 
 ```powershell
-git clone --branch codex/g1-laptop-sync-20260917 https://github.com/Y1048/Y.git G1_Teleop_Source
+git clone --branch main https://github.com/Y1048/Y.git G1_Teleop_Source
 cd G1_Teleop_Source
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1
 ```

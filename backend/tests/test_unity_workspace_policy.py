@@ -217,6 +217,21 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertIn("IsInitialAlignmentApplied = true", camera)
         self.assertIn("LockTrackingSpacePosition", camera)
 
+    def test_virtual_wrist_target_follows_measured_robot_base_rotation(self):
+        preview = (TELEOP_ROOT / "G1UnityRightArmPreview.cs").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("robot_base_position_at_calibration", preview)
+        self.assertIn("robot_base_rotation_at_calibration", preview)
+        self.assertIn("FollowRobotBaseFromCalibration(command_position)", preview)
+        self.assertIn("FollowRobotBaseFromCalibration(command_rotation)", preview)
+        self.assertIn(
+            "official_g1_object.transform.rotation\n"
+            "            * Quaternion.Inverse(robot_base_rotation_at_calibration)",
+            preview,
+        )
+
     def test_head_only_motion_is_not_subtracted_from_the_wrist(self):
         binder = (TELEOP_ROOT / "G1ExistingHandTargetBinder.cs").read_text(
             encoding="utf-8"

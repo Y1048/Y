@@ -102,6 +102,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private bool calibration_reference_captured;
     private bool previous_preview_calibrated;
     private Vector3 robot_wrist_at_calibration;
+    private Vector3 robot_base_position_at_calibration;
+    private Quaternion robot_base_rotation_at_calibration = Quaternion.identity;
     private ulong calibration_state_revision;
     private float alignment_log_timer;
     private float base_mirror_log_timer;
@@ -703,6 +705,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
         Quaternion command_rotation = command_active
             ? hand_binder.MappedHandRotation
             : hand_binder.EngagementTargetRotation;
+        command_position = FollowRobotBaseFromCalibration(command_position);
+        command_rotation = FollowRobotBaseFromCalibration(command_rotation);
 
         // 초록 표식은 백엔드가 검증한 예측 자세만 표시한다. 응답이 없으면
         // 원래 손 목표를 도달 가능한 목표인 것처럼 대신 표시하지 않는다.
@@ -721,9 +725,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 show_orientation_axes && target_visible && feasible_target_available);
             if (feasible_target_available)
             {
-                command_target_position = robot_wrist_at_calibration
-                    + hand_binder.OperatorHeading
-                    * state_receiver.LatestFeasibleTargetOperatorDelta;
+                command_target_position = FollowRobotBaseFromCalibration(
+                    robot_wrist_at_calibration
+                        + hand_binder.OperatorHeading
+                        * state_receiver.LatestFeasibleTargetOperatorDelta);
             }
         }
 
@@ -878,9 +883,41 @@ public class G1UnityRightArmPreview : MonoBehaviour
             && robot_position_reference != null)
         {
             robot_wrist_at_calibration = robot_position_reference.position;
+            if (official_g1_object != null)
+            {
+                robot_base_position_at_calibration =
+                    official_g1_object.transform.position;
+                robot_base_rotation_at_calibration =
+                    official_g1_object.transform.rotation;
+            }
             calibration_state_revision = state_receiver == null ? 0 : state_receiver.StateRevision;
             calibration_reference_captured = true;
         }
+    }
+
+    private Vector3 FollowRobotBaseFromCalibration(Vector3 world_position)
+    {
+        if (!calibration_reference_captured || official_g1_object == null)
+        {
+            return world_position;
+        }
+
+        Quaternion base_delta = official_g1_object.transform.rotation
+            * Quaternion.Inverse(robot_base_rotation_at_calibration);
+        return official_g1_object.transform.position
+            + base_delta * (world_position - robot_base_position_at_calibration);
+    }
+
+    private Quaternion FollowRobotBaseFromCalibration(Quaternion world_rotation)
+    {
+        if (!calibration_reference_captured || official_g1_object == null)
+        {
+            return world_rotation;
+        }
+
+        Quaternion base_delta = official_g1_object.transform.rotation
+            * Quaternion.Inverse(robot_base_rotation_at_calibration);
+        return base_delta * world_rotation;
     }
 
     private void UpdateMotionDiagnostics(Vector3 command_position)

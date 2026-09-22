@@ -1,3 +1,13 @@
+## 2026-09-22 가상 손목 target의 G1 base 회전 추종
+
+실측 G1 모델의 base yaw는 Unity에 반영됐지만, 녹색 feasible wrist target은 calibration
+당시 world 좌표에 남아 로봇과 함께 돌지 않았다. `G1UnityRightArmPreview`가 calibration
+시점의 G1 base 위치/회전을 저장하고, 현재 base pose와의 delta를 가상 command/feasible
+target 위치와 방향에 적용한다. Quest 손 입력과 백엔드로 전달하는 operator-frame delta는
+기존 역보정을 유지하므로 body yaw가 팔 명령으로 섞이지 않는다. 정적 회귀 테스트 15개와
+Unity 생성 `Assembly-CSharp.csproj` 컴파일(오류 0, 기존 경고 85)이 통과했다. 실제 G1,
+DDS, Play mode는 실행하지 않았다.
+
 ## 2026-09-22 Play 종료 응답 없음 2차 분석
 
 첫 수정 뒤 재현 로그에서 custom 카메라 task 대기는 더 이상 나타나지 않았다. 실제 긴

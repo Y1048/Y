@@ -33,8 +33,12 @@ OMNI_CSV_HEADER = [
     "schema", "receive_monotonic_s", "elapsed_s", "sample_sequence",
     "mx", "my", "arm_yaw_deg", "omni_yaw_rate_deg_s",
     "vx", "vy", "yaw_rate", "yaw_diff_deg", "yaw_step_diff_deg",
-    "calibrated", "raw_json_text",
+    "calibrated", "yaw_relative_deg", "theta_deg", "movement_magnitude",
+    "vx_forward", "vy_right", "vy_left", "raw_json_text",
 ]
+
+YAW_OFFSET_DEG = 120.0
+MOVEMENT_DEADZONE = 0.10
 
 
 def clamp(value: float, limit: float) -> float:
@@ -52,28 +56,37 @@ def wrapped_delta_degrees(current: float, previous: float) -> float:
     return (current - previous + 180.0) % 360.0 - 180.0
 
 
-def world_movement_to_body(movement_x: float, movement_y: float,
-                           arm_yaw_deg: float) -> tuple[float, float]:
-    """Express a world XY movement vector in the current body frame.
+def omni_to_body_velocity(movement_x: float, movement_y: float,
+                          yaw_deg: float, initial_yaw_deg: float,
+                          yaw_offset_deg: float = YAW_OFFSET_DEG,
+                          deadzone: float = MOVEMENT_DEADZONE) -> tuple[float, float]:
+    """Return body-forward and body-right components of an Omni movement vector.
 
-    Input contract: heading zero faces world +X, positive heading turns toward
-    world +Y. Output +X is forward, +Y is left. Use absolute armYaw in this same
-    world frame, not the yaw difference from session start. This rotates the
-    vector without normalizing its magnitude or integrating a robot position.
+    Omni movement_x is right-positive and movement_y is forward-positive in its
+    fixed frame.  The user's initial heading is the yaw origin.  The two rows
+    below are the unit forward and right basis vectors at theta, so their dot
+    products express the input in the current body frame.
     """
     if not all(math.isfinite(value) for value in
-               (movement_x, movement_y, arm_yaw_deg)):
+               (movement_x, movement_y, yaw_deg, initial_yaw_deg,
+                yaw_offset_deg, deadzone)):
         raise ValueError('nonfinite world movement or heading')
-    theta = math.radians(arm_yaw_deg % 360.0)
-    cosine, sine = math.cos(theta), math.sin(theta)
-    return (cosine * movement_x + sine * movement_y,
-            -sine * movement_x + cosine * movement_y)
+    if not 0.0 <= deadzone < 1.0:
+        raise ValueError('deadzone must be in [0, 1)')
+    if math.hypot(movement_x, movement_y) <= deadzone:
+        return (0.0, 0.0)
+    yaw_relative_deg = wrapped_delta_degrees(yaw_deg, initial_yaw_deg)
+    theta = math.radians(yaw_relative_deg + yaw_offset_deg)
+    sine, cosine = math.sin(theta), math.cos(theta)
+    return (movement_x * sine + movement_y * cosine,
+            movement_x * cosine - movement_y * sine)
 
 
 @dataclass
 class OmniVelocityConfig:
     calibration_s: float = 1.0
-    movement_deadzone: float = 0.08
+    movement_deadzone: float = MOVEMENT_DEADZONE
+    yaw_offset_deg: float = YAW_OFFSET_DEG
     forward_max_m_s: float = 0.8
     lateral_max_m_s: float = 0.8
     yaw_gain: float = 1.0
@@ -165,12 +178,14 @@ class OmniVelocityMapper:
                 * self.config.yaw_max_rad_s / usable,
                 self.filtered_yaw_rate)
 
-        # Bias is measured in world coordinates. Rotate before per-axis
-        # deadzones/scales, so forward walking stays forward at every heading.
-        body_forward, body_left = world_movement_to_body(
-            movement_x - self.zero_x, movement_y - self.zero_y, arm_yaw_deg)
-        forward = deadzone(body_forward, self.config.movement_deadzone)
-        lateral = deadzone(body_left, self.config.movement_deadzone)
+        # Subtract the fixed-frame calibration bias, then project onto the
+        # user's current forward/right basis. G1 lateral velocity is left-positive.
+        body_forward, body_right = omni_to_body_velocity(
+            movement_x - self.zero_x, movement_y - self.zero_y,
+            arm_yaw_deg, origin, self.config.yaw_offset_deg,
+            self.config.movement_deadzone)
+        forward = body_forward
+        lateral = -body_right
         velocity = (
             clamp(forward * self.config.forward_max_m_s,
                   self.config.forward_max_m_s),
@@ -219,11 +234,21 @@ def omni_csv_row(now_s: float, run_started_s: float, sequence: int,
                  movement_x: float, movement_y: float, arm_yaw_deg: float,
                  velocity: tuple[float, float, float],
                  mapper: OmniVelocityMapper, raw_json_text: str) -> list:
+    corrected_x = movement_x - mapper.zero_x if mapper.calibrated else 0.0
+    corrected_y = movement_y - mapper.zero_y if mapper.calibrated else 0.0
+    yaw_relative = mapper.yaw_from_origin_deg
+    theta_deg = yaw_relative + mapper.config.yaw_offset_deg
+    magnitude = math.hypot(corrected_x, corrected_y)
+    vx_forward, vy_right = omni_to_body_velocity(
+        corrected_x, corrected_y, arm_yaw_deg,
+        arm_yaw_deg - yaw_relative, mapper.config.yaw_offset_deg,
+        mapper.config.movement_deadzone)
     return [
         OMNI_CSV_SCHEMA, f"{now_s:.9f}", f"{now_s - run_started_s:.9f}",
         sequence, movement_x, movement_y, arm_yaw_deg,
         mapper.yaw_rate_raw_deg_s, *velocity, mapper.yaw_from_origin_deg,
-        mapper.yaw_step_diff_deg, int(mapper.calibrated), raw_json_text,
+        mapper.yaw_step_diff_deg, int(mapper.calibrated), yaw_relative,
+        theta_deg, magnitude, vx_forward, vy_right, -vy_right, raw_json_text,
     ]
 
 
@@ -397,8 +422,8 @@ def run_clocked_observation(args, observation, websocket_module):
         writer.writerow(OMNI_CSV_HEADER + extra_fields)
     print('[OMNI CLOCKED OBSERVATION] processing %.3f Hz; raw WS receipt independent; '
           'only new samples published; no command/discovery transport' % args.process_hz, flush=True)
-    print('[OMNI FRAME] world mx/my -> body vx/vy using current absolute armYaw; '
-          'yaw 0: +mx forward, +my left. Speed scale/limits unchanged.', flush=True)
+    print('[OMNI FRAME] mx/my -> body vx/vy using initial-relative armYaw + 120 deg; '
+          'vx forward-positive, vy left-positive.', flush=True)
     print('[CSV] processed-new samples only, original raw JSON/timestamp preserved; '
           'raw_samples_skipped reports samples superseded before processing', flush=True)
     period = 1. / args.process_hz
@@ -541,8 +566,8 @@ def main() -> None:
     print(f"[OMNI] connected {args.omni_url}; preparation delay "
           f"{args.start_delay_seconds:.1f} s, then calibrating for "
           f"{mapper.config.calibration_s:.1f} s", flush=True)
-    print('[OMNI FRAME] world mx/my -> body vx/vy using current absolute armYaw; '
-          'yaw 0: +mx forward, +my left. Speed scale/limits unchanged.', flush=True)
+    print('[OMNI FRAME] mx/my -> body vx/vy using initial-relative armYaw + 120 deg; '
+          'vx forward-positive, vy left-positive.', flush=True)
     if observation:
         print('[OBSERVATION] sample copy -> localhost:55071; no G1 command transport', flush=True)
     while True:

@@ -43,9 +43,13 @@ class BurstyConnection:
         deadline = self.started + batch / 30.
         time.sleep(max(0., deadline - time.perf_counter()))
         moving = self.index >= 32
+        yaw = 110. + max(0, self.index - 32) * .5
+        theta = math.radians((yaw - 110.) + 120.)
+        movement = ([.35 * math.sin(theta) + .6 * math.cos(theta),
+                     .35 * math.cos(theta) - .6 * math.sin(theta)]
+                    if moving else [0., 0.])
         raw = json.dumps(dict(fixture_sequence=self.index,
-                             movementXY=[.35 if moving else 0., .6 if moving else 0.],
-                             armYaw=110. + max(0, self.index - 32) * .5))
+                             movementXY=movement, armYaw=yaw))
         self.index += 1
         return raw
 

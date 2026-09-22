@@ -9,6 +9,7 @@ from .g1_omni_velocity_gateway import (
     OmniVelocityMapper,
     OMNI_CSV_HEADER,
     encode_command,
+    omni_to_body_velocity,
     omni_csv_row,
     parse_omni_message,
     wrapped_delta_degrees,
@@ -35,12 +36,14 @@ class OmniVelocityGatewayTests(unittest.TestCase):
         self.calibrate(mapper)
         self.assertEqual(mapper.update(0.01, -0.02, 110.0, 0.2), (0.0, 0.0, 0.0))
 
-    def test_forward_and_lateral_zero_correction(self):
+    def test_translation_uses_calibrated_input_and_relative_yaw_offset(self):
         mapper = self.mapper()
         self.calibrate(mapper)
         vx, vy, _ = mapper.update(0.51, 0.48, 110.0, 0.2)
-        self.assertGreater(vx, 0.0)
-        self.assertLess(vy, 0.0)
+        forward, right = omni_to_body_velocity(
+            .50, .50, 110., 110., deadzone=.05)
+        self.assertAlmostEqual(vx, forward * .8)
+        self.assertAlmostEqual(vy, -right * .8)
 
     def test_yaw_wrap_is_continuous(self):
         self.assertAlmostEqual(wrapped_delta_degrees(-179.0, 179.0), 2.0)

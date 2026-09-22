@@ -70,6 +70,23 @@ Omni Connect에 연결한 뒤 실행한다.
 | `yaw_rate` | deadzone/filter/clamp 뒤 회전속도, rad/s |
 | `calibrated` | movement 원점 보정 완료 여부 |
 
+현재 이동 변환은 첫 유효 `arm_yaw_deg`를 상대 yaw 0도로 저장하고, 실측된 고정
+오프셋 120도를 더한다. `theta = yaw_relative + 120 deg`에서 Omni 고정 좌표의
+`[movement_x, movement_y]`를 현재 사용자의 forward/right 단위축에 내적한다.
+결과 `vx_forward`는 전진 양수, `vy_right`는 오른쪽 양수이며 G1 입력의 `vy`는
+왼쪽 양수이므로 `vy = -vy_right`다. 이동 벡터 크기가 0.10 이하이면 두 평행이동
+성분을 모두 0으로 만든다. yaw-rate 계산 경로는 이 변경으로 수정하지 않았다.
+
+기존 CSV를 같은 변환으로 보정하려면 저장소 루트에서 다음을 실행한다. 원본 열은
+보존되고 기본 출력은 입력 파일명 뒤에 `_corrected.csv`를 붙인다.
+
+```powershell
+.\.venv-teleop\Scripts\python.exe .\tools\CONVERT_OMNI_CSV_BODY_VELOCITY.py <입력.csv>
+```
+
+추가 열은 `time_s`, `yaw_relative_deg`, `vx_forward`, `vy_right`, `vy_left`,
+`theta_deg`, `movement_magnitude`다.
+
 시작 시 움직이고 있어도 원본 열은 그대로 기록된다. 다만 처음 1초 동안 계산된 `vx/vy/yaw_rate`는 보정 구간이라 0이다. 정확한 원점이 필요하면 실행 직후 1초 동안 Omni를 가능한 한 움직이지 않는다.
 
 ## 검증 범위

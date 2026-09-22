@@ -1,3 +1,13 @@
+## 2026-09-22 Omni 상대 yaw + 120도 이동 좌표 변환
+
+Omni `movement_x`(오른쪽 양수), `movement_y`(전진 양수)를 첫 유효 yaw 기준의
+body velocity로 변환한다. 실측 고정 오프셋은 120도이며 자동 추정하지 않는다.
+출력은 `vx` 전진 양수, G1 규약의 `vy` 왼쪽 양수다. 벡터 크기 0.10 이하의
+평행이동 입력은 0으로 만든다. 기존 yaw-rate 계산은 변경하지 않았다. JSON observation과
+velocity command는 같은 매퍼 결과를 사용한다. 기존 CSV용 오프라인 변환기는
+`tools/CONVERT_OMNI_CSV_BODY_VELOCITY.py`다. 필수 방향 A-D, wrap, 좌우 부호,
+JSON/CSV 일치 및 Omni 관련 오프라인 검사 32개가 통과했다. 실제 Omni/G1은 실행하지 않았다.
+
 ## 2026-09-21 Full measured pose supersedes leg-only display
 
 User clarified all29 joints must define the displayed robot, to compare operator wrists, IK targets and measured wrist FK. G1LowStateLegView retains its legacy component name but now applies the full29 array through G1OfficialRig. State is polled in Update; G1UnityRightArmPreview applies measured FK before markers/lines in its LateUpdate, preventing a simulated wrist/actual mesh frame mismatch. IK targets and hand markers remain independent. No state: explicitly labeled simulation fallback; after first measured state, stale input holds the last measured pose and labels STALE rather than substituting IK. Root local position stays fixed; no IMU/base odometry added. Actual world-space wrist pose is not claimed.

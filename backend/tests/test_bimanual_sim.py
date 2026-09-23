@@ -28,17 +28,17 @@ class BimanualTests(unittest.TestCase):
         self.assertIn(tuple(sorted(hands)), [tuple(sorted(p)) for p in s.pairs])
         self.assertGreater(s.clearance(s.home), .005)
 
-    def test_all_fourteen_limits_and_checked_stop_use_90_180_60(self):
+    def test_all_fourteen_limits_and_checked_stop_use_90_180_90(self):
         s = self.s
         self.assertAlmostEqual(JOINT_VELOCITY_LIMIT_RAD_S, np.pi)
-        self.assertAlmostEqual(JOINT_ACCELERATION_LIMIT_RAD_S2, np.pi/3)
+        self.assertAlmostEqual(JOINT_ACCELERATION_LIMIT_RAD_S2, np.pi/2)
         np.testing.assert_array_equal(s.caps, np.tile(np.deg2rad([90]*4+[180]*3), 2))
-        np.testing.assert_array_equal(s.return_motion.acceleration_limits, np.full(14, np.pi/3))
+        np.testing.assert_array_equal(s.return_motion.acceleration_limits, np.full(14, np.pi/2))
         for policy in s.motion.values():
-            np.testing.assert_array_equal(policy.acceleration_limits, np.full(7, np.pi/3))
+            np.testing.assert_array_equal(policy.acceleration_limits, np.full(7, np.pi/2))
         # Isolate the discrete limit boundary from the independent geometry guard.
         wrist = s.motion['right'].dofs[4]
-        s.velocity[wrist] = np.pi - (np.pi/3)*s.dt
+        s.velocity[wrist] = np.pi - (np.pi/2)*s.dt
         proposed = s.velocity.copy()
         proposed[wrist] = np.pi
         # Isolate numerical velocity/acceleration boundaries from travel limits.
@@ -48,13 +48,13 @@ class BimanualTests(unittest.TestCase):
             self.assertIsNotNone(plan, reason)
             previous = s.velocity.copy()
             for _, velocity in plan:
-                self.assertLessEqual(np.max(np.abs(velocity-previous))/s.dt, np.pi/3+1e-6)
+                self.assertLessEqual(np.max(np.abs(velocity-previous))/s.dt, np.pi/2+1e-6)
                 previous = velocity
             self.assertEqual(np.max(np.abs(previous)), 0.)
             proposed[wrist] = np.pi + .001
             self.assertEqual(s.checked_stop_plan(proposed), (None, 'velocity_acceleration'))
             s.velocity[wrist] = 0.
-            proposed[wrist] = (np.pi/3)*s.dt + .001
+            proposed[wrist] = (np.pi/2)*s.dt + .001
             self.assertEqual(s.checked_stop_plan(proposed), (None, 'velocity_acceleration'))
 
     def test_no_transport_in_entrypoint(self):

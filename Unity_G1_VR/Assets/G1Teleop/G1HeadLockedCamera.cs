@@ -21,6 +21,10 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     public int head_camera_tcp_port = G1HeadCameraPiP.DefaultTcpPort;
     public bool show_ambient_operator_environment = true;
     public bool follow_omni_body_heading = true;
+    [Min(0.0f)]
+    public float operator_height_above_shoulders_m = 0.30f;
+    [Min(0.0f)]
+    public float operator_forward_offset_m = 0.05f;
 
     public bool IsPositionLocked { get; private set; }
     public bool IsInitialAlignmentApplied { get; private set; }
@@ -129,6 +133,17 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
             return false;
         }
 
+        if (!robot_preview.TryGetBimanualWorldFrame(
+            out _, out _, out Vector3 shoulder_center, out _, out _))
+        {
+            return false;
+        }
+        Vector3 desired_camera_position = GetOperatorAnchorPosition(
+            shoulder_center,
+            robot_preview.HeadCameraMount.forward,
+            operator_height_above_shoulders_m,
+            operator_forward_offset_m);
+
         Transform tracking_space = TrackingSpace;
         if (tracking_space == null)
         {
@@ -141,7 +156,8 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
                 tracking_space,
                 xr_center_eye,
                 robot_preview.HeadCameraMount,
-                out Vector3 position_correction);
+                out Vector3 position_correction,
+                desired_camera_position);
             LastPositionCorrection = position_correction;
             IsInitialAlignmentApplied = true;
             Debug.Log(
@@ -149,14 +165,16 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
                 + $"correction={LastPositionCorrection} "
                 + $"yaw_correction={LastYawCorrectionDegrees:F1} deg "
                 + $"camera={xr_center_eye.position} "
-                + $"mount={robot_preview.HeadCameraMount.position}");
+                + $"shoulders={shoulder_center} "
+                + $"operator_offset=up {operator_height_above_shoulders_m:F2}m, "
+                + $"forward {operator_forward_offset_m:F2}m");
         }
         else
         {
             LastPositionCorrection = LockTrackingSpacePosition(
                 tracking_space,
                 xr_center_eye,
-                robot_preview.HeadCameraMount.position);
+                desired_camera_position);
         }
 
         IsPositionLocked = lock_position;
@@ -190,8 +208,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         }
 
         IsHeadTrackingReady = current_time - head_tracking_valid_since
-            >= Mathf.Max(1.0f, head_tracking_stable_duration)
-            && (!follow_omni_body_heading || (OmniBodyHeading != null && OmniBodyHeading.HasStableSample));
+            >= Mathf.Max(1.0f, head_tracking_stable_duration);
         return IsHeadTrackingReady;
     }
 
@@ -251,6 +268,19 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         Transform camera_transform,
         Transform head_mount,
         out Vector3 position_correction)
+        => AlignTrackingSpaceToHeadMount(
+            tracking_space,
+            camera_transform,
+            head_mount,
+            out position_correction,
+            head_mount == null ? Vector3.zero : head_mount.position);
+
+    public static float AlignTrackingSpaceToHeadMount(
+        Transform tracking_space,
+        Transform camera_transform,
+        Transform head_mount,
+        out Vector3 position_correction,
+        Vector3 desired_camera_position)
     {
         position_correction = Vector3.zero;
         if (tracking_space == null
@@ -279,9 +309,25 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
                 Vector3.up) * tracking_space.rotation;
         }
 
-        position_correction = head_mount.position - camera_transform.position;
+        position_correction = desired_camera_position - camera_transform.position;
         tracking_space.position += position_correction;
         return yaw_correction;
+    }
+
+    public static Vector3 GetOperatorAnchorPosition(
+        Vector3 shoulder_center,
+        Vector3 robot_forward,
+        float height_above_shoulders_m,
+        float forward_offset_m)
+    {
+        Vector3 forward = Vector3.ProjectOnPlane(robot_forward, Vector3.up);
+        if (forward.sqrMagnitude < 0.0001f)
+        {
+            forward = Vector3.forward;
+        }
+        return shoulder_center
+            + Vector3.up * Mathf.Max(0.0f, height_above_shoulders_m)
+            + forward.normalized * Mathf.Max(0.0f, forward_offset_m);
     }
 
     public static void LockWorldPosition(

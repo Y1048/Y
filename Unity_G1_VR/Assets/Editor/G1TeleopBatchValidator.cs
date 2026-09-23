@@ -232,12 +232,13 @@ public static class G1TeleopBatchValidator
     private static void ValidateBaseCoordinateMapping()
     {
         AssertVector(
-            G1OmniBodyHeading.MapWorldPosition(
-                new Vector3(-0.45f, 1.25f, 0.30f),
-                new Vector3(-0.10f, 1.60f, 0.05f),
-                new Vector3(0.00f, 1.30f, 0.00f)),
-            new Vector3(-0.35f, 0.95f, 0.25f),
-            "HMD-origin to shoulder-center world mapping is invalid.");
+            G1HeadLockedCamera.GetOperatorAnchorPosition(
+                new Vector3(0.00f, 1.30f, 0.00f),
+                Vector3.forward,
+                0.30f,
+                0.05f),
+            new Vector3(0.00f, 1.60f, 0.05f),
+            "Whole-person shoulder-relative display placement is invalid.");
 
         AssertVector(
             G1UnityRightArmPreview.RobotVectorToUnity(

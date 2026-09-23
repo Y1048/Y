@@ -15,20 +15,27 @@ public static class G1OmniHeadingStateTests
         Check(!state.Accept("a", new double[] { 2, 10.2, double.NaN }, 20.2));
         Check(!state.Accept("a", new double[] { 2, 10.2, 300 }, 20.2));
         Check(state.Degrees == 30);
-        Check(state.Accept("a", new double[] { 2, 11, 300 }, 21)); // stale gap rebase
-        Check(state.Degrees == 30);
+        Check(state.Accept("a", new double[] { 2, 11, 300 }, 21)); // silence must retain the next absolute heading change
+        Check(state.Degrees == 188);
         Check(state.Accept("b", new double[] { 0, 1, 0 }, 21.1)); // new clock/session
         Check(!state.Accept("a", new double[] { 3, 11.2, 301 }, 21.2));
         Check(state.Accept("b", new double[] { 1, 1.1, 330 }, 21.2));
-        Check(Math.Abs(state.Degrees) < 1e-8); // wrap 0 -> 330 is -30
+        Check(Math.Abs(state.Degrees - 158) < 1e-8); // wrap 0 -> 330 is -30
         Check(!state.Accept("b", new double[] { 2, 1, 335 }, 21.3));
         Check(!state.Accept("b", new double[] { 2, 1.2, 335 }, 20));
         Check(!state.Accept("b", null, 22));
         Check(!state.Accept("b", new double[] { 3, 4 }, 22));
         Check(G1OmniHeadingState.Delta(1, 359) == 2);
         Check(G1OmniHeadingState.Delta(359, 1) == -2);
-        Check(G1OmniHeadingState.ToUnityYawDelta(30) == -30); // G1 left -> Unity left
-        Check(G1OmniHeadingState.ToUnityYawDelta(-30) == 30); // G1 right -> Unity right
+        Check(G1OmniHeadingState.ToUnityYawDelta(30) == 30); // Omni left -> visible G1 left
+        Check(G1OmniHeadingState.ToUnityYawDelta(-30) == -30); // Omni right -> visible G1 right
+        var stationary = new G1OmniHeadingState();
+        Check(stationary.Accept("quiet", new double[] {0, 0, 350}, 0));
+        Check(stationary.Degrees == 0); // zero until first change
+        Check(stationary.Accept("quiet", new double[] {1, 30, 350}, 30));
+        Check(stationary.Degrees == 0); // 30 seconds of silence, unchanged yaw
+        Check(stationary.Accept("quiet", new double[] {2, 60, 20}, 60));
+        Check(stationary.Degrees == 30); // first movement after silence is preserved
         Console.WriteLine("PASS: " + count + " production heading-gate assertions");
     }
 }

@@ -12,7 +12,7 @@ class BimanualEngageGateTest {
     tests++;
    }
   }
-  if(G1BimanualSimulationSender.TrackedMarkerDiameter!=.060f || G1BimanualSimulationSender.TargetMarkerDiameter!=.055f) throw new Exception("marker dimensions");
+  if(G1BimanualSimulationSender.TrackedMarkerDiameter!=.075f || G1BimanualSimulationSender.TargetMarkerDiameter!=.070f) throw new Exception("marker dimensions");
   double until=G1BimanualSimulationSender.RememberReady(10,double.NegativeInfinity,true,1);
   if(until!=14) throw new Exception("initial memory");
   if(G1BimanualSimulationSender.RememberReady(11,until,true,0)!=14) throw new Exception("sequential memory");

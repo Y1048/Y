@@ -4,7 +4,9 @@ using System.Collections.Generic;
 /// <summary>Omni input validation and unwrapped yaw; no transforms or robot transport.</summary>
 public sealed class G1OmniHeadingState
 {
-    public const double StaleSeconds = .25;
+    // Freshness is diagnostic only: stationary Omni may stop publishing.
+    // Hold the last heading without pausing upper-body tracking or IK.
+    public const double StaleSeconds = .50;
     public double Degrees { get; private set; }
     public double LastReceipt { get; private set; } = double.NegativeInfinity;
     private string session;
@@ -14,11 +16,10 @@ public sealed class G1OmniHeadingState
     public static double Delta(double current, double previous)
         => ((current - previous) % 360 + 540) % 360 - 180;
 
-    // Omni/G1 positive yaw is counter-clockwise (left) when viewed from above.
-    // Unity's positive Y rotation turns the rendered forward direction right, so
-    // the view transform must use the opposite sign to show the same body turn.
+    // The imported G1 model's visible forward direction uses the same signed
+    // yaw observed from Omni. Keep this conversion explicit and testable.
     public static double ToUnityYawDelta(double omniYawDelta)
-        => -omniYawDelta;
+        => omniYawDelta;
 
     private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 
@@ -30,10 +31,11 @@ public sealed class G1OmniHeadingState
             receipt < LastReceipt || retired.Contains(id)) return false;
         bool changed = id != session;
         if (!changed && (sample[0] <= sequence || sample[1] <= stamp)) return false;
-        // A restart or tracking gap establishes a new origin without a view jump.
-        bool rebase = changed || receipt - LastReceipt > StaleSeconds || sample[1] - stamp > StaleSeconds;
+        // Only a source restart rebases. A silent stationary interval must not
+        // discard the first subsequent heading change.
+        bool rebase = changed;
         double step = Delta(sample[2], yaw);
-        if (!rebase && Math.Abs(step) > Math.Min(45, 720 * (sample[1] - stamp) + 2)) return false;
+        if (!rebase && Math.Abs(step) > Math.Min(180, 720 * (sample[1] - stamp) + 2)) return false;
         if (changed && session != null)
         {
             if (retired.Count >= 64) return false;

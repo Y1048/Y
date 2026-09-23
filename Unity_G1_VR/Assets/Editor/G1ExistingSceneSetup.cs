@@ -256,6 +256,8 @@ public static class G1ExistingSceneSetup
         camera_lock_value.show_head_camera_pip = true;
         camera_lock_value.head_camera_tcp_port =
             G1HeadCameraPiP.DefaultTcpPort;
+        camera_lock_value.operator_height_above_shoulders_m = 0.30f;
+        camera_lock_value.operator_forward_offset_m = 0.05f;
         EditorUtility.SetDirty(camera_lock_value);
         return camera_lock_value;
     }

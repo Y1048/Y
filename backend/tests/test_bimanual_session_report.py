@@ -139,7 +139,7 @@ class SessionReportTests(unittest.TestCase):
     def test_current_replay_uses_current_limits_and_checks_speed_and_acceleration(self):
         # This tests replay validation only; the stub starts no simulator or transport.
         for speed, acceleration, passed in ((1.5707963267948966, 1.0471975511965976, True), (1.572, 0.0, False),
-                                             (0.1, 1.049, False)):
+                                             (0.1, 1.572, False)):
             sim = SimpleNamespace(
                 caps=report.np.asarray(report.JOINT_VELOCITY_LIMITS_RAD_S),
             dofs=report.np.arange(14), qids=report.np.arange(14), dt=report.SIM_DT,

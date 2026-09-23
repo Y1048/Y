@@ -118,7 +118,7 @@ class ArmMotionPolicy:
         error = self.wrist_task.compute_error(self.configuration)
         jacobian = self.wrist_task.compute_jacobian(self.configuration)[:, self.dofs]
         correction = np.linalg.lstsq(jacobian, -error, rcond=1e-4)[0]
-        rate = min(1., float(np.min(np.sqrt(self.acceleration_limits /
+        rate = min(5., float(np.min(np.sqrt(self.acceleration_limits /
             (2.*np.maximum(np.abs(correction), 1e-6))))))
         self.approach_rate_s = rate
         self.wrist_task.gain = min(base.FRAME_GAIN, self.dt_s*rate)

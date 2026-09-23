@@ -538,8 +538,8 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
-        // Preserve the render-space pose for the cyan Quest wrist marker.
-        // The corrected pose below remains the only pose used for commands.
+        // Position stays in the displayed world; wrist axes are mapped once below
+        // for both the visible target and the absolute IK input.
         DisplayedWristPosition = tracked_wrist_transform.position;
         DisplayedWristRotation = tracked_wrist_transform.rotation;
         Vector3 current_wrist_position = CorrectInputPosition(
@@ -551,6 +551,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         Quaternion current_wrist_rotation = GetAnatomicalHandRotation(
             SourceWristRotation);
         TrackedWristRotation = current_wrist_rotation;
+        DisplayedWristRotation = current_wrist_rotation;
         TrackedHandPosition = GetPalmCenterPosition();
     }
 
@@ -786,10 +787,13 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return fallback_rotation;
         }
 
-        // Semantic hand frame: +Z follows the fingers and +Y is the palm normal.
+        // G1 wrist frame: MuJoCo +X follows fingers, +Z points toward thumb.
+        // Under the Unity/MuJoCo basis these are Unity +Z and +Y.
+        // Index-minus-pinky supplies thumbward direction for BOTH hands;
+        // using the palm normal here instead introduces a 90-degree roll.
         IsAnatomicalRotationUsed = true;
         IsAnatomicalFrameValid = true;
-        return Quaternion.LookRotation(finger_direction, palm_normal);
+        return Quaternion.LookRotation(finger_direction, palm_across);
     }
 
     private void ResolveAnatomicalHandTransforms()

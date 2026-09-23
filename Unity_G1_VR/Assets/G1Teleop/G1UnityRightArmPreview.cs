@@ -234,7 +234,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
             new Color(0.15f, 1.0f, 0.25f, 1.0f));
         engagement_waiting_material = CreateUnlitMaterial(
             "g1_engagement_waiting_material",
-            Color.white);
+            new Color(1.0f, 0.15f, 0.85f, 1.0f));
         engagement_ready_material = CreateUnlitMaterial(
             "g1_engagement_ready_material",
             new Color(1.0f, 0.85f, 0.05f, 1.0f));
@@ -254,7 +254,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
         tracked_hand_marker = CreateSphere(
             "tracked_quest_wrist_marker",
             tracked_hand_material,
-            Vector3.one * 0.060f);
+            Vector3.one * G1BimanualSimulationSender.TrackedMarkerDiameter);
         robot_wrist_marker = CreateSphere(
             "g1_actual_wrist_marker",
             robot_wrist_material,
@@ -262,7 +262,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
         target_hand_marker = CreateSphere(
             "g1_feasible_motion_target_marker",
             target_hand_material,
-            Vector3.one * 0.055f);
+            Vector3.one * G1BimanualSimulationSender.TargetMarkerDiameter);
         target_hand_renderer = target_hand_marker.GetComponent<Renderer>();
         tracked_hand_axes = CreateOrientationAxes("tracked_quest_wrist_axes");
         mapped_hand_axes = CreateOrientationAxes("mapped_quest_command_axes");
@@ -407,7 +407,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
         {
             var omni = head_camera_alignment == null ? null : head_camera_alignment.OmniBodyHeading;
             if (official_g1_object != null && robot_anchored && omni != null)
-                official_g1_object.transform.SetPositionAndRotation(Vector3.zero, omni.BaseRotation);
+                // Imported pelvis is at 0.793 m; the isolated IK pelvis is at
+                // 0.780 m. Match the rendered model to the solver world.
+                official_g1_object.transform.SetPositionAndRotation(
+                    new Vector3(0, -0.013f, 0), omni.BaseRotation);
             if (bimanual_simulation.HasFreshJoints)
                 for (int i=0; i<14; ++i)
                     official_g1_rig.ApplyJointPosition(bimanual_simulation.LatestJointNames[i], bimanual_simulation.LatestJoints[i]);
@@ -655,7 +658,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
         official_g1_object.SetActive(true);
         official_g1_object.transform.SetPositionAndRotation(
-            Vector3.zero,
+            UsesBimanualSimulation ? new Vector3(0, -0.013f, 0) : Vector3.zero,
             Quaternion.identity);
         official_g1_rig.SetFirstPersonView(true);
         robot_anchored = true;
@@ -817,12 +820,14 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 ? engagement_ready_material
                 : engagement_waiting_material;
             float progress_scale = 1.0f + 0.35f * hand_binder.EngagementProgress;
-            target_hand_marker.localScale = Vector3.one * 0.055f * progress_scale;
+            target_hand_marker.localScale = Vector3.one
+                * G1BimanualSimulationSender.TargetMarkerDiameter * progress_scale;
         }
         else
         {
             target_hand_renderer.sharedMaterial = target_hand_material;
-            target_hand_marker.localScale = Vector3.one * 0.055f;
+            target_hand_marker.localScale = Vector3.one
+                * G1BimanualSimulationSender.TargetMarkerDiameter;
         }
     }
 
@@ -848,7 +853,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private void UpdateBimanualTrackingMarkers()
     {
         bool visible = show_tracking_markers && robot_anchored && hand_binder != null;
-        SetActualTrackingObjectsActive(visible, false);
+        SetActualTrackingObjectsActive(visible && hand_binder.IsTrackingValid, false);
         SetTargetTrackingObjectsActive(visible, visible);
         if (!visible) return;
         tracked_hand_marker.position = hand_binder.DisplayedWristPosition;
@@ -871,26 +876,38 @@ public class G1UnityRightArmPreview : MonoBehaviour
         target_hand_axes.SetPositionAndRotation(target_hand_marker.position, target_hand_marker.rotation);
         tracked_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TrackedMarkerDiameter;
         target_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TargetMarkerDiameter;
+        robot_wrist_marker.localScale = Vector3.one * (active ? 0.035f : 0.060f);
         target_hand_renderer.material.color = G1BimanualSimulationSender.AlignmentColor(active, hand_binder.IsAlignmentReady);
         var wrist = GetRobotPositionReference();
         if (wrist != null) robot_wrist_marker.SetPositionAndRotation(wrist.position, wrist.rotation);
-        bool rightLineVisible = active && ikAvailable && wrist != null;
+        bool rightAlignmentLine = !active && hand_binder.IsTrackingValid;
+        bool rightLineVisible = rightAlignmentLine || (active && ikAvailable && wrist != null);
         mapping_line.gameObject.SetActive(rightLineVisible);
         if (rightLineVisible)
         {
-            mapping_line.SetPosition(0, wrist.position);
-            mapping_line.SetPosition(1, hand_binder.DisplayInputPosition(ikPosition));
+            mapping_line.SetPosition(0, rightAlignmentLine
+                ? hand_binder.DisplayedWristPosition : wrist.position);
+            mapping_line.SetPosition(1, rightAlignmentLine
+                ? hand_binder.EngagementTargetPosition
+                : hand_binder.DisplayInputPosition(ikPosition));
         }
         Vector3 leftGoal;
         bool leftGoalAvailable = bimanual_simulation.TryGetIkTarget(true, out leftGoal);
-        bool leftLineVisible = active && left_wrist_reference != null && leftGoalAvailable;
+        bool leftAlignmentLine = !active && bimanual_simulation.leftBinder != null
+            && bimanual_simulation.leftBinder.IsTrackingValid;
+        bool leftLineVisible = leftAlignmentLine
+            || (active && left_wrist_reference != null && leftGoalAvailable);
         left_mapping_line.gameObject.SetActive(leftLineVisible);
         if (leftLineVisible)
         {
-            left_mapping_line.SetPosition(0, left_wrist_reference.position);
+            left_mapping_line.SetPosition(0, leftAlignmentLine
+                ? bimanual_simulation.leftBinder.DisplayedWristPosition
+                : left_wrist_reference.position);
             left_mapping_line.SetPosition(
                 1,
-                bimanual_simulation.leftBinder.DisplayInputPosition(leftGoal));
+                leftAlignmentLine
+                    ? bimanual_simulation.leftBinder.EngagementTargetPosition
+                    : bimanual_simulation.leftBinder.DisplayInputPosition(leftGoal));
         }
     }
 

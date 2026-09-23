@@ -14,8 +14,8 @@ from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_runtime import runtime_metadata, startup_stage
 
 SCHEMA = 'g1.bimanual.unity.sim.v1'
-WORLD_SCHEMA = 'g1.bimanual.unity.sim.v3'
-WORLD_FRAME = 'hmd_shoulder_world_v1'
+WORLD_SCHEMA = 'g1.bimanual.unity.sim.v4'
+WORLD_FRAME = 'unity_display_world_v1'
 BASIS = np.array([[0., 0., 1.], [-1., 0., 0.], [0., 1., 0.]])
 
 
@@ -112,9 +112,14 @@ def decode(raw):
                 if (not isinstance(values, list) or len(values) != length or any(
                         type(v) not in (int, float) or not math.isfinite(v) for v in values)):
                     raise ValueError(key)
+    for key in ('omni_source_yaw_deg', 'omni_origin_yaw_deg', 'omni_aligned_yaw_deg'):
+        if key in x and (type(x[key]) not in (int, float) or not math.isfinite(x[key])):
+            raise ValueError(key)
     for key, length in (('quest_origin_world_m', 3), ('hmd_world_m', 3),
+                        ('hmd_world_wxyz', 4),
                         ('unity_robot_root_position_m', 3), ('unity_robot_root_wxyz', 4),
-                        ('unity_shoulder_center_m', 3), ('unity_left_wrist_world_m', 3),
+                        ('unity_shoulder_center_m', 3),
+                        ('unity_left_wrist_world_m', 3),
                         ('unity_right_wrist_world_m', 3)):
         if key in x:
             values = x[key]

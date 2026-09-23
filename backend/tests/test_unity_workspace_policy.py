@@ -124,7 +124,7 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
             preview,
         )
         self.assertIn("robot_wrist_marker.gameObject.SetActive(robot_active)", preview)
-        self.assertIn("Vector3.one * 0.055f * progress_scale", preview)
+        self.assertIn("G1BimanualSimulationSender.TargetMarkerDiameter * progress_scale", preview)
         self.assertIn(
             "target_hand_axes.gameObject.SetActive(show_orientation_axes && target_active)",
             preview,
@@ -218,6 +218,26 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         self.assertIn("initial_alignment_needed", camera)
         self.assertIn("IsInitialAlignmentApplied = true", camera)
         self.assertIn("LockTrackingSpacePosition", camera)
+        self.assertIn("operator_height_above_shoulders_m: 0.3", scene)
+        self.assertIn("operator_forward_offset_m: 0.05", scene)
+        self.assertIn("GetOperatorAnchorPosition", camera)
+
+    def test_omni_display_recovers_and_does_not_mask_hand_tracking(self):
+        heading = (TELEOP_ROOT / "G1OmniBodyHeading.cs").read_text(
+            encoding="utf-8"
+        )
+        heading_state = (TELEOP_ROOT / "G1OmniHeadingState.cs").read_text(
+            encoding="utf-8"
+        )
+        sender = (TELEOP_ROOT / "G1BimanualSimulationSender.cs").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertNotIn("private bool faulted", heading)
+        self.assertIn("holding last heading (arms available)", heading)
+        self.assertIn("StaleSeconds = .50", heading_state)
+        self.assertIn("leftBinder != null && leftBinder.IsTrackingValid", sender)
+        self.assertNotIn("Omni.IsReady", sender)
 
     def test_virtual_wrist_target_uses_same_display_frame_as_quest_wrist(self):
         preview = (TELEOP_ROOT / "G1UnityRightArmPreview.cs").read_text(
@@ -226,12 +246,20 @@ class UnityWorkspacePolicyTest(unittest.TestCase):
         heading = (TELEOP_ROOT / "G1OmniBodyHeading.cs").read_text(
             encoding="utf-8"
         )
+        bimanual = (TELEOP_ROOT / "G1BimanualSimulationSender.cs").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn("DisplayInputPosition(command_position)", preview)
         self.assertIn("DisplayInputRotation(command_rotation)", preview)
         self.assertIn("DisplayInputPosition(ikPosition)", preview)
         self.assertIn("public Vector3 DisplayInputPosition", heading)
         self.assertIn("public Quaternion DisplayInputRotation", heading)
+        self.assertIn("CorrectInputPosition(Vector3 value) => value", heading)
+        self.assertNotIn("TryMapCommandPosition", heading)
+        self.assertIn("Vector3 p = binder.TrackedWristPosition", bimanual)
+        self.assertIn('input_frame = "unity_display_world_v1"', bimanual)
+        self.assertNotIn("worldCommandAnchorsValid", bimanual)
         self.assertNotIn("UpdateMeasuredBaseHeading", heading)
         self.assertNotIn("TrackingCorrectionDegrees", heading)
         self.assertIn("BaseRotation", heading)

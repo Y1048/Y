@@ -432,6 +432,8 @@ MonoBehaviour:
   align_position_once: 1
   lock_position: 1
   head_tracking_stable_duration: 0.15
+  operator_height_above_shoulders_m: 0.3
+  operator_forward_offset_m: 0.05
   minimum_floor_head_height: 0.4
   show_head_camera_pip: 1
   head_camera_tcp_port: 5011

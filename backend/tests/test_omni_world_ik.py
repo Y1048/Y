@@ -39,9 +39,12 @@ class OmniWorldTests(unittest.TestCase):
     def test_protocol_preserves_world_diagnostics(self):
         sim = BimanualSimulation()
         p = packet(sim, 0, 0., False)
-        p.update(quest_origin_world_m=[0., 1.6, 0.], hmd_world_m=[.01, 1.61, -.02],
+        p.update(omni_source_yaw_deg=91., omni_origin_yaw_deg=1., omni_aligned_yaw_deg=90.,
+                 quest_origin_world_m=[0., 1.6, 0.], hmd_world_m=[.01, 1.61, -.02],
+                 hmd_world_wxyz=[1., 0., 0., 0.],
                  unity_robot_root_position_m=[0., 0., 0.], unity_robot_root_wxyz=[1., 0., 0., 0.],
-                 unity_shoulder_center_m=[0., 1.3, 0.], unity_left_wrist_world_m=[-.2, 1., .3],
+                 unity_shoulder_center_m=[0., 1.3, 0.],
+                 unity_left_wrist_world_m=[-.2, 1., .3],
                  unity_right_wrist_world_m=[.2, 1., .3])
         p['left']['raw_position_m'] = [-.3, 1.2, .4]
         p['left']['raw_quaternion_wxyz'] = [1., 0., 0., 0.]

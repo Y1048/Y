@@ -8,7 +8,8 @@ import numpy as np
 import mink
 import mujoco
 import run_mink_g1_right_arm_prototype as base
-from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2
+from g1_bimanual_limits import (
+    IK_TRACKING_RATE_S, JOINT_ACCELERATION_LIMIT_RAD_S2)
 
 class ElbowClearanceTask(mink.Task):
     """World lateral/vertical elbow bias; FrameTask axes are body-local."""
@@ -115,13 +116,9 @@ class ArmMotionPolicy:
         self._update_orientation_priority(current_q, goal, clearance)
         self._update_elbow_assist(current_q, current_pose, goal)
         self._update_wrist_priority(current_q, current_pose, goal, clearance)
-        error = self.wrist_task.compute_error(self.configuration)
-        jacobian = self.wrist_task.compute_jacobian(self.configuration)[:, self.dofs]
-        correction = np.linalg.lstsq(jacobian, -error, rcond=1e-4)[0]
-        rate = min(5., float(np.min(np.sqrt(self.acceleration_limits /
-            (2.*np.maximum(np.abs(correction), 1e-6))))))
-        self.approach_rate_s = rate
-        self.wrist_task.gain = min(base.FRAME_GAIN, self.dt_s*rate)
+        self.approach_rate_s = IK_TRACKING_RATE_S
+        self.wrist_task.gain = min(
+            base.FRAME_GAIN, self.dt_s*IK_TRACKING_RATE_S)
         # Same task/posture equilibrium as the single-arm controller (not .01).
         self.posture_task.gain = self.wrist_task.gain/base.FRAME_GAIN
         self.shoulder_comfort_task.reference = self.posture_reference[self.qpos_ids[1:3]].copy()

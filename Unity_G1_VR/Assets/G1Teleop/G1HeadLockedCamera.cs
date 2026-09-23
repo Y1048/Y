@@ -72,6 +72,7 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
         {
             head_camera_pip = G1HeadCameraPiP.Create(
                 xr_center_eye,
+                robot_preview == null ? null : robot_preview.RobotRoot,
                 head_camera_tcp_port);
         }
         if (follow_omni_body_heading && xr_center_eye != null)

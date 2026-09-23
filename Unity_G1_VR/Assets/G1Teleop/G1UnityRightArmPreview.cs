@@ -146,6 +146,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
     public float UnityBaseMirrorPositionError { get; private set; }
     public float UnityBaseMirrorRotationErrorDegrees { get; private set; }
     public bool IsRobotAnchored => robot_anchored;
+    public Transform RobotRoot => official_g1_object == null
+        ? null
+        : official_g1_object.transform;
     public Transform HeadCameraMount => official_g1_rig == null
         ? null
         : official_g1_rig.head_camera_mount;

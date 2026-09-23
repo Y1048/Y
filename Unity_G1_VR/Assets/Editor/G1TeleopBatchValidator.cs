@@ -446,17 +446,40 @@ public static class G1TeleopBatchValidator
         GameObject camera_object = new GameObject(
             "g1_head_camera_pip_validation",
             typeof(Camera));
+        GameObject robot_root_object = new GameObject(
+            "g1_head_camera_pip_robot_root_validation");
         try
         {
+            camera_object.transform.SetPositionAndRotation(
+                new Vector3(0.30f, 1.60f, -0.20f),
+                Quaternion.Euler(8.0f, 25.0f, 0.0f));
+            Vector3 expected_initial_position =
+                camera_object.transform.TransformPoint(
+                    new Vector3(
+                        0.0f,
+                        G1HeadCameraPiP.DefaultCanvasVerticalOffset,
+                        0.80f));
+            Quaternion expected_initial_rotation =
+                camera_object.transform.rotation;
+
             G1HeadCameraPiP pip_value = G1HeadCameraPiP.Create(
                 camera_object.transform,
+                robot_root_object.transform,
                 G1HeadCameraPiP.DefaultTcpPort);
             AssertCondition(
                 pip_value != null,
                 "G1 head-camera PiP could not be created.");
             AssertCondition(
-                pip_value.transform.parent == camera_object.transform,
-                "G1 head-camera PiP is not view-locked to CenterEyeAnchor.");
+                pip_value.transform.parent == robot_root_object.transform,
+                "G1 head-camera PiP must be parented to the G1 root.");
+            AssertCondition(
+                Vector3.Distance(
+                    pip_value.transform.position,
+                    expected_initial_position) < 0.0001f
+                    && Quaternion.Angle(
+                        pip_value.transform.rotation,
+                        expected_initial_rotation) < 0.01f,
+                "G1 head-camera PiP initial world pose changed from the previous HMD-relative placement.");
             AssertCondition(
                 pip_value.video_image != null
                     && pip_value.status_indicator != null,
@@ -475,11 +498,25 @@ public static class G1TeleopBatchValidator
                         G1HeadCameraPiP.DefaultCanvasScale)
                     && Mathf.Approximately(
                         pip_transform.localScale.y,
-                        G1HeadCameraPiP.DefaultCanvasScale)
-                    && Mathf.Approximately(
-                        pip_transform.localPosition.y,
-                        G1HeadCameraPiP.DefaultCanvasVerticalOffset),
-                "G1 head-camera PiP transform does not match the enlarged, lowered default.");
+                        G1HeadCameraPiP.DefaultCanvasScale),
+                "G1 head-camera PiP scale changed unexpectedly.");
+
+            Vector3 local_before = pip_value.transform.localPosition;
+            Quaternion local_rotation_before =
+                pip_value.transform.localRotation;
+            robot_root_object.transform.rotation =
+                Quaternion.AngleAxis(90.0f, Vector3.up);
+            AssertVector(
+                pip_value.transform.position,
+                robot_root_object.transform.TransformPoint(local_before),
+                "G1 head-camera PiP did not follow the G1 root transform.");
+            AssertCondition(
+                Quaternion.Angle(
+                    pip_value.transform.rotation,
+                    robot_root_object.transform.rotation
+                        * local_rotation_before) < 0.01f,
+                "G1 head-camera PiP rotation did not follow the G1 root.");
+
             AssertCondition(
                 G1HeadCameraPiP.IsValidLoopbackPort(
                     G1HeadCameraPiP.DefaultTcpPort)
@@ -509,6 +546,7 @@ public static class G1TeleopBatchValidator
         }
         finally
         {
+            UnityEngine.Object.DestroyImmediate(robot_root_object);
             UnityEngine.Object.DestroyImmediate(camera_object);
         }
     }

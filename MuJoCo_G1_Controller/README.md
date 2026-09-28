@@ -1,527 +1,162 @@
-# MuJoCo / Mink G1 Right-Arm Controller
+# MuJoCo / Mink G1 Bimanual Controller
 
-이 폴더는 Unitree G1 MuJoCo 모델과 Mink 기반 오른팔 differential QP IK를 담당한다.
+이 폴더의 현재 기본 상체 경로는 **G1 양팔 14축 differential QP IK**다.
 
-현재 기본 IK 정책은:
+예전 오른팔 전용 controller는 비교/reference와 공통 모델 helper로 일부 유지하지만, 기본 통합 런처는 `g1_bimanual_runtime.py`를 사용한다.
+
+## 현재 진입점
 
 ```text
-scripts/run_mink_g1_right_arm_virtual_center_live.py
+tools/START_G1_VR_TELEOP.bat
+  -> tools/G1_VR_TELEOP_LAUNCH.py
+  -> tools/G1_INPUT_OBSERVATION_LAUNCH.py
+  -> MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py
+  -> g1_bimanual_unity_sim.py
 ```
 
-이며 실행은 프로젝트 루트에서:
+bimanual backend는 loopback UDP `5020`에서 Unity 양손 packet을 받고 60 Hz로 계산한다.
 
-```powershell
-.\START_VR_HAND_TO_MUJOCO.bat
-```
-
-으로 한다.
-
-## 1. 먼저 볼 파일 3개
+## 핵심 파일
 
 | 파일 | 역할 |
 | --- | --- |
-| `scripts/run_mink_g1_right_arm_virtual_center_live.py` | 현재 IK 정책: virtual center, role split, wrist-limit assist |
-| `scripts/run_mink_g1_right_arm_prototype.py` | 공통 Mink QP, UDP, collision, state packet 기반 |
-| `scripts/g1_right_arm_common.py` | G1 joint/frame/model/좌표계 공통 정의 |
+| `scripts/g1_bimanual_runtime.py` | MuJoCo version/runtime guard, 실행 진입 |
+| `scripts/g1_bimanual_unity_sim.py` | Unity packet decode, 60 Hz cycle, input filtering |
+| `scripts/g1_bimanual_sim.py` | 양팔 QP, collision/boundary guard, braking, return 상태 |
+| `scripts/g1_bimanual_motion_policy.py` | 팔별 FrameTask/posture/workspace projection/priority |
+| `scripts/g1_bimanual_limits.py` | joint 속도·가속도·tracking rate |
+| `scripts/g1_bimanual_return.py` | staged safe return |
+| `scripts/g1_bimanual_session_report.py` | 기록 session replay/report 도구 |
 
-옛 DLS 데모는 제거했다. 카메라 검사와 축 변환 테스트는 현재 공통 모델/변환을
-사용한다. `prototype`이라는 이름의 파일은 현재 공통 모듈과 baseline 비교
-경로이므로 유지한다. 수식·게인·주요 함수 설명은 [코드 가이드](../docs/CODE_GUIDE.md)를 참고한다.
+## 제어 관절
 
----
-
-## 2. 현재 IK 구조
-
-정확한 표현은 **Virtual-Wrist-Center Role-Separated Differential QP IK**다.
+각 팔 7축, 총 14축을 사용한다.
 
 ```text
-Quest hand pose
-     ↓ clutch-relative mapping
-Translation target ──→ right_wrist_roll_link
-Orientation target ─→ right_wrist_yaw_link
-     ↓
-Mink tasks + limits + constraints
-     ↓
-QP
-     ↓ DAQP
-Δq
-     ↓ / dt
-joint velocity v
-     ↓ integrate
-next configuration q
+left/right 각각:
+shoulder pitch / roll / yaw
+elbow
+wrist roll / pitch / yaw
 ```
 
-### Translation task
+양팔은 같은 MuJoCo configuration 안에서 풀리며 inter-arm collision과 다른 robot geometry collision을 함께 검사한다.
 
-```python
-position_task = mink.FrameTask(
-    frame_name="right_wrist_roll_link",
-    frame_type="body",
-    position_cost=base.POSITION_COST,
-    orientation_cost=0.0,
-    gain=base.FRAME_GAIN,
-    lm_damping=base.LM_DAMPING,
-)
-```
+## 현재 motion profile
 
-`right_wrist_roll_link`를 virtual wrist center로 사용한다. 이 frame은 wrist pitch/yaw보다 upstream에 있으므로 손목 회전에 따른 위치 coupling을 줄인다.
-
-### Orientation task
-
-`VirtualCenterOrientationTask` 내부에서:
-
-```python
-self.inner = mink.FrameTask(
-    frame_name="right_wrist_yaw_link",
-    frame_type="body",
-    position_cost=0.0,
-    orientation_cost=1.0,
-    ...
-)
-```
-
-를 사용한다. 따라서 손의 최종 orientation 기준은 `right_wrist_yaw_link`다.
-
----
-
-## 3. G1 오른팔 7DoF
-
-`g1_right_arm_common.py`의 순서가 controller 전체에서 기준이다.
-
-```python
-RIGHT_ARM_JOINTS = [
-    "right_shoulder_pitch_joint",
-    "right_shoulder_roll_joint",
-    "right_shoulder_yaw_joint",
-    "right_elbow_joint",
-    "right_wrist_roll_joint",
-    "right_wrist_pitch_joint",
-    "right_wrist_yaw_joint",
-]
-```
+`g1_bimanual_limits.py` 기준:
 
 ```text
-Proximal group = joints[:4]
-  shoulder pitch / roll / yaw + elbow
-
-Wrist group = joints[4:]
-  wrist roll / pitch / yaw
+proximal velocity limit = 90 deg/s
+wrist velocity limit    = 180 deg/s
+joint acceleration      = 90 deg/s²
+IK tracking rate        = 1.0 /s
+simulation dt           = 1/60 s
 ```
 
-Hardware motor indices는 `22..28`이다.
-
----
-
-## 4. Role separation은 어떻게 구현되는가
-
-핵심은 `VirtualCenterOrientationTask.compute_jacobian()`이다.
+`ArmMotionPolicy.prepare()`의 현재 tracking gain:
 
 ```python
-def compute_jacobian(self, configuration):
-    jacobian = self.inner.compute_jacobian(configuration).copy()
-    jacobian[3:6, self.proximal_dofs] *= self._assist_gain(configuration)
-    return jacobian
+self.wrist_task.gain = min(
+    base.FRAME_GAIN,
+    self.dt_s * IK_TRACKING_RATE_S)
 ```
 
-Mink FrameTask의 6D Jacobian row는 개념적으로:
+현재 60 Hz, rate 1.0에서는 약 `0.01667`이다. `base.FRAME_GAIN=0.35`는 상한 및 posture 상대비 계산에 남아 있다.
+
+이전에 사용했던 Jacobian pseudo-inverse correction/rate heuristic은 production bimanual tracking 경로에서 제거됐다.
+
+## Task 구조
+
+각 팔은 기본적으로 다음 task를 준비한다.
 
 ```text
-row 0..2 = translation X/Y/Z
-row 3..5 = rotation Rx/Ry/Rz
+wrist FrameTask
+posture task
+damping task
+wrist-priority task
+shoulder-comfort task
+optional elbow-clearance assist
 ```
 
-이다.
+wrist task frame은 각 팔의 `*_wrist_yaw_link`다. position과 orientation은 같은 FrameTask로 풀되 joint limit/collision 상황에서 보조 priority가 작동할 수 있다.
 
-평상시 `_assist_gain()`은 `0.0`이므로:
+## Unity 입력
+
+현재 world-frame packet:
 
 ```text
-orientation Jacobian × shoulder/elbow columns = 0
+schema      = g1.bimanual.unity.sim.v4
+input_frame = unity_display_world_v1
+UDP         = 127.0.0.1:5020
 ```
 
-이 된다. 따라서 평상시 orientation error는 wrist roll/pitch/yaw가 담당한다.
+legacy test path는 `g1.bimanual.unity.sim.v1 / legacy_relative`도 decode할 수 있지만 현재 scene은 v4 world-frame을 사용한다.
 
-### Wrist-limit assist
+`g1_bimanual_unity_sim.py`는 packet size, JSON depth, duplicate key, session/sequence, sender time, 양손 tracked flag, position/quaternion, world frame/base yaw를 검증한다.
 
-손목이 관절 한계에 몰렸을 때 orientation을 완전히 잃지 않도록 proximal assist를 제한적으로 허용한다.
+## Filtering
 
-```python
-ASSIST_ENTER_MARGIN_DEG = 18.0
-ASSIST_RELEASE_MARGIN_DEG = 28.0
-ASSIST_FULL_MARGIN_DEG = 5.0
-ASSIST_LATCH_FLOOR = 0.08
-ASSIST_MAX = 1.0
-```
-
-동작:
+양손 모두 Python에서 동일한 filter를 쓴다.
 
 ```text
-wrist limit margin > 18°
-→ proximal orientation assist = 0%
-
-margin <= 18°
-→ assist latch ON
-
-limit에 매우 가까움
-→ 최대 100%
-
-margin >= 28° 회복
-→ latch OFF
+position tau = 60 ms
+rotation tau = 50 ms
 ```
 
-18°/28° 두 threshold를 둔 이유는 경계에서 assist가 반복적으로 켜졌다 꺼지는 chatter를 막기 위한 hysteresis다.
+tracking gap은 smoothing을 우회하지 않으며 양손 중 하나가 invalid이면 정상 tracking update로 만들지 않는다.
 
-**손 속도를 기준으로 mode를 바꾸지 않는다.** 느린 millimetric translation도 항상 정상 position task로 처리한다.
+## 상태와 return
 
----
-
-## 5. Clutch-relative target mapping
-
-Engage 순간 Quest와 G1의 pose를 기준으로 저장한다.
-
-### Position
-
-```python
-operator_target_position = (
-    clutch_reference["yaw_position"]
-    + raw_target
-    - clutch_reference["input_position"]
-)
-current_center_to_yaw = yaw_position - roll_position
-target_center_position = operator_target_position - current_center_to_yaw
-```
-
-수식:
+개략적인 state:
 
 ```text
-p_external_target = p_G1_yaw_engage + (p_input_current - p_input_engage)
-p_roll_target = p_external_target - (p_yaw_current - p_roll_current)
+ready -> tracking -> returning -> ready
 ```
 
-Quest의 절대 세계좌표를 G1에 직접 넣는 것이 아니라 engage 이후의 상대 이동량을 사용한다. 외부 계약은 yaw-link로 유지하고, 내부 위치 task에만 현재 yaw-to-roll offset을 한 번 빼서 전달한다.
+pinch, tracking loss, stale/fault 조건과 return 정책은 `g1_bimanual_unity_sim.py`, `g1_bimanual_sim.py`, `g1_bimanual_return.py`에서 관리한다.
 
-### Orientation
+return은 단순 관절 직선 복귀가 아니라 near-hands/collision 조건을 고려하는 staged return을 사용한다.
 
-```python
-rotation_delta = input_rotation @ clutch_reference["input_rotation"].T
-target_rotation = rotation_delta @ clutch_reference["yaw_rotation"]
-```
+## 현재 알려진 reachability 이슈
 
-수식:
+최근 실제 session replay에서 큰 position error는 rate 부족만으로 설명되지 않았다.
+
+정지 target hold, orientation 제거, posture/damping 제거, 다중 초기값 nonlinear IK를 비교한 결과 일부 world target은 현재 G1 팔 기하에서 실제로 도달 불가능한 영역에 있었다.
+
+현재 결론:
 
 ```text
-R_delta  = R_hand_current · R_hand_engage^T
-R_target = R_delta · R_G1_engage
+speed profile 문제    : 크게 개선됨
+남은 큰 residual 문제 : human world target vs G1 workspace mismatch
 ```
 
-현재 orientation mapping은 `clutch_relative`다. Quest semantic frame을 G1 yaw frame에 절대적으로 직접 대입하지 않는다.
+따라서 production에는 dynamic pseudo-inverse rate, adaptive position gain, global movement compression, permanent reach clamp를 추가하지 않았다.
 
----
+후속 retargeting이 필요하면 current controller와 분리된 mapping layer로 설계한다.
 
-## 6. Mink `solve_ik()`에서 실제로 하는 일
+## 검증
 
-우리 코드는 Mink 라이브러리의 `mink.solve_ik()`를 호출한다.
+현재 핵심 bimanual regression은 `backend/tests/test_bimanual_*.py`에 있다.
 
-```python
-velocity = mink.solve_ik(
-    configuration=configuration,
-    tasks=[
-        position_task,
-        orientation_task,
-        posture_task,
-        damping_task,
-    ],
-    dt=base.DT,
-    solver=solver,
-    damping=base.QP_DAMPING,
-    limits=limits,
-    constraints=constraints,
-)
-```
-
-Mink 내부의 QP는:
+최근 기준:
 
 ```text
-minimize   1/2 Δqᵀ H Δq + cᵀ Δq
-subject to G Δq ≤ h
-           A Δq = b
+116 tests PASS
+fixture historical exact replay max q diff = 0
+G1.zip actual-session strict replay PASS; max q diff = 2.000621890374532e-13 rad
+near-hands / return / rotation-quality gates PASS
 ```
 
-형태다.
+## Deprecated single-arm code — 직접 실행 금지
 
-### Objective: `H, c`
-
-각 task의 weighted Jacobian/error를 합쳐:
-
-```python
-W = np.vstack(weighted_jacobians)
-H = W.T @ W
-c = -(np.concatenate(weighted_errors) @ W)
-```
-
-로 만든다.
-
-우리 controller에서 objective 쪽에 들어가는 것은:
+다음 계열은 현재 default bimanual controller가 아니다.
 
 ```text
-position_task
-orientation_task
-posture_task
-damping_task
+run_mink_g1_right_arm_*.py
+START_VR_HAND_TO_MUJOCO*.bat
+UDP 5005 / 5006 deprecated single-arm path
 ```
 
-이다.
+다만 bimanual code가 공통 model/joint constants와 일부 helper를 `run_mink_g1_right_arm_prototype.py`에서 가져오므로 파일을 임의 삭제하지 않는다.
 
-### Inequality: `G Δq <= h`
-
-`limits`에서 생성한다.
-
-```text
-ConfigurationLimit
-VelocityLimit
-CollisionAvoidanceLimit
-```
-
-이 여기에 들어간다.
-
-### Equality: `A Δq = b`
-
-현재 non-right-arm DOF freeze가 exact equality constraint로 들어간다.
-
-```python
-constraints = [
-    mink.DofFreezingTask(
-        model=model,
-        dof_indices=frozen_dofs,
-    )
-]
-```
-
-즉 오른팔 7DoF 외에는 `Δq = 0`이다.
-
-### DAQP 역할
-
-Mink가 `H,c,G,h,A,b`를 구성하고 `qpsolvers`를 통해 QP backend에 넘긴다. 현재 우선 backend는 DAQP다.
-
-```text
-Mink = IK/QP formulation
-qpsolvers = common interface
-DAQP = numerical QP solver
-```
-
-Mink가 얻은 `Δq`는:
-
-```python
-v = delta_q / dt
-```
-
-로 velocity가 되어 반환되고 live controller가:
-
-```python
-configuration.integrate_inplace(velocity, base.DT)
-```
-
-로 다음 configuration을 만든다.
-
----
-
-## 7. QP Task와 주요 파라미터
-
-기본값은 `run_mink_g1_right_arm_prototype.py`에 있다.
-
-```python
-CONTROL_HZ = 60.0
-POSITION_COST = 8.0
-ORIENTATION_COST = 2.0
-POSTURE_COST = 0.04
-FRAME_GAIN = 0.35
-LM_DAMPING = 1e-5
-QP_DAMPING = 1e-8
-```
-
-Virtual-center live controller는 추가로:
-
-```python
-PROXIMAL_MAX_JOINT_VELOCITY_DEG_S = 90.0
-WRIST_MAX_JOINT_VELOCITY_DEG_S = 180.0
-JOINT_MAX_ACCELERATION_RAD_S2 = math.radians(60.0)
-VIRTUAL_CENTER_PROXIMAL_DAMPING_COST = 0.03
-VIRTUAL_CENTER_WRIST_DAMPING_COST = 0.015
-```
-
-를 사용한다. 이 값은 Mink 공식 G1 예제의 값이 아니라 이 프로젝트에서 조작감을
-시험해 정한 virtual-center 제어기 전용 상한이다.
-
-| 값 | 의미 | 크게 하면 |
-| --- | --- | --- |
-| `POSITION_COST` | 위치 error weight | 위치를 더 강하게 추종 |
-| `ORIENTATION_COST` | 회전 error weight | 회전을 더 강하게 추종 |
-| `POSTURE_COST` | engage posture 선호 | 원래 팔 자세를 더 유지 |
-| `FRAME_GAIN` | task feedback gain | 수렴 반응 증가 |
-| `VIRTUAL_CENTER_PROXIMAL_DAMPING_COST` | shoulder/elbow motion penalty | proximal 움직임 억제 |
-| `VIRTUAL_CENTER_WRIST_DAMPING_COST` | wrist motion penalty | wrist 움직임 억제 |
-| `PROXIMAL_MAX_JOINT_VELOCITY_DEG_S` | 어깨·팔꿈치 관절속도 제한 | 팔 전체의 최대 추종속도 증가 |
-| `WRIST_MAX_JOINT_VELOCITY_DEG_S` | 손목 roll/pitch/yaw 속도 제한 | 손목 회전 최대속도 증가 |
-
-Cost는 strict priority가 아니다. QP objective에서 weighted compromise를 만든다. 반면 joint limit/collision/freeze와 같은 constraint는 별도의 제한조건이다.
-
----
-
-## 8. Joint limits
-
-MuJoCo model의 joint range를 `mink.ConfigurationLimit`이 사용한다.
-
-프로젝트에서 elbow는 별도의 operational policy를 추가한다.
-
-```python
-RIGHT_ARM_OPERATIONAL_LIMITS_DEGREES = {
-    "right_elbow_joint": (5.0, 120.0),
-}
-```
-
-Virtual-center live에서는 어깨·팔꿈치를 `40 deg/s`, 손목 3축을 `100 deg/s`로 제한한다.
-
----
-
-## 9. Collision avoidance
-
-공통 prototype에서 collision pair를 만들고 Mink에 넘긴다.
-
-```python
-mink.CollisionAvoidanceLimit(
-    model=model,
-    geom_pairs=collision_pairs,
-    minimum_distance_from_collisions=0.012,
-    collision_detection_distance=0.040,
-    gain=0.85,
-    broadphase=True,
-)
-```
-
-현재 의미:
-
-```text
-detection distance = 40 mm
-minimum clearance  = 12 mm
-```
-
-MuJoCo collision-enabled geom의 거리와 distance Jacobian을 사용해 QP inequality를 만든다.
-
-### Collision pair 구성
-
-오른팔 body와 다른 robot collision geom 사이 pair를 구성한다. body tree상 구조적으로 매우 가까운 link는 제외한다.
-
-```python
-STRUCTURAL_NEIGHBOR_DISTANCE = 2
-```
-
-### Hand collision geom
-
-`_prepare_mink_xml()`에서 실제 hand mesh 기반 collision geom을 추가한다.
-
-```text
-name = mink_right_rubber_hand_collision
-mesh = right_rubber_hand
-pos  = 0.0415 -0.003 0
-```
-
-### 확인된 실제 충돌
-
-Virtual-center에서 collision을 끄고 pure yaw를 추적한 결과, hand와 right hip의 최소거리는:
-
-```text
-yaw 40° : +24.95 mm
-yaw 50° :  +0.40 mm
-yaw 60° : -20.21 mm
-yaw 70° : -31.42 mm
-```
-
-였다. 따라서 큰 positive yaw에서 collision avoidance가 shoulder/elbow를 움직이는 것은 실제 hand-hip penetration을 피하기 위한 정상 동작이다.
-
----
-
-## 10. 왜 Virtual Wrist Center를 사용했는가
-
-기존 yaw-link 6D pose task에서는 wrist pitch 회전만 줘도 shoulder/elbow가 움직였다.
-
-Collision ON/OFF 진단:
-
-```text
-pitch +30° : OFF 3.52°  / ON 3.52°
-pitch -30° : OFF 34.20° / ON 34.20°
-pitch +60° : OFF 12.03° / ON 12.03°
-```
-
-collision과 무관했기 때문에 `right_wrist_yaw_link` 위치를 고정하려는 kinematic coupling이 원인이었다.
-
-Virtual-center로 바꾼 뒤:
-
-```text
-pitch +30° : proximal 0.00°
-pitch -30° : proximal 0.00°
-pitch +60° : proximal 0.00°
-```
-
-를 오프라인에서 확인했다.
-
----
-
-## 11. Unity 외부 frame 계약
-
-내부 translation frame은 `right_wrist_roll_link`지만 Unity에 보내는 wrist state는 계속 `right_wrist_yaw_link`다.
-
-```python
-center_error = target_center_position - roll_pose.translation()
-external_target_position = yaw_pose.translation() + center_error
-```
-
-순수 wrist rotation에서 center error가 0이면 Unity-visible target도 실제 yaw wrist와 같은 위치를 유지한다. 이전 split-frame 실험에서 발생했던 Unity/MuJoCo position baseline 불일치를 막기 위한 구조다.
-
----
-
-## 12. Offline 테스트
-
-VR 없이 IK를 검증할 수 있다.
-
-```powershell
-.\tools\TEST_MINK_WRIST_FRAME.bat
-.\tools\TEST_G1_MINK_FK_PARITY.bat
-.\tools\TEST_MINK_SAFETY_PIPELINE.bat
-.\tools\TEST_G1_STARTUP_RECOVERY_OFFLINE.bat
-```
-
-과거 A/B 탐색 스크립트는 현재 정책이 결정된 뒤 제거했다. 현재 유지하는 테스트는 wrist frame 계약, G1/Mink FK 일치, 안전 파이프라인, startup recovery 검증이다.
-
----
-
-## 13. 코드를 수정할 때 먼저 찾을 부분
-
-`run_mink_g1_right_arm_virtual_center_live.py`에서 IDE 검색으로 다음을 순서대로 찾으면 전체 흐름을 빠르게 읽을 수 있다.
-
-```text
-class VirtualCenterOrientationTask
-compute_jacobian
-position_task =
-orientation_task =
-target_center_position =
-rotation_delta =
-mink.solve_ik(
-CollisionAvoidanceLimit
-external_target_position
-```
-
-전체 실행 흐름은:
-
-```text
-UDP hand pose
-→ clutch-relative target
-→ position/orientation task target 설정
-→ mink.solve_ik()
-→ DAQP solves Δq
-→ velocity = Δq/dt
-→ configuration.integrate_inplace()
-→ MuJoCo forward
-→ UDP 5006 Unity state
-→ UDP 5008 safety dry-run
-```
-
-이다.
+현재 source of truth는 `g1_bimanual_*` 파일과 `tools/START_G1_VR_TELEOP.bat`이다.

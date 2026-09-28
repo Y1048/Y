@@ -1,57 +1,99 @@
-# Omni 기준 양팔 IK (2026-09-22)
+# Omni World-Frame Upper Body
 
-## 동작
+이 문서는 현재 bimanual upper-body에서 사용하는 Omni/world-frame 계약을 설명한다.
 
-Unity Play 시작 후 Quest 머리 추적과 Omni yaw가 정상이고 약 1초간 안정되면
-초기 전방을 맞춘다. 외부 고정버튼은 현재 패킷에 포함되어 있지 않으므로
-버튼 눌림/해제를 자동 감지하지 않는다. 사용자는 차렷하고 정면을 보며
-고정버튼을 누른 채 Play를 시작하고, 화면의 ALIGNED/정렬 완료 표시 후 해제한다.
-데이터가 늦게 도착하거나 움직이면 대기 시간이 길어질 수 있다.
+## 현재 기준
 
-초기 머리 위치를 G1 head mount에 맞추는 한 번의 평행이동과 yaw 정렬 이후,
-Quest tracking space는 고정된다. 사람 몸 기준점은 초기 머리-로봇 머리 대응으로
-추정한 것이며, 실제 골반 추적이나 체격 자동 보정은 없다. 회전 중심 차이와
-신체 비율에 따른 오차는 실착 확인이 필요하다.
+Unity Play 시작 후 Quest tracking과 Omni yaw가 안정되면 초기 정렬을 만든다.
 
-Unity 로봇 root와 MuJoCo base는 동일한 Omni 초기 yaw 대비 변화량을 따른다.
-MuJoCo의 기존 free-base qpos는 외부에서 지정하고 양팔 14개 관절만 QP로 푼다.
-Unity 상체 제어 모델은 실제 관절 LowState로 IK 결과를 덮어쓰지 않는다.
-실제 G1 odometry yaw는 이 입력/표시 경로에 사용하지 않는다.
-Omni movement x/y 및 G1 하체에 전달되는 vx/vy/yaw-rate 경로는 변경하지 않았다.
+그 이후:
 
-## 손목 경로
+- Quest tracking world는 고정된다.
+- Unity G1 `RobotRoot`는 Omni 초기-relative yaw를 따른다.
+- MuJoCo base도 같은 yaw 변화를 사용한다.
+- 양손 IK target은 aligned absolute world wrist pose다.
 
-정렬된 Quest 손목 world pose -> Unity/G1 축 대응 -> 월드 손목 목표 -> 회전하는 G1 모델 IK.
-손목 위치는 engage 변위가 아닌 절대 world 위치이다. 손 회전은 해부학적 손 프레임을
-사용하며 engage 때 손 방향과 G1 초기 wrist 방향의 대응을 저장한다.
-Engage 때 HMD 전방을 다시 저장하지 않는다.
-필터는 Omni base 기준으로 적용한 뒤 동일한 base 회전으로 world에 돌려놓는다.
-이 처리는 몸 회전 자체에 필터 지연이 생겨 팔을 뒤로 끌어당기는 것을 방지한다.
-하늘색 표시는 Quest 원본 손목, 초록 목표는 backend가 실제 IK에 사용한
-필터/충돌 투영 후 world 목표이다. 제한이 작동하면 둘의 위치가 다를 수 있다.
+## 현재 bimanual packet
 
-입력 계약: g1.bimanual.unity.sim.v2, input_frame=omni_world_v1,
-base_yaw_rad=G1 축 부호의 Omni 상대 yaw, position_m=정렬된 Unity world 좌표,
-quaternion_wxyz=Unity 손의 해부학적 프레임.
-기존 v1 녹화 재생은 지원하지만 v1 상대 변위와 v2 world 입력을 혼용하지 않는다.
-오래된 backend는 v2를 거부한다. Unity와 양팔 IK backend를 모두 재시작해야 한다.
-피드백은 기존 state.v1에 input_frame, base_yaw_rad, *_ik_target_world_m,
-*_ik_target_world_wxyz를 추가했다.
+```text
+schema      = g1.bimanual.unity.sim.v4
+input_frame = unity_display_world_v1
+UDP         = 127.0.0.1:5020
+```
 
-Omni 샘플이 0.25초 이상 끊기거나 송신 세션/시계가 바뀌면 초기 정렬을 무효화하고
-재engage를 차단한다. 조작 중이면 기존 복귀 절차로 전환한다.
-이 경우 Play를 재시작하고 초기 정렬부터 다시 한다.
+양손 위치와 회전은 `G1BimanualSimulationSender`가 보낸다.
 
-## 검증
+`base_yaw_rad`은 Unity/MuJoCo 축 convention 차이에 맞춰 변환된다.
 
-- 원래 양팔 입력/복귀/목표/Unity 구조 테스트 통과.
-- 0~360도 공동 회전 시 home 팔 관절 및 FK/표시 목표 일치.
-- 0, +90, 180, -90도에서 전방/좌우 목표의 팔 관절 결과 일치.
-- 회전하면서 팔을 뻗을 때 정지한 base의 동일 몸 기준 동작과 관절 결과 일치.
-- 회전 직후 손 추적 손실 시 정지 궤적이 이전 base 회전을 복원하지 않음.
-- 잘못된 yaw/좌표 계약 거부, 세션 내 frame 변경 시 복귀.
-- Unity runtime C# 소스를 프로젝트 참조로 Roslyn 컴파일. .NET SDK가 없어
-  dotnet build 대신 설치된 Visual Studio csc를 사용했다.
-- 실제 Quest 착용 Play 및 G1 명령 실행은 하지 않았다.
+## 손목 위치
 
-검증 출력: logs/validation/omni_world_20260922/ (로컬, Git 제외).
+현재 bimanual world path는 engage displacement가 아니라 **absolute aligned world wrist position**을 IK target으로 사용한다.
+
+binder 내부에는 relative delta/body-translation helper가 남아 있지만 현재 v4 `position_m` 계약과 동일한 것은 아니다.
+
+## 손목 회전
+
+손 회전은 anatomical wrist frame을 기준으로 sender/backend가 quaternion으로 전달한다.
+
+position과 orientation은 Python bimanual policy의 wrist FrameTask에서 함께 풀린다.
+
+## Omni observation
+
+Omni Connect endpoint:
+
+```text
+ws://127.0.0.1:32123
+```
+
+기본 통합 launcher에서는 `g1_omni_velocity_gateway.py --dry-run --process-hz 60`으로 읽는다.
+
+이 default worker는 observation-only이며 G1 motor command transport를 활성화하지 않는다.
+
+## PiP
+
+카메라 PiP는 HMD가 아니라 G1 `RobotRoot`에 parent된다.
+
+따라서 사용자가 머리를 돌려도 PiP parent가 따라가지 않고 G1/Omni 기준으로 유지된다.
+
+## 현재 확인된 제한
+
+이 world-frame 계약에는 사람 체격을 G1 팔 길이에 자동 retargeting하는 단계가 없다.
+
+최근 실제 세션 분석에서는 상당수 absolute world wrist target이 G1 shoulder 기준 reachable workspace 밖에 있었다.
+
+그 결과 큰 position residual이 speed tuning만으로 사라지지 않는 구간이 있었다.
+
+현재 production에는 다음을 추가하지 않았다.
+
+- adaptive position gain
+- permanent reach clamp
+- global movement compression
+- relative mapping rollback
+
+향후 retargeting을 추가할 경우 다음 invariant를 유지해야 한다.
+
+1. Omni yaw를 바꿔도 body-relative 동작이 일관될 것
+2. left/right symmetry
+3. world schema/frame provenance 유지
+4. motor authority와 observation mapping 분리
+5. 기존 80-test bimanual regression 보존
+
+## Legacy와의 차이
+
+예전 single-arm/relative path:
+
+```text
+UDP 5005/5006
+engage-relative target
+right-hand/right-arm 중심
+```
+
+현재 default:
+
+```text
+UDP 5020
+absolute aligned world target
+left + right 14-DoF bimanual
+```
+
+두 계약을 혼용하지 않는다.

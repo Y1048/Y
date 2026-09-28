@@ -10,7 +10,7 @@
 - Python 선언은 AST로 추출하며 C#/C++/배치의 호출 그래프를 자동 추정하지 않는다.
 - 상태는 2026-09-03 확인 범위다. 이후 변경은 다시 검토해야 한다.
 
-대상 파일: **924개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
+대상 파일: **844개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
 
 ## 포함 범위
 
@@ -41,11 +41,11 @@ py -3.11 backend/tools/build_code_index.py --check
 | 파일 | 줄 수 | 상태 | Python 최상위 선언(최대 5개) | SHA256 앞 12자리 |
 | --- | ---: | --- | --- | --- |
 | [MuJoCo_G1_Controller/scripts/export_g1_mink_fk_reference.py](../MuJoCo_G1_Controller/scripts/export_g1_mink_fk_reference.py) | 81 | 목록 확인 | mujoco_to_unity_delta, main | `f12675084b20` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py) | 20 | 목록 확인 | - | `5fb9fb70707d` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py) | 20 | 목록 확인 | - | `f7de3500b8b6` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py) | 305 | 목록 확인 | ElbowClearanceTask, ShoulderComfortTask, ArmMotionPolicy | `2fa02ca14f20` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_return.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_return.py) | 288 | 목록 확인 | BimanualReturnMotion | `379a49a2315b` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py) | 130 | 목록 확인 | startup_stage, require_validated_engine, load_engine, runtime_metadata, main | `c92c5cdafe0f` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py) | 589 | 목록 확인 | _recorded_motion_limits, _current_motion_limits, _open_text, _percentiles, _current_source_hashes (+7) | `adf74f24e543` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py) | 586 | 목록 확인 | _recorded_motion_limits, _current_motion_limits, _open_text, _percentiles, _current_source_hashes (+7) | `100d56344e2d` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py) | 450 | 목록 확인 | BimanualSimulation, targets_from_json, main | `a8f1ea04d0a9` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_udp_cycle.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_udp_cycle.py) | 317 | 목록 확인 | make_packet, free_loopback_port, send_packet, valid_feedback, wait_feedback (+6) | `7820bd59b50d` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py) | 526 | 목록 확인 | decode, PairedHandFilter, UnityCycle, main | `6fc85712de31` |
@@ -80,7 +80,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [Unity_G1_VR/Assets/Editor/G1MinkFkParityValidator.cs](../Unity_G1_VR/Assets/Editor/G1MinkFkParityValidator.cs) | 134 | 목록 확인 | - | `3a842c8567a3` |
 | [Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs](../Unity_G1_VR/Assets/Editor/G1OfficialModelImporter.cs) | 591 | 목록 확인 | - | `0cc491e3db1b` |
 | [Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs](../Unity_G1_VR/Assets/Editor/G1SameSceneBimanualSetup.cs) | 92 | 목록 확인 | - | `fd1e225def8d` |
-| [Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs](../Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs) | 685 | 목록 확인 | - | `1082bd2c4932` |
+| [Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs](../Unity_G1_VR/Assets/Editor/G1TeleopBatchValidator.cs) | 685 | 목록 확인 | - | `219faf30456d` |
 | [Unity_G1_VR/Assets/Editor/G1VRBuild.cs](../Unity_G1_VR/Assets/Editor/G1VRBuild.cs) | 67 | 목록 확인 | - | `3f198318b963` |
 | [Unity_G1_VR/Assets/G1Teleop/G1AmbientOperatorEnvironment.cs](../Unity_G1_VR/Assets/G1Teleop/G1AmbientOperatorEnvironment.cs) | 222 | 목록 확인 | - | `fd7a7ec659d2` |
 | [Unity_G1_VR/Assets/G1Teleop/G1BimanualFeedbackGate.cs](../Unity_G1_VR/Assets/G1Teleop/G1BimanualFeedbackGate.cs) | 40 | 목록 확인 | - | `df0560f6d8dd` |
@@ -88,8 +88,8 @@ py -3.11 backend/tools/build_code_index.py --check
 | [Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs](../Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs) | 970 | 입출력 확인 | - | `340ddef9ffe8` |
 | [Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs) | 539 | 입출력 확인 | - | `2de01db7eff5` |
 | [Unity_G1_VR/Assets/G1Teleop/G1HandUdpDiagnostics.cs](../Unity_G1_VR/Assets/G1Teleop/G1HandUdpDiagnostics.cs) | 98 | 목록 확인 | - | `40a96eb5264c` |
-| [Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs) | 661 | 목록 확인 | - | `3bdd09378484` |
-| [Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs) | 343 | 목록 확인 | - | `64479cd12b7a` |
+| [Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs) | 661 | 목록 확인 | - | `c299f6ddde07` |
+| [Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs) | 343 | 목록 확인 | - | `8e5e5da7275a` |
 | [Unity_G1_VR/Assets/G1Teleop/G1JointNode.cs](../Unity_G1_VR/Assets/G1Teleop/G1JointNode.cs) | 18 | 목록 확인 | - | `93bf9cf822c3` |
 | [Unity_G1_VR/Assets/G1Teleop/G1KeypadLocomotionUdpSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1KeypadLocomotionUdpSender.cs) | 251 | 목록 확인 | - | `57c9e499aaa5` |
 | [Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs](../Unity_G1_VR/Assets/G1Teleop/G1LiveTeleopTrace.cs) | 280 | 목록 확인 | - | `99a798753602` |
@@ -141,7 +141,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [backend/tests/test_bimanual_quest_reengage.py](../backend/tests/test_bimanual_quest_reengage.py) | 149 | 목록 확인 | rows, QuestReengageReplayTests | `b9c810f2463c` |
 | [backend/tests/test_bimanual_recorded_session.py](../backend/tests/test_bimanual_recorded_session.py) | 178 | 목록 확인 | load_fixture, RecordedStagedSessionTests | `b5171d78b2f4` |
 | [backend/tests/test_bimanual_return.py](../backend/tests/test_bimanual_return.py) | 480 | 목록 확인 | assert_output, recorded_return, StagedReturnTests | `ebfff5ccb53d` |
-| [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 156 | 목록 확인 | fake_engine, RuntimeTests | `71409c57a605` |
+| [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 159 | 목록 확인 | fake_engine, RuntimeTests | `5cbef4f62bcd` |
 | [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 413 | 목록 확인 | SessionReportTests | `89cc7e969de8` |
 | [backend/tests/test_bimanual_sim.py](../backend/tests/test_bimanual_sim.py) | 264 | 목록 확인 | BimanualTests | `49631327dbc7` |
 | [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 271 | 목록 확인 | packet, CycleTests | `85eb715512ee` |
@@ -268,75 +268,6 @@ py -3.11 backend/tools/build_code_index.py --check
 | [config/teleimager_real_d435i.yaml](../config/teleimager_real_d435i.yaml) | 36 | 목록 확인 | - | `2646f08cfc76` |
 | [config/teleimager_simulation.yaml](../config/teleimager_simulation.yaml) | 36 | 목록 확인 | - | `65127fae537d` |
 | [config/teleop.json](../config/teleop.json) | 83 | 목록 확인 | - | `e3498304c8b4` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/manifest.json](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/manifest.json) | 32 | 목록 확인 | - | `347fff96cfb8` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_live_cycle_contract.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_live_cycle_contract.hpp) | 190 | 목록 확인 | - | `bca168cf72bb` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_live_cycle_target.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_live_cycle_target.hpp) | 84 | 목록 확인 | - | `f9556d12cdd7` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_udp_target.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/mink_udp_target.hpp) | 53 | 목록 확인 | - | `de32b2bb7c9f` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_relay_contract.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_relay_contract.hpp) | 22 | 목록 확인 | - | `d3fe4a0fdf3c` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_snapshot_freshness.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_snapshot_freshness.hpp) | 7 | 목록 확인 | - | `7b9026980e86` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_state_tick.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_state_tick.hpp) | 8 | 목록 확인 | - | `ff86033bf355` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_vr_cycle_udp.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_vr_cycle_udp.hpp) | 69 | 목록 확인 | - | `2424fa527778` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_vr_policy_adapter.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/native_vr_policy_adapter.hpp) | 78 | 목록 확인 | - | `0c1ad7b3890c` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/offline_twist2_constants.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/offline_twist2_constants.hpp) | 45 | 목록 확인 | - | `517a651ecfc9` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_gain_options.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_gain_options.hpp) | 59 | 목록 확인 | - | `a992fe6591f1` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_joint_trial.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_joint_trial.hpp) | 46 | 목록 확인 | - | `e760154bb5a4` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_reach_reference.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_reach_reference.hpp) | 17 | 목록 확인 | - | `ca0f771ddfd2` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_reach_trial.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_reach_trial.hpp) | 51 | 목록 확인 | - | `a58197aaec1e` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_ready_settle.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_ready_settle.hpp) | 41 | 목록 확인 | - | `a33e931e51aa` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_small_signal_trial.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/pd_small_signal_trial.hpp) | 133 | 목록 확인 | - | `a7b8562ab1ac` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/periodic_csv.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/periodic_csv.hpp) | 64 | 목록 확인 | - | `a2c406b1e65d` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/raw_input_watch_offline.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/raw_input_watch_offline.hpp) | 28 | 목록 확인 | - | `7f614be48562` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_common.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_common.hpp) | 376 | 목록 확인 | - | `2db4dea94bf4` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_mink_cycle_trial.cpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_mink_cycle_trial.cpp) | 1284 | 목록 확인 | - | `f2b507dd2658` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_mink_cycle_trial.remote_current.cpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/twist2_mink_cycle_trial.remote_current.cpp) | 1590 | 목록 확인 | - | `c309da057467` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/upper_target_offline.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/upper_target_offline.hpp) | 140 | 목록 확인 | - | `4ce96f2ae645` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/validate_input.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/validate_input.hpp) | 178 | 목록 확인 | - | `a28785a3f42b` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/vendor/json.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/vendor/json.hpp) | 25526 | 목록 확인 | - | `5f09d1eebe9b` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/verified_regular_handoff.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/verified_regular_handoff.hpp) | 31 | 목록 확인 | - | `72aabbc6e625` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/writer_frame.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_right_arm/writer_frame.hpp) | 37 | 목록 확인 | - | `16f2ec354c74` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_velocity/g1_velocity_policy.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_velocity/g1_velocity_policy.hpp) | 302 | 목록 확인 | - | `97fd27227c47` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_velocity/run_continuous_gait.sh](../experiments/g1_velocity_mink_right_arm_20260914/base_velocity/run_continuous_gait.sh) | 11 | 목록 확인 | - | `e4bfdaddc03b` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_velocity/twist2_common.hpp](../experiments/g1_velocity_mink_right_arm_20260914/base_velocity/twist2_common.hpp) | 384 | 목록 확인 | - | `8f591c905291` |
-| [experiments/g1_velocity_mink_right_arm_20260914/base_velocity/twist2_static_stand.cpp](../experiments/g1_velocity_mink_right_arm_20260914/base_velocity/twist2_static_stand.cpp) | 1687 | 목록 확인 | - | `5b2e5476d47e` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/g1_velocity_mink_keypad_right_arm.cpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/g1_velocity_mink_keypad_right_arm.cpp) | 1823 | 목록 확인 | - | `d4d81f757613` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/g1_velocity_policy.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/g1_velocity_policy.hpp) | 315 | 목록 확인 | - | `0214800838e5` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/leg_policy_switch.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/leg_policy_switch.hpp) | 101 | 목록 확인 | - | `bc49ce045444` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_live_cycle_contract.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_live_cycle_contract.hpp) | 198 | 목록 확인 | - | `040183d233dc` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_live_cycle_target.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_live_cycle_target.hpp) | 84 | 목록 확인 | - | `ba5ef1140818` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_udp_target.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/mink_udp_target.hpp) | 53 | 목록 확인 | - | `de32b2bb7c9f` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/native_relay_contract.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/native_relay_contract.hpp) | 22 | 목록 확인 | - | `d3fe4a0fdf3c` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/native_snapshot_freshness.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/native_snapshot_freshness.hpp) | 7 | 목록 확인 | - | `7b9026980e86` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/native_state_tick.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/native_state_tick.hpp) | 8 | 목록 확인 | - | `ff86033bf355` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/native_velocity_udp.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/native_velocity_udp.hpp) | 155 | 목록 확인 | - | `b6c73d10bbb8` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/native_vr_cycle_udp.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/native_vr_cycle_udp.hpp) | 69 | 목록 확인 | - | `2424fa527778` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/native_vr_policy_adapter.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/native_vr_policy_adapter.hpp) | 78 | 목록 확인 | - | `0c1ad7b3890c` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/offline_twist2_constants.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/offline_twist2_constants.hpp) | 45 | 목록 확인 | - | `517a651ecfc9` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_gain_options.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_gain_options.hpp) | 60 | 목록 확인 | - | `f7ba9c1ccdc4` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_joint_trial.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_joint_trial.hpp) | 46 | 목록 확인 | - | `e760154bb5a4` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_reach_reference.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_reach_reference.hpp) | 17 | 목록 확인 | - | `ca0f771ddfd2` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_reach_trial.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_reach_trial.hpp) | 51 | 목록 확인 | - | `a58197aaec1e` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_ready_settle.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_ready_settle.hpp) | 41 | 목록 확인 | - | `a33e931e51aa` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_small_signal_trial.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/pd_small_signal_trial.hpp) | 133 | 목록 확인 | - | `a7b8562ab1ac` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/periodic_csv.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/periodic_csv.hpp) | 64 | 목록 확인 | - | `a2c406b1e65d` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/raw_input_watch_offline.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/raw_input_watch_offline.hpp) | 28 | 목록 확인 | - | `7f614be48562` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/run_static_stand_handoff_probe.sh](../experiments/g1_velocity_mink_right_arm_20260914/candidate/run_static_stand_handoff_probe.sh) | 6 | 목록 확인 | - | `25912e7b7a12` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/run_velocity_axis_trial.sh](../experiments/g1_velocity_mink_right_arm_20260914/candidate/run_velocity_axis_trial.sh) | 16 | 목록 확인 | - | `9adca7344b06` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/run_velocity_mink_keypad.sh](../experiments/g1_velocity_mink_right_arm_20260914/candidate/run_velocity_mink_keypad.sh) | 21 | 목록 확인 | - | `a90cb043e5bf` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/test_initial_ready_continuous_gait.cpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/test_initial_ready_continuous_gait.cpp) | 55 | 목록 확인 | - | `dc537e322244` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/test_leg_policy_switch.cpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/test_leg_policy_switch.cpp) | 49 | 목록 확인 | - | `9d49562027d6` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/test_velocity_keypad_contract.cpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/test_velocity_keypad_contract.cpp) | 44 | 목록 확인 | - | `1204e46b9354` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/twist2_common.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/twist2_common.hpp) | 384 | 목록 확인 | - | `8f591c905291` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/upper_target_offline.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/upper_target_offline.hpp) | 140 | 목록 확인 | - | `4ce96f2ae645` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/validate_input.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/validate_input.hpp) | 178 | 목록 확인 | - | `a28785a3f42b` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/velocity_keypad_contract.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/velocity_keypad_contract.hpp) | 78 | 목록 확인 | - | `a0d2b744a19c` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/vendor/json.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/vendor/json.hpp) | 25526 | 목록 확인 | - | `5f09d1eebe9b` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/verified_regular_handoff.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/verified_regular_handoff.hpp) | 31 | 목록 확인 | - | `72aabbc6e625` |
-| [experiments/g1_velocity_mink_right_arm_20260914/candidate/writer_frame.hpp](../experiments/g1_velocity_mink_right_arm_20260914/candidate/writer_frame.hpp) | 37 | 목록 확인 | - | `16f2ec354c74` |
-| [experiments/g1_velocity_mink_right_arm_20260914/deploy_arm_ready_decouple_20260915.sh](../experiments/g1_velocity_mink_right_arm_20260914/deploy_arm_ready_decouple_20260915.sh) | 30 | 목록 확인 | - | `7643463d8642` |
-| [experiments/g1_velocity_mink_right_arm_20260914/deploy_build_continuous_20260915.sh](../experiments/g1_velocity_mink_right_arm_20260914/deploy_build_continuous_20260915.sh) | 40 | 목록 확인 | - | `641e6c7e502e` |
-| [experiments/g1_velocity_mink_right_arm_20260914/deploy_continuous_gait_arm_ready_20260915.sh](../experiments/g1_velocity_mink_right_arm_20260914/deploy_continuous_gait_arm_ready_20260915.sh) | 32 | 목록 확인 | - | `0e5d1e6c7dbb` |
-| [experiments/g1_velocity_mink_right_arm_20260914/deploy_dual_policy_idle_20260915.sh](../experiments/g1_velocity_mink_right_arm_20260914/deploy_dual_policy_idle_20260915.sh) | 19 | 목록 확인 | - | `88744eb4d9e1` |
-| [experiments/g1_velocity_mink_right_arm_20260914/deploy_keypad_latched_08_20260915.sh](../experiments/g1_velocity_mink_right_arm_20260914/deploy_keypad_latched_08_20260915.sh) | 28 | 목록 확인 | - | `040010a2ae09` |
 | [experiments/independent_locomotion/data/mink_command_trajectories_v1.json](../experiments/independent_locomotion/data/mink_command_trajectories_v1.json) | 89 | 목록 확인 | - | `0d30f8242e40` |
 | [experiments/independent_locomotion/evaluate_upper_body_conditioned.py](../experiments/independent_locomotion/evaluate_upper_body_conditioned.py) | 160 | 목록 확인 | _state_snapshot, _unchanged, evaluate_seed, main | `b6491eb74b9e` |
 | [experiments/independent_locomotion/evaluation_protocol_v1.json](../experiments/independent_locomotion/evaluation_protocol_v1.json) | 33 | 목록 확인 | - | `51493834e452` |
@@ -357,17 +288,6 @@ py -3.11 backend/tools/build_code_index.py --check
 | [experiments/independent_locomotion/upper_body_conditioned_env.py](../experiments/independent_locomotion/upper_body_conditioned_env.py) | 229 | 목록 확인 | _upper_state, apply_smooth_upper_target, apply_fixed_upper_target, recorded_scale_at_step, apply_recorded_upper_target (+2) | `363d9e6cb9fc` |
 | [experiments/independent_locomotion/verify_mjlab.sh](../experiments/independent_locomotion/verify_mjlab.sh) | 26 | 목록 확인 | - | `393f509c6d40` |
 | [experiments/independent_locomotion/verify_upper_body_conditioned.sh](../experiments/independent_locomotion/verify_upper_body_conditioned.sh) | 27 | 목록 확인 | - | `fb4c583664c4` |
-| [experiments/startup_recovery_multistrategy/TEST_MULTI_STRATEGY.bat](../experiments/startup_recovery_multistrategy/TEST_MULTI_STRATEGY.bat) | 30 | 목록 확인 | - | `c17f8f5e265c` |
-| [experiments/startup_recovery_multistrategy/VIEW_SELECTED.bat](../experiments/startup_recovery_multistrategy/VIEW_SELECTED.bat) | 26 | 목록 확인 | - | `07f85ccfcd9f` |
-| [experiments/startup_recovery_multistrategy/candidate_runner.py](../experiments/startup_recovery_multistrategy/candidate_runner.py) | 39 | 목록 확인 | parse_arguments, main | `20b2e8d8ebca` |
-| [experiments/startup_recovery_multistrategy/run_experiment.py](../experiments/startup_recovery_multistrategy/run_experiment.py) | 248 | 목록 확인 | RecoveryCandidate, parse_arguments, load_initial_pose, candidate_score, select_candidate (+3) | `a3e6a8dec3ae` |
-| [experiments/startup_recovery_multistrategy/test_experiment.py](../experiments/startup_recovery_multistrategy/test_experiment.py) | 87 | 목록 확인 | MultiStrategyRecoveryExperimentTest | `c97dd80049c2` |
-| [experiments/startup_recovery_multistrategy/view_selected.py](../experiments/startup_recovery_multistrategy/view_selected.py) | 37 | 목록 확인 | main | `f277d289ab9e` |
-| [experiments/startup_recovery_posture_sweep/RUN_POSTURE_SWEEP.bat](../experiments/startup_recovery_posture_sweep/RUN_POSTURE_SWEEP.bat) | 30 | 목록 확인 | - | `874505042940` |
-| [experiments/startup_recovery_posture_sweep/RUN_STANDARD_POSTURE_SWEEP.bat](../experiments/startup_recovery_posture_sweep/RUN_STANDARD_POSTURE_SWEEP.bat) | 37 | 목록 확인 | - | `a804d7c63a0d` |
-| [experiments/startup_recovery_posture_sweep/run_sweep.py](../experiments/startup_recovery_posture_sweep/run_sweep.py) | 653 | 목록 확인 | SweepCase, ParseOffsets, ParseArguments, LoadPose, BuildProvenance (+12) | `43b1e62e9c31` |
-| [experiments/startup_recovery_posture_sweep/single_pose_runner.py](../experiments/startup_recovery_posture_sweep/single_pose_runner.py) | 62 | 목록 확인 | ParseArguments, UseIsolatedModel, Main | `0c58f76471f6` |
-| [experiments/startup_recovery_posture_sweep/test_sweep.py](../experiments/startup_recovery_posture_sweep/test_sweep.py) | 191 | 목록 확인 | StartupRecoveryPostureSweepTests | `62616b76c696` |
 | [experiments/twist2_right_arm_manual/TEST_OFFLINE.bat](../experiments/twist2_right_arm_manual/TEST_OFFLINE.bat) | 18 | 목록 확인 | - | `53a20610cefb` |
 | [experiments/twist2_right_arm_manual/VERIFY_OFFLINE.ps1](../experiments/twist2_right_arm_manual/VERIFY_OFFLINE.ps1) | 31 | 목록 확인 | - | `45806b68d3b1` |
 | [experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat](../experiments/twist2_right_arm_manual/VIEW_PHYSICAL_CSV_MUJOCO.bat) | 34 | 목록 확인 | - | `f1af8630a586` |
@@ -748,7 +668,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [hardware/g1_arm_bridge/precheck_provenance_guard.py](../hardware/g1_arm_bridge/precheck_provenance_guard.py) | 39 | 목록 확인 | require_provenance_bound_precheck | `aa8fbdd33530` |
 | [hardware/g1_arm_bridge/probe_joint_motion.py](../hardware/g1_arm_bridge/probe_joint_motion.py) | 177 | 목록 확인 | parse_args, current_positions, collect_positions, summarize, main | `6b43271de626` |
 | [hardware/g1_arm_bridge/query_motion_mode.py](../hardware/g1_arm_bridge/query_motion_mode.py) | 110 | 목록 확인 | _write_json, parse_args, main | `d86bc3ea68ba` |
-| [hardware/g1_arm_bridge/query_motion_mode_wsl.sh](../hardware/g1_arm_bridge/query_motion_mode_wsl.sh) | 24 | 목록 확인 | - | `19cdf2097714` |
+| [hardware/g1_arm_bridge/query_motion_mode_wsl.sh](../hardware/g1_arm_bridge/query_motion_mode_wsl.sh) | 24 | 목록 확인 | - | `43adffcedd77` |
 | [hardware/g1_arm_bridge/read_only_lowstate.py](../hardware/g1_arm_bridge/read_only_lowstate.py) | 563 | 목록 확인 | JointSample, ReadOnlyG1LowState, ReadOnlyG1BaseState, _motor_value, _state_uint8 (+9) | `bfaef913f786` |
 | [hardware/g1_arm_bridge/read_only_lowstate_entry.py](../hardware/g1_arm_bridge/read_only_lowstate_entry.py) | 154 | 목록 확인 | _pop_option, _finite_vector, install_raw_odom_binding, install_forward_token, main | `a38ce663d019` |
 | [hardware/g1_arm_bridge/receive_initial_state.py](../hardware/g1_arm_bridge/receive_initial_state.py) | 199 | 목록 확인 | parse_args, _raw_object, _validate_provenance, _validate_full_body_consistency, main | `4285ba83ada2` |
@@ -763,10 +683,10 @@ py -3.11 backend/tools/build_code_index.py --check
 | [hardware/g1_arm_bridge/safety_gate.py](../hardware/g1_arm_bridge/safety_gate.py) | 149 | 목록 확인 | SafetyConfig, SafetyDecision, _vector, _within_joint_limits, evaluate_target | `20d483a19afa` |
 | [hardware/g1_arm_bridge/simulate_startup_recovery.py](../hardware/g1_arm_bridge/simulate_startup_recovery.py) | 1181 | 목록 확인 | _load_startup_safe_ready_degrees, _right_qpos_ids, _minimum_clearance, _minimum_clearance_extended, _recovery_edge_is_valid (+10) | `370af1261378` |
 | [hardware/g1_arm_bridge/start_camera_tcp_bridge_wsl.sh](../hardware/g1_arm_bridge/start_camera_tcp_bridge_wsl.sh) | 69 | 목록 확인 | - | `7cd8933586e9` |
-| [hardware/g1_arm_bridge/start_gate6_hold_wsl.sh](../hardware/g1_arm_bridge/start_gate6_hold_wsl.sh) | 24 | 목록 확인 | - | `02803d8b764f` |
-| [hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh](../hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh) | 29 | 목록 확인 | - | `1040c430ca14` |
-| [hardware/g1_arm_bridge/start_read_only_wsl.sh](../hardware/g1_arm_bridge/start_read_only_wsl.sh) | 22 | 목록 확인 | - | `969530765469` |
-| [hardware/g1_arm_bridge/start_right_arm_jog_wsl.sh](../hardware/g1_arm_bridge/start_right_arm_jog_wsl.sh) | 24 | 목록 확인 | - | `bf6fc5424ee2` |
+| [hardware/g1_arm_bridge/start_gate6_hold_wsl.sh](../hardware/g1_arm_bridge/start_gate6_hold_wsl.sh) | 24 | 목록 확인 | - | `39e4eb31dbc5` |
+| [hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh](../hardware/g1_arm_bridge/start_gate7_live_arm_sdk_wsl.sh) | 29 | 목록 확인 | - | `1b6fdb592e13` |
+| [hardware/g1_arm_bridge/start_read_only_wsl.sh](../hardware/g1_arm_bridge/start_read_only_wsl.sh) | 22 | 목록 확인 | - | `09de003deb87` |
+| [hardware/g1_arm_bridge/start_right_arm_jog_wsl.sh](../hardware/g1_arm_bridge/start_right_arm_jog_wsl.sh) | 24 | 목록 확인 | - | `e804bd2ecb46` |
 | [hardware/g1_arm_bridge/startup_state_binding_guard.py](../hardware/g1_arm_bridge/startup_state_binding_guard.py) | 143 | 목록 확인 | file_sha256, build_state_binding, base_state_to_dict, _require_finite_vector, require_state_binding | `386687ebca94` |
 | [hardware/g1_arm_bridge/test_arm_sdk_hold_contract.py](../hardware/g1_arm_bridge/test_arm_sdk_hold_contract.py) | 159 | 목록 확인 | _safe_all_q, ArmSdkHoldContractTests | `a004f9246ac4` |
 | [hardware/g1_arm_bridge/test_arm_sdk_release_contract.py](../hardware/g1_arm_bridge/test_arm_sdk_release_contract.py) | 192 | 목록 확인 | FakeClock, ReleaseContractTests | `28006040442e` |
@@ -941,7 +861,7 @@ py -3.11 backend/tools/build_code_index.py --check
 | [tools/TEST_MINK_SAFETY_PIPELINE.bat](../tools/TEST_MINK_SAFETY_PIPELINE.bat) | 35 | 목록 확인 | - | `3592659bb64f` |
 | [tools/TEST_MINK_TORCH_OWNER_OFFLINE.bat](../tools/TEST_MINK_TORCH_OWNER_OFFLINE.bat) | 32 | 목록 확인 | - | `cc44ceb0ae2a` |
 | [tools/TEST_MINK_WRIST_FRAME.bat](../tools/TEST_MINK_WRIST_FRAME.bat) | 34 | 목록 확인 | - | `414187888f10` |
-| [tools/VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1](../tools/VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1) | 60 | 목록 확인 | - | `bb978c800f09` |
+| [tools/VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1](../tools/VERIFY_DESKTOP_SOURCE_CHECKOUT.ps1) | 60 | 목록 확인 | - | `61d5b02cea3c` |
 | [tools/VERIFY_HEAD_CAMERA_FOUNDATION.bat](../tools/VERIFY_HEAD_CAMERA_FOUNDATION.bat) | 27 | 목록 확인 | - | `eae096375075` |
 | [tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat](../tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat) | 24 | 목록 확인 | - | `bbccd6e78e11` |
 | [tools/VIEW_G1_GATE7_LATEST_CAPTURE_MUJOCO.bat](../tools/VIEW_G1_GATE7_LATEST_CAPTURE_MUJOCO.bat) | 29 | 목록 확인 | - | `863b6b3bab9c` |

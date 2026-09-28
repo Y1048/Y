@@ -1,216 +1,126 @@
 # Unity G1 VR Frontend
 
-이 Unity 프로젝트는 VR 오른손 tracking을 받아 G1 teleoperation target을 만들고, Mink/MuJoCo에서 돌아오는 G1 오른팔 state를 시각화한다.
+현재 Unity 프로젝트는 Quest **양손** 입력, Omni 기준 G1 root, bimanual IK 표시, G1 LowState 표시, 전면 카메라 PiP를 담당한다.
 
-## 현재 환경
+Unity 고정 버전: `6000.5.4f1`.
 
-```text
-Unity            : 6000.5.4f1
-Meta XR SDK      : 205.x
-Target headset   : VR headset
-Scene            : Assets/Scenes/SampleScene.unity
-```
-
-`com.unity.xr.oculus`가 아직 남아 있어 Unity 6에서 Oculus Plugin deprecation 경고가 표시될 수 있다. OpenXR migration은 wrist/frame 동작이 안정된 뒤 별도로 진행한다.
-
-## Windows PC별 XR 런타임 설정
-
-Git 저장소와 Unity 프로젝트를 동기화해도 Windows의 활성 OpenXR 런타임은 다른 PC로 복사되지 않는다. 새 PC에서 처음 실행하거나 SteamVR/Meta 앱 업데이트 뒤에는 다음 항목을 PC별로 확인한다.
-
-1. Unity 6000.5.4f1과 프로젝트에 필요한 플랫폼 모듈을 설치한다.
-2. Meta Horizon/Meta Quest Link와 Quest 장치 연결·개발자 권한을 준비한다.
-3. Meta Horizon/Meta Quest Link의 Settings > General에서 Meta Quest Link를 활성 OpenXR 런타임으로 설정한다.
-4. Unity에서 이 프로젝트와 `Assets/Scenes/SampleScene.unity`를 연다.
-
-현재 프로젝트는 Oculus XR Plugin을 사용한다. SteamVR이 활성 OpenXR 런타임이면 Oculus Plugin이 비 Oculus 런타임을 거부해 다음 오류가 발생할 수 있다.
+## 현재 기본 경로
 
 ```text
-XR_ERROR_RUNTIME_FAILURE
-xrCreateInstance failed
-Oculus XR Plugin Failed to initialize
-Unable to start Oculus XR Plugin
+Quest left/right hands
+        |
+        v
+G1ExistingHandTargetBinder (L/R)
+        |
+        v
+G1BimanualSimulationSender
+        | UDP 127.0.0.1:5020
+        v
+Python bimanual Mink/MuJoCo
+        `-- feedback -> Unity
 ```
 
-현재 Windows 런타임은 다음 읽기 전용 명령으로 확인할 수 있다.
-
-```powershell
-Get-ItemProperty 'HKLM:\SOFTWARE\Khronos\OpenXR\1' | Select-Object ActiveRuntime
-```
-
-SteamVR과 Omni Connect는 계속 설치해 둘 수 있다. Quest teleop을 실행할 때는 현재 Oculus 기반 Unity 프로젝트가 요구하는 Meta 런타임이 활성인지 확인한다. 이 설정은 보통 PC당 최초 한 번만 필요하지만 새 PC 설정, XR 프로그램 업데이트, 또는 위 초기화 오류 발생 뒤에는 다시 확인한다.
-
-## 데이터 흐름
+기본 scene의 양팔 sender는 `useExistingScene` world-frame 경로를 사용한다.
 
 ```text
-VR right hand
-   ↓
-Unity hand/wrist source
-   ↓ engagement/clutch
-UDP 5005
-   ↓
-Mink/MuJoCo
-   ↓
-UDP 5006
-   ↓
-Unity G1 preview
+schema      = g1.bimanual.unity.sim.v4
+input_frame = unity_display_world_v1
+port        = 5020
 ```
 
-## Frame 기준
+## 양손 engagement
 
-외부 teleoperation wrist contract는 현재:
+`G1BimanualSimulationSender`는 왼손과 오른손 binder를 모두 요구한다.
+
+tracking 시작 조건은 양손 freshness/tracking/alignment, zone 상태, pinch 상태와 backend readiness를 함께 검사한다. 한 손만 유효하다고 양팔 tracking을 정상 상태로 만들지 않는다.
+
+Unity marker와 status text는 raw tracked wrist, IK target, backend 상태를 구분해서 표시한다.
+
+## World-frame 입력
+
+현재 sender는 bimanual world schema에서 각 손의 absolute aligned world wrist pose를 보낸다.
+
+- `left.position_m` / `left.quaternion_wxyz`
+- `right.position_m` / `right.quaternion_wxyz`
+- `base_yaw_rad`
+- `input_frame=unity_display_world_v1`
+
+`base_yaw_rad`은 Unity/MuJoCo 축 대응에 맞춰 Omni yaw 부호를 변환한다.
+
+binder 안에는 engage-relative `OperatorTargetDelta`와 body-translation compensation 기능도 남아 있지만 현재 world-frame bimanual sender의 기본 `position_m` 계약은 absolute aligned wrist pose다. 두 계약을 혼용하지 않는다.
+
+## Omni / robot root
+
+`G1OmniBodyHeading`이 G1 root의 초기-relative yaw 기준을 제공한다.
+
+upper-body world target과 rotating G1 base는 동일한 초기 정렬 계약을 사용한다. 자세한 내용은 [../docs/OMNI_WORLD_UPPER_BODY_20260922.md](../docs/OMNI_WORLD_UPPER_BODY_20260922.md)를 따른다.
+
+## PiP 카메라
+
+현재 PiP는 HMD에 붙지 않는다.
 
 ```text
-right_wrist_yaw_link
+생성 시: 사용자 시야 앞 world pose 계산
+생성 후: parent = G1 RobotRoot
 ```
 
-이다.
+따라서 `CenterEyeAnchor`를 계속 따라가는 구조가 아니다.
 
-Mink virtual-center controller 내부에서는 translation objective에 `right_wrist_roll_link`를 사용하지만 Unity가 수신/표시하는 actual wrist와 target 의미는 계속 `right_wrist_yaw_link`를 유지한다.
-
-Unity와 MuJoCo의 동일 joint configuration에 대한 wrist-yaw FK parity 검증은 통과했다.
-
-```powershell
-.\tools\TEST_G1_MINK_FK_PARITY.bat
-```
-
-## VR wrist source
-
-현재 위치와 orientation source의 역할을 구분한다.
-
-- wrist position: VR rig의 `source_hand`를 우선 사용
-- anatomical orientation: hand skeleton 기반 semantic orientation 사용
-- skeleton wrist 위치가 palm 안쪽으로 보이던 문제 때문에 position source는 별도 compatibility layer로 처리
-
-관련 코드:
+관련 파일:
 
 ```text
-Assets/G1Teleop/G1WristSourceCompatibility.cs
-Assets/G1Teleop/G1ExistingHandTargetBinder.cs
+Assets/G1Teleop/G1HeadCameraPiP.cs
+Assets/G1Teleop/G1HeadLockedCamera.cs
+Assets/G1Teleop/G1UnityRightArmPreview.cs
 ```
 
-`G1ExistingHandTargetBinder.cs`는 local calibration/debug 변경 가능성이 높은 파일이므로 수정 전 현재 working tree를 반드시 확인한다.
+카메라 이미지 경로는 PC loopback TCP `5011`이다. camera stream은 motor authority와 무관하다.
 
-## Marker 의미
+## 표시 source
 
-현재 디버그 시각화 기준:
+Unity에는 목적이 다른 simulation feedback, measured G1 LowState, recorded replay, camera PiP source가 존재한다.
 
-| Marker | 의미 |
+measured state display와 simulation feedback을 같은 source로 취급하지 않는다. measured state 표시는 read-only이며 motor command를 의미하지 않는다.
+
+## 핵심 컴포넌트
+
+| 파일 | 역할 |
 | --- | --- |
-| Cyan | 실제 VR wrist |
-| Green | Mink target |
-| Magenta | Unity에 replay된 실제 G1 `right_wrist_yaw_link` |
+| `G1BimanualSimulationSender.cs` | 양손 packet 송수신, engagement, target/status |
+| `G1ExistingHandTargetBinder.cs` | Quest wrist/head tracking, calibration/helper |
+| `G1OmniBodyHeading.cs` | Omni yaw와 Unity G1 root 정렬 |
+| `G1UnityRightArmPreview.cs` | G1 preview root와 arm visualization 공통부 |
+| `G1HeadCameraPiP.cs` | G1 RobotRoot 기준 PiP |
+| `G1HeadLockedCamera.cs` | camera/PiP 생성 wiring |
+| `G1RobotStateUdpReceiver.cs` | simulation/measured state display source 처리 |
 
-`G1DebugVisualFilter`는 axis/line debug object만 숨기고 engagement sphere는 유지한다.
+파일명에 `RightArm`이 남아 있어도 현재 bimanual scene의 shared preview 역할로 쓰이는 부분이 있다. 이름만 보고 현재 controller가 오른팔 전용이라고 판단하면 안 된다.
 
-## Engagement
+## Deprecated single-arm path — 지원하지 않음
 
-사용자는 VR wrist marker를 G1 engagement target에 맞춘 뒤 일정 시간 유지해 clutch를 활성화한다.
-
-Engage 순간의 VR pose와 G1 pose를 기준으로 저장하므로 controller가 absolute VR pose를 로봇에 바로 대입하지 않는다. Mink 측에서도 같은 철학으로 clutch-relative target을 생성한다.
-
-```text
-engage VR pose
-engage G1 pose
-      ↓
-relative hand movement / rotation
-      ↓
-G1 target delta
-```
-
-이 방식은 teleoperation을 시작하는 순간 target이 튀는 zero-jump 문제를 줄인다.
-
-## 좌표계
+다음 항목은 현재 기본 bimanual 경로가 아니다.
 
 ```text
-Unity operator frame
-+X = right
-+Y = up
-+Z = forward
-
-MuJoCo G1 frame
-+X = forward
-+Y = left
-+Z = up
+G1ExistingTargetUdpSender
+UDP 5005 / 5006
+right-hand-only documentation
+START_VR_HAND_TO_MUJOCO.bat 계열
 ```
 
-Python 공통 변환 기준은 `g1_right_arm_common.py`의 `OPERATOR_TO_ROBOT_BASIS`에 정의되어 있다.
+legacy scene/tool 지원 때문에 코드가 남아 있을 수 있다. 현재 실행은 `tools/START_G1_VR_TELEOP.bat`을 기준으로 한다.
 
-## UDP
+## 안전 경계
 
-### Unity → Mink: 5005
+Unity 프로젝트는 현재 기본 통합 경로에서 G1 motor publisher를 만들지 않는다.
 
-오른손 target position/orientation과 tracking validity를 전송한다.
+Unity가 보내는 것은 bimanual simulation/observation input이며 실제 G1 command authority는 별도의 `hardware/g1_arm_bridge/` 단계에서 관리한다.
 
-### Mink → Unity: 5006
+## 현재 확인 사항
 
-오른팔 7개 joint state와 wrist/target 상태를 수신한다.
-
-Virtual-center live controller에서도 외부 state frame은 `right_wrist_yaw_link`로 유지한다.
-
-## 실행
-
-기본 통합 실행:
-
-```powershell
-.\START_VR_HAND_TO_MUJOCO.bat
-```
-
-현재 최신 virtual-center IK를 직접 시험할 때는 Mink controller를 별도로:
-
-```powershell
-.\START_MUJOCO_ONLY.bat
-```
-
-실행하고 Unity 프로젝트에서 Play한다.
-
-UDP `5005`를 이미 다른 controller가 사용 중이면 새 controller를 동시에 실행하지 않는다.
-
-## 주요 코드 위치
-
-```text
-Assets/G1Teleop/
-```
-
-여기에서 주로 확인할 항목:
-
-```text
-hand target binder
-wrist source compatibility
-UDP target sender
-UDP robot-state receiver
-G1 right-arm preview
-actual wrist-yaw marker
-debug visual filter
-engagement target policy
-```
-
-## 디버깅할 때 구분할 것
-
-### Green target과 Magenta actual wrist 위치가 어긋남
-
-먼저 Mink runtime status의:
-
-```text
-position_error_m
-orientation_error_deg
-collision_limit_nearby
-```
-
-를 확인한다. Unity 표시 문제인지 IK 자체 tracking 문제인지 분리한다.
-
-### 손목 방향만 가끔 크게 틀어짐
-
-다음 순서로 확인한다.
-
-```text
-1. Mink orientation_error_deg
-2. wrist joint-limit margin
-3. collision status
-4. VR anatomical orientation validity
-```
-
-Mink error가 작은데 Unity/VR visual만 다르면 frame/source 쪽 문제이고, Mink error 자체가 크면 IK feasibility/joint-limit/collision 쪽 문제다.
-
-## 주의
-
-Unity frontend에서 frame 기준을 임의로 `right_wrist_roll_link`로 바꾸지 않는다. 내부 IK virtual center와 외부 visualization frame은 의도적으로 분리되어 있다.
+- 양손 input / bimanual backend: 사용 중
+- world-frame Omni alignment: 사용 중
+- PiP RobotRoot anchor: 적용됨
+- fixed IK tracking rate 1.0: Python backend 기준
+- 실제 G1에서 추종 속도 개선: 확인됨
+- 큰 absolute wrist target의 workspace mismatch: 남은 문제
+- reach clamp / adaptive gain: production 미적용

@@ -5,14 +5,14 @@
 
 # G1 VR Teleoperation
 
-> **2026-09-21 최신 데스크톱 인계:** [DESKTOP_INPUT_HANDOFF_20260921.md](docs/DESKTOP_INPUT_HANDOFF_20260921.md)를 먼저 읽는다.
+> **2026-09-21 최신 데스크톱 인계:** DESKTOP_INPUT_HANDOFF_20260921.md를 먼저 읽는다.
 > 현재 범위는 양팔 IK 14축 + Omni 입력 전달·관찰이다. 통합 진입점은
 > `tools/START_G1_VR_TELEOP.bat`이며, 아래 기존 오른팔·물리제어 설명과 구분한다.
 > FOV/화면 배치는 유지한다. 설치 환경과 원본 로그는 Git만으로 이전되지 않는다.
 
 > **2026-09-22 main checkpoint:** The reviewed laptop checkpoint is now on
 > `main`. Clone `main` and read
-> [`docs/migration/20260917/README.md`](docs/migration/20260917/README.md) and
+> `docs/migration/20260917/README.md` and
 > [`docs/CHAT_HANDOFF.md`](docs/CHAT_HANDOFF.md) first. The lower-body policy is
 > now supplied by another developer; this repository preserves the previous
 > locomotion experiments as evidence but does not continue or physically test
@@ -20,15 +20,15 @@
 > the existing Unity/Mink upper-body and single-LowCmd-owner boundary.
 >
 > **Current bimanual work:** Read
-> [`docs/GPT_BIMANUAL_HANDOFF_20260918.md`](docs/GPT_BIMANUAL_HANDOFF_20260918.md) first.
+> `docs/GPT_BIMANUAL_HANDOFF_20260918.md` first.
 > Earlier bimanual work was on the laptop. The user has now reported a Unity
 > installation-path failure from Desktop Codex; read the
-> [Windows path discovery notes](docs/WINDOWS_TOOL_PATHS_20260918.md).
+> Windows path discovery notes.
 > `C:/Users/user/Desktop/...` is the laptop's Windows Desktop folder, not another computer.
 
 처음 읽는 순서: [코드 연결·주요 함수·Mink 해설](docs/CODE_GUIDE.md)
  -> [파일 색인과 검토 범위](docs/CODE_INDEX.md).
- [미사용 코드 정리 기록](docs/CLEANUP_20260903.md)은 변경 이력이다.
+ 미사용 코드 정리 기록은 변경 이력이다.
 
 VR 오른손 hand tracking을 Unity에서 수집하고, Mink + MuJoCo 기반 differential QP IK로 Unitree G1 오른팔 7DoF를 제어하는 텔레오퍼레이션 프로젝트다.
 
@@ -72,7 +72,7 @@ UDP 5008 → Windows validated relay → WSL UDP 5013
 
 ### 통신 포트
 
-빠른 암기용 한 장 요약은 [`docs/NETWORK_QUICK_REFERENCE.md`](docs/NETWORK_QUICK_REFERENCE.md)를 참고한다.
+빠른 암기용 한 장 요약은 `docs/NETWORK_QUICK_REFERENCE.md`를 참고한다.
 
 | Port | 방향 | 용도 |
 | ---: | --- | --- |

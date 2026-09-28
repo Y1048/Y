@@ -2,7 +2,7 @@
 
 현재 코드의 읽기 순서·수식·실제 파라미터는 [CODE_GUIDE](CODE_GUIDE.md)를 참고한다.
 [파일 색인](CODE_INDEX.md)은 코드/설정 파일의 목록과 확인 범위를 구분한다.
-2026-09-03 미사용 DLS/voxel/monkey-patch 정리 내역은 [정리 기록](CLEANUP_20260903.md)에 있다.
+2026-09-03 미사용 DLS/voxel/monkey-patch 정리 내역은 정리 기록에 있다.
 
 ## 1. 목적과 범위
 

@@ -518,8 +518,8 @@ Desktop 실행본6파일을 이전 설치 SHA와 대조한 뒤 백업·설치했
 
 ## 2026-09-18 session report and near-hands return v2
 
-Read [near-hands return v2](BIMANUAL_NEAR_HANDS_RETURN_20260918.md) and
-[session reporting](BIMANUAL_SESSION_REPORT_20260918.md). The report tool selected the latest
+Read near-hands return v2 and
+session reporting. The report tool selected the latest
 real operator log behind newer headless smokes and exposed a historical return BLOCKED at seq 697.
 The preserved fixture now triggers a v2 path: checked stop -> one-arm separation -> existing safe
 waypoint -> home -> settle. Original/mirrored cases choose left/right respectively and both finish
@@ -545,7 +545,7 @@ Headless log `unity_20260918_211223_0339097.jsonl` records v2 + MuJoCo 3.12.0 + 
 
 ## 2026-09-18 performance micro-optimization stop point
 
-Read [performance stop point](BIMANUAL_PERFORMANCE_STOP_POINT_20260918.md).
+Read performance stop point.
 No code after `1e28597` was accepted. Squared sphere masking had zero decision mismatches but
 no reproducible full-replay gain; hybrid AABB and small-distmax variants were slower/inconsistent.
 Early unsafe-pair exit saved just 0.0133% of exact pair calls. Keep the current sphere broadphase
@@ -554,7 +554,7 @@ prove identical sampled decisions, zero-distance handling, Quest replay and repr
 
 ## 2026-09-18 conservative sphere broadphase
 
-Read [sphere broadphase validation](BIMANUAL_PERFORMANCE_SPHERE_20260918.md).
+Read sphere broadphase validation.
 Stopping-tail threshold checks now reject certainly distant collision pairs with bounding
 spheres enclosing each local geom AABB; surviving pairs still use exact geometry distance.
 No clearance/sweep/motion limit changed. Recorded + random exact-distance rechecks found
@@ -564,7 +564,7 @@ Clean detached suite 77/77 PASS; runtime targeted 16/16 PASS. A/B p95 mean impro
 
 ## 2026-09-18 clearance kinematics optimization
 
-Read [second clearance optimization](BIMANUAL_PERFORMANCE_KINEMATICS_20260918.md).
+Read second clearance optimization.
 Normal sampled distance checks now use `mj_kinematics`; exact zero distance alone promotes
 to `mj_fwdPosition` and the existing robust contact/probe path. All collision margins,
 sweep samples and motion limits remain unchanged. Quest replay q is still identical.
@@ -573,7 +573,7 @@ Two files installed with backup, 277 protected files unchanged, BAT smoke passed
 
 ## 2026-09-18 clearance performance optimization
 
-Read [performance/clearance validation](BIMANUAL_PERFORMANCE_CLEARANCE_20260918.md).
+Read performance/clearance validation.
 Profiling the confirmed Quest replay showed checked stopping-tail clearance checks
 were the main tracking cost; QP solve itself averaged about 0.044 ms. Clearance now
 uses `mj_fwdPosition` instead of full `mj_forward`, without changing collision samples,
@@ -584,7 +584,7 @@ The user process was left running; the installed optimization loads on next Pyth
 
 ## 2026-09-18 Quest pinch/re-engage confirmed
 
-Read [Quest confirmation and replay](BIMANUAL_QUEST_CONFIRMED_20260918.md).
+Read Quest confirmation and replay.
 The user confirmed the current Quest behavior works. The same session log shows
 two pinch staged returns with one successful re-engage between them. A compact
 recorded fixture replays 2,927 state ticks with 0 rad max logged-q difference,
@@ -594,7 +594,7 @@ not physical G1 validation or a claim of continuous host-side 60 Hz timing.
 
 ## 2026-09-18 pinch re-engage and startup follow-up
 
-Read [re-engage/startup validation](BIMANUAL_REENGAGE_STARTUP_20260918.md).
+Read re-engage/startup validation.
 A real BimanualSimulation/UnityCycle regression now covers motion, pinch return,
 staged waypoint/home/settle, active-only rejection, inactive rearm and re-engage.
 Source bimanual suite: 71/71 PASS; return suite: 11/11 PASS.
@@ -610,7 +610,7 @@ not reproduced and remains unexplained. No new Quest or physical G1 validation.
 
 ## 2026-09-18 observed staged-return replay and laptop path deployment
 
-Read [observed run validation](BIMANUAL_OBSERVED_RUN_20260918.md).
+Read observed run validation.
 Added a selected recorded-input fixture and two regression tests covering
 3,433 state ticks through tracking-loss braking and staged return. The source
 recording's five Python hashes match `7e74219`; replayed q matches exactly.
@@ -627,7 +627,7 @@ import stalled again; its interrupted attempt is not counted as a pass.
 
 ## 2026-09-18 staged bimanual return restored on the same laptop
 
-Read [return parity and validation](BIMANUAL_RETURN_PARITY_20260918.md).
+Read return parity and validation.
 The reported return regression was a different return implementation, not reduced
 speed caps in the preceding boundary fix. Tracking retains the shared QP and
 motion policies. Return now uses the original right-arm Ruckig profile/waypoint,
@@ -641,7 +641,7 @@ unverified. This is historical v1 parity evidence. Current restarted Python shou
 
 ## 2026-09-18 bimanual boundary fixes installed (simulation only)
 
-Read [boundary fixes and verification](BIMANUAL_BOUNDARY_HARDENING_20260918.md).
+Read boundary fixes and verification.
 Short tracking loss now consumes checked braking commands, with output qpos
 continuity and zero-speed READY checks. Known solver errors use the tail or
 BLOCKED; malformed JSON is rejected before updating the cycle. Engage origins
@@ -658,12 +658,12 @@ Intermittent engine-import delay remains unexplained; stage timestamps are now
 logged. A stopped auxiliary test is not counted as passed. Quest feel, full
 Unity Play restart and physical G1 behavior have not been tested.
 
-**최신 GPT 인계 요약: [GPT_BIMANUAL_HANDOFF_20260918.md](GPT_BIMANUAL_HANDOFF_20260918.md).**
+**최신 GPT 인계 요약: GPT_BIMANUAL_HANDOFF_20260918.md.**
 아래 기록은 역순 작업 이력이며, 과거의 미해결 표시는 이후 수정 결과와 구분한다.
 
 ## 2026-09-18 bimanual motion corrections installed on the same laptop
 
-Read [motion correction validation](BIMANUAL_MOTION_CORRECTION_20260918.md).
+Read motion correction validation.
 Per-arm motion preferences now restore target-approach braking, wrist priority,
 shoulder comfort, torso projection, elbow assistance and reversible orientation
 priority inside the shared 14-DOF QP. The original single-right-arm controllers,
@@ -686,7 +686,7 @@ Backup: laptop runtime logs/backups/bimanual_motion_install_20260918_114658/.
   is on the same laptop. Folder names and device hostnames do not establish a PC migration.
 - Runtime engine parity fix `d52c2aa` and its 29/29 offline test record are in the
   source worktree; that fix has not been copied into the laptop's runtime folder.
-  See [runtime validation](BIMANUAL_RUNTIME_VALIDATION_20260918.md).
+  See runtime validation.
 - Latest Quest feel remains unverified. Historical desktop-migration instructions
   below are plans/reference material, not evidence that desktop development occurred.
 
@@ -1117,7 +1117,7 @@ Last updated: 2026-09-18
 - Added a receive-only Mink logger for `g1.mink.right_arm.state.v1` on Windows loopback UDP 5008. It validates the complete 29-joint order and the duplicated right-arm indices 22-28, then records the seven targets in radians before any G1 relay/controller.
 - The final IK CSV column, `raw_json_text`, preserves the complete UTF-8 UDP JSON plaintext alongside the parsed fields.
 - Extended the existing Omni read-only CSV with raw `movementXY`/arm yaw, yaw relative to the first sample, wrapped per-sample yaw difference, raw yaw rate, and mapped `vx/vy/yaw_rate` with explicit units.
-- Operator instructions and field definitions are in [IK_OMNI_TIMESERIES_20260917.md](IK_OMNI_TIMESERIES_20260917.md).
+- Operator instructions and field definitions are in IK_OMNI_TIMESERIES_20260917.md.
 - No G1 SSH, SDK, DDS, publisher, relay, or motor output was used. Tests use generated fixtures only; Quest/Omni hardware capture remains an operator step.
 - Restored the selected fast Quest-following limits in the standard virtual-center path: shoulder/elbow 90 deg/s, wrist 180 deg/s, and all right-arm joints 60 deg/s^2. This source change is not physical-G1 validation.
 - Restored the user-confirmed simulation v5 path for IK CSV capture. It now
@@ -1138,7 +1138,7 @@ Last updated: 2026-09-18
 
 ## Laptop migration checkpoint
 
-This integration branch combines the latest published continuation with the laptop source. Read [migration status](migration/20260917/README.md) and [two-PC synchronization rules](migration/20260917/TWO_PC_SYNC.md) first. Local historical notes are preserved in [LAPTOP_CHAT_HANDOFF.md](migration/20260917/LAPTOP_CHAT_HANDOFF.md). Conflicting temporary-worktree work is stored as patches, not enabled in this checkout. This is source synchronization, not hardware validation.
+This integration branch combines the latest published continuation with the laptop source. Read migration status and two-PC synchronization rules first. Local historical notes are preserved in LAPTOP_CHAT_HANDOFF.md. Conflicting temporary-worktree work is stored as patches, not enabled in this checkout. This is source synchronization, not hardware validation.
 
 ### 2026-09-17 scope change and last locomotion evidence
 
@@ -1155,7 +1155,7 @@ This integration branch combines the latest published continuation with the lapt
 For every new project conversation:
 
 1. For current laptop bimanual work and any later desktop migration, use `codex/g1-laptop-sync-20260917`. `main` remains the canonical branch after review and merge.
-2. Read this file, [`ARCHITECTURE.md`](ARCHITECTURE.md), and [`REVIEW_LATEST.md`](REVIEW_LATEST.md).
+2. Read this file, [`ARCHITECTURE.md`](ARCHITECTURE.md), and `REVIEW_LATEST.md`.
 3. Read the relevant review/remediation log before changing a reviewed defect.
 4. Read [`CODE_GUIDE.md`](CODE_GUIDE.md) before changing a control path.
 5. Inspect current HEAD and working-tree state before edits or cleanup.
@@ -1262,7 +1262,7 @@ The first explicitly approved right-shoulder-pitch sign/response trial completed
 on 2026-09-04. `Q` increased raw q and moved the arm backward; `Z` decreased raw
 q and moved it forward. The run also included an absolute-zero `A` input, so it
 is not a strict +/- one-step acceptance test. See
-[`PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md`](PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md).
+`PHYSICAL_TEST_20260904_TWIST2_RIGHT_SHOULDER_PITCH.md`.
 Do not expand physical testing without a new exact approval.
 
 The captured 1,538-row full-body CSV now has a local-only visual replay at
@@ -1325,7 +1325,7 @@ regression requires at least 120 moving frames, lower final target error and a
 
 ## 8. Historical handoff
 
-Historical detail remains in [`CHAT_HANDOFF_HISTORY_20260903.md`](CHAT_HANDOFF_HISTORY_20260903.md). Use this current handoff and `REVIEW_LATEST.md` first.
+Historical detail remains in `CHAT_HANDOFF_HISTORY_20260903.md`. Use this current handoff and `REVIEW_LATEST.md` first.
 
 ## 9. 2026-09-14 main-baseline continuation
 

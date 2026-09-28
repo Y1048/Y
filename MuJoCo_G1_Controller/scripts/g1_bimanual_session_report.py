@@ -15,7 +15,8 @@ from pathlib import Path
 import numpy as np
 
 from g1_bimanual_limits import (
-    JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S)
+    JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S,
+    PROXIMAL_VELOCITY_LIMIT_DEG_S, WRIST_VELOCITY_LIMIT_DEG_S)
 
 ROOT = Path(__file__).resolve().parents[2]
 SIM_DT = 1.0 / 60.0
@@ -527,7 +528,9 @@ def markdown_report(report):
             f"- Exact replay passed: {replay['exact_replay_passed'] if replay['exact_replay_passed'] is not None else 'not comparable'}",
             f"- Current validation passed: {replay['current_validation']['passed']}",
             f"- Current validation failures: {', '.join(replay['current_validation']['failures']) or 'none'}",
-            f"- Validation limits: current code, shoulder/elbow 90 deg/s, wrist 180 deg/s and "
+            f"- Validation limits: current code, shoulder/elbow "
+            f"{PROXIMAL_VELOCITY_LIMIT_DEG_S:g} deg/s, wrist "
+            f"{WRIST_VELOCITY_LIMIT_DEG_S:g} deg/s and "
             f"{JOINT_ACCELERATION_LIMIT_RAD_S2:g} rad/s^2",
             f"- Max logged-q difference: {replay['maximum_logged_q_difference_rad']:.9g} rad",
             f"- Minimum sampled clearance: {replay['minimum_sampled_clearance_mm']:.6f} mm",

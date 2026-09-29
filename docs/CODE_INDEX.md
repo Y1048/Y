@@ -89,7 +89,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_g1_lowstate_view.py](../backend/tests/test_g1_lowstate_view.py) | 28 | 목록 확인 | LowStateTests | `51a289d5a2b5` |
 | [backend/tests/test_g1_observation_audit.py](../backend/tests/test_g1_observation_audit.py) | 330 | 목록 확인 | packet, source_packet, AuditTests | `6037c1f78ca9` |
 | [backend/tests/test_g1_observation_pipeline.py](../backend/tests/test_g1_observation_pipeline.py) | 402 | 목록 확인 | ObservationPipelineTests, ObservationLauncherTests | `ce23230cdcd7` |
-| [backend/tests/test_g1_observation_tap.py](../backend/tests/test_g1_observation_tap.py) | 223 | 목록 확인 | ObservationTapTests, ProducerPreservationTests | `8ca75624d2cb` |
+| [backend/tests/test_g1_observation_tap.py](../backend/tests/test_g1_observation_tap.py) | 197 | 목록 확인 | ObservationTapTests, ProducerPreservationTests | `8996afa2af65` |
 | [backend/tests/test_g1_omni_transport_recovery.py](../backend/tests/test_g1_omni_transport_recovery.py) | 152 | 목록 확인 | LocalOmniServer, OmniTransportRecoveryTests | `dcc10160c2aa` |
 | [backend/tests/test_g1_portable_environment.py](../backend/tests/test_g1_portable_environment.py) | 85 | 목록 확인 | PortableTests | `74319e1b558d` |
 | [backend/tests/test_g1_process_lifetime.py](../backend/tests/test_g1_process_lifetime.py) | 62 | 목록 확인 | LifetimeTests | `ebcce528a3f2` |

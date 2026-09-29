@@ -51,8 +51,8 @@ SSH transport only
 - 남은 사용자용 BAT 4개 전수 embedded-shim 감사
 - operator runtime source의 machine-local Python 경로 금지
 
-2026-09-29 BAT 정리 후 재검증: backend 214/214 PASS, hardware 38/38 PASS,
-code index PASS, no-system-Python startup check PASS.
+2026-09-29 portable 정리 후 재검증: backend 213/213 PASS, hardware 38/38 PASS,
+code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` 없는 export에서도 실행 가능하다.
 상세 근거: `docs/PORTABLE_EMBEDDED_PYTHON_AUDIT_20260929.md`.
 
 ## External dependencies

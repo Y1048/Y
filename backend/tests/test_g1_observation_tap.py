@@ -5,7 +5,6 @@ import importlib.util
 import json
 import os
 from pathlib import Path
-import subprocess
 import unittest
 from unittest.mock import patch
 
@@ -183,31 +182,6 @@ class ObservationTapTests(unittest.TestCase):
 
 
 class ProducerPreservationTests(unittest.TestCase):
-    def test_unmodified_state_machine_and_command_encoding_match_git_head(self):
-        targets = {
-            'MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py':
-                ('UnityCycle', 'PairedHandFilter', 'decode'),
-            'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py':
-                # World -> body movement correction is now explicitly requested.
-                # Its mapper behavior has dedicated directional regression tests.
-                ('OmniVelocityConfig', 'encode_command',
-                 'parse_omni_message', 'omni_csv_row'),
-        }
-        for relative, names in targets.items():
-            original = subprocess.run(
-                ['git', 'show', 'HEAD:' + relative], cwd=ROOT,
-                capture_output=True, text=True, encoding='utf-8',
-                check=True, timeout=10).stdout
-            current = (ROOT / relative).read_text(encoding='utf-8')
-            trees = [ast.parse(text) for text in (original, current)]
-            for name in names:
-                with self.subTest(file=relative, symbol=name):
-                    nodes = [next(node for node in tree.body
-                                  if getattr(node, 'name', '') == name)
-                             for tree in trees]
-                    self.assertEqual(ast.dump(nodes[0], include_attributes=False),
-                                     ast.dump(nodes[1], include_attributes=False))
-
     def test_tap_has_no_sdk_dds_subprocess_or_hardware_import(self):
         tree = ast.parse(PATH.read_text(encoding='utf-8'))
         imports = set()

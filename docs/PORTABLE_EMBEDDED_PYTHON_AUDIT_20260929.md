@@ -44,7 +44,7 @@ Windows PowerShell helper에 위임한다.
 현재 source checkout에서 embedded interpreter만 사용해 실행했다.
 
 - runtime manifest/package probe: PASS, errors 0
-- backend regression after BAT cleanup: 214/214 PASS
+- backend regression after BAT cleanup/gitless-test cleanup: 213/213 PASS
 - hardware Omni/Ruckig regression: 38/38 PASS
 - code index check: PASS
 - project-owned tracked text의 `C:\Users\...` hardcode: 0건
@@ -87,4 +87,5 @@ dirty/untracked 보존 원칙 때문에 자동 삭제하지 않는다.
 
 `backend/tests/test_g1_portable_environment.py`는 남은 4개 BAT의 3줄 embedded shim 계약과
 operator runtime source의 machine-local Python 경로 금지를 검사한다.
+회귀 테스트는 `.git` metadata를 요구하지 않으므로 tracked-file-only portable export에서도 실행 가능하다.
 새 Python dependency가 필요하면 `runtime/python`, requirements pin, manifest를 함께 갱신해야 한다.

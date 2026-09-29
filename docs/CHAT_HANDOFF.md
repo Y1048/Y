@@ -59,6 +59,10 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 
 Unity 6000.5.4f1, OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. Python package dependency만 project-local로 완전히 고정한다.
 
+## Upper-body simplification discussion
+
+상체 제어 구조를 수정하거나 gain/limit를 재튜닝하기 전에 `docs/G1_UPPER_BODY_CONTROL_SIMPLIFICATION_AUDIT_20260929.md`를 먼저 읽는다. 현재 결론은 동작 변경보다 구조 분리가 우선이며, dead/legacy/preview-only 경로를 행동 보존 상태로 걷어낸 뒤 heuristic을 하나씩 ablation한다. 특히 실제 replay profile에서 QP solver 자체보다 checked stop-tail/geometry 검증이 지배적인 계산비용이었다.
+
 ## 작업 원칙
 
 1. BAT는 shim 외 로직 금지.

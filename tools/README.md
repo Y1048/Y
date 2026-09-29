@@ -1,6 +1,6 @@
 # Project Tools
 
-`tools/`의 BAT 파일은 더 이상 실행 로직을 갖지 않는다. 모두 프로젝트에 포함된 CPython Embedded runtime을 호출하는 **3줄짜리 double-click shim**이다.
+`tools/`에는 실제 사용자 운용에 필요한 BAT 4개만 남긴다. 모두 프로젝트에 포함된 CPython Embedded runtime을 호출하는 **3줄짜리 double-click shim**이다.
 
 ## Embedded runtime
 
@@ -34,21 +34,18 @@ runtime\python\python.exe -I -B tools\G1_PORTABLE.py teleop
 - Unity open/reuse
 - no motor output
 
-## BAT shim -> Python command
+## 남겨둔 BAT shim
 
-| BAT | Python subcommand |
-|---|---|
-| `START_G1_VR_TELEOP.bat` | `teleop` |
-| `START_G1_CAMERA_TO_UNITY.bat` | `camera` |
-| `START_BIMANUAL_SIM.bat` | `bimanual-demo` |
-| `START_BIMANUAL_UNITY_SIM.bat` | `bimanual-unity` |
-| `REPORT_LATEST_BIMANUAL_SESSION.bat` | `report-latest` |
-| `VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat` | `verify-latest-quest` |
-| `SETUP_G1_VR_TELEOP.bat` | `check-runtime` |
-| `RESOLVE_UNITY_EDITOR.bat` | `resolve-unity` |
-| `BUILD_AND_INSTALL_VR_APK.bat` | `build-install-apk` |
-| `CONFIGURE_G1_ETHERNET.bat` | `ethernet-configure` |
-| `RESTORE_G1_ETHERNET_DHCP.bat` | `ethernet-restore` |
+| BAT | Python subcommand | 용도 |
+|---|---|---|
+| `START_G1_VR_TELEOP.bat` | `teleop` | 기본 통합 실행/재실행 |
+| `BUILD_AND_INSTALL_VR_APK.bat` | `build-install-apk` | Quest APK 빌드·설치 |
+| `CONFIGURE_G1_ETHERNET.bat` | `ethernet-configure` | G1 Ethernet 설정 |
+| `RESTORE_G1_ETHERNET_DHCP.bat` | `ethernet-restore` | PC Ethernet DHCP 복구 |
+
+camera 단독 실행, bimanual demo, report/replay, runtime check, Unity path 확인은
+일상 사용자 진입점이 아니므로 별도 BAT를 두지 않는다. 필요한 경우
+`runtime\python\python.exe -I -B tools\G1_PORTABLE.py <subcommand>`를 직접 사용한다.
 
 ## Network administration
 

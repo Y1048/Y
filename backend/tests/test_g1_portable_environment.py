@@ -43,13 +43,6 @@ class PortableTests(unittest.TestCase):
     def test_all_bats_are_three_line_embedded_shims(self):
         expected = {
             "START_G1_VR_TELEOP": "teleop",
-            "START_G1_CAMERA_TO_UNITY": "camera",
-            "START_BIMANUAL_SIM": "bimanual-demo",
-            "START_BIMANUAL_UNITY_SIM": "bimanual-unity",
-            "REPORT_LATEST_BIMANUAL_SESSION": "report-latest",
-            "VERIFY_LATEST_BIMANUAL_QUEST_CYCLE": "verify-latest-quest",
-            "SETUP_G1_VR_TELEOP": "check-runtime",
-            "RESOLVE_UNITY_EDITOR": "resolve-unity",
             "BUILD_AND_INSTALL_VR_APK": "build-install-apk",
             "CONFIGURE_G1_ETHERNET": "ethernet-configure",
             "RESTORE_G1_ETHERNET_DHCP": "ethernet-restore",

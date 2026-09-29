@@ -16,7 +16,7 @@ runtime/python/RUNTIME_MANIFEST.json
 다른 Windows PC로 옮길 때 시스템 Python 설치, `py -3.11`, venv 생성, `pip install`이 필요하지 않다.
 프로젝트 폴더 전체를 복사하면 Python runtime도 같이 이동한다.
 
-BAT 파일에는 환경 설정 로직이 없다. 모든 BAT는 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다.
+남겨둔 사용자용 BAT 4개에는 환경 설정 로직이 없다. 모두 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다.
 
 ## 기본 실행
 
@@ -33,10 +33,11 @@ tools\START_G1_VR_TELEOP.bat --check-only
 bundled runtime 자체 검사:
 
 ```bat
-tools\SETUP_G1_VR_TELEOP.bat --check-only
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 ```
 
-`SETUP_G1_VR_TELEOP.bat`은 더 이상 설치를 하지 않는다. manifest, exact package versions, MuJoCo model construction, camera prerequisite를 검사할 뿐이다.
+별도 setup BAT는 유지하지 않는다. 통합 실행 검사는 `START_G1_VR_TELEOP.bat --check-only`,
+Python runtime만 검사할 때는 위 dispatcher 명령을 사용한다.
 
 ## 현재 데이터 흐름
 

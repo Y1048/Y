@@ -10,7 +10,7 @@
 - Python 선언은 AST로 추출하며 C#/C++/배치의 호출 그래프를 자동 추정하지 않는다.
 - 상태는 2026-09-03 확인 범위다. 이후 변경은 다시 검토해야 한다.
 
-대상 파일: **101개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
+대상 파일: **94개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
 
 ## 포함 범위
 
@@ -61,7 +61,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs) | 687 | 입출력 확인 | - | `c8bd9bf6fcf3` |
 | [Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs](../Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs) | 970 | 목록 확인 | - | `340ddef9ffe8` |
 | [Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs](../Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs) | 539 | 목록 확인 | - | `2de01db7eff5` |
-| [Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs) | 694 | 입출력 확인 | - | `7df0063d6c77` |
+| [Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs) | 694 | 입출력 확인 | - | `6c84c7fff672` |
 | [Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs](../Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs) | 343 | 입출력 확인 | - | `64479cd12b7a` |
 | [Unity_G1_VR/Assets/G1Teleop/G1JointNode.cs](../Unity_G1_VR/Assets/G1Teleop/G1JointNode.cs) | 18 | 목록 확인 | - | `93bf9cf822c3` |
 | [Unity_G1_VR/Assets/G1Teleop/G1LowStateLegView.cs](../Unity_G1_VR/Assets/G1Teleop/G1LowStateLegView.cs) | 100 | 목록 확인 | - | `d560f0a9416c` |
@@ -80,8 +80,8 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_bimanual_quest_reengage.py](../backend/tests/test_bimanual_quest_reengage.py) | 149 | 목록 확인 | rows, QuestReengageReplayTests | `b9c810f2463c` |
 | [backend/tests/test_bimanual_recorded_session.py](../backend/tests/test_bimanual_recorded_session.py) | 178 | 목록 확인 | load_fixture, RecordedStagedSessionTests | `b5171d78b2f4` |
 | [backend/tests/test_bimanual_return.py](../backend/tests/test_bimanual_return.py) | 483 | 목록 확인 | assert_output, recorded_return, StagedReturnTests | `4195b0221e6c` |
-| [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 165 | 목록 확인 | fake_engine, RuntimeTests | `e7c5b079f784` |
-| [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 415 | 목록 확인 | SessionReportTests | `3a2765a2510c` |
+| [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 147 | 목록 확인 | fake_engine, RuntimeTests | `d0b1e72cae73` |
+| [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 399 | 목록 확인 | SessionReportTests | `d3bf25568dfd` |
 | [backend/tests/test_bimanual_sim.py](../backend/tests/test_bimanual_sim.py) | 264 | 목록 확인 | BimanualTests | `2caea488127a` |
 | [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 271 | 목록 확인 | packet, CycleTests | `85eb715512ee` |
 | [backend/tests/test_g1_camera_ssh.py](../backend/tests/test_g1_camera_ssh.py) | 75 | 목록 확인 | CameraTests | `040b3f661067` |
@@ -91,7 +91,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_g1_observation_pipeline.py](../backend/tests/test_g1_observation_pipeline.py) | 402 | 목록 확인 | ObservationPipelineTests, ObservationLauncherTests | `ce23230cdcd7` |
 | [backend/tests/test_g1_observation_tap.py](../backend/tests/test_g1_observation_tap.py) | 223 | 목록 확인 | ObservationTapTests, ProducerPreservationTests | `8ca75624d2cb` |
 | [backend/tests/test_g1_omni_transport_recovery.py](../backend/tests/test_g1_omni_transport_recovery.py) | 152 | 목록 확인 | LocalOmniServer, OmniTransportRecoveryTests | `dcc10160c2aa` |
-| [backend/tests/test_g1_portable_environment.py](../backend/tests/test_g1_portable_environment.py) | 92 | 목록 확인 | PortableTests | `6374be6586c2` |
+| [backend/tests/test_g1_portable_environment.py](../backend/tests/test_g1_portable_environment.py) | 85 | 목록 확인 | PortableTests | `74319e1b558d` |
 | [backend/tests/test_g1_process_lifetime.py](../backend/tests/test_g1_process_lifetime.py) | 62 | 목록 확인 | LifetimeTests | `ebcce528a3f2` |
 | [backend/tests/test_g1_quiet_observation.py](../backend/tests/test_g1_quiet_observation.py) | 52 | 목록 확인 | QuietTests | `cc779d373adf` |
 | [backend/tests/test_g1_ssh_login.py](../backend/tests/test_g1_ssh_login.py) | 56 | 목록 확인 | LoginTests | `1fca27bf0d14` |
@@ -122,16 +122,9 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [tools/G1_PORTABLE.py](../tools/G1_PORTABLE.py) | 257 | 목록 확인 | stamp, run_checked, engine_env, check_runtime, teleop (+8) | `180d62975df9` |
 | [tools/G1_VR_TELEOP_LAUNCH.py](../tools/G1_VR_TELEOP_LAUNCH.py) | 297 | 입출력 확인 | windows_arguments, process_arguments, option, option_casefold, normalized_path (+9) | `8b60769c8925` |
 | [tools/PRINT_G1_INPUTS_50HZ.py](../tools/PRINT_G1_INPUTS_50HZ.py) | 228 | 목록 확인 | finite, arm_value, omni_value, LogTail, newest (+1) | `ea02e5193e41` |
-| [tools/REPORT_LATEST_BIMANUAL_SESSION.bat](../tools/REPORT_LATEST_BIMANUAL_SESSION.bat) | 3 | 목록 확인 | - | `0c85f421d077` |
-| [tools/RESOLVE_UNITY_EDITOR.bat](../tools/RESOLVE_UNITY_EDITOR.bat) | 3 | 목록 확인 | - | `d5b5cf6ab7a6` |
 | [tools/RESTORE_G1_ETHERNET_DHCP.bat](../tools/RESTORE_G1_ETHERNET_DHCP.bat) | 3 | 목록 확인 | - | `a481a444d468` |
 | [tools/RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1](../tools/RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1) | 23 | 목록 확인 | - | `f83e2c335106` |
-| [tools/SETUP_G1_VR_TELEOP.bat](../tools/SETUP_G1_VR_TELEOP.bat) | 3 | 목록 확인 | - | `12924dd1aea8` |
-| [tools/START_BIMANUAL_SIM.bat](../tools/START_BIMANUAL_SIM.bat) | 3 | 목록 확인 | - | `17163b6225ae` |
-| [tools/START_BIMANUAL_UNITY_SIM.bat](../tools/START_BIMANUAL_UNITY_SIM.bat) | 3 | 목록 확인 | - | `e9cbfc40f97a` |
-| [tools/START_G1_CAMERA_TO_UNITY.bat](../tools/START_G1_CAMERA_TO_UNITY.bat) | 3 | 목록 확인 | - | `61299b51e2e6` |
 | [tools/START_G1_VR_TELEOP.bat](../tools/START_G1_VR_TELEOP.bat) | 3 | 입출력 확인 | - | `297389d91107` |
-| [tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat](../tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat) | 3 | 목록 확인 | - | `3f010dd8e2d2` |
 | [tools/g1_camera_ssh.py](../tools/g1_camera_ssh.py) | 115 | 입출력 확인 | read_exact, read_packet, check_environment, run | `9ac0e96bcf28` |
 | [tools/g1_embedded_runtime.py](../tools/g1_embedded_runtime.py) | 50 | 목록 확인 | is_embedded_interpreter, require_embedded_interpreter, child_environment, python_command | `aecfcf33d4aa` |
 | [tools/g1_lowstate_view.py](../tools/g1_lowstate_view.py) | 103 | 목록 확인 | validate, run | `4a4e83208060` |

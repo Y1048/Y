@@ -13,24 +13,20 @@ Omni Connect, G1 network와 G1 robot-side `python3`은 별도 외부 조건이�
 
 ## BAT 전수 감사
 
-현재 Git이 추적하는 `*.bat`는 아래 11개가 전부다.
-모두 정확히 3줄이며 `runtime\python\python.exe -I -B tools\G1_PORTABLE.py`로 위임한다.
+embedded runtime 전환 직후에는 11개의 3줄 shim이 있었지만, 사용자 운용과 직접 관련 없는
+개발/QA wrapper 7개를 제거했다. 현재 Git이 추적하는 `*.bat`는 아래 4개가 전부다.
 
-| BAT | dispatcher command |
-| --- | --- |
-| `BUILD_AND_INSTALL_VR_APK.bat` | `build-install-apk` |
-| `CONFIGURE_G1_ETHERNET.bat` | `ethernet-configure` |
-| `REPORT_LATEST_BIMANUAL_SESSION.bat` | `report-latest` |
-| `RESOLVE_UNITY_EDITOR.bat` | `resolve-unity` |
-| `RESTORE_G1_ETHERNET_DHCP.bat` | `ethernet-restore` |
-| `SETUP_G1_VR_TELEOP.bat` | `check-runtime` |
-| `START_BIMANUAL_SIM.bat` | `bimanual-demo` |
-| `START_BIMANUAL_UNITY_SIM.bat` | `bimanual-unity` |
-| `START_G1_CAMERA_TO_UNITY.bat` | `camera` |
-| `START_G1_VR_TELEOP.bat` | `teleop` |
-| `VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat` | `verify-latest-quest` |
+| BAT | dispatcher command | 유지 이유 |
+| --- | --- | --- |
+| `START_G1_VR_TELEOP.bat` | `teleop` | 기본 통합 실행/재실행 |
+| `BUILD_AND_INSTALL_VR_APK.bat` | `build-install-apk` | Quest APK 빌드·설치 |
+| `CONFIGURE_G1_ETHERNET.bat` | `ethernet-configure` | G1 Ethernet 설정 |
+| `RESTORE_G1_ETHERNET_DHCP.bat` | `ethernet-restore` | PC Ethernet DHCP 복구 |
 
-BAT 안에는 venv 생성, pip 설치/복구, system `py` 탐색, PowerShell 환경 구성 로직이 없다.
+삭제한 wrapper는 camera 단독 실행, bimanual demo/unity simulation, report/replay,
+runtime check, Unity path 확인이다. 기능 자체는 `G1_PORTABLE.py` subcommand로 남아 있다.
+
+남은 BAT에는 venv 생성, pip 설치/복구, system `py` 탐색, PowerShell 환경 구성 로직이 없다.
 Ethernet BAT도 Python bootstrap은 embedded runtime이며, 실제 관리자 권한 네트워크 변경만
 Windows PowerShell helper에 위임한다.
 
@@ -48,7 +44,7 @@ Windows PowerShell helper에 위임한다.
 현재 source checkout에서 embedded interpreter만 사용해 실행했다.
 
 - runtime manifest/package probe: PASS, errors 0
-- backend regression: 217/217 PASS
+- backend regression after BAT cleanup: 214/214 PASS
 - hardware Omni/Ruckig regression: 38/38 PASS
 - code index check: PASS
 - project-owned tracked text의 `C:\Users\...` hardcode: 0건
@@ -56,7 +52,7 @@ Windows PowerShell helper에 위임한다.
 시스템 Python이 PATH에서 사용되지 않는 조건에서도 다음이 PASS했다.
 
 ```bat
-tools\SETUP_G1_VR_TELEOP.bat --check-only --pc-only
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 tools\START_G1_VR_TELEOP.bat --check-only --host 192.168.123.164
 ```
 
@@ -89,6 +85,6 @@ dirty/untracked 보존 원칙 때문에 자동 삭제하지 않는다.
 
 ## 회귀 방지
 
-`backend/tests/test_g1_portable_environment.py`는 11개 BAT의 3줄 embedded shim 계약과
+`backend/tests/test_g1_portable_environment.py`는 남은 4개 BAT의 3줄 embedded shim 계약과
 operator runtime source의 machine-local Python 경로 금지를 검사한다.
 새 Python dependency가 필요하면 `runtime/python`, requirements pin, manifest를 함께 갱신해야 한다.

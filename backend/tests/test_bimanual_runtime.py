@@ -133,16 +133,6 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(all(len(value) == 64 for value in metadata['source_sha256'].values()))
         json.dumps(metadata, allow_nan=False)
 
-    def test_both_launchers_dispatch_to_portable_runtime(self):
-        for name, command in [('START_BIMANUAL_UNITY_SIM.bat', 'bimanual-unity'),
-                              ('START_BIMANUAL_SIM.bat', 'bimanual-demo')]:
-            text = (ROOT/'tools'/name).read_text(encoding='utf-8')
-            self.assertIn(r'runtime\python\python.exe', text)
-            self.assertIn('G1_PORTABLE.py', text)
-            self.assertIn(' ' + command + ' ', text)
-            self.assertIn('%*', text)
-            self.assertNotIn('pip install', text)
-
     def test_report_mode_propagates_runner_exit_code(self):
         engine = fake_engine(Path('/validated'))
         module = SimpleNamespace(__file__='report.py', main=lambda: 7)
@@ -151,14 +141,6 @@ class RuntimeTests(unittest.TestCase):
                 with contextlib.redirect_stdout(io.StringIO()):
                     self.assertEqual(runtime.main(['--mode', 'report', '--strict']), 7)
         imports.assert_called_once_with('g1_bimanual_session_report')
-
-    def test_report_launcher_dispatches_to_portable_runtime(self):
-        text = (ROOT/'tools/REPORT_LATEST_BIMANUAL_SESSION.bat').read_text(encoding='utf-8')
-        self.assertIn(r'runtime\python\python.exe', text)
-        self.assertIn('G1_PORTABLE.py', text)
-        self.assertIn(' report-latest ', text)
-        self.assertIn('%*', text)
-        self.assertNotIn('START_BIMANUAL_UNITY_SIM', text)
 
 
 if __name__ == '__main__':

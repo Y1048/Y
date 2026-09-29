@@ -4,7 +4,7 @@
 
 - `runtime/python/python.exe`: bundled CPython Embedded 3.11.9
 - `runtime/python/RUNTIME_MANIFEST.json`: runtime identity/core hashes/package pins
-- `tools/G1_PORTABLE.py`: BAT 전체의 Python dispatcher
+- `tools/G1_PORTABLE.py`: 남은 사용자용 BAT와 개발/QA subcommand의 Python dispatcher
 - `tools/g1_embedded_runtime.py`: project-relative runtime path/identity helper
 - `tools/g1_teleop_dependencies.py`: install 없이 bundled runtime 검증
 - `tools/START_G1_VR_TELEOP.bat`: 3-line double-click shim
@@ -35,10 +35,10 @@ MuJoCo default engine root는 `runtime/python/Lib/site-packages`다.
 
 - `tools/G1_CAMERA_LAUNCH.py`
 - `tools/g1_camera_ssh.py`
-- `tools/START_G1_CAMERA_TO_UNITY.bat`
 - `Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs`
 
-camera BAT도 별도 로직 없이 `G1_PORTABLE.py camera`를 호출한다.
+camera worker는 `START_G1_VR_TELEOP.bat` 통합 launcher가 시작·재사용한다.
+camera 단독 BAT는 유지하지 않는다.
 
 ## Network administration
 

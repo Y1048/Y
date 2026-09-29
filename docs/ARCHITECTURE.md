@@ -22,7 +22,7 @@ system Python, venv, pip repair는 operator runtime에 사용하지 않는다.
 
 ## 2. BAT policy
 
-모든 BAT는 3줄짜리 compatibility/double-click shim이다. BAT 내부에 Python 탐색, dependency 설치, 날짜 생성, child BAT chaining, Unity resolution 같은 로직을 두지 않는다.
+남겨둔 사용자용 BAT 4개는 3줄짜리 compatibility/double-click shim이다. BAT 내부에 Python 탐색, dependency 설치, 날짜 생성, child BAT chaining, Unity resolution 같은 로직을 두지 않는다.
 
 실제 Windows orchestration의 source of truth는 `tools/G1_PORTABLE.py`다.
 

@@ -25,10 +25,10 @@ runtime/python/RUNTIME_MANIFEST.json
 ## 1. 폴더 복사 후 runtime 검사
 
 ```bat
-tools\SETUP_G1_VR_TELEOP.bat --check-only
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 ```
 
-이 BAT는 설치 작업을 하지 않는다. 3줄짜리 shim으로 bundled `runtime/python/python.exe`의 `G1_PORTABLE.py check-runtime`만 실행한다.
+별도 setup BAT는 유지하지 않는다. 위 명령은 bundled runtime 자체만 사용해 PC-side Python 환경을 검사한다.
 
 검사 항목:
 

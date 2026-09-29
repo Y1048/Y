@@ -51,9 +51,9 @@ SSH transport only
 - 남은 사용자용 BAT 4개 전수 embedded-shim 감사
 - operator runtime source의 machine-local Python 경로 금지
 
-2026-09-29 portable 정리 후 재검증: backend 213/213 PASS, hardware 38/38 PASS,
-code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` 없는 export에서도 실행 가능하다. `G1.zip` 실제 세션도 gitless portable에서 `--replay --strict` exact replay PASS했다.
-상세 근거: `docs/PORTABLE_EMBEDDED_PYTHON_AUDIT_20260929.md`.
+2026-09-29 전체 archive validator 추가 후 재검증: backend 219/219 PASS, hardware 38/38 PASS,
+code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` 없는 export에서도 실행 가능하다. `G1.zip`은 bimanual exact replay뿐 아니라 Quest/Unity, Omni, LowState, PC→G1 observation, G1→GROOT까지 전체 offline strict validation PASS했다.
+상세 근거: `docs/G1_ARCHIVE_FULL_OFFLINE_VALIDATION_20260929.md`.
 
 ## External dependencies
 

@@ -110,7 +110,13 @@ runtime\python\python.exe -B -m unittest discover -s backend\tests -p "test_*.py
 runtime\python\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
 ```
 
-`G1.zip` 실제 세션은 `g1_bimanual_session_report.py --replay --strict`로 재현 가능해야 한다.
+`G1.zip` 전체 오프라인 세션 검증은 다음 명령으로 수행한다.
+
+```bat
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py archive-validate "C:\Users\user\Desktop\G1.zip" --strict
+```
+
+이 gate는 bimanual exact replay와 함께 Quest/Unity trace, Omni mapper, LowState clock, PC→G1 observation, G1→GROOT telemetry를 교차 검증하며 네트워크나 로봇 명령을 사용하지 않는다.
 
 상세 문서:
 

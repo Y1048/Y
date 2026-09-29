@@ -90,7 +90,17 @@ runtime\python\python.exe -B -m unittest discover -s backend\tests -p "test_*.py
 runtime\python\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
 ```
 
-## 6. 이동성 gate
+## 6. 실제 archive 오프라인 gate
+
+기준 `G1.zip`이 있으면 live 장비 없이 전체 기록 경로를 재검증한다.
+
+```bat
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py archive-validate "C:\Users\user\Desktop\G1.zip" --strict
+```
+
+이 검증은 네트워크 연결이나 robot command를 만들지 않는다. bimanual, Quest/Unity trace, Omni, LowState, PC→G1 observation, G1→GROOT telemetry를 archive 내부 기록으로 교차 검증한다.
+
+## 7. 이동성 gate
 
 portable runtime은 원래 checkout 경로가 아닌 별도 폴더로 복사한 뒤에도 `START_G1_VR_TELEOP.bat --check-only`가 통과해야 한다.
 

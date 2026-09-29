@@ -44,21 +44,22 @@ Windows PowerShell helper에 위임한다.
 현재 source checkout에서 embedded interpreter만 사용해 실행했다.
 
 - runtime manifest/package probe: PASS, errors 0
-- backend regression after BAT cleanup/gitless-test cleanup: 213/213 PASS
+- backend regression after archive-validator addition: 219/219 PASS
 - hardware Omni/Ruckig regression: 38/38 PASS
 - code index check: PASS
 - project-owned tracked text의 `C:\Users\...` hardcode: 0건
 
 tracked-file-only clean export도 별도 검증했다.
 
-- tracked files: 6660
+- tracked files after archive-validator addition: 6663
 - `.git`: 없음
 - `.venv-teleop`: 없음
 - BAT: 사용자용 4개만 존재
-- backend: 213/213 PASS
+- backend: 219/219 PASS
 - hardware: 38/38 PASS
 - `G1.zip` bimanual log SHA256: manifest와 일치
-- `G1.zip --replay --strict`: exact replay PASS, state/reason mismatch 0, return code 0
+- `G1.zip` bimanual `--replay --strict`: exact replay PASS, state/reason mismatch 0, return code 0
+- full archive `archive-validate --strict`: Quest/Unity + Omni + LowState + PC→G1 + G1→GROOT PASS
 
 시스템 Python이 PATH에서 사용되지 않는 조건에서도 다음이 PASS했다.
 

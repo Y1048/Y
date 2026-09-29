@@ -47,6 +47,12 @@ camera 단독 실행, bimanual demo, report/replay, runtime check, Unity path �
 일상 사용자 진입점이 아니므로 별도 BAT를 두지 않는다. 필요한 경우
 `runtime\python\python.exe -I -B tools\G1_PORTABLE.py <subcommand>`를 직접 사용한다.
 
+전체 캡처 archive의 오프라인 회귀는 `archive-validate` subcommand를 사용한다.
+
+```bat
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py archive-validate "C:\Users\user\Desktop\G1.zip" --strict
+```
+
 ## Network administration
 
 `CONFIGURE_G1_ETHERNET_ADMIN.ps1`, `RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1`, `G1_ETHERNET_DNS.ps1`, `G1_ETHERNET_TRANSACTION.ps1`은 Windows 관리자 NetTCPIP/DNS transaction을 위해 유지한다.

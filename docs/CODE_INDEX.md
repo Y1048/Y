@@ -10,7 +10,7 @@
 - Python 선언은 AST로 추출하며 C#/C++/배치의 호출 그래프를 자동 추정하지 않는다.
 - 상태는 2026-09-03 확인 범위다. 이후 변경은 다시 검토해야 한다.
 
-대상 파일: **94개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
+대상 파일: **96개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
 
 ## 포함 범위
 
@@ -84,6 +84,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 399 | 목록 확인 | SessionReportTests | `d3bf25568dfd` |
 | [backend/tests/test_bimanual_sim.py](../backend/tests/test_bimanual_sim.py) | 264 | 목록 확인 | BimanualTests | `2caea488127a` |
 | [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 271 | 목록 확인 | packet, CycleTests | `85eb715512ee` |
+| [backend/tests/test_g1_archive_offline_validate.py](../backend/tests/test_g1_archive_offline_validate.py) | 107 | 목록 확인 | ArchiveOfflineValidatorTests | `605586c5102c` |
 | [backend/tests/test_g1_camera_ssh.py](../backend/tests/test_g1_camera_ssh.py) | 75 | 목록 확인 | CameraTests | `040b3f661067` |
 | [backend/tests/test_g1_input_console.py](../backend/tests/test_g1_input_console.py) | 86 | 목록 확인 | arm_row, ConsoleTests | `9d264ab75632` |
 | [backend/tests/test_g1_lowstate_view.py](../backend/tests/test_g1_lowstate_view.py) | 28 | 목록 확인 | LowStateTests | `51a289d5a2b5` |
@@ -114,12 +115,13 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [tools/BUILD_EMBEDDED_RUNTIME.py](../tools/BUILD_EMBEDDED_RUNTIME.py) | 183 | 목록 확인 | sha256_file, requirement_pins, require_builder_python, remove_generated_launchers, write_manifest (+3) | `620491d24589` |
 | [tools/CONFIGURE_G1_ETHERNET.bat](../tools/CONFIGURE_G1_ETHERNET.bat) | 3 | 목록 확인 | - | `b05c2e1d86fb` |
 | [tools/CONFIGURE_G1_ETHERNET_ADMIN.ps1](../tools/CONFIGURE_G1_ETHERNET_ADMIN.ps1) | 25 | 목록 확인 | - | `f9342a380804` |
+| [tools/G1_ARCHIVE_OFFLINE_VALIDATE.py](../tools/G1_ARCHIVE_OFFLINE_VALIDATE.py) | 1034 | 목록 확인 | percentile, unique_entry, open_text, sha256_entry, verify_manifest (+19) | `782676dfcaa5` |
 | [tools/G1_CAMERA_LAUNCH.py](../tools/G1_CAMERA_LAUNCH.py) | 28 | 입출력 확인 | main | `4dd859cd3bc0` |
 | [tools/G1_ETHERNET_DNS.ps1](../tools/G1_ETHERNET_DNS.ps1) | 60 | 목록 확인 | - | `8405c5e3187b` |
 | [tools/G1_ETHERNET_TRANSACTION.ps1](../tools/G1_ETHERNET_TRANSACTION.ps1) | 126 | 목록 확인 | - | `e49e43ff9063` |
 | [tools/G1_INPUT_OBSERVATION_LAUNCH.py](../tools/G1_INPUT_OBSERVATION_LAUNCH.py) | 128 | 입출력 확인 | worker_command, engine_environment, preflight, main | `e767f04935e6` |
 | [tools/G1_INPUT_RECEIVE_AUDIT.py](../tools/G1_INPUT_RECEIVE_AUDIT.py) | 597 | 목록 확인 | _stdout_line, LatestOutput, _aged_payload, display_view, AsyncLog (+15) | `338dfea129c7` |
-| [tools/G1_PORTABLE.py](../tools/G1_PORTABLE.py) | 257 | 목록 확인 | stamp, run_checked, engine_env, check_runtime, teleop (+8) | `180d62975df9` |
+| [tools/G1_PORTABLE.py](../tools/G1_PORTABLE.py) | 265 | 목록 확인 | stamp, run_checked, engine_env, check_runtime, teleop (+9) | `da77a19f5427` |
 | [tools/G1_VR_TELEOP_LAUNCH.py](../tools/G1_VR_TELEOP_LAUNCH.py) | 297 | 입출력 확인 | windows_arguments, process_arguments, option, option_casefold, normalized_path (+9) | `8b60769c8925` |
 | [tools/PRINT_G1_INPUTS_50HZ.py](../tools/PRINT_G1_INPUTS_50HZ.py) | 228 | 목록 확인 | finite, arm_value, omni_value, LogTail, newest (+1) | `ea02e5193e41` |
 | [tools/RESTORE_G1_ETHERNET_DHCP.bat](../tools/RESTORE_G1_ETHERNET_DHCP.bat) | 3 | 목록 확인 | - | `a481a444d468` |

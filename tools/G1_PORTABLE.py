@@ -195,6 +195,12 @@ def ethernet(command_name, args):
     return 0
 
 
+def archive_validate(args):
+    require_embedded_interpreter()
+    import G1_ARCHIVE_OFFLINE_VALIDATE as validator
+    return validator.main(args)
+
+
 def main(argv=None):
     require_embedded_interpreter()
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -204,7 +210,7 @@ def main(argv=None):
         choices=(
             "teleop", "camera", "bimanual-demo", "bimanual-unity",
             "report-latest", "verify-latest-quest", "check-runtime",
-            "resolve-unity", "build-install-apk",
+            "resolve-unity", "build-install-apk", "archive-validate",
             "ethernet-configure", "ethernet-restore",
         ),
     )
@@ -234,6 +240,8 @@ def main(argv=None):
         sub.add_argument("--check-unity-path", action="store_true")
         sub.parse_args(rest)
         return resolve_unity(ns)
+    if ns.command == "archive-validate":
+        return archive_validate(rest)
     if ns.command == "build-install-apk":
         sub = argparse.ArgumentParser(prog="G1_PORTABLE.py build-install-apk")
         sub.add_argument("--serial")

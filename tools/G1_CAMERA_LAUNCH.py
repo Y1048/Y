@@ -1,8 +1,8 @@
-"""Launch only the read-only camera bridge, or inspect/install its dependencies."""
+"""Launch the read-only G1 camera over SSH, or check local prerequisites."""
 import argparse
-import subprocess
 import sys
-from g1_portable_environment import camera_run, select_robot_host
+
+from g1_portable_environment import select_robot_host
 
 
 def main():
@@ -11,21 +11,18 @@ def main():
     mode.add_argument('--check-only', action='store_true')
     mode.add_argument('--setup', action='store_true')
     parser.add_argument('--robot-host', default='auto')
-    parser.add_argument('--transport', choices=('ssh', 'wsl'), default='ssh')
     args = parser.parse_args()
-    host = args.robot_host if args.setup or args.check_only else select_robot_host(args.robot_host)
-    if args.transport == 'ssh':
-        from g1_camera_ssh import run, check_environment
-        check_environment()
-        if args.setup or args.check_only:
-            return
-        return run(host)
-    camera_run('--setup' if args.setup else '--check-only' if args.check_only else '--run', host)
+
+    from g1_camera_ssh import run, check_environment
+    check_environment()
+    if args.setup or args.check_only:
+        return
+    return run(select_robot_host(args.robot_host))
 
 
 if __name__ == '__main__':
     try:
         main()
-    except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
+    except (OSError, ValueError, RuntimeError) as error:
         print('CAMERA: ' + str(error), file=sys.stderr)
         raise SystemExit(1)

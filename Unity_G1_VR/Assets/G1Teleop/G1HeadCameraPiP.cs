@@ -20,6 +20,8 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
     private const int FrameAssemblyTimeoutMs = 2000;
     public const float DefaultCanvasScale = 0.00180f;
     public const float DefaultCanvasVerticalOffset = -0.04f;
+    public const float DefaultCanvasWidth = 320.0f;
+    public const float DefaultCanvasHeight = 240.0f;
     public const string ObjectName = "G1_Head_Camera_PiP";
 
     public RawImage video_image;
@@ -67,6 +69,8 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
     private float last_frame_time;
     private string last_error = string.Empty;
     private string last_logged_error = string.Empty;
+    private int last_logged_width;
+    private int last_logged_height;
 
     public static G1HeadCameraPiP Create(
         Transform center_eye,
@@ -109,7 +113,9 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
             initial_world_position,
             initial_world_rotation);
         canvas_transform.localScale = Vector3.one * DefaultCanvasScale;
-        canvas_transform.sizeDelta = new Vector2(320.0f, 240.0f);
+        canvas_transform.sizeDelta = new Vector2(
+            DefaultCanvasWidth,
+            DefaultCanvasHeight);
 
         Canvas canvas_value = canvas_object.GetComponent<Canvas>();
         canvas_value.renderMode = RenderMode.WorldSpace;
@@ -155,6 +161,17 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         pip_value.tcp_port = camera_tcp_port;
         canvas_object.SetActive(true);
         return pip_value;
+    }
+
+    public static Vector2 GetCanvasSizeForTexture(int width, int height)
+    {
+        if (width <= 0 || height <= 0)
+        {
+            return new Vector2(DefaultCanvasWidth, DefaultCanvasHeight);
+        }
+        return new Vector2(
+            DefaultCanvasWidth,
+            DefaultCanvasWidth * height / width);
     }
 
     public static bool IsValidLoopbackPort(int value)
@@ -485,6 +502,22 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
             return;
         }
 
+        RectTransform canvas_transform = transform as RectTransform;
+        if (canvas_transform != null)
+        {
+            canvas_transform.sizeDelta = GetCanvasSizeForTexture(
+                decoded_texture.width,
+                decoded_texture.height);
+        }
+        if (decoded_texture.width != last_logged_width
+            || decoded_texture.height != last_logged_height)
+        {
+            Debug.Log(
+                $"G1 camera PiP live texture: "
+                + $"{decoded_texture.width}x{decoded_texture.height}.");
+            last_logged_width = decoded_texture.width;
+            last_logged_height = decoded_texture.height;
+        }
         if (video_image != null)
         {
             video_image.texture = decoded_texture;

@@ -500,6 +500,12 @@ public static class G1TeleopBatchValidator
                         pip_transform.localScale.y,
                         G1HeadCameraPiP.DefaultCanvasScale),
                 "G1 head-camera PiP scale changed unexpectedly.");
+            Vector2 full_hd_canvas =
+                G1HeadCameraPiP.GetCanvasSizeForTexture(1920, 1080);
+            AssertCondition(
+                Mathf.Approximately(full_hd_canvas.x, 320.0f)
+                    && Mathf.Approximately(full_hd_canvas.y, 180.0f),
+                "G1 head-camera PiP must preserve the live texture aspect ratio.");
 
             Vector3 local_before = pip_value.transform.localPosition;
             Quaternion local_rotation_before =

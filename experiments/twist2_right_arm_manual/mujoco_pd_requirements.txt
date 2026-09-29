@@ -1,3 +1,0 @@
-# Isolated offline PD environment; do not alter the VR/Mink environment.
-mujoco==3.3.7
-numpy>=1.26,<3

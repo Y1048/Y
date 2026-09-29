@@ -1,193 +1,61 @@
 # G1 Teleop Protocol
 
-이 문서는 현재 기본 bimanual/world-frame 통신 계약을 설명한다.
-
-## 1. 기본 bimanual UDP
-
-```text
-transport : UDP loopback
-address   : 127.0.0.1
-port      : 5020
-sender    : Unity G1BimanualSimulationSender
-receiver  : g1_bimanual_unity_sim.py
-```
-
-같은 UDP peer로 Python feedback이 Unity에 돌아간다.
-
-이 경로는 simulation/observation 전용이며 G1 motor packet이 아니다.
-
-## 2. 현재 input schema
-
-현재 scene:
+## 1. Current bilateral input
 
 ```text
 schema      = g1.bimanual.unity.sim.v4
 input_frame = unity_display_world_v1
 simulation_only = true
+UDP         = 127.0.0.1:5020
 ```
 
-필수 상위 필드의 핵심:
+packet은 양손 tracking pose, engage/return flags, base yaw, world diagnostics를 포함한다.
 
-- `schema`
-- `simulation_only`
-- `session`
-- `sequence`
-- `sender_time_s`
-- `engage`
-- `return_home`
-- `input_frame`
-- `base_yaw_rad`
-- `left`
-- `right`
+## 2. Validation
 
-각 hand:
+backend는 packet size, JSON depth, duplicate key, schema/frame pair, simulation provenance, session/sequence monotonicity, finite pose/base-yaw, tracked flag, peer ownership/freshness를 fail-closed로 검사한다.
 
-```text
-tracked: bool
-position_m: [x,y,z]
-quaternion_wxyz: [w,x,y,z]
-```
+## 3. Replay compatibility
 
-진단용으로 `raw_position_m`, `raw_quaternion_wxyz`, `engage_offset_m` 등이 포함될 수 있다.
+저장된 2026-09 bilateral regression fixture는 `g1.bimanual.unity.sim.v1 / legacy_relative` packet을 포함한다. 이 decode path는 회귀 재생용 compatibility boundary다. 새 SampleScene traffic은 v4 world-frame을 사용한다.
 
-## 3. Legacy schema
+## 4. Feedback
 
-backend는 test/backward compatibility를 위해 다음도 decode할 수 있다.
+backend feedback은 같은 UDP cycle로 Unity에 반환된다. 주요 항목은 backend/session/feedback sequence, state, 14 joint positions, effective IK targets, world diagnostics, base yaw다.
 
-```text
-schema      = g1.bimanual.unity.sim.v1
-input_frame = legacy_relative
-```
+## 5. Timing
 
-현재 `useExistingScene` Unity path는 v4 world schema를 사용한다. v1 relative와 v4 world를 한 세션에서 혼용하지 않는다.
+- bilateral compute: 60 Hz
+- Omni processing: 60 Hz
+- observation sender: 60 Hz
+- observation display: 100 Hz
+- freshness: local monotonic clock
 
-## 4. 좌표계
+## 6. Omni observation
 
-Python의 Unity->MuJoCo position basis:
+Omni Connect는 `ws://127.0.0.1:32123`을 사용한다. 통합 launcher에서는 gateway를 `--dry-run`으로 실행한다.
+
+## 7. LowState
+
+LowState는 G1에서 read-only로 읽고 observation/Unity display에 전달한다. 현재 measured-state display port는 `5010/UDP`이다.
+
+## 8. Camera
 
 ```text
-BASIS = [[ 0, 0, 1],
-         [-1, 0, 0],
-         [ 0, 1, 0]]
-```
-
-`base_yaw_rad`은 Unity +Y yaw와 MuJoCo +Z yaw의 부호 차이를 반영해 sender에서 변환된다.
-
-현재 upper-body 계약은 absolute aligned world wrist pose다.
-
-```text
-Quest aligned world wrist
- -> Unity/G1 basis mapping
- -> world wrist target
- -> rotating G1/MuJoCo base
-```
-
-## 5. Packet validation
-
-`decode()`는 다음을 fail-closed로 검사한다.
-
-- packet size <= 8192 bytes
-- JSON nesting depth <= 8
-- duplicate JSON key 거부
-- finite numeric values
-- session length
-- sequence range
-- sender timestamp
-- schema/frame pair
-- 양손 tracked bool
-- position length/range
-- normalized quaternion
-- world frame의 finite base yaw
-
-잘못된 packet을 임의 보정해 정상 input으로 만들지 않는다.
-
-## 6. Freshness / clocks
-
-`sender_time_s`는 Unity sender 내부 sequence/filter ordering에 사용한다.
-
-cross-host wall-clock subtraction으로 freshness를 계산하지 않는다. Python receiver는 local receipt monotonic time을 사용한다.
-
-## 7. Filtering
-
-Python bimanual filter:
-
-```text
-position tau = 0.060 s
-rotation tau = 0.050 s
-```
-
-양손 tracking이 모두 유효하지 않으면 invalid input을 정상 pose update로 승격하지 않는다.
-
-## 8. Feedback
-
-Unity가 받는 bimanual feedback schema:
-
-```text
-g1.bimanual.unity.sim.state.v1
-```
-
-feedback에는 backend state, joint state, IK target validity, world IK target, operator delta, diagnostics가 포함될 수 있다.
-
-Unity는 feedback source가 loopback peer/port와 일치하는지 확인한다.
-
-## 9. Omni observation
-
-Omni Connect source:
-
-```text
-ws://127.0.0.1:32123
-```
-
-기본 통합 launcher에서는 `g1_omni_velocity_gateway.py --dry-run --process-hz 60`을 사용한다.
-
-observation tap 사용 시 sample copy는 localhost UDP `55071`로 전달된다. 이 경로는 motor command transport가 아니다.
-
-## 10. Camera
-
-```text
-G1 VideoClient on eth0
+G1 VideoClient.GetImageSample()
+ -> JPEG
  -> SSH stdout
  -> PC g1_camera_ssh.py
  -> TCP 127.0.0.1:5011
- -> Unity PiP
+ -> Unity G1HeadCameraPiP
 ```
 
-camera transport는 motor authority와 분리되어 있다.
+현재 target은 1920×1080 / 15 fps / 16:9이며 JPEG는 PC에서 재인코딩하지 않는다.
 
-## 11. Measured-state display
+## 9. Compatibility scene wiring
 
-read-only measured/recorded display에서 사용하는 대표 포트:
+SampleScene에는 과거 5005/5006 component reference 일부가 남아 있다. current bimanual sender가 5005 sender를 비활성화하고 5020 path를 사용한다. 새 코드에서 5005/5006을 current protocol로 사용하지 않는다.
 
-```text
-5009 : G1/read-only state -> MuJoCo display
-5010 : measured/recorded state -> Unity display
-```
+## 10. Motor-output boundary
 
-simulation feedback과 measured-state display를 같은 provenance로 취급하지 않는다.
-
-## 12. Deprecated single-arm ports
-
-```text
-5005 : legacy Unity -> single-arm Mink command
-5006 : legacy Mink -> Unity simulation state
-```
-
-이 포트들은 저장소에 남아 있지만 현재 bimanual default protocol이 아니다.
-
-## 13. Motor-output boundary
-
-`5020`, `55071`, `5011`, Omni dry-run은 실제 G1 motor authority를 부여하지 않는다.
-
-물리 출력은 `hardware/g1_arm_bridge/`의 별도 Gate/config/publisher 경로에서만 다룬다.
-
-## 14. 변경 규칙
-
-protocol field/frame/port를 변경할 때는 Unity sender와 Python decoder, feedback, tests를 같은 변경으로 맞춘다.
-
-특히 다음 invariant를 회귀로 유지한다.
-
-- left/right hand symmetry
-- world-frame schema와 base yaw 일치
-- stale/invalid packet fail-closed
-- loopback bimanual path에서 motor output 없음
-- Omni yaw 변경 시 body-relative 동작 일관성
+`START_G1_VR_TELEOP.bat`은 motor publisher를 만들지 않는다. physical bilateral motor control은 별도 승인과 별도 contract가 필요하다.

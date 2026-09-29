@@ -9,7 +9,7 @@ import numpy as np
 import mink
 from mink.tasks.task import Task
 
-import run_mink_g1_right_arm_prototype as base
+import g1_mink_shared as base
 
 
 # Quest 추종에 사용한 빠른 프로파일. 어깨/팔꿈치와 손목을 구분한다.

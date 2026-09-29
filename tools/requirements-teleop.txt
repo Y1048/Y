@@ -6,6 +6,7 @@ qpsolvers==4.13.0
 daqp==0.9.1
 ruckig==0.19.4
 websocket-client==1.8.0
+websockets==15.0.1
 scipy==1.17.1
 absl-py==2.5.0
 etils==1.14.0

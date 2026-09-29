@@ -7,7 +7,7 @@ The original g1_upstream_mink_tracking.py remains an unchanged reference.
 import numpy as np
 import mink
 import mujoco
-import run_mink_g1_right_arm_prototype as base
+import g1_mink_shared as base
 from g1_bimanual_limits import (
     IK_TRACKING_RATE_S, JOINT_ACCELERATION_LIMIT_RAD_S2)
 

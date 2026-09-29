@@ -6,11 +6,12 @@ checks. This is neither a global motion planner nor a physical braking model.
 """
 import numpy as np
 import mujoco
-import run_mink_g1_right_arm_prototype as base
-from g1_mink_return_cycle import SAFE_RIGHT_ARM_RAD
-from g1_virtual_center_tasks import JOINT_MAX_JERK_RAD_S3
+import g1_mink_shared as base
 from g1_mink_trajectory import RuckigJointMotionLimiter
-from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2
+from g1_bimanual_limits import (
+    JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_JERK_LIMIT_RAD_S3,
+    RETURN_RIGHT_WAYPOINT_RAD,
+)
 
 
 class BimanualReturnMotion:
@@ -24,10 +25,10 @@ class BimanualReturnMotion:
     def __init__(self, simulation):
         self.sim = simulation
         # Mirror the original seven-joint intermediate pose, not a new pose.
-        mirrored = SAFE_RIGHT_ARM_RAD * np.array([1., -1., -1., 1., -1., 1., -1.])
-        self.waypoint = np.r_[mirrored, SAFE_RIGHT_ARM_RAD].copy()
+        mirrored = RETURN_RIGHT_WAYPOINT_RAD * np.array([1., -1., -1., 1., -1., 1., -1.])
+        self.waypoint = np.r_[mirrored, RETURN_RIGHT_WAYPOINT_RAD].copy()
         self.acceleration_limits = np.full(14, JOINT_ACCELERATION_LIMIT_RAD_S2)
-        self.jerk_limits = np.full(14, JOINT_MAX_JERK_RAD_S3)
+        self.jerk_limits = np.full(14, JOINT_JERK_LIMIT_RAD_S3)
         left_pairs = {tuple(map(int, pair)) for pair in simulation.policy_pairs['left']}
         right_pairs = {tuple(map(int, pair)) for pair in simulation.policy_pairs['right']}
         self.inter_arm_pairs = [tuple(map(int, pair)) for pair in simulation.pairs

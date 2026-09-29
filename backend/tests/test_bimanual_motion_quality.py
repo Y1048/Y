@@ -134,8 +134,7 @@ class MotionQualityTests(unittest.TestCase):
                     self.assertLess(result['final_position_error_mm'],3.)
 
     def test_right_arm_matches_unchanged_reference_in_free_space(self):
-        sys.path.insert(0,str(ROOT/'experiments/twist2_right_arm_manual'))
-        from replay_upstream_mink import build, base
+        from upstream_mink_replay import build, base
         from bimanual_replay_profiles import historical_recording_profile
         # Compare algorithms under the reference's original limits. The new
         # 3/3 profile intentionally differs in timing and has separate gates.

@@ -11,8 +11,12 @@ import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+import sys
 
-from . import g1_omni_velocity_gateway as gateway
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import g1_omni_velocity_gateway as gateway
 
 
 class CaptureTap:

@@ -12,7 +12,7 @@ import mink
 import mujoco
 import numpy as np
 
-import run_mink_g1_right_arm_prototype as base
+import g1_mink_shared as base
 from g1_virtual_center_tasks import (
     hierarchical_orientation_damping_costs,
     hierarchical_position_damping_costs,

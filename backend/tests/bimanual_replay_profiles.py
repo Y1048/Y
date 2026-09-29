@@ -6,7 +6,7 @@ import mink
 import numpy as np
 import g1_bimanual_motion_policy as motion_policy
 import g1_bimanual_sim as simulator
-import run_mink_g1_right_arm_prototype as base
+import g1_mink_shared as base
 
 
 RECORDED_ACCELERATION_RAD_S2 = float(np.deg2rad(60.))

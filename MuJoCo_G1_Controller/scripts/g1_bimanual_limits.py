@@ -1,5 +1,6 @@
 """Shared bilateral target limits; independent from measured-state visualization."""
 import math
+import numpy as np
 
 # Fixed-base simulation / IK tuning profile. These are controller-side motion
 # bounds, not physical G1 authorization or gain settings.
@@ -7,6 +8,8 @@ PROXIMAL_VELOCITY_LIMIT_DEG_S = 90.0
 WRIST_VELOCITY_LIMIT_DEG_S = 180.0
 JOINT_ACCELERATION_LIMIT_DEG_S2 = 90.0
 IK_TRACKING_RATE_S = 1.0
+JOINT_JERK_LIMIT_RAD_S3 = 1.28
+RETURN_RIGHT_WAYPOINT_RAD = np.deg2rad([10.0, -35.0, 0.0, 70.0, 0.0, 0.0, 0.0])
 
 ARM_VELOCITY_LIMITS_RAD_S = (
     math.radians(PROXIMAL_VELOCITY_LIMIT_DEG_S),

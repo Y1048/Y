@@ -24,7 +24,7 @@ class BimanualTests(unittest.TestCase):
     def test_order_and_hand_pairs(self):
         s = self.s
         self.assertEqual(len(s.names), 14)
-        self.assertEqual(s.names, module.base.g1.G1_29_JOINTS[15:29])
+        self.assertEqual(s.names, module.base.g1.LEFT_ARM_JOINTS + module.base.g1.RIGHT_ARM_JOINTS)
         hands = [mujoco.mj_name2id(s.model, mujoco.mjtObj.mjOBJ_GEOM,
                  'mink_' + side + '_rubber_hand_collision') for side in ('left', 'right')]
         self.assertIn(tuple(sorted(hands)), [tuple(sorted(p)) for p in s.pairs])
@@ -81,9 +81,9 @@ class BimanualTests(unittest.TestCase):
         imports = [n.module or '' for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)]
         imports += [a.name for n in ast.walk(tree) if isinstance(n, ast.Import) for a in n.names]
         self.assertFalse(any(x.startswith(('socket', 'unitree', 'cyclonedds', 'subprocess')) for x in imports))
-        # Guard against an inherited command-stream sender ever being invoked.
-        with patch.object(module.base.MinkCommandStream, '__init__', side_effect=AssertionError('sender')):
-            self.assertTrue(self.s.step(self.s.home_targets))
+        # Shared model/math helpers must not expose any command-stream transport.
+        self.assertFalse(hasattr(module.base, 'MinkCommandStream'))
+        self.assertTrue(self.s.step(self.s.home_targets))
 
     def test_missing_nonfinite_and_quaternion(self):
         with self.assertRaises(ValueError):

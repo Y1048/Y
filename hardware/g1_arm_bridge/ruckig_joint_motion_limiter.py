@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ruckig-backed online joint motion limiter for offline Gate 7 experiments."""
+"""Ruckig-backed online joint motion limiter for current bilateral motion shaping."""
 
 from __future__ import annotations
 

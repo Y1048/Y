@@ -1,118 +1,91 @@
 # 다른 PC에서 G1 Teleop 실행
 
-현재 portable setup은 `tools/START_G1_VR_TELEOP.bat`과 프로젝트 `.venv-teleop`을 기준으로 한다.
+## 요구 환경
 
-## 기본 구성
+- Windows 11
+- Python 3.11 x64
+- 프로젝트에 기록된 Unity version
+- Meta Quest / Link
+- Omni Connect
+- G1 Ethernet 또는 closed network
 
-```text
-Windows x64
-Python 3.11
-Unity 6000.5.4f1
-Meta Horizon Link
-Omni Connect
-Windows OpenSSH
+WSL2는 현재 기본 camera/observation 경로에 필요하지 않다.
+
+## 1. 저장소 준비
+
+```bat
+tools\SETUP_G1_VR_TELEOP.bat
 ```
 
-WSL2는 현재 기본 SSH camera/observation 경로의 필수 조건이 아니다. WSL 전용 legacy/hardware 도구를 명시적으로 사용할 때만 필요하다.
-
-## Python dependency
-
-```powershell
-.\tools\SETUP_G1_VR_TELEOP.bat
-```
-
-setup은 프로젝트 `.venv-teleop`을 준비하고 pinned/import 상태를 검사한다. 기존 정상 venv는 재사용한다.
+`.venv-teleop`을 만들고 `tools/requirements-teleop.txt`의 exact pin을 설치/검사한다. global Python은 수정하지 않는다.
 
 검사만:
 
-```powershell
-.\tools\SETUP_G1_VR_TELEOP.bat --check-only
+```bat
+tools\SETUP_G1_VR_TELEOP.bat --check-only
 ```
 
-## 현재 기본 실행
+## 2. Ethernet
 
-```powershell
-.\tools\START_G1_VR_TELEOP.bat
+필요 시:
+
+```bat
+tools\CONFIGURE_G1_ETHERNET.bat
 ```
 
-이 launcher는:
+DHCP 복구:
 
-- 동일 checkout의 Unity 프로젝트를 연다/재사용한다.
-- bimanual IK worker를 60 Hz로 실행한다.
-- Omni를 observation-only dry-run으로 읽는다.
-- LowState/input observation worker를 시작한다.
-- camera worker를 시작/재사용한다.
-- motor output은 실행하지 않는다.
+```bat
+tools\RESTORE_G1_ETHERNET_DHCP.bat
+```
 
-Unity Play는 사용자가 직접 켠다.
+wired G1 주소는 기본적으로 `192.168.123.164`, closed-network fallback은 `192.168.10.165`를 탐색한다.
 
-## 현재 bimanual endpoint
+## 3. 실행
+
+```bat
+tools\START_G1_VR_TELEOP.bat
+```
+
+launcher는 기존 정상 worker를 재사용하며 사용자 프로세스를 임의 종료하지 않는다.
+
+check-only:
+
+```bat
+tools\START_G1_VR_TELEOP.bat --check-only
+```
+
+## 4. Camera
 
 ```text
-UDP 127.0.0.1:5020
-g1.bimanual.unity.sim.v4
-unity_display_world_v1
-```
-
-legacy `5005/5006` 설명은 현재 기본 경로에 적용하지 않는다.
-
-## 카메라
-
-```text
-G1 eth0 VideoClient
- -> SSH stdout
- -> PC
+G1 VideoClient
+ -> SSH
+ -> Windows g1_camera_ssh.py
  -> TCP 127.0.0.1:5011
- -> Unity
+ -> Unity PiP
 ```
 
-PiP parent는 G1 `RobotRoot`다.
+현재 target은 1920×1080 / 15 fps / 16:9이다. 처음 G1 주소에 연결할 때 SSH key enrollment가 필요할 수 있다.
 
-## Omni
+## 5. Omni
 
-```text
-Omni Connect -> ws://127.0.0.1:32123
+Omni Connect가 `ws://127.0.0.1:32123`에서 데이터를 제공해야 한다. 통합 launcher의 Omni worker는 `--dry-run`이다.
+
+## 6. Unity
+
+`START_G1_VR_TELEOP.bat`은 Unity Editor를 열거나 기존 editor를 재사용하지만 Play mode를 강제로 켜지 않는다.
+
+## 7. 검증
+
+```bat
+.venv-teleop\Scripts\python.exe -B -m unittest discover -s backend\tests -p "test_*.py"
+.venv-teleop\Scripts\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
 ```
 
-기본 launcher의 gateway는 motor command가 없는 dry-run observation이다.
+## 8. 문제 분리
 
-## PC 간 이동 시 복사하지 않는 것
-
-- `.venv-teleop`
-- Unity `Library/`, `Temp/`, `Logs/`
-- runtime `logs/`
-- Python `__pycache__`
-
-이 항목은 새 PC에서 재생성한다.
-
-## Git에서 가져오는 것
-
-- source
-- Unity `Assets/`, `Packages/`, `ProjectSettings/`
-- current docs
-- backend tests
-- hardware/tooling source
-
-## 첫 실행 점검
-
-1. `git status`로 checkout 확인
-2. setup BAT 실행
-3. Quest/Meta OpenXR 확인
-4. Omni Connect 확인
-5. G1 Ethernet/SSH 확인
-6. `START_G1_VR_TELEOP.bat --check-only`
-7. 통합 launcher 실행
-8. Unity compile 완료 후 Play
-
-## 문제 분리
-
-- Python import 실패: `.venv-teleop` / requirements
-- Unity open 실패: `6000.5.4f1` 경로/Hub
-- 5020 bind 실패: 오래된 bimanual worker
-- camera 실패: SSH/G1 VideoClient/TCP 5011
-- Omni 실패: Omni Connect 32123
-- check-only G1 unavailable: Ethernet/closed-network TCP 22
-
-## 실제 motor control
-
-portable observation setup 완료는 physical G1 command 승인이 아니다. 실제 출력은 hardware checklist의 별도 gate를 따른다.
+- 5020 bind 실패: 기존 bilateral backend 확인
+- camera 실패: G1 SSH / VideoClient / TCP 5011 확인
+- Omni 실패: Omni Connect 32123 확인
+- dependency 실패: 통합 launcher를 다시 실행해 pinned environment repair
+- G1 host 탐색 실패: Ethernet/closed network TCP 22 확인

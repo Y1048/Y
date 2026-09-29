@@ -4,8 +4,13 @@ import io
 import json
 import math
 import unittest
+from pathlib import Path
+import sys
 
-from . import g1_omni_velocity_gateway as gateway
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import g1_omni_velocity_gateway as gateway
 
 
 def raw_body_vector(forward, right, yaw_relative_deg, offset_deg=120.0):

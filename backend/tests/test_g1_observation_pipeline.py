@@ -22,6 +22,14 @@ import uuid
 
 
 ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / 'MuJoCo_G1_Controller/scripts'
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+from g1_bimanual_limits import (  # noqa: E402
+    JOINT_VELOCITY_LIMITS_RAD_S,
+    JOINT_ACCELERATION_LIMIT_RAD_S2,
+)
+
 AUDIT = ROOT / 'tools/G1_INPUT_RECEIVE_AUDIT.py'
 RUNTIME = ROOT / 'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py'
 OMNI = ROOT / 'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py'
@@ -35,10 +43,11 @@ class ObservationPipelineTests(unittest.TestCase):
     def test_generated_unity_and_fake_omni_reach_observation_receiver_together(self):
         import websockets
 
-        engine = Path(os.environ.get('G1_BIMANUAL_ENGINE_ROOT',
-            str(Path.home() / 'Desktop/G1_Teleop_Project/logs/diagnostics/mujoco_versions/3.12.0')))
+        engine = Path(os.environ.get(
+            'G1_BIMANUAL_ENGINE_ROOT',
+            str(ROOT / '.venv-teleop/Lib/site-packages')).strip())
         self.assertTrue((engine / 'mujoco/__init__.py').is_file(),
-                        'Select the isolated MuJoCo 3.12.0 engine before this test')
+                        "Use this checkout's validated .venv-teleop engine")
         for port in (55070, 55071):
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as check:
                 if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
@@ -177,10 +186,12 @@ class ObservationPipelineTests(unittest.TestCase):
                 received = [row for row in rows if row.get('kind') == 'received_observation']
                 sim_rows = [json.loads(line) for line in (tmp/'generated_unity.jsonl').read_text(encoding='utf-8').splitlines()]
                 run = sim_rows[0]
-                self.assertEqual(run['motion_limits']['velocity_rad_s'], [3.] * 14)
-                self.assertEqual(run['motion_limits']['acceleration_rad_s2'], [3.] * 14)
-                self.assertEqual(run['return_profile']['velocity_rad_s'], [3.] * 14)
-                self.assertEqual(run['return_profile']['acceleration_rad_s2'], [3.] * 14)
+                expected_velocity = list(JOINT_VELOCITY_LIMITS_RAD_S)
+                expected_acceleration = [JOINT_ACCELERATION_LIMIT_RAD_S2] * 14
+                self.assertEqual(run['motion_limits']['velocity_rad_s'], expected_velocity)
+                self.assertEqual(run['motion_limits']['acceleration_rad_s2'], expected_acceleration)
+                self.assertEqual(run['return_profile']['velocity_rad_s'], expected_velocity)
+                self.assertEqual(run['return_profile']['acceleration_rad_s2'], expected_acceleration)
                 self.assertIs(run['simulation_only'], True)
                 self.assertIs(run['hardware_output_authorized'], False)
                 states = [row for row in sim_rows if row.get('kind') == 'state']
@@ -202,12 +213,16 @@ class ObservationPipelineTests(unittest.TestCase):
                     velocity = [(q - p) / dt for p, q in zip(previous['q_rad'], current['q_rad'])]
                     for joint, speed in enumerate(velocity):
                         maximum_speed[joint] = max(maximum_speed[joint], abs(speed))
-                        self.assertLessEqual(abs(speed), 3. + 1e-6, JOINT_NAMES[joint])
+                        self.assertLessEqual(
+                            abs(speed), expected_velocity[joint] + 1e-6,
+                            JOINT_NAMES[joint])
                         if previous_velocity is not None:
                             acceleration = abs(speed - previous_velocity[joint]) / dt
                             maximum_acceleration[joint] = max(maximum_acceleration[joint], acceleration)
-                            # Existing solver validation allows this numerical tolerance.
-                            self.assertLessEqual(acceleration, 3. + 1e-3, JOINT_NAMES[joint])
+                            self.assertLessEqual(
+                                acceleration,
+                                JOINT_ACCELERATION_LIMIT_RAD_S2 + 1e-3,
+                                JOINT_NAMES[joint])
                     previous_velocity = velocity
                 self.assertGreater(max(maximum_speed[:7]), .001, 'left IK output did not move')
                 self.assertGreater(max(maximum_speed[7:]), .001, 'right IK output did not move')
@@ -224,16 +239,21 @@ class ObservationPipelineTests(unittest.TestCase):
                     self.assertEqual((float(row['mx']), float(row['my'])), (0., 0.))
                 independent_mapping_checks = 0
                 for row in omni_rows[calibration_end + 1:]:
-                    # Independent world -> body oracle with the gateway's unchanged
-                    # 0.08 per-axis deadzone and 0.8 m/s scale/limit; no mapper reuse.
-                    theta = math.radians(float(row['arm_yaw_deg']))
+                    # Independent oracle for the current gateway contract:
+                    # calibrated world vector -> relative heading + fixed 120 deg
+                    # alignment -> body forward/right -> G1 left-positive lateral.
                     world_x, world_y = float(row['mx']), float(row['my'])
-                    body = (world_x * math.cos(theta) + world_y * math.sin(theta),
-                            -world_x * math.sin(theta) + world_y * math.cos(theta))
-                    for key, value in zip(('vx', 'vy'), body):
-                        expected = (0. if abs(value) <= .08 else
-                                    math.copysign(min(.8, (abs(value) - .08) * .8 / .92), value))
-                        self.assertAlmostEqual(float(row[key]), expected, places=12)
+                    magnitude = math.hypot(world_x, world_y)
+                    if magnitude <= .10:
+                        expected_vx = expected_vy = 0.0
+                    else:
+                        theta = math.radians(float(row['theta_deg']))
+                        forward = world_x * math.sin(theta) + world_y * math.cos(theta)
+                        right = world_x * math.cos(theta) - world_y * math.sin(theta)
+                        expected_vx = max(-.8, min(.8, forward * .8))
+                        expected_vy = max(-.8, min(.8, -right * .8))
+                    self.assertAlmostEqual(float(row['vx']), expected_vx, places=12)
+                    self.assertAlmostEqual(float(row['vy']), expected_vy, places=12)
                     independent_mapping_checks += 1
                 self.assertGreater(independent_mapping_checks, 30)
 
@@ -288,7 +308,11 @@ class ObservationPipelineTests(unittest.TestCase):
                     omni_sequences.add(feet['sample_sequence'])
                     tracking_seen |= arms['state'] == 'tracking'
                     returning_seen |= arms['state'] == 'returning'
-                    mapped_nonzero |= feet['calibrated'] and feet['vx'] > .1 and feet['vy'] < -.1 and feet['yaw_rate'] > .1
+                    mapped_nonzero |= (
+                        feet['calibrated']
+                        and math.hypot(feet['vx'], feet['vy']) > .1
+                        and abs(feet['yaw_rate']) > .1
+                    )
                 self.assertGreater(len(arm_sequences), 30)
                 self.assertGreater(len(omni_sequences), 30)
                 self.assertTrue(mapped_nonzero)
@@ -348,7 +372,12 @@ class ObservationLauncherTests(unittest.TestCase):
         path = ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'
         spec = importlib.util.spec_from_file_location('observation_launcher_test', path)
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        tools = str(ROOT / 'tools')
+        sys.path.insert(0, tools)
+        try:
+            spec.loader.exec_module(module)
+        finally:
+            sys.path.remove(tools)
         commands = {worker: module.worker_command(worker, '127.0.0.1', 'generated_fixture')
                     for worker in module.WORKERS}
         self.assertIn('--dry-run', commands['omni'])

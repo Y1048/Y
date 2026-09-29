@@ -15,27 +15,29 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE_ROOTS = (
-    "backend", "hardware", "experiments", "tools", "config",
+    "backend/tests", "backend/tools", "hardware/g1_arm_bridge", "tools",
     "MuJoCo_G1_Controller/scripts", "Unity_G1_VR/Assets/G1Teleop",
-    "Unity_G1_VR/Assets/Editor",
+    "Unity_G1_VR/Assets/Editor", "Unity_G1_VR/Assets/Scenes",
 )
 EXTENSIONS = {".py", ".cs", ".cpp", ".hpp", ".h", ".bat", ".ps1", ".sh", ".json", ".toml", ".yaml", ".yml"}
 EXCLUDED = {"__pycache__", "build", ".venv", "venv", "node_modules", "third_party", ".git"}
 # Boundary review is not a claim that every function was audited.
 BOUNDARY_REVIEWED = {
-    "START_VR_HAND_TO_MUJOCO.bat",
-    "tools/SET_UNITY_DISPLAY_MODE.ps1",
-    "MuJoCo_G1_Controller/scripts/run_mink_g1_right_arm_virtual_center_live.py",
-    "MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py",
-    "backend/g1_teleop/mink_command_stream.py",
-    "backend/g1_teleop/live_receiver.py",
-    "backend/g1_teleop/command_adapter.py",
-    "hardware/g1_arm_bridge/gate7_mink_wsl_relay.py",
-    "hardware/g1_arm_bridge/gate7_live_arm_sdk.py",
-    "Unity_G1_VR/Assets/G1Teleop/G1ExistingHandTargetBinder.cs",
-    "Unity_G1_VR/Assets/G1Teleop/G1ExistingTargetUdpSender.cs",
+    "tools/START_G1_VR_TELEOP.bat",
+    "tools/G1_VR_TELEOP_LAUNCH.py",
+    "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
+    "tools/G1_CAMERA_LAUNCH.py",
+    "tools/g1_camera_ssh.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py",
+    "MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py",
+    "MuJoCo_G1_Controller/scripts/g1_mink_shared.py",
+    "MuJoCo_G1_Controller/scripts/g1_arm_common.py",
+    "hardware/g1_arm_bridge/g1_omni_velocity_gateway.py",
+    "Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs",
+    "Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs",
+    "Unity_G1_VR/Assets/G1Teleop/G1HeadLockedCamera.cs",
     "Unity_G1_VR/Assets/G1Teleop/G1RobotStateUdpReceiver.cs",
-    "Unity_G1_VR/Assets/G1Teleop/G1UnityRightArmPreview.cs",
 }
 
 

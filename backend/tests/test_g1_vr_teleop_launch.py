@@ -167,7 +167,6 @@ class OrchestrationTests(unittest.TestCase):
         if unity:
             inventory.append([r'C:\Unity\Unity.exe', '-projectPath', str(launcher.UNITY_PROJECT)])
         stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=inventory))
-        camera_mock = stack.enter_context(mock.patch.object(launcher, 'camera_running', return_value=camera))
         environment = {'G1_OBSERVATION_TAP': '1', 'TEST_ONLY': '1'}
         stack.enter_context(mock.patch.object(launcher.observation, 'engine_environment', return_value=environment))
         check = stack.enter_context(mock.patch.object(launcher, 'preflight', side_effect=preflight_error))
@@ -181,8 +180,7 @@ class OrchestrationTests(unittest.TestCase):
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
         result = launcher.main(['--show-consoles'] + list(args))
         run.assert_not_called()
-        camera_mock.assert_not_called()  # Default SSH must never inspect WSL.
-        return result, spawn, check, camera_mock, environment, unity_start
+        return result, spawn, check, None, environment, unity_start
 
     def test_fresh_start_creates_exactly_five_observation_and_camera_windows(self):
         result, spawn, check, _, environment, unity_start = self.invoke()
@@ -242,12 +240,10 @@ class OrchestrationTests(unittest.TestCase):
     def test_conflicting_inventory_fails_before_any_spawn(self):
         with mock.patch.object(launcher, 'select_robot_host', return_value=HOST), \
                 mock.patch.object(launcher, 'process_arguments', return_value=[worker_row('send', 'other-host')]), \
-                mock.patch.object(launcher, 'camera_running') as camera, \
                 mock.patch.object(launcher.subprocess, 'Popen') as spawn, \
                 mock.patch.object(launcher.subprocess, 'run') as run:
             with self.assertRaises(RuntimeError):
                 launcher.main([])
-            camera.assert_not_called()
             spawn.assert_not_called()
             run.assert_not_called()
 
@@ -276,8 +272,11 @@ class PreflightTests(unittest.TestCase):
                 sock.bind.assert_called_once_with(('127.0.0.1', port))
                 run.assert_not_called()
 
-    def test_ssh_camera_preflight_never_requires_wsl(self):
-        with mock.patch.object(launcher.shutil, 'which', side_effect=lambda name: 'ssh.exe' if name=='ssh.exe' else None), mock.patch.object(launcher, 'camera_run', side_effect=AssertionError('WSL must not run')), mock.patch.object(launcher.subprocess, 'run', side_effect=AssertionError('No subprocess required')):
+    def test_ssh_camera_preflight_requires_only_local_ssh(self):
+        with mock.patch.object(launcher.shutil, 'which',
+                               side_effect=lambda name: 'ssh.exe' if name == 'ssh.exe' else None), \
+                mock.patch.object(launcher.subprocess, 'run',
+                                  side_effect=AssertionError('No subprocess required')):
             launcher.preflight(['camera'], {})
 
     def test_reused_workers_do_not_probe_their_occupied_udp_ports(self):
@@ -288,43 +287,6 @@ class PreflightTests(unittest.TestCase):
             socket_factory.assert_not_called()
             run.assert_not_called()
 
-
-@unittest.skipUnless(os.name == 'nt', 'Windows subprocess constants')
-class CameraRecognitionTests(unittest.TestCase):
-    def test_absent_and_matching_read_only_camera(self):
-        results = [
-            (1, b'', False),
-            (0, b'123 /venv/bin/python hardware/g1_arm_bridge/g1_camera_tcp_bridge.py eth0 --host 127.0.0.1 --port 5011\n', True),
-            (0, b'124 /venv/bin/python hardware/g1_arm_bridge/g1_camera_tcp_bridge.py eth0\n', True),
-        ]
-        for returncode, stdout, expected in results:
-            with self.subTest(returncode=returncode, stdout=stdout), \
-                    mock.patch.object(launcher.subprocess, 'run',
-                                      return_value=subprocess.CompletedProcess([], returncode, stdout=stdout)) as run, \
-                    mock.patch.object(launcher.socket, 'socket') as socket_factory:
-                self.assertEqual(expected, launcher.camera_running())
-                self.assertEqual(launcher.wsl_prefix() + ['bash', '-lc'],
-                                 run.call_args.args[0][:-1])
-                self.assertIn('pgrep -af', run.call_args.args[0][-1])
-                # Unity owns the TCP listener; camera inspection must not bind it.
-                socket_factory.assert_not_called()
-
-    def test_incompatible_camera_options_are_refused(self):
-        for suffix in ('--host 10.0.0.2 --port 5011', '--host 127.0.0.1 --port 5012'):
-            stdout = ('123 /venv/bin/python hardware/g1_arm_bridge/g1_camera_tcp_bridge.py eth0 ' + suffix + '\n').encode()
-            with self.subTest(suffix=suffix), \
-                    mock.patch.object(launcher.subprocess, 'run',
-                                      return_value=subprocess.CompletedProcess([], 0, stdout=stdout)):
-                with self.assertRaises(RuntimeError):
-                    launcher.camera_running()
-
-    def test_failed_or_empty_camera_inspection_is_not_treated_as_absent(self):
-        for returncode, stdout in ((2, b''), (0, b''), (0, b'123 unrelated-process\n')):
-            with self.subTest(returncode=returncode, stdout=stdout), \
-                    mock.patch.object(launcher.subprocess, 'run',
-                                      return_value=subprocess.CompletedProcess([], returncode, stdout=stdout)):
-                with self.assertRaises(RuntimeError):
-                    launcher.camera_running()
 
 
 if __name__ == '__main__':

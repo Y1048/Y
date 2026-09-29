@@ -9,7 +9,7 @@ import numpy as np
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "MuJoCo_G1_Controller" / "scripts"))
-import g1_right_arm_common as controller  # noqa: E402
+import g1_arm_common as controller  # noqa: E402
 
 
 class MuJoCoControlMathTest(unittest.TestCase):

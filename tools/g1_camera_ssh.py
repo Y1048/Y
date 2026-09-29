@@ -20,7 +20,7 @@ from unitree_sdk2py.go2.video.video_client import VideoClient
 ChannelFactoryInitialize(0, 'eth0')
 c = VideoClient(); c.SetTimeout(3.0); c.Init()
 sequence = 0
-frame_period_s = 0.5  # 2 fps: prioritize joint/velocity transport over video.
+frame_period_s = 1.0 / 15.0  # Current Unity camera target: 15 fps at the source JPEG resolution.
 while True:
     start = time.monotonic()
     code, data = c.GetImageSample()
@@ -78,7 +78,7 @@ def run(host):
     log = (logdir/(time.strftime('%Y%m%d_%H%M%S')+'_'+str(os.getpid())+'.log')).open('a', encoding='utf-8')
     def status(message):
         print(message, flush=True); log.write(message+'\n'); log.flush()
-    status('[CAMERA SSH] '+host+' eth0 -> SSH -> Unity 127.0.0.1:5011; camera only; low bandwidth 2 fps')
+    status('[CAMERA SSH] '+host+' eth0 -> SSH -> Unity 127.0.0.1:5011; camera only; target 15 fps')
     child = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
     connection = None

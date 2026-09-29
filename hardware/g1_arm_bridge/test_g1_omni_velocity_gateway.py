@@ -3,8 +3,13 @@ import math
 import csv
 import io
 import unittest
+from pathlib import Path
+import sys
 
-from .g1_omni_velocity_gateway import (
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+from g1_omni_velocity_gateway import (
     OmniVelocityConfig,
     OmniVelocityMapper,
     OMNI_CSV_HEADER,

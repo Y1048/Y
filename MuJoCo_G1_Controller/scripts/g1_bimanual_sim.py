@@ -12,7 +12,7 @@ import mujoco
 import mink
 import qpsolvers
 from qpsolvers.exceptions import SolverError
-import run_mink_g1_right_arm_prototype as base
+import g1_mink_shared as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
 from g1_bimanual_return import BimanualReturnMotion

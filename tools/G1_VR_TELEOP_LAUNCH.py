@@ -13,7 +13,7 @@ import sys
 from g1_ssh_login import ensure_login
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
-from g1_portable_environment import wsl_prefix, camera_run, select_robot_host
+from g1_portable_environment import select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATED_WORKERS = observation.WORKERS + ('lowstate',)
@@ -189,28 +189,6 @@ def running_workers(rows, root, host):
     return found
 
 
-def camera_running():
-    # Legacy WSL diagnostic only; never called by default SSH orchestration.
-    result = subprocess.run(
-        wsl_prefix() + ['bash', '-lc',
-         "pgrep -af '[p]ython.*g1_camera_tcp_bridge[.]py'"],
-        capture_output=True, timeout=15, creationflags=subprocess.CREATE_NO_WINDOW)
-    if result.returncode not in (0, 1):
-        raise RuntimeError('Cannot inspect the WSL camera bridge; no windows were started.')
-    if result.returncode == 1:
-        return False
-    rows = result.stdout.decode('utf-8').splitlines()
-    for row in rows:
-        argv = shlex.split(row)
-        if (not any(arg.endswith('g1_camera_tcp_bridge.py') for arg in argv)
-                or option(argv, '--port') not in (None, '5011')
-                or option(argv, '--host') not in (None, 'localhost', '127.0.0.1')):
-            raise RuntimeError('Existing camera process has different options; no extra camera was started.')
-    if not rows:
-        raise RuntimeError('Camera process inspection returned no details')
-    # TCP 5011 belongs to Unity's listener, not this outgoing camera client.
-    return True
-
 
 def preflight(missing, env):
     for executable in ('ssh.exe',):
@@ -305,7 +283,7 @@ def main(argv=None):
                     '--worker', worker, '--host', args.host])
         subprocess.Popen(command, cwd=ROOT, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
     print('Unity_G1_VR is open. Press Play in Unity, then use Quest and Omni Connect.')
-    print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: up to 20 fps.')
+    print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: 15 fps target.')
     print('Close each observation/camera window to stop it. Unity Play is not changed automatically.')
     return 0
 

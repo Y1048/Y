@@ -1,11 +1,27 @@
 # Project Tools
 
-`tools/`에는 current integrated runtime과 setup/maintenance에 필요한 파일만 둔다.
+`tools/`의 BAT 파일은 더 이상 실행 로직을 갖지 않는다. 모두 프로젝트에 포함된 CPython Embedded runtime을 호출하는 **3줄짜리 double-click shim**이다.
+
+## Embedded runtime
+
+```text
+runtime/python/python.exe
+tools/G1_PORTABLE.py
+tools/g1_embedded_runtime.py
+```
+
+`G1_PORTABLE.py`가 현재 Windows orchestration의 source of truth다.
 
 ## 기본 실행
 
 ```bat
 START_G1_VR_TELEOP.bat
+```
+
+내부적으로:
+
+```text
+runtime\python\python.exe -I -B tools\G1_PORTABLE.py teleop
 ```
 
 구성:
@@ -18,54 +34,32 @@ START_G1_VR_TELEOP.bat
 - Unity open/reuse
 - no motor output
 
-## Camera
+## BAT shim -> Python command
 
-```text
-START_G1_CAMERA_TO_UNITY.bat
- -> G1_CAMERA_LAUNCH.py
- -> g1_camera_ssh.py
-```
+| BAT | Python subcommand |
+|---|---|
+| `START_G1_VR_TELEOP.bat` | `teleop` |
+| `START_G1_CAMERA_TO_UNITY.bat` | `camera` |
+| `START_BIMANUAL_SIM.bat` | `bimanual-demo` |
+| `START_BIMANUAL_UNITY_SIM.bat` | `bimanual-unity` |
+| `REPORT_LATEST_BIMANUAL_SESSION.bat` | `report-latest` |
+| `VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat` | `verify-latest-quest` |
+| `SETUP_G1_VR_TELEOP.bat` | `check-runtime` |
+| `RESOLVE_UNITY_EDITOR.bat` | `resolve-unity` |
+| `BUILD_AND_INSTALL_VR_APK.bat` | `build-install-apk` |
+| `CONFIGURE_G1_ETHERNET.bat` | `ethernet-configure` |
+| `RESTORE_G1_ETHERNET_DHCP.bat` | `ethernet-restore` |
 
-현재 camera transport는 SSH 하나다. WSL fallback은 제거했다.
+## Network administration
 
-## Setup
+`CONFIGURE_G1_ETHERNET_ADMIN.ps1`, `RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1`, `G1_ETHERNET_DNS.ps1`, `G1_ETHERNET_TRANSACTION.ps1`은 Windows 관리자 NetTCPIP/DNS transaction을 위해 유지한다.
 
-```text
-SETUP_G1_VR_TELEOP.bat
-SETUP_G1_VR_TELEOP.py
-requirements-teleop.txt
-g1_teleop_dependencies.py
-```
+이 PowerShell 파일들은 Python dependency가 아니라 Windows 자체 네트워크 관리 API 경계다.
 
-Python 3.11 x64와 `.venv-teleop`을 사용한다.
+## Runtime policy
 
-## Network maintenance
-
-- `CONFIGURE_G1_ETHERNET.bat`
-- `CONFIGURE_G1_ETHERNET_ADMIN.ps1`
-- `RESTORE_G1_ETHERNET_DHCP.bat`
-- `RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1`
-- `G1_ETHERNET_DNS.ps1`
-- `G1_ETHERNET_TRANSACTION.ps1`
-
-## Unity build
-
-- `RESOLVE_UNITY_EDITOR.bat`
-- `BUILD_AND_INSTALL_VR_APK.bat`
-
-## Bimanual utilities
-
-- `START_BIMANUAL_SIM.bat`
-- `START_BIMANUAL_UNITY_SIM.bat`
-- `REPORT_LATEST_BIMANUAL_SESSION.bat`
-- `VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat`
-
-## Observation
-
-- `G1_INPUT_OBSERVATION_LAUNCH.py`
-- `G1_INPUT_RECEIVE_AUDIT.py`
-- `g1_lowstate_view.py`
-- `g1_observation_tap.py`
-- `PRINT_G1_INPUTS_50HZ.py`
-
-과거 Gate/MJLab/PD/right-arm trial wrapper는 제거했다.
+- system Python 사용 금지
+- `py -3.11` 사용 금지
+- `.venv-teleop` 사용 금지
+- operator PC에서 pip repair 금지
+- bundled runtime 이상 시 `runtime/python` 폴더 전체 복원

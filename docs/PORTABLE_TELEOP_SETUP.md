@@ -1,31 +1,61 @@
 # 다른 PC에서 G1 Teleop 실행
 
-## 요구 환경
+## 핵심
 
-- Windows 11
-- Python 3.11 x64
-- 프로젝트에 기록된 Unity version
-- Meta Quest / Link
-- Omni Connect
-- G1 Ethernet 또는 closed network
+이 프로젝트는 Python 실행 환경을 폴더 안에 포함한다.
 
-WSL2는 현재 기본 camera/observation 경로에 필요하지 않다.
-
-## 1. 저장소 준비
-
-```bat
-tools\SETUP_G1_VR_TELEOP.bat
+```text
+runtime/python/python.exe
+runtime/python/Lib/site-packages/
+runtime/python/RUNTIME_MANIFEST.json
 ```
 
-`.venv-teleop`을 만들고 `tools/requirements-teleop.txt`의 exact pin을 설치/검사한다. global Python은 수정하지 않는다.
+따라서 다른 Windows PC로 옮길 때 **시스템 Python 설치, venv 생성, pip install은 필요하지 않다.** 프로젝트 폴더 전체를 복사하면 Python 쪽 환경도 같이 이동한다.
 
-검사만:
+## 여전히 외부에 필요한 것
+
+- Windows 11 x64
+- Unity 6000.5.4f1
+- Meta Quest / Link 환경과 필요한 드라이버
+- Omni Connect
+- Windows OpenSSH client (`ssh.exe`, `ssh-keygen.exe`)
+- G1 Ethernet 또는 closed network
+- APK 설치 시 Meta Quest Developer Hub의 `adb.exe`
+
+## 1. 폴더 복사 후 runtime 검사
 
 ```bat
 tools\SETUP_G1_VR_TELEOP.bat --check-only
 ```
 
-## 2. Ethernet
+이 BAT는 설치 작업을 하지 않는다. 3줄짜리 shim으로 bundled `runtime/python/python.exe`의 `G1_PORTABLE.py check-runtime`만 실행한다.
+
+검사 항목:
+
+- CPython Embedded 3.11.9 x64
+- runtime manifest/core hash
+- exact package versions
+- MuJoCo 3.12 model construction
+- DAQP/QP backend
+- 로컬 SSH camera prerequisite
+
+실패하면 PC에서 pip install로 고치지 말고 **정상 프로젝트의 `runtime/python` 폴더를 통째로 복원**한다.
+
+## 2. 실행
+
+```bat
+tools\START_G1_VR_TELEOP.bat
+```
+
+검사만:
+
+```bat
+tools\START_G1_VR_TELEOP.bat --check-only
+```
+
+BAT는 환경 로직을 갖지 않고 Embedded Python dispatcher만 호출한다.
+
+## 3. Ethernet
 
 필요 시:
 
@@ -39,53 +69,29 @@ DHCP 복구:
 tools\RESTORE_G1_ETHERNET_DHCP.bat
 ```
 
-wired G1 주소는 기본적으로 `192.168.123.164`, closed-network fallback은 `192.168.10.165`를 탐색한다.
-
-## 3. 실행
-
-```bat
-tools\START_G1_VR_TELEOP.bat
-```
-
-launcher는 기존 정상 worker를 재사용하며 사용자 프로세스를 임의 종료하지 않는다.
-
-check-only:
-
-```bat
-tools\START_G1_VR_TELEOP.bat --check-only
-```
+UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell helper를 사용하지만, Python/venv dependency는 없다.
 
 ## 4. Camera
 
 ```text
 G1 VideoClient
  -> SSH
- -> Windows g1_camera_ssh.py
+ -> bundled Python g1_camera_ssh.py
  -> TCP 127.0.0.1:5011
  -> Unity PiP
 ```
 
-현재 target은 1920×1080 / 15 fps / 16:9이다. 처음 G1 주소에 연결할 때 SSH key enrollment가 필요할 수 있다.
+현재 target은 1920×1080 / 15 fps / 16:9이다.
 
-## 5. Omni
-
-Omni Connect가 `ws://127.0.0.1:32123`에서 데이터를 제공해야 한다. 통합 launcher의 Omni worker는 `--dry-run`이다.
-
-## 6. Unity
-
-`START_G1_VR_TELEOP.bat`은 Unity Editor를 열거나 기존 editor를 재사용하지만 Play mode를 강제로 켜지 않는다.
-
-## 7. 검증
+## 5. 테스트
 
 ```bat
-.venv-teleop\Scripts\python.exe -B -m unittest discover -s backend\tests -p "test_*.py"
-.venv-teleop\Scripts\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
+runtime\python\python.exe -B -m unittest discover -s backend\tests -p "test_*.py"
+runtime\python\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
 ```
 
-## 8. 문제 분리
+## 6. 이동성 gate
 
-- 5020 bind 실패: 기존 bilateral backend 확인
-- camera 실패: G1 SSH / VideoClient / TCP 5011 확인
-- Omni 실패: Omni Connect 32123 확인
-- dependency 실패: 통합 launcher를 다시 실행해 pinned environment repair
-- G1 host 탐색 실패: Ethernet/closed network TCP 22 확인
+portable runtime은 원래 checkout 경로가 아닌 별도 폴더로 복사한 뒤에도 `START_G1_VR_TELEOP.bat --check-only`가 통과해야 한다.
+
+하드코딩된 사용자 경로, `.venv-teleop`, system `py`, pip repair에 의존하면 portable gate 실패로 본다.

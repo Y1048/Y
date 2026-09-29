@@ -84,8 +84,8 @@ def BuildIndex(root: Path) -> str:
         "외부 SDK·Packages·Library·빌드 산출물은 이 코드 색인에서 제외한다.",
         "제외 항목을 미사용 또는 검토 완료로 판정한 것은 아니다.", "",
         "## 갱신", "", "```powershell",
-        "py -3.11 backend/tools/build_code_index.py",
-        "py -3.11 backend/tools/build_code_index.py --check", "```", "",
+        "runtime\python\python.exe -B backend/tools/build_code_index.py",
+        "runtime\python\python.exe -B backend/tools/build_code_index.py --check", "```", "",
         "## 파일 목록", "",
         "| 파일 | 줄 수 | 상태 | Python 최상위 선언(최대 5개) | SHA256 앞 12자리 |",
         "| --- | ---: | --- | --- | --- |",
@@ -110,7 +110,7 @@ def main() -> int:
     content = BuildIndex(ROOT)
     if args.check:
         if not output.exists() or output.read_text(encoding="utf-8") != content:
-            print("[FAIL] Code index is stale. Run: py -3.11 backend/tools/build_code_index.py")
+            print("[FAIL] Code index is stale. Run: runtime\python\python.exe -B backend/tools/build_code_index.py")
             return 1
         print("[PASS] Code index matches current scoped source files.")
     else:

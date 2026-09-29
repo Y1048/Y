@@ -1,7 +1,22 @@
 # G1 VR Bimanual Teleoperation
 
-현재 기본 경로는 **Quest/Unity → 양팔 Mink/MuJoCo → Omni/LowState/camera observation**이다.
-`tools/START_G1_VR_TELEOP.bat`이 통합 진입점이며 기본 실행은 G1 motor publisher를 만들지 않는다.
+현재 기본 경로는 **Quest/Unity → bilateral Mink/MuJoCo → Omni/LowState/camera observation**이다.
+`tools/START_G1_VR_TELEOP.bat`이 사용자 진입점이며 기본 실행은 G1 motor publisher를 만들지 않는다.
+
+## Portable Python runtime
+
+프로젝트는 Windows x64용 **CPython Embedded 3.11.9**와 필요한 Python 패키지를 폴더 안에 포함한다.
+
+```text
+runtime/python/python.exe
+runtime/python/Lib/site-packages/
+runtime/python/RUNTIME_MANIFEST.json
+```
+
+다른 Windows PC로 옮길 때 시스템 Python 설치, `py -3.11`, venv 생성, `pip install`이 필요하지 않다.
+프로젝트 폴더 전체를 복사하면 Python runtime도 같이 이동한다.
+
+BAT 파일에는 환경 설정 로직이 없다. 모든 BAT는 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다.
 
 ## 기본 실행
 
@@ -9,13 +24,19 @@
 tools\START_G1_VR_TELEOP.bat
 ```
 
-검사만 하려면:
+검사만:
 
 ```bat
 tools\START_G1_VR_TELEOP.bat --check-only
 ```
 
-새 PC 설치는 [docs/PORTABLE_TELEOP_SETUP.md](docs/PORTABLE_TELEOP_SETUP.md)를 따른다.
+bundled runtime 자체 검사:
+
+```bat
+tools\SETUP_G1_VR_TELEOP.bat --check-only
+```
+
+`SETUP_G1_VR_TELEOP.bat`은 더 이상 설치를 하지 않는다. manifest, exact package versions, MuJoCo model construction, camera prerequisite를 검사할 뿐이다.
 
 ## 현재 데이터 흐름
 
@@ -23,7 +44,7 @@ tools\START_G1_VR_TELEOP.bat --check-only
 Quest both hands
   -> Unity G1BimanualSimulationSender
   -> UDP 127.0.0.1:5020
-  -> g1_bimanual_runtime.py
+  -> bundled Python g1_bimanual_runtime.py
   -> one bilateral Mink/QP solve for 14 arm joints
 
 Omni Connect ws://127.0.0.1:32123
@@ -37,7 +58,7 @@ G1 LowState
 G1 front camera
   -> Unitree VideoClient JPEG
   -> SSH stdout
-  -> tools/g1_camera_ssh.py
+  -> g1_camera_ssh.py
   -> TCP 127.0.0.1:5011
   -> Unity PiP on G1 RobotRoot
 ```
@@ -60,44 +81,40 @@ G1 front camera
 
 - proximal arm joints: 90 deg/s
 - wrist joints: 180 deg/s
-- joint acceleration: 90 deg/s^2
+- joint acceleration: 90 deg/s²
 - IK tracking rate constant: 1.0 s
 - compute/send: 60 Hz
 - observation display: 100 Hz
 
 ## Camera
 
-현재 실제 실행 target은 **1920×1080 JPEG / 15 fps / 16:9**이다.
+현재 target은 **1920×1080 JPEG / 15 fps / 16:9**이다.
 `g1_camera_ssh.py`는 JPEG를 재인코딩하지 않고 전달하며 Unity PiP는 1920×1080을 320×180으로 표시한다.
 
-30 fps 실험은 G1 `videohub_pc4`의 임시 `/tmp` 복사본으로만 수행했다. stock service는 변경하지 않았다.
+## 외부 dependency
 
-## 현재 포트
+Python dependency는 프로젝트 안에 포함하지만 다음은 외부 환경이다.
 
-| 포트 | 용도 |
-|---|---|
-| 5020/UDP | Unity bilateral input / backend feedback |
-| 55071/UDP | observation tap |
-| 5011/TCP | G1 camera -> Unity PiP |
-| 32123/WebSocket | Omni Connect |
-| 5010/UDP | read-only G1 state display |
+- Unity 6000.5.4f1
+- Meta Quest/Link 및 드라이버
+- Omni Connect
+- Windows OpenSSH client
+- G1 network access
+- APK 설치 시 Meta Quest Developer Hub ADB
 
-`5005/5006` 호환 wiring 일부는 기존 SampleScene/replay 경계 때문에 남아 있으나 기본 bilateral runtime에는 사용하지 않는다.
-
-## 검증
+## 테스트
 
 ```bat
-.venv-teleop\Scripts\python.exe -B -m unittest discover -s backend\tests -p "test_*.py"
-.venv-teleop\Scripts\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
+runtime\python\python.exe -B -m unittest discover -s backend\tests -p "test_*.py"
+runtime\python\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
 ```
 
 `G1.zip` 실제 세션은 `g1_bimanual_session_report.py --replay --strict`로 재현 가능해야 한다.
 
 상세 문서:
 
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- [docs/PROTOCOL.md](docs/PROTOCOL.md)
-- [docs/CODE_GUIDE.md](docs/CODE_GUIDE.md)
-- [docs/CHAT_HANDOFF.md](docs/CHAT_HANDOFF.md)
-- [docs/OMNI_WORLD_UPPER_BODY_20260922.md](docs/OMNI_WORLD_UPPER_BODY_20260922.md)
-- [docs/PORTABLE_TELEOP_SETUP.md](docs/PORTABLE_TELEOP_SETUP.md)
+- `docs/ARCHITECTURE.md`
+- `docs/PROTOCOL.md`
+- `docs/CODE_GUIDE.md`
+- `docs/CHAT_HANDOFF.md`
+- `docs/PORTABLE_TELEOP_SETUP.md`

@@ -20,7 +20,7 @@ DISPLAY_HZ = 100
 
 
 def worker_command(worker, host, stamp):
-    python = [sys.executable, '-u', '-B']
+    python = [sys.executable, '-I', '-u', '-B']
     if worker == 'lowstate':
         return python + [str(ROOT/'tools/g1_lowstate_view.py'), '--host', host]
     if worker == 'receive':
@@ -46,13 +46,10 @@ def engine_environment():
     # Only children started by this launcher receive the opt-in observation tap.
     env['G1_OBSERVATION_TAP'] = '1'
     env['G1_OMNI_UNITY_HEADING'] = '1'
-    if not env.get('G1_BIMANUAL_ENGINE_ROOT'):
-        candidates = [ROOT/'.venv-teleop/Lib/site-packages',
-                      ROOT/'logs/diagnostics/mujoco_versions/3.12.0']
-        for candidate in candidates:
-            if (candidate/'mujoco/__init__.py').is_file():
-                env['G1_BIMANUAL_ENGINE_ROOT'] = str(candidate)
-                break
+    engine = ROOT / 'runtime/python/Lib/site-packages'
+    if not (engine / 'mujoco/__init__.py').is_file():
+        raise RuntimeError('Bundled MuJoCo runtime is missing')
+    env['G1_BIMANUAL_ENGINE_ROOT'] = str(engine)
     return env
 
 
@@ -114,7 +111,7 @@ def main():
     for worker in WORKERS:
         if args.no_receiver and worker == 'receive':
             continue
-        subprocess.Popen([sys.executable, '-u', '-B', str(Path(__file__).resolve()),
+        subprocess.Popen([sys.executable, '-I', '-u', '-B', str(Path(__file__).resolve()),
                           '--worker', worker, '--host', args.host], cwd=str(ROOT), env=env,
                          creationflags=subprocess.CREATE_NEW_CONSOLE)
     print(('Three PC' if args.no_receiver else 'Four')+

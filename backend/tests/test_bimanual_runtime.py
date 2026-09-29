@@ -74,14 +74,15 @@ class RuntimeTests(unittest.TestCase):
                         with patch.object(runtime, 'require_validated_engine', return_value=engine):
                             self.assertIs(runtime.load_engine(), engine)
 
-    def test_installed_validated_engine_needs_no_local_root(self):
-        engine = fake_engine(Path('/site-packages'))
+    def test_missing_bundled_engine_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
-            with patch.dict(os.environ, {runtime.ENGINE_ENV: '', 'PYTHONPATH': 'unchanged'}):
-                with patch.object(runtime, 'DEFAULT_ENGINE_ROOT', Path(directory)/'absent'):
-                    with patch.object(runtime, 'require_validated_engine', return_value=engine):
-                        self.assertIs(runtime.load_engine(), engine)
-                        self.assertEqual(os.environ['PYTHONPATH'], 'unchanged')
+            missing = Path(directory) / 'absent'
+            with patch.dict(os.environ, {runtime.ENGINE_ENV: ''}):
+                with patch.object(runtime, 'DEFAULT_ENGINE_ROOT', missing):
+                    with patch.object(runtime, 'require_validated_engine') as load:
+                        with self.assertRaisesRegex(RuntimeError, 'Bundled/selected engine package is missing'):
+                            runtime.load_engine()
+                        load.assert_not_called()
 
     def test_cannot_switch_preloaded_engine(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -132,10 +133,13 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(all(len(value) == 64 for value in metadata['source_sha256'].values()))
         json.dumps(metadata, allow_nan=False)
 
-    def test_both_launchers_use_validated_runtime(self):
-        for name, mode in [('START_BIMANUAL_UNITY_SIM.bat', 'unity'), ('START_BIMANUAL_SIM.bat', 'demo')]:
-            text = (ROOT/'tools'/name).read_text()
-            self.assertIn('g1_bimanual_runtime.py --mode '+mode, text)
+    def test_both_launchers_dispatch_to_portable_runtime(self):
+        for name, command in [('START_BIMANUAL_UNITY_SIM.bat', 'bimanual-unity'),
+                              ('START_BIMANUAL_SIM.bat', 'bimanual-demo')]:
+            text = (ROOT/'tools'/name).read_text(encoding='utf-8')
+            self.assertIn(r'runtime\python\python.exe', text)
+            self.assertIn('G1_PORTABLE.py', text)
+            self.assertIn(' ' + command + ' ', text)
             self.assertIn('%*', text)
             self.assertNotIn('pip install', text)
 
@@ -148,9 +152,11 @@ class RuntimeTests(unittest.TestCase):
                     self.assertEqual(runtime.main(['--mode', 'report', '--strict']), 7)
         imports.assert_called_once_with('g1_bimanual_session_report')
 
-    def test_report_launcher_uses_validated_runtime_without_sim_launcher(self):
-        text = (ROOT/'tools/REPORT_LATEST_BIMANUAL_SESSION.bat').read_text()
-        self.assertIn('g1_bimanual_runtime.py --mode report --latest', text)
+    def test_report_launcher_dispatches_to_portable_runtime(self):
+        text = (ROOT/'tools/REPORT_LATEST_BIMANUAL_SESSION.bat').read_text(encoding='utf-8')
+        self.assertIn(r'runtime\python\python.exe', text)
+        self.assertIn('G1_PORTABLE.py', text)
+        self.assertIn(' report-latest ', text)
         self.assertIn('%*', text)
         self.assertNotIn('START_BIMANUAL_UNITY_SIM', text)
 

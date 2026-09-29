@@ -24,7 +24,7 @@
 ## 테스트
 
 ```bat
-.venv-teleop\Scripts\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
+runtime\python\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "test_*.py"
 ```
 
 검증 범위:

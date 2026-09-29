@@ -1,4 +1,4 @@
-# Validated observation/IK versions. Installed into .venv-teleop, never globally.
+# Bundled observation/IK versions. Preinstalled in runtime/python/Lib/site-packages.
 mujoco==3.12.0
 numpy==2.4.6
 mink==1.3.0

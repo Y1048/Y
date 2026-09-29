@@ -1,0 +1,8 @@
+python311.zip
+.
+Lib
+Lib\site-packages
+..\..
+..\..\tools
+..\..\MuJoCo_G1_Controller\scripts
+..\..\hardware\g1_arm_bridge

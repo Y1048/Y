@@ -40,6 +40,9 @@ Unity_*_TEST/
 __pycache__/
 *.py[cod]
 *.pyo
+# Bundled CPython native extensions are runtime inputs, not cache.
+!runtime/python/*.pyd
+!runtime/python/**/*.pyd
 
 .venv/
 /.venv-mujoco-pd/

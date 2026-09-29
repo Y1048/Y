@@ -43,11 +43,9 @@ class ObservationPipelineTests(unittest.TestCase):
     def test_generated_unity_and_fake_omni_reach_observation_receiver_together(self):
         import websockets
 
-        engine = Path(os.environ.get(
-            'G1_BIMANUAL_ENGINE_ROOT',
-            str(ROOT / '.venv-teleop/Lib/site-packages')).strip())
+        engine = ROOT / 'runtime/python/Lib/site-packages'
         self.assertTrue((engine / 'mujoco/__init__.py').is_file(),
-                        "Use this checkout's validated .venv-teleop engine")
+                        "Use this checkout's bundled runtime/python engine")
         for port in (55070, 55071):
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as check:
                 if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):

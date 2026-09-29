@@ -1,0 +1,31 @@
+{
+  "architecture": "win_amd64",
+  "core_sha256": {
+    "python.exe": "5f7b89a612c9b8af1d6456cdfcd1dbe5ca630849e79aebced9bee9a6694952ec",
+    "python311._pth": "5a2032624753a830ca83c6c4a134e9582f494dd2d41d669fb4f5870d1ff50ee0",
+    "python311.dll": "0817a2a657a24c0d5fbb60df56960f42fc66b3039d522ec952dab83e2d869364",
+    "python311.zip": "197d242243962155b439bb3a2df534e14fdcdc0e5849ec99e7f30c7e1217808e"
+  },
+  "packages": {
+    "absl-py": "2.5.0",
+    "daqp": "0.9.1",
+    "etils": "1.14.0",
+    "fsspec": "2026.7.0",
+    "glfw": "2.10.2",
+    "mink": "1.3.0",
+    "mujoco": "3.12.0",
+    "numpy": "2.4.6",
+    "pyopengl": "3.1.10",
+    "qpsolvers": "4.13.0",
+    "ruckig": "0.19.4",
+    "scipy": "1.17.1",
+    "typing_extensions": "4.16.0",
+    "websocket-client": "1.8.0",
+    "websockets": "15.0.1",
+    "zipp": "4.1.0"
+  },
+  "python_version": "3.11.9",
+  "schema": "g1.embedded-python.runtime.v1",
+  "source_archive_sha256": "33b448f95fecb7c6f802157dbd5e6b40a2ad9bfc8b95ca634a06ba4073ad1ac0",
+  "source_url": "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embeddable-amd64.zip"
+}

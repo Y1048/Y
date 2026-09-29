@@ -394,16 +394,18 @@ class SessionReportTests(unittest.TestCase):
             self.assertIn('quest_cycle_no_reengage', failures)
             self.assertIn('quest_cycle_no_completed_pinch_return', failures)
 
-    def test_latest_requires_project_relative_session_and_launchers_are_read_only(self):
+    def test_report_launchers_are_embedded_python_shims(self):
         source = (ROOT / 'tools/REPORT_LATEST_BIMANUAL_SESSION.bat').read_text(encoding='utf-8')
-        self.assertIn('--mode report --latest', source)
+        self.assertIn(r'runtime\python\python.exe', source)
+        self.assertIn('G1_PORTABLE.py', source)
+        self.assertIn(' report-latest ', source)
         self.assertNotIn('START_BIMANUAL_UNITY_SIM', source)
-        self.assertIn('g1_bimanual_runtime.py --mode report --latest', source)
         self.assertNotIn('unitree', source.lower())
 
         verify = (ROOT / 'tools/VERIFY_LATEST_BIMANUAL_QUEST_CYCLE.bat').read_text(encoding='utf-8')
-        self.assertIn('--mode report --latest --replay', verify)
-        self.assertIn('--require-quest-cycle --strict', verify)
+        self.assertIn(r'runtime\python\python.exe', verify)
+        self.assertIn('G1_PORTABLE.py', verify)
+        self.assertIn(' verify-latest-quest ', verify)
         self.assertNotIn('START_BIMANUAL_UNITY_SIM', verify)
         self.assertNotIn('adb ', verify.lower())
         self.assertNotIn('unitree', verify.lower())

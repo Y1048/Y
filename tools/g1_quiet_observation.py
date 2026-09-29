@@ -53,10 +53,11 @@ def run_workers(root, workers, host, env):
             logfile = folder / (worker + '.log')
             if worker == 'camera':
                 child = subprocess.Popen(
-                    ['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', host],
+                    [sys.executable, '-I', '-u', '-B', str(root / 'tools/G1_CAMERA_LAUNCH.py'),
+                     '--robot-host', host],
                     cwd=root, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
             elif worker == 'receive':
-                command = [sys.executable, '-u', '-B', str(Path(__file__).resolve()), host, str(logfile)]
+                command = [sys.executable, '-I', '-u', '-B', str(Path(__file__).resolve()), host, str(logfile)]
                 child = subprocess.Popen(command, cwd=root, env=env,
                                          creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:

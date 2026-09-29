@@ -15,9 +15,12 @@ import time
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = Path(__file__).resolve().parent
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
 VALIDATED_MUJOCO = '3.12.0'
 ENGINE_ENV = 'G1_BIMANUAL_ENGINE_ROOT'
-DEFAULT_ENGINE_ROOT = ROOT / 'logs/diagnostics/mujoco_versions' / VALIDATED_MUJOCO
+DEFAULT_ENGINE_ROOT = ROOT / 'runtime/python/Lib/site-packages'
 
 
 def startup_stage(stage):
@@ -41,25 +44,20 @@ def require_validated_engine():
 def load_engine(engine_root=None):
     """Select before importing Mink/MuJoCo; propagate only to child processes."""
     requested = engine_root if engine_root is not None else os.environ.get(ENGINE_ENV)
-    selected = Path(requested).expanduser().resolve() if requested else None
-    if selected is None and DEFAULT_ENGINE_ROOT.exists():
-        selected = DEFAULT_ENGINE_ROOT.resolve()
-    if selected is not None:
-        if not (selected / 'mujoco/__init__.py').is_file():
-            raise RuntimeError(f'Isolated engine package is missing: {selected}')
-        cached = sys.modules.get('mujoco')
-        if cached is not None and Path(cached.__file__).resolve() != (selected/'mujoco/__init__.py').resolve():
-            raise RuntimeError('A different MuJoCo is already imported; start a fresh Python process.')
-        if cached is None:
-            sys.path.insert(0, str(selected))
+    selected = (Path(requested).expanduser().resolve()
+                if requested else DEFAULT_ENGINE_ROOT.resolve())
+    if not (selected / 'mujoco/__init__.py').is_file():
+        raise RuntimeError(f'Bundled/selected engine package is missing: {selected}')
+    cached = sys.modules.get('mujoco')
+    if cached is not None and Path(cached.__file__).resolve() != (selected/'mujoco/__init__.py').resolve():
+        raise RuntimeError('A different MuJoCo is already imported; start a fresh Python process.')
+    if cached is None:
+        sys.path.insert(0, str(selected))
     engine = require_validated_engine()
-    if selected is not None:
-        if Path(engine.__file__).resolve() != (selected/'mujoco/__init__.py').resolve():
-            raise RuntimeError('MuJoCo was not loaded from the selected engine root.')
-        # The loopback regression uses a fresh Python child. It must use the
-        # same selected engine, not the machine-wide site-packages version.
-        paths = [str(selected)] + [p for p in os.environ.get('PYTHONPATH', '').split(os.pathsep) if p]
-        os.environ['PYTHONPATH'] = os.pathsep.join(dict.fromkeys(paths))
+    if Path(engine.__file__).resolve() != (selected/'mujoco/__init__.py').resolve():
+        raise RuntimeError('MuJoCo was not loaded from the selected bundled engine root.')
+    paths = [str(selected)] + [p for p in os.environ.get('PYTHONPATH', '').split(os.pathsep) if p]
+    os.environ['PYTHONPATH'] = os.pathsep.join(dict.fromkeys(paths))
     return engine
 
 

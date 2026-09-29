@@ -1,76 +1,80 @@
-"""Offline portability tests for the current Windows SSH teleop path."""
-import os
+"""Offline portability tests for the bundled Windows runtime."""
 from pathlib import Path
 import sys
-import tempfile
 import unittest
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / 'tools'))
+sys.path.insert(0, str(ROOT / "tools"))
 import g1_portable_environment as portable
-import SETUP_G1_VR_TELEOP as setup
-import g1_camera_ssh as camera
+import g1_embedded_runtime as embedded
 
 
 class PortableTests(unittest.TestCase):
     def test_wired_first_fallback_and_explicit_host(self):
-        with mock.patch.object(portable.socket, 'create_connection') as connect:
-            self.assertEqual('192.168.123.164', portable.select_robot_host())
-            connect.assert_called_once_with(('192.168.123.164', 22), timeout=1.5)
-        with mock.patch.object(portable.socket, 'create_connection',
-                               side_effect=[OSError('timeout'), mock.MagicMock()]) as connect:
-            self.assertEqual('192.168.10.165', portable.select_robot_host())
-            self.assertEqual(('192.168.10.165', 22), connect.call_args.args[0])
-        with mock.patch.object(portable.socket, 'create_connection',
-                               side_effect=OSError('timeout')) as connect:
+        with mock.patch.object(portable.socket, "create_connection") as connect:
+            self.assertEqual("192.168.123.164", portable.select_robot_host())
+            connect.assert_called_once_with(("192.168.123.164", 22), timeout=1.5)
+        with mock.patch.object(
+                portable.socket, "create_connection",
+                side_effect=[OSError("timeout"), mock.MagicMock()]) as connect:
+            self.assertEqual("192.168.10.165", portable.select_robot_host())
+            self.assertEqual(("192.168.10.165", 22), connect.call_args.args[0])
+        with mock.patch.object(
+                portable.socket, "create_connection",
+                side_effect=OSError("timeout")) as connect:
             with self.assertRaises(RuntimeError):
                 portable.select_robot_host()
             self.assertEqual(2, connect.call_count)
-        with mock.patch.object(portable.socket, 'create_connection') as connect:
-            self.assertEqual('192.168.10.165',
-                             portable.select_robot_host('192.168.10.165'))
+        with mock.patch.object(portable.socket, "create_connection") as connect:
+            self.assertEqual(
+                "192.168.10.165",
+                portable.select_robot_host("192.168.10.165"))
             connect.assert_not_called()
 
-    def test_check_only_missing_environment_never_installs(self):
-        with tempfile.TemporaryDirectory() as directory, \
-                mock.patch.object(setup, 'ROOT', Path(directory)), \
-                mock.patch.object(sys, 'argv', ['setup', '--check-only']), \
-                mock.patch.object(setup.subprocess, 'run') as run, \
-                mock.patch.object(camera, 'check_environment') as camera_check:
-            with self.assertRaises(RuntimeError):
-                setup.main()
-            run.assert_not_called()
-            camera_check.assert_not_called()
+    def test_embedded_paths_are_checkout_relative(self):
+        self.assertEqual(ROOT / "runtime/python/python.exe", embedded.PYTHON_EXE)
+        self.assertEqual(
+            ROOT / "runtime/python/Lib/site-packages",
+            embedded.SITE_PACKAGES)
+        self.assertTrue(embedded.PYTHON_EXE.is_file())
+        self.assertTrue((embedded.SITE_PACKAGES / "mujoco/__init__.py").is_file())
 
-    def test_check_only_existing_environment_checks_current_paths_only(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            python = root / '.venv-teleop/Scripts/python.exe'
-            python.parent.mkdir(parents=True)
-            python.touch()
-            with mock.patch.object(setup, 'ROOT', root), \
-                    mock.patch.object(sys, 'argv', ['setup', '--check-only']), \
-                    mock.patch.object(setup.subprocess, 'run') as run, \
-                    mock.patch.object(camera, 'check_environment') as camera_check:
-                setup.main()
-                self.assertEqual(3, run.call_count)
-                self.assertIn('g1_portable_environment.py', run.call_args.args[0][-1])
-                camera_check.assert_called_once()
-
-    def test_launch_bats_use_own_checkout_environment(self):
-        for name in ('START_G1_VR_TELEOP', 'START_G1_CAMERA_TO_UNITY'):
-            source = (ROOT / 'tools' / (name + '.bat')).read_text()
-            self.assertIn('cd /d "%~dp0.."', source)
-            self.assertIn('.venv-teleop\\Scripts\\python.exe', source)
-            self.assertNotIn('/mnt/c/Users/', source)
+    def test_all_bats_are_three_line_embedded_shims(self):
+        expected = {
+            "START_G1_VR_TELEOP": "teleop",
+            "START_G1_CAMERA_TO_UNITY": "camera",
+            "START_BIMANUAL_SIM": "bimanual-demo",
+            "START_BIMANUAL_UNITY_SIM": "bimanual-unity",
+            "REPORT_LATEST_BIMANUAL_SESSION": "report-latest",
+            "VERIFY_LATEST_BIMANUAL_QUEST_CYCLE": "verify-latest-quest",
+            "SETUP_G1_VR_TELEOP": "check-runtime",
+            "RESOLVE_UNITY_EDITOR": "resolve-unity",
+            "BUILD_AND_INSTALL_VR_APK": "build-install-apk",
+            "CONFIGURE_G1_ETHERNET": "ethernet-configure",
+            "RESTORE_G1_ETHERNET_DHCP": "ethernet-restore",
+        }
+        tracked = {path.stem for path in (ROOT / "tools").glob("*.bat")}
+        self.assertEqual(set(expected), tracked)
+        for name, command in expected.items():
+            with self.subTest(name=name):
+                source = (ROOT / "tools" / (name + ".bat")).read_text(encoding="utf-8")
+                self.assertEqual(3, len(source.splitlines()))
+                self.assertIn(r"runtime\python\python.exe", source)
+                self.assertIn("G1_PORTABLE.py", source)
+                self.assertIn(" " + command, source)
+                self.assertIn("%*", source)
+                for forbidden in (".venv-teleop", "py -3.11", "pip ", "powershell"):
+                    self.assertNotIn(forbidden, source.lower())
 
     def test_portable_module_has_no_wsl_camera_fallback(self):
-        source = (ROOT / 'tools/g1_portable_environment.py').read_text()
-        for token in ('wsl.exe', 'camera_run', 'configure_mirrored_network',
-                      'start_camera_tcp_bridge_wsl.sh'):
+        source = (ROOT / "tools/g1_portable_environment.py").read_text(encoding="utf-8")
+        for token in (
+            "wsl.exe", "camera_run", "configure_mirrored_network",
+            "start_camera_tcp_bridge_wsl.sh",
+        ):
             self.assertNotIn(token, source)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

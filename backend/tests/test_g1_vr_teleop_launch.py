@@ -116,8 +116,22 @@ class UnityLaunchTests(unittest.TestCase):
     def test_missing_editor_fails_closed(self):
         with tempfile.TemporaryDirectory() as temporary:
             with self.assertRaisesRegex(RuntimeError, 'was not found'):
-                launcher.resolve_unity_editor({'ProgramFiles': temporary,
-                                               'USERPROFILE': temporary})
+                launcher.resolve_unity_editor({
+                    'ProgramFiles': temporary,
+                    'ProgramW6432': temporary,
+                    'USERPROFILE': temporary,
+                    'SystemDrive': 'Z:',
+                })
+
+    def test_editor_resolution_uses_system_drive_program_files_fallback(self):
+        expected = (Path(r'C:\Program Files') / 'Unity/Hub/Editor' /
+                    launcher.UNITY_VERSION / 'Editor/Unity.exe')
+        environment = {'SystemDrive': 'C:', 'USERPROFILE': r'C:\NoUnityHere'}
+        with mock.patch.object(
+                Path, 'is_file', autospec=True,
+                side_effect=lambda path: str(path).casefold() == str(expected).casefold()):
+            resolved = launcher.resolve_unity_editor(environment)
+        self.assertEqual(expected.resolve(), resolved)
 
     def test_start_uses_detached_editor_without_play_mode(self):
         editor = Path(r'C:\Unity\Unity.exe')
@@ -130,26 +144,24 @@ class UnityLaunchTests(unittest.TestCase):
         self.assertEqual(ROOT, spawn.call_args.kwargs['cwd'])
         self.assertTrue(spawn.call_args.kwargs['creationflags'] & subprocess.DETACHED_PROCESS)
 
+    def test_unity_environment_fills_process_local_windows_defaults(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            local = Path(temporary)
+            (local / 'Temp').mkdir()
+            environment = {
+                'SystemDrive': 'C:',
+                'LOCALAPPDATA': str(local),
+                'ProgramFiles': r'C:\Program Files',
+            }
+            with mock.patch.object(Path, 'is_dir', autospec=True,
+                                   side_effect=lambda path: True if str(path).endswith('ProgramData') else Path.exists(path)):
+                result = launcher.unity_environment(environment)
+            self.assertEqual(r'C:\ProgramData', result['PROGRAMDATA'])
+            self.assertEqual(result['PROGRAMDATA'], result['ALLUSERSPROFILE'])
+            self.assertEqual(str(local / 'Temp'), result['TEMP'])
+            self.assertEqual(result['TEMP'], result['TMP'])
+            self.assertNotIn('PROGRAMDATA', environment)
 
-class RedirectorTests(unittest.TestCase):
-    def test_only_identical_parent_child_pair_collapses(self):
-        root = Path('C:/project')
-        base = 'C:/Python311/python.exe'
-        venv = str(root / '.venv-teleop/Scripts/python.exe')
-        rows = [dict(ProcessId=1, ParentProcessId=0, ExecutablePath=venv, CommandLine='parent'),
-                dict(ProcessId=2, ParentProcessId=1, ExecutablePath=base, CommandLine='child')]
-        commands = {'parent':[venv,'gateway.py','--csv','one.csv'],
-                    'child':[base,'gateway.py','--csv','one.csv']}
-        with mock.patch.object(launcher, 'windows_arguments', side_effect=commands.__getitem__):
-            self.assertEqual([commands['child']], launcher.collapse_venv_redirectors(rows,root))
-            rows[1]['ParentProcessId']=99
-            self.assertEqual(2,len(launcher.collapse_venv_redirectors(rows,root)))
-            rows[1]['ParentProcessId']=1
-            commands['child'][-1]='different.csv'
-            self.assertEqual(2,len(launcher.collapse_venv_redirectors(rows,root)))
-            commands['child'][-1]='one.csv'
-            rows[0]['ExecutablePath']='C:/other/.venv-teleop/Scripts/python.exe'
-            self.assertEqual(2,len(launcher.collapse_venv_redirectors(rows,root)))
 
 
 @unittest.skipUnless(os.name == 'nt', 'Windows visible-console launcher')
@@ -191,7 +203,10 @@ class OrchestrationTests(unittest.TestCase):
         commands = [call.args[0] for call in spawn.call_args_list]
         self.assertEqual(['send', 'omni', 'arm', 'lowstate'],
                          [launcher.option(command, '--worker') for command in commands[:-1]])
-        self.assertEqual(['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', HOST], commands[-1])
+        self.assertEqual(
+            [sys.executable, '-I', '-u', '-B', str(ROOT/'tools/G1_CAMERA_LAUNCH.py'),
+             '--robot-host', HOST],
+            commands[-1])
         for call in spawn.call_args_list:
             self.assertEqual(ROOT, call.kwargs['cwd'])
             self.assertEqual(environment, call.kwargs['env'])

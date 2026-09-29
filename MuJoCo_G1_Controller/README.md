@@ -51,7 +51,7 @@ return은 `g1_bimanual_return.py`의 staged motion을 사용하며 limits는 `g1
 ## Validation
 
 ```bat
-.venv-teleop\Scripts\python.exe -B -m unittest discover -s backend\tests -p "test_bimanual*.py"
+runtime\python\python.exe -B -m unittest discover -s backend\tests -p "test_bimanual*.py"
 ```
 
 실제 세션 재현은 `g1_bimanual_session_report.py --replay --strict`를 사용한다.

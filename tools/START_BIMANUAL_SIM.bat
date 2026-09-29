@@ -1,8 +1,3 @@
 @echo off
-setlocal
-cd /d "%~dp0.."
-echo Two-arm kinematic SIMULATION ONLY. No Unity connection or G1 output.
-for /f %%I in ('powershell.exe -NoProfile -Command "Get-Date -Format yyyyMMdd_HHmmss_fffffff"') do set STAMP=%%I
-py -3.11 -B MuJoCo_G1_Controller\scripts\g1_bimanual_runtime.py --mode demo --viewer --output "logs\test_results\bimanual\demo_%STAMP%.jsonl" %*
-if errorlevel 1 pause
-endlocal
+"%~dp0..\runtime\python\python.exe" -I -B "%~dp0G1_PORTABLE.py" bimanual-demo %*
+exit /b %ERRORLEVEL%

@@ -1,15 +1,15 @@
 # G1 Teleop Architecture
 
-## 1. 원칙
+## 1. Runtime boundary
 
-현재 기본 시스템은 **bilateral-only**이다. `tools/START_G1_VR_TELEOP.bat`이 유일한 통합 진입점이며 default path는 motor publisher를 만들지 않는다.
-
-## 2. Launcher
+현재 기본 시스템은 bilateral-only다. Python 실행 환경은 project-local CPython Embedded runtime에 고정된다.
 
 ```text
-START_G1_VR_TELEOP.bat
-  -> g1_teleop_dependencies.py
-  -> G1_VR_TELEOP_LAUNCH.py
+tools/START_G1_VR_TELEOP.bat
+  -> runtime/python/python.exe
+  -> tools/G1_PORTABLE.py teleop
+  -> tools/g1_teleop_dependencies.py
+  -> tools/G1_VR_TELEOP_LAUNCH.py
        -> observation send worker
        -> Omni dry-run worker
        -> bilateral arm simulation worker
@@ -18,27 +18,42 @@ START_G1_VR_TELEOP.bat
        -> Unity Editor open/reuse
 ```
 
-정상 worker가 이미 실행 중이면 재사용하며 다른 host/옵션의 사용자 프로세스를 임의 종료하지 않는다.
+system Python, venv, pip repair는 operator runtime에 사용하지 않는다.
 
-## 3. Bilateral backend
+## 2. BAT policy
 
-`g1_bimanual_runtime.py`가 실행 wrapper다. `g1_bimanual_unity_sim.py`가 UDP 5020 packet과 cycle state를 관리하고 `g1_bimanual_sim.py`가 하나의 MuJoCo configuration에서 좌/우 task를 동시에 푼다.
+모든 BAT는 3줄짜리 compatibility/double-click shim이다. BAT 내부에 Python 탐색, dependency 설치, 날짜 생성, child BAT chaining, Unity resolution 같은 로직을 두지 않는다.
 
-공용 model/collision/math helper는 `g1_mink_shared.py`와 `g1_arm_common.py`에 있다.
+실제 Windows orchestration의 source of truth는 `tools/G1_PORTABLE.py`다.
 
-## 4. Motion policy
+## 3. Embedded runtime
+
+- CPython Embedded 3.11.9 x64
+- exact packages: `tools/requirements-teleop.txt`
+- installed packages: `runtime/python/Lib/site-packages`
+- manifest/core hashes: `runtime/python/RUNTIME_MANIFEST.json`
+- isolated path config: `runtime/python/python311._pth`
+
+runtime 검증 실패 시 PC에서 pip install로 수리하지 않는다. 정상 `runtime/python` 폴더를 복원한다.
+
+## 4. Bilateral backend
+
+`g1_bimanual_runtime.py`가 실행 wrapper다. MuJoCo 기본 package root도 `runtime/python/Lib/site-packages`로 고정된다.
+`g1_bimanual_unity_sim.py`가 UDP 5020 packet과 state cycle을 관리하고, `g1_bimanual_sim.py`가 하나의 configuration에서 좌/우 task를 동시에 푼다.
+
+## 5. Motion policy
 
 - 14 arm joints
 - proximal velocity 90 deg/s
 - wrist velocity 180 deg/s
-- acceleration 90 deg/s^2
-- jerk limit 1.28 rad/s^3
+- acceleration 90 deg/s²
+- jerk limit 1.28 rad/s³
 - compute 60 Hz
 - staged return: `g1_bimanual_return.py`
 
-## 5. Unity world-frame contract
+## 6. Unity world-frame contract
 
-현재 SampleScene은 `G1BimanualSimulationSender.useExistingScene = true`이며 다음 packet을 사용한다.
+current SampleScene:
 
 ```text
 schema      = g1.bimanual.unity.sim.v4
@@ -46,41 +61,34 @@ input_frame = unity_display_world_v1
 port        = 5020
 ```
 
-저장된 regression fixture 재생을 위해 v1/legacy-relative decode만 호환 경계로 유지한다. 새 runtime traffic은 v4 world-frame이다.
+저장된 regression fixture 재생을 위해 v1/legacy-relative decode만 compatibility boundary로 유지한다.
 
-## 6. Omni
+## 7. Omni / observation / camera
 
-`g1_omni_velocity_gateway.py`는 Omni Connect WebSocket을 읽는다. 통합 launcher에서는 `--dry-run`으로 실행되며 motor output이 없다.
-
-## 7. Observation
-
-- arm source: 60 Hz
-- Omni processing: 60 Hz
+- Omni Connect: `ws://127.0.0.1:32123`, default `--dry-run`
+- observation sender: 60 Hz
 - observation display: 100 Hz
 - LowState: read-only
-- camera: SSH read-only transport
+- camera: G1 VideoClient → SSH → TCP 5011 → Unity PiP
 
-## 8. Camera
+## 8. Windows-native external boundaries
 
-```text
-G1 VideoClient
- -> JPEG 1920x1080
- -> SSH stdout
- -> g1_camera_ssh.py
- -> TCP 127.0.0.1:5011
- -> G1HeadCameraPiP
+Embedded Python으로 해결하지 않는 항목:
+
+- Unity installation
+- OpenSSH executable
+- Quest/ADB/driver
+- Omni Connect process
+- privileged Windows NetTCPIP/DNS administration
+
+Ethernet 관리자 변경은 Embedded Python dispatcher가 UAC elevation을 요청하고 기존 PowerShell transaction helper를 호출한다.
+
+## 9. Portability gate
+
+원래 checkout이 아닌 별도 경로로 프로젝트를 복사한 뒤에도:
+
+```bat
+tools\START_G1_VR_TELEOP.bat --check-only
 ```
 
-현재 target은 15 fps, native 16:9이며 PiP parent는 HMD가 아니라 G1 RobotRoot다.
-
-## 9. Compatibility boundary
-
-SampleScene에는 과거 5005/5006 component wiring 일부가 남아 있다. current bimanual sender는 기존 5005 sender를 비활성화하고 5020 bilateral path를 사용한다. 새 기능의 기준으로 5005/5006을 사용하지 않는다.
-
-## 10. Source of truth
-
-1. `tools/START_G1_VR_TELEOP.bat`
-2. `tools/G1_VR_TELEOP_LAUNCH.py`
-3. `MuJoCo_G1_Controller/scripts/g1_bimanual_*.py`
-4. current backend/hardware regression
-5. 이 문서
+가 system Python/venv 없이 PASS해야 한다.

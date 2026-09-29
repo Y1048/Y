@@ -11,6 +11,7 @@ import socket
 import subprocess
 import sys
 from g1_ssh_login import ensure_login
+from g1_camera_ssh import check_environment as check_camera_environment
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
 from g1_portable_environment import select_robot_host
@@ -51,29 +52,8 @@ def process_arguments():
     rows = json.loads(result.stdout or '[]') or []
     if isinstance(rows, dict):
         rows = [rows]
-    return collapse_venv_redirectors(rows, ROOT)
-
-
-def collapse_venv_redirectors(rows, root):
-    """Count a Windows venv redirector + its identical child once, not unrelated copies."""
-    parsed = [(row, windows_arguments(row['CommandLine'])) for row in rows
-              if row.get('CommandLine')]
-    by_pid = {row['ProcessId']: (row, argv) for row, argv in parsed}
-    normalize = lambda value: str(value).replace('\\', '/').casefold()
-    redirector = normalize(root / '.venv-teleop/Scripts/python.exe')
-    suppressed = set()
-    for row, argv in parsed:
-        parent = by_pid.get(row.get('ParentProcessId'))
-        if parent is None:
-            continue
-        parent_row, parent_argv = parent
-        if (normalize(parent_row.get('ExecutablePath') or '') == redirector
-                and Path(row.get('ExecutablePath') or '').name.casefold() == 'python.exe'
-                and normalize(row.get('ExecutablePath') or '') != redirector
-                and argv[1:] == parent_argv[1:]):
-            suppressed.add(parent_row['ProcessId'])
-    return [argv for row, argv in parsed if row['ProcessId'] not in suppressed]
-
+    return [windows_arguments(row['CommandLine']) for row in rows
+            if row.get('CommandLine')]
 
 def option(argv, flag):
     try:
@@ -113,18 +93,41 @@ def unity_project_running(rows, project=UNITY_PROJECT):
     return bool(matches)
 
 
+def unity_environment(environment=None):
+    """Fill only process-local Windows variables Unity/UPM expects."""
+    env = dict(os.environ if environment is None else environment)
+    system_drive = env.get('SystemDrive', 'C:').rstrip('\/')
+    program_data = Path(system_drive + '\\') / 'ProgramData'
+    if not env.get('PROGRAMDATA') and program_data.is_dir():
+        env['PROGRAMDATA'] = str(program_data)
+    if not env.get('ALLUSERSPROFILE') and env.get('PROGRAMDATA'):
+        env['ALLUSERSPROFILE'] = env['PROGRAMDATA']
+    local_temp = Path(env.get('LOCALAPPDATA', '')) / 'Temp'
+    if not env.get('TEMP') and local_temp.is_dir():
+        env['TEMP'] = str(local_temp)
+    if not env.get('TMP') and env.get('TEMP'):
+        env['TMP'] = env['TEMP']
+    return env
+
+
 def resolve_unity_editor(environment=None):
-    """Match RESOLVE_UNITY_EDITOR.bat without starting Unity or Unity Hub."""
-    environment = os.environ if environment is None else environment
+    """Resolve the pinned Unity editor without starting Unity or Unity Hub."""
+    environment = unity_environment(environment)
     candidates = []
     if environment.get('UNITY_EXE'):
         candidates.append(Path(environment['UNITY_EXE']))
-    if environment.get('ProgramFiles'):
-        candidates.append(Path(environment['ProgramFiles']) / 'Unity/Hub/Editor' /
-                          UNITY_VERSION / 'Editor/Unity.exe')
+
+    suffix = Path('Unity/Hub/Editor') / UNITY_VERSION / 'Editor/Unity.exe'
+    for key in ('ProgramW6432', 'ProgramFiles'):
+        value = environment.get(key)
+        if value:
+            candidates.append(Path(value) / suffix)
+
+    system_drive = environment.get('SystemDrive', 'C:').rstrip('\/')
+    candidates.append(Path(system_drive + '\\') / 'Program Files' / suffix)
+
     if environment.get('USERPROFILE'):
-        candidates.append(Path(environment['USERPROFILE']) / 'Unity/Hub/Editor' /
-                          UNITY_VERSION / 'Editor/Unity.exe')
+        candidates.append(Path(environment['USERPROFILE']) / suffix)
     for candidate in candidates:
         if candidate.is_file():
             return candidate.resolve()
@@ -143,7 +146,7 @@ def validate_unity_project(project=UNITY_PROJECT):
 def start_unity(editor, project=UNITY_PROJECT):
     """Start the editor outside the later quiet-worker job object; never enter Play."""
     subprocess.Popen([str(editor), '-projectPath', str(project.resolve())],
-                     cwd=ROOT,
+                     cwd=ROOT, env=unity_environment(),
                      creationflags=(subprocess.DETACHED_PROCESS |
                                     subprocess.CREATE_NEW_PROCESS_GROUP))
 
@@ -208,10 +211,7 @@ def preflight(missing, env):
     if 'arm' in missing:
         subprocess.run([sys.executable, '-B', str(ROOT / 'tools/g1_portable_environment.py')], cwd=ROOT, env=env, check=True)
     if 'camera' in missing:
-        from g1_camera_ssh import check_environment
-        check_environment()
-    if not (ROOT / 'tools/START_G1_CAMERA_TO_UNITY.bat').is_file():
-        raise RuntimeError('Existing camera BAT is missing')
+        check_camera_environment()
 
 
 def launch_plan(existing, has_camera, no_receiver=False):
@@ -277,9 +277,10 @@ def main(argv=None):
         print('Existing workers kept. Close their original windows to stop them.')
         return 0
     for worker in plan:
-        command = (['cmd.exe', '/d', '/c', r'tools\START_G1_CAMERA_TO_UNITY.bat', '--robot-host', args.host]
+        command = ([sys.executable, '-I', '-u', '-B', str(ROOT / 'tools/G1_CAMERA_LAUNCH.py'),
+                    '--robot-host', args.host]
                    if worker == 'camera' else
-                   [sys.executable, '-u', '-B', str(ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'),
+                   [sys.executable, '-I', '-u', '-B', str(ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'),
                     '--worker', worker, '--host', args.host])
         subprocess.Popen(command, cwd=ROOT, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
     print('Unity_G1_VR is open. Press Play in Unity, then use Quest and Omni Connect.')

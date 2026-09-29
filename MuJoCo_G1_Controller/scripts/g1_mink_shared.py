@@ -263,7 +263,7 @@ def _select_solver() -> str:
     for candidate in ("daqp", "proxqp", "quadprog", "osqp"):
         if candidate in available:
             return candidate
-    raise RuntimeError("No supported QP backend found. Install DAQP: py -3.11 -m pip install daqp")
+    raise RuntimeError("No supported QP backend found in bundled runtime; restore runtime/python.")
 
 
 def _matrix_to_se3(rotation: np.ndarray, position: np.ndarray):

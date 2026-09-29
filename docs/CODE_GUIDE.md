@@ -1,83 +1,56 @@
 # G1 Teleop Code Guide
 
-## 1. Integrated launcher
+## Portable entry layer
 
-- `tools/START_G1_VR_TELEOP.bat`: 기본 진입점
+- `runtime/python/python.exe`: bundled CPython Embedded 3.11.9
+- `runtime/python/RUNTIME_MANIFEST.json`: runtime identity/core hashes/package pins
+- `tools/G1_PORTABLE.py`: BAT 전체의 Python dispatcher
+- `tools/g1_embedded_runtime.py`: project-relative runtime path/identity helper
+- `tools/g1_teleop_dependencies.py`: install 없이 bundled runtime 검증
+- `tools/START_G1_VR_TELEOP.bat`: 3-line double-click shim
+
+## Integrated launcher
+
 - `tools/G1_VR_TELEOP_LAUNCH.py`: worker/Unity/camera orchestration
 - `tools/G1_INPUT_OBSERVATION_LAUNCH.py`: send/receive/Omni/arm worker command
 - `tools/g1_quiet_observation.py`: background worker lifetime
-- `tools/g1_process_lifetime.py`: reuse/duplicate protection
+- `tools/g1_process_lifetime.py`: process reuse/lifetime helpers
 
-## 2. Bilateral IK
+모든 Python child process는 현재 `sys.executable`, 즉 bundled `runtime/python/python.exe`를 이어받는다.
 
-- `g1_bimanual_runtime.py`: 실행 wrapper
-- `g1_bimanual_unity_sim.py`: UDP schema/state machine
-- `g1_bimanual_sim.py`: shared MuJoCo configuration + paired tasks
-- `g1_bimanual_motion_policy.py`: target shaping / limits
-- `g1_bimanual_return.py`: staged return
-- `g1_bimanual_limits.py`: bilateral limit source of truth
-- `g1_mink_shared.py`: model/collision/math helper only
-- `g1_arm_common.py`: G1 arm/model/frame definitions
+## Bilateral IK
 
-`g1_mink_shared.py`에는 CLI, UDP sender, motor output, standalone right-arm controller가 없다.
+- `g1_bimanual_runtime.py`
+- `g1_bimanual_unity_sim.py`
+- `g1_bimanual_sim.py`
+- `g1_bimanual_motion_policy.py`
+- `g1_bimanual_return.py`
+- `g1_bimanual_limits.py`
+- `g1_mink_shared.py`
+- `g1_arm_common.py`
 
-## 3. Regression parity helpers
+MuJoCo default engine root는 `runtime/python/Lib/site-packages`다.
 
-다음은 live single-arm controller가 아니라 bilateral regression에서 upstream/standard Mink와 비교하기 위한 helper다.
-
-- `g1_standard_mink_planner.py`
-- `g1_upstream_mink_tracking.py`
-- `g1_mink_feasible_target.py`
-- `g1_mink_trajectory.py`
-- `g1_virtual_center_tasks.py`
-
-## 4. Unity
-
-현재 핵심:
-
-- `G1BimanualSimulationSender.cs`
-- `G1ExistingHandTargetBinder.cs`
-- `G1UnityRightArmPreview.cs` — 이름은 과거 명칭이지만 현재 SampleScene의 bimanual preview component
-- `G1OfficialRig.cs`
-- `G1RobotStateUdpReceiver.cs`
-- `G1LowStateLegView.cs`
-- `G1HeadLockedCamera.cs`
-- `G1HeadCameraPiP.cs`
-- `G1OmniBodyHeading.cs`
-
-## 5. Camera
+## Camera
 
 - `tools/G1_CAMERA_LAUNCH.py`
 - `tools/g1_camera_ssh.py`
 - `tools/START_G1_CAMERA_TO_UNITY.bat`
 - `Unity_G1_VR/Assets/G1Teleop/G1HeadCameraPiP.cs`
 
-WSL camera fallback은 제거했다. 현재 camera transport는 SSH 하나다.
+camera BAT도 별도 로직 없이 `G1_PORTABLE.py camera`를 호출한다.
 
-## 6. Omni
+## Network administration
 
-- `hardware/g1_arm_bridge/g1_omni_velocity_gateway.py`
-- `hardware/g1_arm_bridge/g1_velocity_discovery.py`
-- `hardware/g1_arm_bridge/ruckig_joint_motion_limiter.py`
+- `CONFIGURE_G1_ETHERNET.bat` → `G1_PORTABLE.py ethernet-configure`
+- `RESTORE_G1_ETHERNET_DHCP.bat` → `G1_PORTABLE.py ethernet-restore`
+- `*_ADMIN.ps1`, `G1_ETHERNET_DNS.ps1`, `G1_ETHERNET_TRANSACTION.ps1`: Windows 관리자 transaction helper
 
-## 7. Setup / maintenance
+## Runtime policy
 
-- `tools/SETUP_G1_VR_TELEOP.bat/.py`
-- `tools/requirements-teleop.txt`
-- `tools/g1_teleop_dependencies.py`
-- Ethernet configure/restore scripts
-- `tools/BUILD_AND_INSTALL_VR_APK.bat`
-
-## 8. Tests
-
-현재 유지하는 테스트는 bilateral IK/replay/return, launcher/process/dependency, SSH camera, LowState/observation, Omni mapping/transport, current MuJoCo helper math만 검증한다.
-
-과거 Gate5/6/7, PD/sysid, MJLab, right-arm jog, startup-recovery 실험은 제거했다.
-
-## 9. 변경 원칙
-
-1. current execution graph를 먼저 확인한다.
-2. 사용자 dirty/untracked를 reset/clean하지 않는다.
-3. 작은 변경 후 회귀를 실행한다.
-4. `G1.zip --replay --strict` 재현성을 유지한다.
-5. physical motor output은 별도 명시적 승인 전 추가하지 않는다.
+1. system Python을 호출하지 않는다.
+2. `.venv-teleop`을 사용하지 않는다.
+3. operator PC에서 pip install/repair를 하지 않는다.
+4. BAT 안에 orchestration 로직을 넣지 않는다.
+5. relocation test가 통과해야 portable로 인정한다.
+6. physical motor output은 별도 승인 전 추가하지 않는다.

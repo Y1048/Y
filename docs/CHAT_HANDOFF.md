@@ -48,6 +48,12 @@ SSH transport only
 - hardware Omni/Ruckig regression
 - `G1.zip --replay --strict` exact replay
 - portable relocation check from a different directory
+- tracked BAT 11개 전수 embedded-shim 감사
+- operator runtime source의 machine-local Python 경로 금지
+
+2026-09-29 재검증: backend 217/217 PASS, hardware 38/38 PASS,
+code index PASS, no-system-Python startup check PASS.
+상세 근거: `docs/PORTABLE_EMBEDDED_PYTHON_AUDIT_20260929.md`.
 
 ## External dependencies
 

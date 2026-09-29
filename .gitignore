@@ -115,5 +115,5 @@ desktop.ini
 # Machine-local Unity build cache
 Unity_G1_VR/.utmp/
 
-# Per-checkout portable teleop environment
+# Legacy local teleop venv only; the portable runtime does not use it.
 .venv-teleop/

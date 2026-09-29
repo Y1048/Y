@@ -67,6 +67,18 @@ class PortableTests(unittest.TestCase):
                 for forbidden in (".venv-teleop", "py -3.11", "pip ", "powershell"):
                     self.assertNotIn(forbidden, source.lower())
 
+    def test_operator_runtime_sources_have_no_machine_local_python_paths(self):
+        sources = list((ROOT / "tools").glob("*.py"))
+        sources.remove(ROOT / "tools/BUILD_EMBEDDED_RUNTIME.py")
+        sources += list((ROOT / "MuJoCo_G1_Controller/scripts").glob("g1_*.py"))
+        sources += list((ROOT / "hardware/g1_arm_bridge").glob("g1_*.py"))
+        forbidden = (r"C:\\Users\\", ".venv-teleop", "py -3.11", "VIRTUAL_ENV")
+        for path in sources:
+            with self.subTest(path=path.relative_to(ROOT)):
+                source = path.read_text(encoding="utf-8-sig")
+                for token in forbidden:
+                    self.assertNotIn(token, source)
+
     def test_portable_module_has_no_wsl_camera_fallback(self):
         source = (ROOT / "tools/g1_portable_environment.py").read_text(encoding="utf-8")
         for token in (

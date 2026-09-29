@@ -577,9 +577,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         background.color = new Color(.025f, .03f, .04f, .97f);
         background.raycastTarget = false;
         statusFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 28);
-        leftStatus = CreateStatusText("Left", new Vector2(0, .45f), new Vector2(.5f, 1), 15);
-        rightStatus = CreateStatusText("Right", new Vector2(.5f, .45f), new Vector2(1, 1), 15);
-        cycleStatus = CreateStatusText("Cycle", Vector2.zero, new Vector2(1, .45f), 12);
+        leftStatus = CreateStatusText("Left", new Vector2(0, 2f / 3f), new Vector2(1, 1), 13);
+        rightStatus = CreateStatusText("Right", new Vector2(0, 1f / 3f), new Vector2(1, 2f / 3f), 13);
+        cycleStatus = CreateStatusText("Cycle", Vector2.zero, new Vector2(1, 1f / 3f), 12);
         nextCameraSearch = 0;
     }
 
@@ -593,6 +593,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         text.rectTransform.offsetMax = new Vector2(-4, -1);
         text.font = statusFont;
         text.fontSize = size;
+        text.resizeTextForBestFit = true;
+        text.resizeTextMinSize = 10;
+        text.resizeTextMaxSize = size;
         text.alignment = TextAnchor.MiddleCenter;
         text.raycastTarget = false;
         text.supportRichText = false;
@@ -627,7 +630,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             statusBar.anchorMin = new Vector2(0, 0);
             statusBar.anchorMax = new Vector2(1, 0);
             statusBar.pivot = new Vector2(.5f, 1);
-            statusBar.sizeDelta = new Vector2(0, 42);
+            statusBar.sizeDelta = new Vector2(0, 60);
             statusBar.anchoredPosition3D = new Vector3(0, -6, -1);
             statusBar.localRotation = Quaternion.identity;
             statusBar.localScale = Vector3.one;
@@ -639,7 +642,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             if (statusBar.parent != head) statusBar.SetParent(head, false);
             statusBar.anchorMin = statusBar.anchorMax = new Vector2(.5f, .5f);
             statusBar.pivot = new Vector2(.5f, 1);
-            statusBar.sizeDelta = new Vector2(320, 42);
+            statusBar.sizeDelta = new Vector2(320, 60);
             statusBar.localScale = Vector3.one * G1HeadCameraPiP.DefaultCanvasScale;
             statusBar.localRotation = Quaternion.identity;
             statusBar.localPosition = new Vector3(0, G1HeadCameraPiP.DefaultCanvasVerticalOffset

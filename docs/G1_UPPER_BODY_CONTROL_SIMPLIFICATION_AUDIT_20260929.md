@@ -744,3 +744,27 @@ Conclusion: in ordinary constrained motion the trade can look modest, but near t
 | dynamic orientation priority | OFF improves rotation slightly but worsens position and causes 44 extra braking steps in boundary interval | KEEP as constrained-position priority |
 
 The ablation series found one behavior-changing simplification worth keeping: remove torso target projection so the operator target remains continuous and let SafetyEnvelope handle infeasible torso commands explicitly. The other live heuristics either improve boundary behavior, preserve natural joint allocation/posture, or provide an isolated fallback. Most simplification gain still comes from the R1 structural separation, dead/legacy removal, explicit roles, and central parameter ownership.
+
+## Safety ablation 1: collision stopping-headroom — removal REJECTED (2026-09-30)
+
+This offline experiment disabled only the extra collision stopping-headroom bound. Mink collision avoidance, acceleration bounds, joint/yaw bounds, checked stop-tail validation, motion heuristics and return behavior remained unchanged.
+
+Recorded G1.zip comparison:
+- baseline exact replay: PASS; max q difference 1.745270594710746e-13 rad
+- headroom OFF: accepted/state/reason mismatch 0 / 0 / 0, current validation PASS, exact replay false
+- maximum logged q difference OFF: 0.23098239002353982 rad (about 13.2 deg)
+- minimum sampled clearance: 5.2318 mm baseline vs 5.2138 mm OFF
+- maximum output acceleration remained at the 90 deg/s^2 limit within numerical tolerance
+
+Synthetic torso intrusion:
+- left: no checked braking in either mode; minimum clearance stayed about 6.0 mm
+- right: checked braking 0 -> 1; minimum clearance 5.9992 -> 5.7958 mm
+- both sides recovered to about 1.1-1.2 mm wrist error after returning to the home target
+
+Synthetic crossed-arm pressure:
+- total checked braking: 25 ON vs 161 OFF
+- swept-clearance braking: 19 ON vs 155 OFF
+- minimum clearance: 5.6617 mm ON vs 5.0027 mm OFF
+- neither mode blocked, so the final checked stop-tail still prevented a hard-clearance violation
+
+Conclusion: the headroom is not a redundant safety proof. The final stop-tail can still prevent a violation without it, but the controller then rides almost directly on the 5 mm hard boundary and relies on emergency checked braking far more often. Removal is rejected. Keep collision stopping-headroom as the pre-emptive collision braking layer; the next safety ablation should test the analogous joint-limit stopping bound independently.

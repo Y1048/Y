@@ -393,18 +393,19 @@ A behavior-changing heuristic deletion gets a separate commit and a separate bef
 
 ## Recommended next action
 
-Do not tune any new gain yet.
+R1 structural cleanup and the planned motion-heuristic ablations are complete. Do not retune gains yet.
 
-Start R1 behavior-preserving structural cleanup only:
+The next simplification target is the safety hot path, because profiling shows that checked stop-tail geometry validation dominates runtime while the actual QP solve is cheap.
 
-1. remove proven dead Python members
-2. make scene/runtime settings tell the truth
-3. split canonical world-frame input from legacy-relative filtering
-4. split Binder pose source from preview/engagement calculations
-5. centralize current effective upper-body parameters into named read-only profiles
-6. keep all existing motion and safety math numerically unchanged
+Proceed only as offline, one-variable-at-a-time safety ablations:
 
-After R1, a human should be able to follow one target from Quest wrist to QP to safety output without opening legacy/preview code. Only then begin heuristic ablation.
+1. keep checked stop-tail as the final gate while testing whether earlier safety rows are behaviorally redundant
+2. measure which constraint actually changes the proposed velocity and which failures are caught only by checked stop-tail
+3. preserve the 5 mm hard clearance, joint ranges, velocity/acceleration caps, recovery behavior and return safety as invariants
+4. use G1.zip plus synthetic torso, joint-limit, inter-arm and return boundary cases for every candidate
+5. do not replace checked stop-tail with a cheaper rule until the remaining bounds are shown to establish an equivalent safety invariant
+
+The goal is not to delete safety layers by inspection. It is to determine whether the current overlapping safety calculations can be reduced while retaining an explicit, auditable safety contract.
 
 ## R1a implementation result — 2026-09-30
 
@@ -593,7 +594,7 @@ Repeated braking when the operator requests a physically impossible torso-penetr
 
 ## Heuristic ablation 2: elbow assist — removal REJECTED (2026-09-30)
 
-The second experiment disabled only ArmMotionPolicy._update_elbow_assist. Projection, wrist priority, orientation priority, shoulder comfort, all limits and return behavior remained unchanged.
+The second experiment disabled only ArmMotionPolicy._update_elbow_assist. The already-accepted projection removal remained in place; wrist priority, orientation priority, shoulder comfort, all limits and return behavior were otherwise unchanged.
 
 Recorded G1.zip result with elbow assist disabled:
 - state rows: 46,570
@@ -735,11 +736,11 @@ Conclusion: in ordinary constrained motion the trade can look modest, but near t
 
 | Component | Removal result | Decision |
 |---|---|---|
-| torso target projection | hard boundary still safe, but clearance margin collapses and braking rises | KEEP as target-feasibility guard |
+| torso target projection | hard boundary stays safe; OFF increases braking but removes a ~296 mm hidden target discontinuity and passes 24 seeded recovery cases | REMOVE; preserve raw operator target |
 | elbow assist | slightly lower wrist error OFF, but lower mean clearance and 18 extra braking steps in active interval | KEEP as boundary-posture helper |
 | wrist priority | OFF roughly doubles proximal motion during wrist-only rotation | KEEP as wrist-rotation allocation preference |
 | shoulder comfort | dormant in normal reach; OFF produces about 50-55 deg shoulder roll/yaw in high reach | KEEP as shoulder-posture preference |
 | shoulder-yaw +/-90 deg envelope | no current trajectory effect, but independent fallback inside +/-150 deg hard model range | KEEP inside SafetyEnvelope |
 | dynamic orientation priority | OFF improves rotation slightly but worsens position and causes 44 extra braking steps in boundary interval | KEEP as constrained-position priority |
 
-The ablation series did not find a live heuristic that can be deleted without losing a deliberate behavior or moving more work into emergency braking. The simplification gain therefore comes from the R1 structural separation, removal of dead/legacy paths, explicit naming, and central parameter ownership—not from deleting these remaining behaviors.
+The ablation series found one behavior-changing simplification worth keeping: remove torso target projection so the operator target remains continuous and let SafetyEnvelope handle infeasible torso commands explicitly. The other live heuristics either improve boundary behavior, preserve natural joint allocation/posture, or provide an isolated fallback. Most simplification gain still comes from the R1 structural separation, dead/legacy removal, explicit roles, and central parameter ownership.

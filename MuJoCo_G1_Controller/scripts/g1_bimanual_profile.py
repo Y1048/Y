@@ -20,11 +20,13 @@ from g1_bimanual_limits import (
 
 @dataclass(frozen=True)
 class TrackingProfile:
+    # Loop rate and hard operational geometry.
     control_hz: float = 60.0
     hard_clearance_m: float = .005
     elbow_operational_min_rad: float = math.radians(5.0)
     elbow_operational_max_rad: float = math.radians(120.0)
 
+    # Base IK objective and numerical damping.
     position_cost: float = base.POSITION_COST
     orientation_cost: float = base.ORIENTATION_COST
     posture_cost: float = base.POSTURE_COST
@@ -34,12 +36,14 @@ class TrackingProfile:
     proximal_damping_cost: float = base.PROXIMAL_DAMPING_COST
     wrist_damping_cost: float = base.WRIST_DAMPING_COST
 
+    # Shoulder posture preference; inactive inside the comfort bands.
     shoulder_comfort_cost: float = .6
     shoulder_comfort_roll_band_rad: float = math.radians(20.0)
     shoulder_comfort_yaw_band_rad: float = math.radians(45.0)
     shoulder_yaw_envelope_rad: float = math.radians(90.0)
     shoulder_yaw_stop_scale: float = .8
 
+    # Elbow posture helper.
     elbow_clearance_cost: float = 8.0
     elbow_gain_per_second: float = .6
     elbow_reference_release_m: float = .025
@@ -52,6 +56,7 @@ class TrackingProfile:
     torso_front_outer_m: float = .06
     torso_front_lateral_margin_m: float = .03
 
+    # Position-versus-orientation preference.
     orientation_position_priority_scale: float = .5
     orientation_collision_clearance_m: float = .012
     orientation_joint_margin_rad: float = math.radians(5.0)
@@ -64,6 +69,7 @@ class TrackingProfile:
     orientation_priority_dwell_s: float = .3
     orientation_scale_slew_per_second: float = 1.0
 
+    # Wrist rotation allocation preference.
     wrist_priority_position_full_m: float = .002
     wrist_priority_position_zero_m: float = .008
     wrist_priority_rotation_full_rad: float = math.radians(3.0)
@@ -73,6 +79,7 @@ class TrackingProfile:
     wrist_priority_clearance_full_m: float = .025
     wrist_priority_proximal_damping_scale: float = 5.0
 
+    # Collision and stopping parameters.
     collision_minimum_m: float = .006
     collision_detection_distance_m: float = .15
     collision_gain: float = .85
@@ -80,6 +87,7 @@ class TrackingProfile:
     joint_limit_stopping_speed_scale: float = .8
     checked_stop_substep_rad: float = math.radians(.25)
 
+    # Shared tracking and motion limits.
     ik_tracking_rate_s: float = IK_TRACKING_RATE_S
     joint_acceleration_limit_rad_s2: float = JOINT_ACCELERATION_LIMIT_RAD_S2
     joint_velocity_limits_rad_s: tuple = JOINT_VELOCITY_LIMITS_RAD_S

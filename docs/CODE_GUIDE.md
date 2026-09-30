@@ -35,6 +35,45 @@
 
 MuJoCo default engine root는 `runtime/python/Lib/site-packages`다.
 
+### 한 프레임을 따라가는 순서
+
+현재 canonical 경로만 볼 때는 아래 순서만 읽으면 된다.
+
+```text
+Quest wrist pose
+  -> G1ExistingHandTargetBinder
+       tracked wrist + anatomical wrist rotation
+  -> G1BimanualSimulationSender
+       serialize absolute world pose
+  -> g1_bimanual_unity_sim.py
+       packet/session/tracking state only
+  -> g1_bimanual_target.py
+       Unity world -> MuJoCo SE3, exactly one basis conversion
+  -> g1_bimanual_motion_policy.py
+       wrist task + named soft preferences
+  -> mink.build_ik
+  -> g1_bimanual_safety.py
+       hard limits / collision / braking / checked stop tail
+  -> QP solve
+  -> q_next
+```
+
+Return 요청은 live wrist IK와 분리되어 `g1_bimanual_return.py`로 간다.
+
+### motion policy에서 남겨둔 계산
+
+ablation으로 역할을 확인한 뒤 남긴 항목이다.
+
+- elbow assist: torso-front/low-elbow 구간의 boundary posture helper. 제거 시 recorded active interval에서 checked braking 18회 증가.
+- wrist priority: wrist-only rotation을 shoulder/elbow가 대신하지 않도록 joint allocation을 유도.
+- shoulder comfort: 평범한 reach에는 개입하지 않고 high reach에서 과도한 shoulder roll/yaw를 억제.
+- dynamic orientation priority: constraint 구간에서 rotation을 일부 양보해 position tracking과 braking을 개선.
+- shoulder-yaw envelope: normal trajectory에는 영향이 없었지만 +/-150 deg hard model range 안의 +/-90 deg fallback으로 SafetyEnvelope에 유지.
+
+torso target projection은 제거했다. operator target을 pre-IK에서 숨겨서 바꾸지 않고, 불가능한 torso command는 SafetyEnvelope가 명시적으로 제한/감속한다.
+
+상체 수치의 source of truth는 `g1_bimanual_profile.py`다. 새 gain/limit/threshold를 다른 파일에 literal로 추가하지 않는다.
+
 ## Camera
 
 - `tools/G1_CAMERA_LAUNCH.py`

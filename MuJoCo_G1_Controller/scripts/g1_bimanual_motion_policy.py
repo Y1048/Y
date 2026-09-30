@@ -108,11 +108,14 @@ class ArmMotionPolicy:
     def prepare(self, goal, clearance):
         current_q = self.configuration.q
         self.raw_target_position = goal.translation().copy()
-        current_pose = self.configuration.get_transform_frame_to_world(self.side + '_wrist_yaw_link', 'body')
-        goal, self.target_projected = self._project_target_outside_torso(goal, current_pose.translation())
+        current_pose = self.configuration.get_transform_frame_to_world(
+            self.side + '_wrist_yaw_link', 'body')
+        # Preserve the operator wrist target exactly. Torso/body feasibility is
+        # enforced by BimanualSafetyEnvelope instead of hidden target rewriting.
+        self.target_projected = False
+        self.target_projection_distance_m = 0.
         self.effective_target_position = goal.translation().copy()
         self.effective_target_rotation = goal.rotation().as_matrix().copy()
-        self.target_projection_distance_m = float(np.linalg.norm(self.effective_target_position-self.raw_target_position))
         self.wrist_task.set_target(goal)
         self._update_orientation_priority(current_q, goal, clearance)
         self._update_elbow_assist(current_q, current_pose, goal)
@@ -152,46 +155,6 @@ class ArmMotionPolicy:
                     target_projection_distance_m=float(self.target_projection_distance_m),
                     approach_rate_s=float(self.approach_rate_s))
 
-    def _project_target_outside_torso(self, goal, reference_position):
-        """Project a wrist origin out of model-derived torso exclusion boxes."""
-        raw = np.asarray(goal.translation(), dtype=float)
-        projected = raw.copy()
-        reference = np.asarray(reference_position, dtype=float)
-        margin = self.wrist_target_radius_m + float(self.clearance_m)
-        changed = False
-        # Torso mesh bounds can overlap, so repeat until the point is outside
-        # every expanded oriented box. Keep the exit side consistent with the
-        # current wrist to prevent a target near the center jumping sides.
-        for _ in range(max(1, len(self.torso_geom_ids) * 2)):
-            pass_changed = False
-            for geom_id in self.torso_geom_ids:
-                center = self.configuration.data.geom_xpos[geom_id]
-                rotation = self.configuration.data.geom_xmat[geom_id].reshape(3, 3)
-                half = np.asarray(self.model.geom_size[geom_id]) + margin
-                local = rotation.T @ (projected - center)
-                if np.any(np.abs(local) >= half):
-                    continue
-                reference_local = rotation.T @ (reference - center)
-                outside = np.flatnonzero(np.abs(reference_local) >= half)
-                if outside.size:
-                    axis = int(outside[np.argmax(
-                        np.abs(reference_local[outside]) / half[outside]
-                    )])
-                    sign = 1. if reference_local[axis] >= 0. else -1.
-                else:
-                    distance = half - np.abs(local)
-                    axis = int(np.argmin(distance))
-                    sign_source = local[axis] if abs(local[axis]) > 1e-9 else reference_local[axis]
-                    sign = 1. if sign_source >= 0. else -1.
-                local[axis] = sign * half[axis]
-                projected = center + rotation @ local
-                changed = pass_changed = True
-            if not pass_changed:
-                break
-        effective = base._matrix_to_se3(goal.rotation().as_matrix(), projected)
-        return effective, changed
-
-
     def _reset_orientation_priority(self):
         self.position_priority_active = False
         self.orientation_priority_scale = 1.
@@ -218,12 +181,6 @@ class ArmMotionPolicy:
             arm[3] - lower[3] < PROFILE.orientation_elbow_margin_rad)
         constrained = collision_constrained or joint_constrained
         if not self.orientation_priority_enabled:
-            self._reset_orientation_priority()
-            return
-        # Torso projection changes only position. Keep the user's orientation
-        # objective active: replacing it with the current rotation each frame
-        # freezes persistent orientation error instead of correcting it.
-        if self.target_projected:
             self._reset_orientation_priority()
             return
         if not self.position_priority_active:

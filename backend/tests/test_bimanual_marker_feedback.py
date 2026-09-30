@@ -108,14 +108,17 @@ class MarkerFeedbackTests(unittest.TestCase):
                 self.assertIsNone(result['left_ik_target_operator_delta'])
                 self.assertIsNone(result['right_ik_target_operator_delta'])
 
-    def test_torso_projection_is_shown_instead_of_impossible_raw_goal(self):
+    def test_torso_intrusion_feedback_preserves_raw_operator_goal(self):
         sim = BimanualSimulation()
         cycle = UnityCycle(sim)
         for side, policy in sim.motion.items():
-            center = sim.config.data.geom_xpos[policy.torso_geom_ids[0]].copy()
-            goal = mink.SE3.from_rotation_and_translation(sim.home_targets[side].rotation(), center)
+            center = sim.config.data.geom_xpos[
+                policy.torso_geom_ids[0]].copy()
+            goal = mink.SE3.from_rotation_and_translation(
+                sim.home_targets[side].rotation(), center)
             policy.prepare(goal, .04)
-            self.assertTrue(policy.target_projected)
+            self.assertFalse(policy.target_projected)
+            self.assertEqual(policy.target_projection_distance_m, 0.0)
         cycle.state = sim.state = 'tracking'
         cycle.last_tick_action = 'tracking'
         sim.reason = 'checked_braking:solver'
@@ -123,9 +126,13 @@ class MarkerFeedbackTests(unittest.TestCase):
         self.assertTrue(result['ik_target_valid'])
         for side, policy in sim.motion.items():
             delta = result[side+'_ik_target_operator_delta']
-            shown = sim.home_targets[side].translation()+BASIS@np.asarray(delta)
-            np.testing.assert_allclose(shown, policy.effective_target_position, atol=1e-12)
-            self.assertGreater(np.linalg.norm(shown-policy.raw_target_position), .005)
+            shown = (
+                sim.home_targets[side].translation()
+                + BASIS @ np.asarray(delta))
+            np.testing.assert_allclose(
+                shown, policy.raw_target_position, atol=1e-12)
+            np.testing.assert_allclose(
+                shown, policy.effective_target_position, atol=1e-12)
 
 
 if __name__ == '__main__':

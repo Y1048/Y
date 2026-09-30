@@ -188,22 +188,25 @@ class MotionQualityTests(unittest.TestCase):
         self.assertFalse(left.elbow_assist_active)
         self.assertEqual(left.orientation_priority_scale,1.)
 
-    def test_torso_projection_preserves_rotation_and_side_reference(self):
+    def test_torso_intrusion_target_is_not_rewritten_before_ik(self):
         sim = BimanualSimulation()
-        for side,policy in sim.motion.items():
+        for side, policy in sim.motion.items():
             geom = policy.torso_geom_ids[0]
             inside = sim.config.data.geom_xpos[geom].copy()
             current = sim.home_targets[side]
-            goal = mink.SE3.from_rotation_and_translation(current.rotation(),inside)
-            projected,changed = policy._project_target_outside_torso(goal,current.translation())
-            self.assertTrue(changed)
-            np.testing.assert_allclose(projected.rotation().as_matrix(),goal.rotation().as_matrix(),atol=1e-12)
-            for gid in policy.torso_geom_ids:
-                center=sim.config.data.geom_xpos[gid]
-                rotation=sim.config.data.geom_xmat[gid].reshape(3,3)
-                half=sim.model.geom_size[gid]+policy.wrist_target_radius_m+sim.clearance_m
-                local=rotation.T@(projected.translation()-center)
-                self.assertTrue(np.any(np.abs(local)>=half-1e-8))
+            goal = mink.SE3.from_rotation_and_translation(
+                current.rotation(), inside)
+            policy.prepare(goal, .04)
+            self.assertFalse(policy.target_projected)
+            self.assertEqual(policy.target_projection_distance_m, 0.0)
+            np.testing.assert_allclose(
+                policy.raw_target_position, inside, atol=1e-12)
+            np.testing.assert_allclose(
+                policy.effective_target_position, inside, atol=1e-12)
+            np.testing.assert_allclose(
+                policy.effective_target_rotation,
+                goal.rotation().as_matrix(),
+                atol=1e-12)
 
     def test_policies_do_not_remove_bilateral_collision_constraints(self):
         sim = BimanualSimulation()

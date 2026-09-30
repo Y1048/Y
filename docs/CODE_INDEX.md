@@ -43,7 +43,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [MuJoCo_G1_Controller/scripts/g1_arm_common.py](../MuJoCo_G1_Controller/scripts/g1_arm_common.py) | 377 | 입출력 확인 | _load_hardware_initial_right_arm_degrees, find_body, make_demo_xml, joint_qpos_addr, set_joint (+5) | `2ab681447148` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_legacy_input.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_legacy_input.py) | 95 | 목록 확인 | PairedHandFilter, relative_target, relative_targets | `5276d5d03843` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py) | 23 | 목록 확인 | - | `eebab49dff59` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py) | 366 | 목록 확인 | ElbowClearanceTask, ShoulderComfortTask, ArmMotionPolicy | `8cae026dcb8d` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py) | 323 | 목록 확인 | ElbowClearanceTask, ShoulderComfortTask, ArmMotionPolicy | `021f5ef5408f` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py) | 101 | 목록 확인 | TrackingProfile, ReturnProfile | `f6f49e5ff7c1` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_return.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_return.py) | 288 | 목록 확인 | BimanualReturnMotion | `c61e80863c8a` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py) | 133 | 입출력 확인 | startup_stage, require_validated_engine, load_engine, runtime_metadata, main | `aa48f69e5321` |
@@ -77,15 +77,15 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/fixtures/bimanual_return_near_hands_20260918.json](../backend/tests/fixtures/bimanual_return_near_hands_20260918.json) | 636 | 목록 확인 | - | `e6f50f455377` |
 | [backend/tests/fixtures/bimanual_return_starts_20260918.json](../backend/tests/fixtures/bimanual_return_starts_20260918.json) | 127 | 목록 확인 | - | `0e42927f9660` |
 | [backend/tests/test_bimanual_boundaries.py](../backend/tests/test_bimanual_boundaries.py) | 210 | 목록 확인 | OutputContinuityTests, ProtocolBoundaryTests | `7ec74c8d6626` |
-| [backend/tests/test_bimanual_marker_feedback.py](../backend/tests/test_bimanual_marker_feedback.py) | 132 | 목록 확인 | MarkerFeedbackTests | `47ad0def0fec` |
-| [backend/tests/test_bimanual_motion_quality.py](../backend/tests/test_bimanual_motion_quality.py) | 288 | 목록 확인 | quality_case, replay_recorded_motion, MotionQualityTests, PoseFilterTests | `661fb469f8a7` |
+| [backend/tests/test_bimanual_marker_feedback.py](../backend/tests/test_bimanual_marker_feedback.py) | 139 | 목록 확인 | MarkerFeedbackTests | `26be343dc3a9` |
+| [backend/tests/test_bimanual_motion_quality.py](../backend/tests/test_bimanual_motion_quality.py) | 291 | 목록 확인 | quality_case, replay_recorded_motion, MotionQualityTests, PoseFilterTests | `37bea74553cd` |
 | [backend/tests/test_bimanual_near_hands_sweep.py](../backend/tests/test_bimanual_near_hands_sweep.py) | 269 | 목록 확인 | TriggerDecisionReached, fixture_q14, full_q, find_threshold_fraction, find_safe_lower_fraction (+4) | `a2b3093612ff` |
 | [backend/tests/test_bimanual_profile.py](../backend/tests/test_bimanual_profile.py) | 60 | 목록 확인 | BimanualProfileTests | `e7f292f2acde` |
 | [backend/tests/test_bimanual_quest_reengage.py](../backend/tests/test_bimanual_quest_reengage.py) | 149 | 목록 확인 | rows, QuestReengageReplayTests | `b9c810f2463c` |
 | [backend/tests/test_bimanual_recorded_session.py](../backend/tests/test_bimanual_recorded_session.py) | 178 | 목록 확인 | load_fixture, RecordedStagedSessionTests | `b5171d78b2f4` |
 | [backend/tests/test_bimanual_return.py](../backend/tests/test_bimanual_return.py) | 483 | 목록 확인 | assert_output, recorded_return, StagedReturnTests | `4195b0221e6c` |
 | [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 151 | 목록 확인 | fake_engine, RuntimeTests | `fe3b34e2744f` |
-| [backend/tests/test_bimanual_safety_boundary.py](../backend/tests/test_bimanual_safety_boundary.py) | 57 | 목록 확인 | BimanualSafetyBoundaryTests | `c06c728a8444` |
+| [backend/tests/test_bimanual_safety_boundary.py](../backend/tests/test_bimanual_safety_boundary.py) | 129 | 목록 확인 | BimanualSafetyBoundaryTests | `20be2285fc25` |
 | [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 399 | 목록 확인 | SessionReportTests | `d3bf25568dfd` |
 | [backend/tests/test_bimanual_sim.py](../backend/tests/test_bimanual_sim.py) | 264 | 목록 확인 | BimanualTests | `2caea488127a` |
 | [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 295 | 목록 확인 | packet, CycleTests | `ae3499a9b387` |

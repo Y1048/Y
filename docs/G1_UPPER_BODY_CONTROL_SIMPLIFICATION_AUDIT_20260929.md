@@ -475,3 +475,212 @@ Final validation after these corrections:
 - maximum q difference: `2.00062189037453e-13 rad`
 
 R1 structural cleanup is now sufficient to start separate heuristic ablation work. Any removal of torso projection, elbow assist, wrist priority, shoulder comfort/yaw envelope, or orientation priority must be a behavior-changing experiment with its own before/after evidence; it must not be folded into structural cleanup.
+
+## Heuristic ablation 1: torso target projection — removal ACCEPTED (2026-09-30)
+
+This behavior-changing experiment removed only `ArmMotionPolicy._project_target_outside_torso`. All hard safety limits and every other motion heuristic remained active. Compatibility diagnostics remain present but now report `target_projected=false` and `target_projection_distance_m=0`, so historical logs can still be compared exactly.
+
+### Ordinary recorded session
+
+`G1.zip archive-validate --strict` after removal:
+
+- exact replay PASS
+- 46,570 state rows / 7,837 input rows
+- accepted/state/reason mismatch: 0 / 0 / 0
+- maximum logged q difference: `1.74527059471075e-13 rad`
+
+The projection had never activated in this recording, so normal recorded behavior is unchanged.
+
+### Static torso-intrusion comparison
+
+Both arms were tested at targets 5%, 25%, 50% and 90% inside the former expanded torso exclusion box.
+
+Projection ON:
+
+- no blocked case
+- no checked braking in this static depth sweep
+- position-priority remained inactive
+- it rewrote the requested target before IK
+
+Projection OFF:
+
+- no hard-clearance violation
+- no blocked case
+- shallow intrusion remained near the 6 mm collision constraint
+- deeper impossible targets caused more checked braking and position-priority activity
+- the raw operator target remained unchanged
+
+This first comparison alone was not enough to justify deletion because projection reduced braking.
+
+### Boundary-local comparison
+
+A second experiment found the exact home-to-torso entry boundary and tested raw targets 1, 5, 10, 20 and 40 mm inside it.
+
+With projection OFF:
+
+- no blocked case on either arm
+- no checked braking in these boundary-local cases
+- minimum clearance remained about 6 mm
+- raw targets were preserved exactly
+- at 20–40 mm intrusion, orientation position-priority took over instead of hidden target rewriting
+
+The hard collision/safety envelope therefore already performs the actual feasibility enforcement.
+
+### Continuous torso-crossing comparison
+
+A continuous target was moved from the home wrist through the torso to the opposite side and then back.
+
+Both ON and OFF:
+
+- remained out of blocked state
+- respected the 5 mm hard checked clearance
+- recovered back to the home wrist
+
+Projection ON:
+- left checked braking: 102 steps
+- right checked braking: 67 steps
+- left position-priority: 124 ticks
+- right position-priority: 114 ticks
+- maximum effective-target step: about **295.6–295.8 mm**
+
+Projection OFF:
+- left checked braking: 193 steps
+- right checked braking: 178 steps
+- position-priority: 557 ticks on each side
+- maximum effective-target step: about **1.34 mm**
+
+The ~296 mm discontinuity is the decisive failure of the projection approach. While the raw target moved continuously, the pre-IK projection could hold the effective goal on the current side of the torso and then jump to the opposite-side raw target as soon as it exited the exclusion box. That makes the target path substantially harder for a person to reason about than letting the safety layer reject/slow an impossible command.
+
+### Deterministic randomized torso sweep
+
+With projection forcibly OFF, 24 seeded torso-intrusion/recovery cases were tested across both arms with varied depth and lateral/vertical offsets.
+
+Seed: `20260930`
+
+Results:
+- cases: 24
+- hard-clearance violations: 0
+- blocked cases: 0
+- home-recovery failures: 0
+- minimum observed clearance: **5.0357 mm**
+- maximum checked-braking count in a case: 8
+- maximum final home error: **1.338 mm**
+
+### Regression after actual code removal
+
+Targeted tests passed after the real code path was changed:
+
+- motion-quality: 16/16 PASS
+- marker feedback: 6/6 PASS
+- safety-boundary: 4/4 PASS
+- joint/boundary tests: 13/13 PASS
+- near-hands sweep: 2/2 PASS
+- staged return: 17/17 PASS
+- recorded-session replay: 3/3 PASS
+- `G1.zip archive-validate --strict`: exact PASS
+
+### Final decision
+
+Removal is accepted.
+
+The reason is not that torso intrusion is harmless. It is that torso/body feasibility already belongs to `BimanualSafetyEnvelope`, which maintained hard clearance and recovery without target projection. The projection duplicated that responsibility by silently replacing the operator target and introduced a large discontinuity in a continuous crossing case.
+
+The canonical contract is now:
+
+`operator wrist target stays unchanged -> IK objective -> SafetyEnvelope constrains/brakes unsafe motion`
+
+Repeated braking when the operator requests a physically impossible torso-penetrating target is explicit safety behavior and is preferable to a hidden pre-IK target rewrite. Further reduction of the resulting orientation-priority/braking activity, if desired, must be handled as separate heuristics or safety-policy work rather than by mutating the target.
+
+## Heuristic ablation 2: elbow assist — removal REJECTED (2026-09-30)
+
+The second experiment disabled only ArmMotionPolicy._update_elbow_assist. Projection, wrist priority, orientation priority, shoulder comfort, all limits and return behavior remained unchanged.
+
+Recorded G1.zip result with elbow assist disabled:
+- state rows: 46,570
+- input rows: 7,837
+- accepted/state/reason mismatch: 0 / 0 / 0
+- exact replay: false
+- maximum logged q difference: 0.38547881457045896 rad (about 22.1 deg)
+- minimum sampled clearance: 5.5297 mm
+
+The original log contains one contiguous right-arm assist interval, feedback_sequence 42272-42338 (67 ticks). In this interval:
+- elbow angle moves from about 13.38 deg to the 5 deg operational lower limit
+- orientation priority is already active at scale 0.5
+- wrist priority is zero
+
+Normal logged interval:
+- right wrist position error mean: 95.71 mm
+- minimum/mean clearance: 5.23 / 9.18 mm
+- tracking-braking rows: 0
+
+Elbow assist disabled:
+- right wrist position error mean: 93.50 mm
+- minimum/mean clearance: 5.53 / 7.31 mm
+- new checked-braking steps: 18
+- maximum joint divergence within the 67-tick interval: 7.83 deg
+
+Interpretation: elbow assist is not a tracking-error optimizer. Disabling it slightly reduces mean wrist position error, but the arm path loses clearance on average and requires repeated checked braking. Across the full session the altered joint trajectory diverges by about 22 deg even though high-level state/reason transitions remain unchanged.
+
+Conclusion: removing elbow assist would simplify code but push more work into the emergency braking layer and materially change the arm posture. Removal is rejected. Keep it as an explicit boundary-posture helper; future simplification may rename or relocate it, but it should not be removed without a replacement that preserves or improves clearance while avoiding the 18 added braking steps observed here.
+
+## Heuristic ablation 3: wrist priority — removal REJECTED (2026-09-30)
+
+This experiment disabled only ArmMotionPolicy._update_wrist_priority by keeping wrist_priority_weight at zero and the extra proximal damping task cost at zero.
+
+G1.zip with wrist priority disabled:
+- accepted/state/reason mismatch: 0 / 0 / 0
+- current validation: PASS
+- exact replay: false
+- maximum logged q difference: 0.3643487350081593 rad (about 20.9 deg)
+- minimum sampled clearance: 5.7881 mm
+- maximum output acceleration remained 90 deg/s^2
+
+Recorded activation was sparse:
+- left: 69 ticks in two intervals
+- right: 52 ticks in three intervals
+- maximum recorded weight: about 0.406 left / 0.721 right
+- activation occurred while orientation priority was inactive, so these two heuristics are not duplicates in the recorded cases
+
+Rotation-only 45 deg ablation with wrist position fixed showed the intended effect clearly.
+
+X-axis rotation:
+- left proximal peak: 8.56 deg ON vs 15.87 deg OFF
+- right proximal peak: 8.51 deg ON vs 15.75 deg OFF
+- wrist rotation remained about 43 deg ON but only about 34 deg OFF
+
+Z-axis rotation:
+- left proximal peak: 2.99 deg ON vs 7.50 deg OFF
+- right proximal peak: 3.50 deg ON vs 7.28 deg OFF
+- wrist yaw remained about 44 deg ON vs about 43 deg OFF
+
+Final position and orientation errors remained sub-millimeter / about 0.05 deg in both modes, and no checked braking occurred in these clean rotation-only tests. The main difference is motion allocation: without wrist priority, shoulders and elbows participate much more in a command that can be achieved mostly by the wrist.
+
+Conclusion: this is not redundant damping. It encodes a useful kinematic preference: near an already-reached wrist position, hand rotation should preferentially use wrist joints instead of visibly moving the whole arm. Removal is rejected. Keep it, but document it as a wrist-rotation allocation preference rather than generic damping.
+
+## Heuristic ablation 4: shoulder comfort task — removal REJECTED (2026-09-30)
+
+Shoulder comfort was disabled by zeroing only the ShoulderComfortTask contribution. Other IK preferences and all limits remained active.
+
+G1.zip result without shoulder comfort:
+- accepted/state/reason mismatch: 0 / 0 / 0
+- current validation: PASS
+- exact replay: false
+- maximum logged q difference: 0.9309293196700652 rad (about 53.3 deg)
+- minimum sampled clearance: 5.1206 mm
+- maximum output acceleration remained 90 deg/s^2
+
+Synthetic 12 cm reaches show when the task matters:
+- forward reach: ON and OFF were identical; shoulder roll/yaw stayed near 1.2 / 3.25 deg
+- outward reach: ON and OFF were identical; shoulder roll/yaw stayed near 14 / 13 deg
+- upward reach: the comfort bands became active
+
+For the upward reach on both arms:
+- ON: shoulder roll peak about 27.43 deg; yaw about 12.56 deg
+- OFF: shoulder roll peak about 49.78 deg; yaw about 54.77 deg
+- ON final wrist position error: about 38.62 mm
+- OFF final wrist position error: about 30.71 mm
+- no checked braking occurred in either mode
+
+Interpretation: the task is dormant for ordinary reaches inside its band. For a difficult high reach it deliberately trades about 8 mm of wrist tracking accuracy for a much less extreme shoulder posture. It is therefore not redundant with the main wrist task or generic posture cost.
+
+Conclusion: removal is rejected. Keep it as an explicit shoulder-posture preference. Its current name is appropriate; future tuning may revisit band/cost values, but that is a separate behavior decision from code simplification.

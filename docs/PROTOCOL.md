@@ -58,4 +58,9 @@ SampleScene에는 과거 5005/5006 component reference 일부가 남아 있다. 
 
 ## 10. Motor-output boundary
 
-`START_G1_VR_TELEOP.bat`은 motor publisher를 만들지 않는다. physical bilateral motor control은 별도 승인과 별도 contract가 필요하다.
+PC bilateral IK/Omni worker 자체는 계속 observation/simulation-only이며 motor publisher를 만들지 않는다. 다만 `START_G1_VR_TELEOP.bat`의 기본 통합 실행은 별도 역할인 onboard GROOT supervisor를 포함한다. 새 supervisor를 시작할 때 local `ACTUATE` 확인이 필요하고, 이후 G1에서 다음 두 프로세스를 실행한다.
+
+- `g1_omni_heading_controller.py --yaw-sign -1`
+- `groot_balance_actuator --normal --enable-actuation --acknowledge-harness --accept-handoff-risk --supervisor-off --external-controller --interface eth0 --duration 300`
+
+`--check-only`에서는 remote login/actuation이 없고, `--no-groot-actuation`은 GROOT supervisor 시작을 생략한다. observation protocol과 motor-output process는 코드/테스트상 분리된 상태를 유지한다.

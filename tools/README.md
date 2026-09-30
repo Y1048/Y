@@ -32,7 +32,8 @@ runtime\python\python.exe -I -B tools\G1_PORTABLE.py teleop
 - LowState read-only
 - front camera 15 fps target
 - Unity open/reuse
-- no motor output
+- explicit `ACTUATE` confirmation 후 onboard GROOT heading + balance actuator
+- `--no-groot-actuation` 사용 시 위 GROOT motor output만 생략
 
 ## 남겨둔 BAT shim
 

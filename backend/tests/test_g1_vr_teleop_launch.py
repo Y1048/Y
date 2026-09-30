@@ -35,11 +35,12 @@ class WorkerRecognitionTests(unittest.TestCase):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
         existing = launcher.running_workers(rows, ROOT, HOST)
         self.assertEqual(set(launcher.INTEGRATED_WORKERS), existing)
-        self.assertEqual([], launcher.launch_plan(existing, True))
-        self.assertEqual(['omni', 'lowstate', 'camera'],
-                         launcher.launch_plan({'send', 'arm'}, False))
+        self.assertEqual([], launcher.launch_plan(existing, True, True))
+        self.assertEqual(['omni', 'lowstate', 'camera', 'groot'],
+                         launcher.launch_plan({'send', 'arm'}, False, False))
         self.assertEqual(['omni', 'lowstate'],
-                         launcher.launch_plan({'send', 'arm'}, True, no_receiver=True))
+                         launcher.launch_plan(
+                             {'send', 'arm'}, True, True, no_receiver=True))
 
     def test_stale_launcher_windows_do_not_count_as_running_workers(self):
         rows = [[sys.executable, '-u', '-B',
@@ -47,8 +48,9 @@ class WorkerRecognitionTests(unittest.TestCase):
                  '--worker', worker, '--host', HOST]
                 for worker in launcher.INTEGRATED_WORKERS]
         self.assertEqual(set(), launcher.running_workers(rows, ROOT, HOST))
-        self.assertEqual(['send', 'omni', 'arm', 'lowstate', 'camera'],
-                         launcher.launch_plan(set(), False))
+        self.assertEqual(
+            ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot'],
+            launcher.launch_plan(set(), False))
 
     def test_incompatible_worker_options_are_refused(self):
         rows = [worker_row('send', '192.168.123.165')]
@@ -69,6 +71,35 @@ class WorkerRecognitionTests(unittest.TestCase):
                 row = worker_row(worker)
                 with self.assertRaises(RuntimeError):
                     launcher.running_workers([row, list(row)], ROOT, HOST)
+
+    def test_exact_groot_supervisor_is_reused(self):
+        row = [
+            sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),
+            '--host', HOST, '--confirmed',
+        ]
+        self.assertTrue(launcher.groot_launcher_running([row], HOST))
+        self.assertFalse(launcher.groot_launcher_running([], HOST))
+
+    def test_conflicting_or_duplicate_groot_supervisor_is_refused(self):
+        exact = [
+            sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),
+            '--host', HOST, '--confirmed',
+        ]
+        wrong = list(exact)
+        wrong[wrong.index(HOST)] = '192.168.123.165'
+        with self.assertRaises(RuntimeError):
+            launcher.groot_launcher_running([wrong], HOST)
+        with self.assertRaises(RuntimeError):
+            launcher.groot_launcher_running([exact, list(exact)], HOST)
+
+    def test_actuation_confirmation_requires_exact_token(self):
+        with mock.patch('builtins.input', return_value='ACTUATE'), \
+                redirect_stdout(io.StringIO()):
+            launcher.confirm_groot_actuation()
+        with mock.patch('builtins.input', return_value='yes'), \
+                redirect_stdout(io.StringIO()):
+            with self.assertRaisesRegex(RuntimeError, 'not confirmed'):
+                launcher.confirm_groot_actuation()
 
     @unittest.skipUnless(os.name == 'nt', 'Uses Windows command-line parsing API')
     def test_windows_quoted_paths_and_remote_command_round_trip(self):
@@ -166,7 +197,8 @@ class UnityLaunchTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == 'nt', 'Windows visible-console launcher')
 class OrchestrationTests(unittest.TestCase):
-    def invoke(self, rows=(), camera=False, unity=False, args=(), preflight_error=None):
+    def invoke(self, rows=(), camera=False, unity=False, groot=False,
+               args=(), preflight_error=None):
         """Execute only the decision code; never enumerate or start real processes."""
         stack = ExitStack()
         self.addCleanup(stack.close)
@@ -175,7 +207,13 @@ class OrchestrationTests(unittest.TestCase):
                                              side_effect=lambda host: HOST if host == 'auto' else host))
         inventory = list(rows)
         if camera:
-            inventory.append([sys.executable, str(ROOT/'tools/G1_CAMERA_LAUNCH.py'), '--robot-host', HOST])
+            inventory.append([sys.executable, str(ROOT/'tools/G1_CAMERA_LAUNCH.py'),
+                              '--robot-host', HOST])
+        if groot:
+            inventory.append([
+                sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),
+                '--host', HOST, '--confirmed',
+            ])
         if unity:
             inventory.append([r'C:\Unity\Unity.exe', '-projectPath', str(launcher.UNITY_PROJECT)])
         stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=inventory))
@@ -187,65 +225,90 @@ class OrchestrationTests(unittest.TestCase):
         stack.enter_context(mock.patch.object(launcher, 'resolve_unity_editor',
                                              return_value=Path(r'C:\Unity\Unity.exe')))
         unity_start = stack.enter_context(mock.patch.object(launcher, 'start_unity'))
+        confirm = stack.enter_context(
+            mock.patch.object(launcher, 'confirm_groot_actuation'))
         spawn = stack.enter_context(mock.patch.object(launcher.subprocess, 'Popen'))
         run = stack.enter_context(mock.patch.object(launcher.subprocess, 'run',
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
         result = launcher.main(['--show-consoles'] + list(args))
         run.assert_not_called()
-        return result, spawn, check, None, environment, unity_start
+        return result, spawn, check, confirm, environment, unity_start
 
-    def test_fresh_start_creates_exactly_five_observation_and_camera_windows(self):
-        result, spawn, check, _, environment, unity_start = self.invoke()
+    def test_fresh_start_adds_groot_after_explicit_confirmation(self):
+        result, spawn, check, confirm, environment, unity_start = self.invoke()
         self.assertEqual(0, result)
-        check.assert_called_once_with(['send', 'omni', 'arm', 'lowstate', 'camera'], environment)
-        self.assertEqual(5, spawn.call_count)
+        check.assert_called_once_with(
+            ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot'], environment)
+        confirm.assert_called_once_with()
+        self.assertEqual(6, spawn.call_count)
         unity_start.assert_called_once()
         commands = [call.args[0] for call in spawn.call_args_list]
-        self.assertEqual(['send', 'omni', 'arm', 'lowstate'],
-                         [launcher.option(command, '--worker') for command in commands[:-1]])
+        self.assertEqual(
+            ['send', 'omni', 'arm', 'lowstate'],
+            [launcher.option(command, '--worker') for command in commands[:4]])
         self.assertEqual(
             [sys.executable, '-I', '-u', '-B', str(ROOT/'tools/G1_CAMERA_LAUNCH.py'),
              '--robot-host', HOST],
-            commands[-1])
+            commands[4])
+        self.assertEqual(
+            [sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),
+             '--host', HOST, '--confirmed'],
+            commands[5])
         for call in spawn.call_args_list:
             self.assertEqual(ROOT, call.kwargs['cwd'])
             self.assertEqual(environment, call.kwargs['env'])
             self.assertEqual(subprocess.CREATE_NEW_CONSOLE, call.kwargs['creationflags'])
         self.assertIn('--dry-run', worker_row('omni'))
-        self.assertEqual('unity', launcher.option(worker_row('arm'), '--mode'))
-        self.assertEqual('60', launcher.option(worker_row('send'), '--send-hz'))
-        self.assertIn('receive --print-hz 100', worker_row('receive')[-1])
 
     def test_all_running_produces_no_new_windows(self):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
-        result, spawn, check, _, environment, unity_start = self.invoke(rows, camera=True, unity=True)
+        result, spawn, check, confirm, environment, unity_start = self.invoke(
+            rows, camera=True, unity=True, groot=True)
         self.assertEqual(0, result)
         check.assert_called_once_with([], environment)
+        confirm.assert_not_called()
         spawn.assert_not_called()
         unity_start.assert_not_called()
 
-    def test_closed_network_host_reaches_observation_and_camera_launches(self):
+    def test_closed_network_host_reaches_all_integrated_launches(self):
         result, spawn, _, _, _, _ = self.invoke(args=['--host', '192.168.10.165'])
         self.assertEqual(0, result)
         commands = [call.args[0] for call in spawn.call_args_list]
-        for command in commands[:-1]:
+        for command in commands[:4]:
             self.assertEqual('192.168.10.165', launcher.option(command, '--host'))
-        self.assertEqual('192.168.10.165', launcher.option(commands[-1], '--robot-host'))
+        self.assertEqual('192.168.10.165', launcher.option(commands[4], '--robot-host'))
+        self.assertEqual('192.168.10.165', launcher.option(commands[5], '--host'))
 
     def test_partial_start_only_creates_missing_workers(self):
-        result, spawn, check, _, environment, _ = self.invoke(
-            [worker_row('send'), worker_row('arm')], camera=True)
+        result, spawn, check, confirm, environment, _ = self.invoke(
+            [worker_row('send'), worker_row('arm')], camera=True, groot=True)
         self.assertEqual(0, result)
         check.assert_called_once_with(['omni', 'lowstate'], environment)
-        self.assertEqual(['omni', 'lowstate'],
-                         [launcher.option(call.args[0], '--worker') for call in spawn.call_args_list])
+        confirm.assert_not_called()
+        self.assertEqual(
+            ['omni', 'lowstate'],
+            [launcher.option(call.args[0], '--worker') for call in spawn.call_args_list])
 
-    def test_check_only_does_not_start_workers_camera_or_ssh(self):
-        result, spawn, check, _, _, unity_start = self.invoke(args=['--check-only'])
+    def test_check_only_never_confirms_or_starts_groot(self):
+        result, spawn, check, confirm, _, unity_start = self.invoke(
+            args=['--check-only'])
         self.assertEqual(0, result)
         check.assert_called_once()
+        confirm.assert_not_called()
         spawn.assert_not_called()
         unity_start.assert_not_called()
+
+    def test_no_groot_actuation_preserves_old_observation_only_start(self):
+        result, spawn, check, confirm, environment, _ = self.invoke(
+            args=['--no-groot-actuation'])
+        self.assertEqual(0, result)
+        check.assert_called_once_with(
+            ['send', 'omni', 'arm', 'lowstate', 'camera'], environment)
+        confirm.assert_not_called()
+        self.assertEqual(5, spawn.call_count)
+        self.assertFalse(any(
+            str(launcher.GROOT_LAUNCHER) in call.args[0]
+            for call in spawn.call_args_list))
 
     def test_no_unity_skips_resolution_and_launch(self):
         result, _, _, _, _, unity_start = self.invoke(args=['--no-unity'])

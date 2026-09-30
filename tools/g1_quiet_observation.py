@@ -1,4 +1,4 @@
-"""Quiet observation workers only; no motor control. Logs retain worker output."""
+"""Own integrated teleop workers, including the confirmed GROOT remote supervisor."""
 from datetime import datetime
 from pathlib import Path
 import subprocess
@@ -44,7 +44,7 @@ def run_workers(root, workers, host, env):
     stopped = threading.Event()
     def wait_for_stop():
         try:
-            input('Press Enter or close this manager to stop its workers and camera. ')
+            input('Press Enter or close this manager to stop owned workers, camera, and GROOT SSH sessions. ')
         except EOFError:
             pass
         stopped.set()
@@ -55,6 +55,12 @@ def run_workers(root, workers, host, env):
                 child = subprocess.Popen(
                     [sys.executable, '-I', '-u', '-B', str(root / 'tools/G1_CAMERA_LAUNCH.py'),
                      '--robot-host', host],
+                    cwd=root, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
+            elif worker == 'groot':
+                child = subprocess.Popen(
+                    [sys.executable, '-I', '-u', '-B',
+                     str(root / 'tools/G1_GROOT_REMOTE_LAUNCH.py'),
+                     '--host', host, '--confirmed'],
                     cwd=root, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
             elif worker == 'receive':
                 command = [sys.executable, '-I', '-u', '-B', str(Path(__file__).resolve()), host, str(logfile)]

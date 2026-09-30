@@ -2,7 +2,7 @@
 
 이 폴더는 현재 integrated teleop에서 사용하는 **Omni observation/discovery와 joint motion limiting**만 포함한다.
 
-`tools/START_G1_VR_TELEOP.bat` 기본 경로는 motor output을 만들지 않는다.
+이 폴더의 Omni gateway 자체는 통합 실행에서도 `--dry-run`이며 motor output을 만들지 않는다. `tools/START_G1_VR_TELEOP.bat`의 실제 motor output은 이 폴더가 아니라 별도 onboard GROOT supervisor가 담당한다.
 
 ## 현재 파일
 
@@ -37,5 +37,4 @@ runtime\python\python.exe -B -m unittest discover -s hardware\g1_arm_bridge -p "
 
 ## Physical control boundary
 
-현재 저장소의 기본 runtime에는 physical arm actuation contract가 없다.
-향후 실제 G1 motor control을 추가하려면 bilateral 14-joint contract, collision/limit validation, fault HOLD/return, 별도 authorization을 새로 설계하고 승인받아야 한다.
+PC-side `hardware/g1_arm_bridge`에는 여전히 direct physical arm publisher가 없다. 실제 integrated motor authority는 G1 onboard `/home/unitree/groot_onboard_runtime`의 `groot_balance_actuator --external-controller`에 있으며, Windows launcher는 SSH supervisor 역할만 한다. bilateral IK의 안전/limit contract와 onboard actuator의 실제 hardware authority를 같은 코드 경계로 취급하지 않는다.

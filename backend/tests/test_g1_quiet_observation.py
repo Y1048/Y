@@ -39,6 +39,23 @@ class QuietTests(unittest.TestCase):
             self.assertEqual(spawn.call_args.args[0][-2:], ['--robot-host', 'example'])
             self.assertEqual(spawn.call_args.kwargs['creationflags'], quiet.subprocess.CREATE_NEW_CONSOLE)
 
+    def test_groot_is_owned_by_same_supervisor(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(quiet, 'bind_session_lifetime') as bind, \
+                patch.object(quiet.subprocess, 'Popen') as spawn, \
+                patch.object(quiet.subprocess, 'run'), \
+                patch('builtins.input', return_value=''):
+            spawn.return_value.poll.return_value = None
+            quiet.run_workers(Path(directory), ['groot'], 'example', {})
+            bind.assert_called_once()
+            command = spawn.call_args.args[0]
+            self.assertIn('G1_GROOT_REMOTE_LAUNCH.py', ' '.join(command))
+            self.assertEqual('example', command[command.index('--host') + 1])
+            self.assertIn('--confirmed', command)
+            self.assertEqual(
+                quiet.subprocess.CREATE_NEW_CONSOLE,
+                spawn.call_args.kwargs['creationflags'])
+
     def test_receive_hides_only_after_stdout_and_preserves_auth_stdin(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(quiet.subprocess, 'Popen') as spawn, patch.object(quiet.ctypes, 'windll') as win:
             child=spawn.return_value

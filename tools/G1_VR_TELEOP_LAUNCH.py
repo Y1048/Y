@@ -1,4 +1,4 @@
-"""Start input observation and the existing read-only camera, without motor control."""
+"""Start integrated VR teleop observation, camera, and confirmed GROOT actuation."""
 import argparse
 import ctypes
 import json
@@ -18,6 +18,7 @@ from g1_portable_environment import select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATED_WORKERS = observation.WORKERS + ('lowstate',)
+GROOT_LAUNCHER = ROOT / 'tools/G1_GROOT_REMOTE_LAUNCH.py'
 UNITY_VERSION = '6000.5.4f1'
 UNITY_PROJECT = ROOT / 'Unity_G1_VR'
 
@@ -72,6 +73,34 @@ def option_casefold(argv, flag):
 
 def normalized_path(value):
     return str(Path(value).resolve(strict=False)).replace('\\', '/').casefold()
+
+
+def groot_launcher_running(rows, host):
+    """Reuse only the exact integrated GROOT supervisor for this robot host."""
+    target = normalized_path(GROOT_LAUNCHER)
+    matches = []
+    for argv in rows:
+        if not argv or Path(argv[0]).name.casefold() not in ('python.exe', 'pythonw.exe'):
+            continue
+        normalized = [normalized_path(arg) for arg in argv[1:] if not arg.startswith('-')]
+        if target not in normalized:
+            continue
+        if option(argv, '--host') != host or '--confirmed' not in argv:
+            raise RuntimeError(
+                'An existing GROOT supervisor has different options; preserved.')
+        matches.append(argv)
+    if len(matches) > 1:
+        raise RuntimeError('Duplicate GROOT supervisors found; preserved.')
+    return bool(matches)
+
+
+def confirm_groot_actuation():
+    print('[GROOT] Remote motor actuation will be enabled on the G1.', flush=True)
+    print('[GROOT] Required remote flags include --supervisor-off and --accept-handoff-risk.',
+          flush=True)
+    answer = input('Type ACTUATE to start the integrated GROOT heading/controller pair: ').strip()
+    if answer != 'ACTUATE':
+        raise RuntimeError('GROOT actuation was not confirmed; nothing new was started.')
 
 
 def unity_project_running(rows, project=UNITY_PROJECT):
@@ -214,8 +243,17 @@ def preflight(missing, env):
         check_camera_environment()
 
 
-def launch_plan(existing, has_camera, no_receiver=False):
-    return [worker for worker in INTEGRATED_WORKERS if worker != 'receive' and worker not in existing] + ([] if has_camera else ['camera'])
+def launch_plan(existing, has_camera, has_groot=False,
+                no_receiver=False, no_groot_actuation=False):
+    plan = [
+        worker for worker in INTEGRATED_WORKERS
+        if worker != 'receive' and worker not in existing
+    ]
+    if not has_camera:
+        plan.append('camera')
+    if not no_groot_actuation and not has_groot:
+        plan.append('groot')
+    return plan
 
 
 def main(argv=None):
@@ -227,6 +265,8 @@ def main(argv=None):
     parser.add_argument('--show-consoles', action='store_true', help='Show legacy diagnostic windows')
     parser.add_argument('--no-unity', action='store_true',
                         help='Start/reuse observation workers without opening the Unity editor.')
+    parser.add_argument('--no-groot-actuation', action='store_true',
+                        help='Keep the integrated launch observation-only; do not start GROOT motor output.')
     args = parser.parse_args(argv)
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', args.host):
         parser.error('host must be a hostname or IPv4 address')
@@ -244,7 +284,10 @@ def main(argv=None):
     if camera_rows and option(camera_rows[0], '--robot-host') != args.host:
         raise RuntimeError('Existing camera targets another host; preserved')
     has_camera = bool(camera_rows)
-    plan = launch_plan(existing, has_camera, args.no_receiver)
+    has_groot = groot_launcher_running(process_rows, args.host)
+    plan = launch_plan(
+        existing, has_camera, has_groot,
+        args.no_receiver, args.no_groot_actuation)
     env = observation.engine_environment()
     preflight(plan, env)
     unity_editor = None
@@ -252,8 +295,16 @@ def main(argv=None):
         validate_unity_project()
         if not has_unity:
             unity_editor = resolve_unity_editor()
-    print('G1 VR TELEOP: bilateral IK + Omni observation + front camera. NO MOTOR OUTPUT.')
-    print('[KEEP] ' + (', '.join(sorted(existing | ({'camera'} if has_camera else set()))) or 'none'))
+    if args.no_groot_actuation:
+        print('G1 VR TELEOP: observation + camera; this invocation will not start GROOT motor output.')
+    else:
+        print('G1 VR TELEOP: observation + camera + confirmed onboard GROOT actuation.')
+    kept = set(existing)
+    if has_camera:
+        kept.add('camera')
+    if has_groot:
+        kept.add('groot')
+    print('[KEEP] ' + (', '.join(sorted(kept)) or 'none'))
     print('[START] ' + (', '.join(plan) or 'none; existing processes are kept'))
     if args.no_unity:
         print('[UNITY] disabled by --no-unity')
@@ -262,8 +313,10 @@ def main(argv=None):
     else:
         print('[UNITY] open Unity_G1_VR with Unity ' + UNITY_VERSION)
     if args.check_only:
-        print('PASS: launch plan checked; no Unity, workers, camera SDK initialization or SSH login. Auto mode probes TCP 22 only.')
+        print('PASS: launch plan checked; no Unity, workers, camera SDK initialization, SSH login, or GROOT actuation. Auto mode probes TCP 22 only.')
         return 0
+    if 'groot' in plan:
+        confirm_groot_actuation()
     if 'lowstate' in plan:
         ensure_login(args.host)
     if unity_editor is not None:
@@ -277,15 +330,29 @@ def main(argv=None):
         print('Existing workers kept. Close their original windows to stop them.')
         return 0
     for worker in plan:
-        command = ([sys.executable, '-I', '-u', '-B', str(ROOT / 'tools/G1_CAMERA_LAUNCH.py'),
-                    '--robot-host', args.host]
-                   if worker == 'camera' else
-                   [sys.executable, '-I', '-u', '-B', str(ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'),
-                    '--worker', worker, '--host', args.host])
-        subprocess.Popen(command, cwd=ROOT, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        if worker == 'camera':
+            command = [
+                sys.executable, '-I', '-u', '-B',
+                str(ROOT / 'tools/G1_CAMERA_LAUNCH.py'),
+                '--robot-host', args.host,
+            ]
+        elif worker == 'groot':
+            command = [
+                sys.executable, '-I', '-u', '-B', str(GROOT_LAUNCHER),
+                '--host', args.host, '--confirmed',
+            ]
+        else:
+            command = [
+                sys.executable, '-I', '-u', '-B',
+                str(ROOT / 'tools/G1_INPUT_OBSERVATION_LAUNCH.py'),
+                '--worker', worker, '--host', args.host,
+            ]
+        subprocess.Popen(
+            command, cwd=ROOT, env=env,
+            creationflags=subprocess.CREATE_NEW_CONSOLE)
     print('Unity_G1_VR is open. Press Play in Unity, then use Quest and Omni Connect.')
     print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: 15 fps target.')
-    print('Close each observation/camera window to stop it. Unity Play is not changed automatically.')
+    print('Close owned worker/GROOT windows to stop them. Unity Play is not changed automatically.')
     return 0
 
 

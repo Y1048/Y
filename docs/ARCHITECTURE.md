@@ -15,6 +15,9 @@ tools/START_G1_VR_TELEOP.bat
        -> bilateral arm simulation worker
        -> LowState read-only worker
        -> camera SSH worker
+       -> confirmed GROOT remote supervisor
+            -> g1_omni_heading_controller.py --yaw-sign -1
+            -> groot_balance_actuator --normal ... --external-controller
        -> Unity Editor open/reuse
 ```
 
@@ -63,13 +66,19 @@ port        = 5020
 
 저장된 regression fixture 재생을 위해 v1/legacy-relative decode만 compatibility boundary로 유지한다.
 
-## 7. Omni / observation / camera
+## 7. Omni / observation / camera / onboard GROOT
 
-- Omni Connect: `ws://127.0.0.1:32123`, default `--dry-run`
+- Omni Connect: `ws://127.0.0.1:32123`, default PC gateway remains `--dry-run`
 - observation sender: 60 Hz
 - observation display: 100 Hz
 - LowState: read-only
 - camera: G1 VideoClient → SSH → TCP 5011 → Unity PiP
+- onboard runtime: `/home/unitree/groot_onboard_runtime`
+- heading controller: `python3 tools/g1_omni_heading_controller.py --yaw-sign -1`
+- actuator: `./build/groot_balance_actuator --normal --enable-actuation --acknowledge-harness --accept-handoff-risk --supervisor-off --external-controller --interface eth0 --duration 300`
+- the integrated launcher requires an explicit `ACTUATE` confirmation before it starts a new GROOT supervisor
+- `--check-only` never logs in or actuates; `--no-groot-actuation` preserves the previous observation-only launch
+- exact existing GROOT processes are preserved; conflicting or duplicate configurations fail closed
 
 ## 8. Windows-native external boundaries
 

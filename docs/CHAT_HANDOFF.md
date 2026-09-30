@@ -10,6 +10,16 @@ tools\START_G1_VR_TELEOP.bat
 
 BAT는 bundled `runtime/python/python.exe`로 `tools/G1_PORTABLE.py teleop`을 호출하는 3줄짜리 shim이다.
 
+일반 실행은 이제 기존 PC/Unity/camera worker와 함께 onboard GROOT pair도 통합한다. 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구하며, 이후 사용자가 별도 SSH 창 두 개를 열 필요는 없다.
+
+```text
+/home/unitree/groot_onboard_runtime
+  python3 tools/g1_omni_heading_controller.py --yaw-sign -1
+  ./build/groot_balance_actuator --normal --enable-actuation --acknowledge-harness --accept-handoff-risk --supervisor-off --external-controller --interface eth0 --duration 300
+```
+
+`--check-only`은 remote login/actuation을 하지 않는다. 기존 observation-only 동작이 필요하면 `START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. exact existing remote process는 보존하고 다른 옵션/duplicate는 자동 종료하지 않고 fail closed한다.
+
 ## Portable Python
 
 - CPython Embedded 3.11.9 x64 bundled

@@ -11,12 +11,13 @@
 
 ## Integrated launcher
 
-- `tools/G1_VR_TELEOP_LAUNCH.py`: worker/Unity/camera orchestration
-- `tools/G1_INPUT_OBSERVATION_LAUNCH.py`: send/receive/Omni/arm worker command
-- `tools/g1_quiet_observation.py`: background worker lifetime
-- `tools/g1_process_lifetime.py`: process reuse/lifetime helpers
+- `tools/G1_VR_TELEOP_LAUNCH.py`: worker/Unity/camera/GROOT orchestration and one-time actuation confirmation
+- `tools/G1_INPUT_OBSERVATION_LAUNCH.py`: observation-only send/receive/Omni/arm worker command; motor flags remain forbidden here
+- `tools/G1_GROOT_REMOTE_LAUNCH.py`: onboard heading + balance actuator SSH supervisor
+- `tools/g1_quiet_observation.py`: integrated child lifetime; owns only children started by the current invocation
+- `tools/g1_process_lifetime.py`: Windows kill-on-close job helper
 
-모든 Python child process는 현재 `sys.executable`, 즉 bundled `runtime/python/python.exe`를 이어받는다.
+모든 local Python child process는 현재 `sys.executable`, 즉 bundled `runtime/python/python.exe`를 이어받는다. GROOT supervisor는 G1의 existing `python3`와 compiled actuator를 SSH로 실행한다.
 
 ## Bilateral IK
 
@@ -96,4 +97,4 @@ camera 단독 BAT는 유지하지 않는다.
 3. operator PC에서 pip install/repair를 하지 않는다.
 4. BAT 안에 orchestration 로직을 넣지 않는다.
 5. relocation test가 통과해야 portable로 인정한다.
-6. physical motor output은 별도 승인 전 추가하지 않는다.
+6. PC observation/IK worker에 motor publisher를 섞지 않는다. 현재 승인된 motor-output integration은 `G1_GROOT_REMOTE_LAUNCH.py`의 onboard GROOT supervisor 경계에만 두고, 새 supervisor 시작 전 `ACTUATE` 확인을 유지한다.

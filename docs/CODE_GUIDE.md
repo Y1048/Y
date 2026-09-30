@@ -7,7 +7,7 @@
 - `tools/G1_PORTABLE.py`: 남은 사용자용 BAT와 개발/QA subcommand의 Python dispatcher
 - `tools/g1_embedded_runtime.py`: project-relative runtime path/identity helper
 - `tools/g1_teleop_dependencies.py`: install 없이 bundled runtime 검증
-- `tools/START_G1_VR_TELEOP.bat`: 3-line double-click shim
+- `START_G1_VR_TELEOP.bat`: 3-line double-click shim
 
 ## Integrated launcher
 

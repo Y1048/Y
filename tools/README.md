@@ -1,6 +1,6 @@
 # Project Tools
 
-`tools/`에는 실제 사용자 운용에 필요한 BAT 4개만 남긴다. 모두 프로젝트에 포함된 CPython Embedded runtime을 호출하는 **3줄짜리 double-click shim**이다.
+메인 실행 BAT `START_G1_VR_TELEOP.bat`은 찾기 쉽도록 프로젝트 루트에 둔다. `tools/`에는 나머지 사용자용 BAT 3개만 두며, 네 BAT 모두 프로젝트에 포함된 CPython Embedded runtime을 호출하는 **3줄짜리 double-click shim**이다.
 
 ## Embedded runtime
 

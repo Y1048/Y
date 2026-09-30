@@ -2,7 +2,7 @@
 
 이 폴더는 현재 integrated teleop에서 사용하는 **Omni observation/discovery와 joint motion limiting**만 포함한다.
 
-이 폴더의 Omni gateway 자체는 통합 실행에서도 `--dry-run`이며 motor output을 만들지 않는다. `tools/START_G1_VR_TELEOP.bat`의 실제 motor output은 이 폴더가 아니라 별도 onboard GROOT supervisor가 담당한다.
+이 폴더의 Omni gateway 자체는 통합 실행에서도 `--dry-run`이며 motor output을 만들지 않는다. `START_G1_VR_TELEOP.bat`의 실제 motor output은 이 폴더가 아니라 별도 onboard GROOT supervisor가 담당한다.
 
 ## 현재 파일
 

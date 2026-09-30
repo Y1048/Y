@@ -42,16 +42,20 @@ class PortableTests(unittest.TestCase):
 
     def test_all_bats_are_three_line_embedded_shims(self):
         expected = {
-            "START_G1_VR_TELEOP": "teleop",
-            "BUILD_AND_INSTALL_VR_APK": "build-install-apk",
-            "CONFIGURE_G1_ETHERNET": "ethernet-configure",
-            "RESTORE_G1_ETHERNET_DHCP": "ethernet-restore",
+            "START_G1_VR_TELEOP": (ROOT / "START_G1_VR_TELEOP.bat", "teleop"),
+            "BUILD_AND_INSTALL_VR_APK": (
+                ROOT / "tools/BUILD_AND_INSTALL_VR_APK.bat", "build-install-apk"),
+            "CONFIGURE_G1_ETHERNET": (
+                ROOT / "tools/CONFIGURE_G1_ETHERNET.bat", "ethernet-configure"),
+            "RESTORE_G1_ETHERNET_DHCP": (
+                ROOT / "tools/RESTORE_G1_ETHERNET_DHCP.bat", "ethernet-restore"),
         }
-        tracked = {path.stem for path in (ROOT / "tools").glob("*.bat")}
-        self.assertEqual(set(expected), tracked)
-        for name, command in expected.items():
+        tracked_tools = {path.stem for path in (ROOT / "tools").glob("*.bat")}
+        self.assertEqual(set(expected) - {"START_G1_VR_TELEOP"}, tracked_tools)
+        self.assertTrue((ROOT / "START_G1_VR_TELEOP.bat").is_file())
+        for name, (path, command) in expected.items():
             with self.subTest(name=name):
-                source = (ROOT / "tools" / (name + ".bat")).read_text(encoding="utf-8")
+                source = path.read_text(encoding="utf-8")
                 self.assertEqual(3, len(source.splitlines()))
                 self.assertIn(r"runtime\python\python.exe", source)
                 self.assertIn("G1_PORTABLE.py", source)

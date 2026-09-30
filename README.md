@@ -1,7 +1,7 @@
 # G1 VR Bimanual Teleoperation
 
 현재 기본 경로는 **Quest/Unity → bilateral Mink/MuJoCo → Omni/LowState/camera observation + onboard GROOT actuation**이다.
-`tools/START_G1_VR_TELEOP.bat`이 사용자 진입점이며, 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`을 주면 기존 observation-only 경로를 유지한다.
+`START_G1_VR_TELEOP.bat`이 사용자 진입점이며, 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`을 주면 기존 observation-only 경로를 유지한다.
 
 ## Portable Python runtime
 
@@ -21,19 +21,19 @@ runtime/python/RUNTIME_MANIFEST.json
 ## 기본 실행
 
 ```bat
-tools\START_G1_VR_TELEOP.bat
+START_G1_VR_TELEOP.bat
 ```
 
 검사만:
 
 ```bat
-tools\START_G1_VR_TELEOP.bat --check-only
+START_G1_VR_TELEOP.bat --check-only
 ```
 
 GROOT actuation 없이 기존 관측/Unity 경로만 실행:
 
 ```bat
-tools\START_G1_VR_TELEOP.bat --no-groot-actuation
+START_G1_VR_TELEOP.bat --no-groot-actuation
 ```
 
 bundled runtime 자체 검사:

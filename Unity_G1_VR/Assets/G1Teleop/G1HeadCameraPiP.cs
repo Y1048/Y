@@ -275,7 +275,7 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
                 () => RunReceiver(receiver_cancellation.Token));
             Debug.Log(
                 $"G1 camera PiP listening on 127.0.0.1:{tcp_port}. "
-                + "Run tools/START_G1_VR_TELEOP.bat while G1 is connected.");
+                + "Run START_G1_VR_TELEOP.bat while G1 is connected.");
         }
         catch (Exception exception_value)
         {

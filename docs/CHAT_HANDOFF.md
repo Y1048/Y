@@ -5,7 +5,7 @@
 ## 현재 실행
 
 ```bat
-tools\START_G1_VR_TELEOP.bat
+START_G1_VR_TELEOP.bat
 ```
 
 BAT는 bundled `runtime/python/python.exe`로 `tools/G1_PORTABLE.py teleop`을 호출하는 3줄짜리 shim이다.

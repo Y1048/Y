@@ -5,7 +5,7 @@
 현재 기본 시스템은 bilateral-only다. Python 실행 환경은 project-local CPython Embedded runtime에 고정된다.
 
 ```text
-tools/START_G1_VR_TELEOP.bat
+START_G1_VR_TELEOP.bat
   -> runtime/python/python.exe
   -> tools/G1_PORTABLE.py teleop
   -> tools/g1_teleop_dependencies.py
@@ -97,7 +97,7 @@ Ethernet 관리자 변경은 Embedded Python dispatcher가 UAC elevation을 요�
 원래 checkout이 아닌 별도 경로로 프로젝트를 복사한 뒤에도:
 
 ```bat
-tools\START_G1_VR_TELEOP.bat --check-only
+START_G1_VR_TELEOP.bat --check-only
 ```
 
 가 system Python/venv 없이 PASS해야 한다.

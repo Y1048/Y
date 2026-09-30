@@ -23,7 +23,7 @@ EXTENSIONS = {".py", ".cs", ".cpp", ".hpp", ".h", ".bat", ".ps1", ".sh", ".json"
 EXCLUDED = {"__pycache__", "build", ".venv", "venv", "node_modules", "third_party", ".git"}
 # Boundary review is not a claim that every function was audited.
 BOUNDARY_REVIEWED = {
-    "tools/START_G1_VR_TELEOP.bat",
+    "START_G1_VR_TELEOP.bat",
     "tools/G1_VR_TELEOP_LAUNCH.py",
     "tools/G1_GROOT_REMOTE_LAUNCH.py",
     "tools/G1_INPUT_OBSERVATION_LAUNCH.py",

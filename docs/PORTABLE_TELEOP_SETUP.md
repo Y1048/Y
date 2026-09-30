@@ -45,16 +45,16 @@ runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 ## 2. 실행
 
 ```bat
-tools\START_G1_VR_TELEOP.bat
+START_G1_VR_TELEOP.bat
 ```
 
 검사만:
 
 ```bat
-tools\START_G1_VR_TELEOP.bat --check-only
+START_G1_VR_TELEOP.bat --check-only
 ```
 
-BAT는 환경 로직을 갖지 않고 Embedded Python dispatcher만 호출한다. 일반 실행은 GROOT supervisor를 새로 시작해야 할 때 `ACTUATE` 확인을 요구하고, 확인 후 heading controller와 300초 balance actuator를 SSH로 함께 실행한다. motor output 없이 PC/Unity/observation만 실행하려면 `tools\START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. `--check-only`은 GROOT remote login이나 actuation을 수행하지 않는다.
+BAT는 환경 로직을 갖지 않고 Embedded Python dispatcher만 호출한다. 일반 실행은 GROOT supervisor를 새로 시작해야 할 때 `ACTUATE` 확인을 요구하고, 확인 후 heading controller와 300초 balance actuator를 SSH로 함께 실행한다. motor output 없이 PC/Unity/observation만 실행하려면 `START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. `--check-only`은 GROOT remote login이나 actuation을 수행하지 않는다.
 
 ## 3. Ethernet
 

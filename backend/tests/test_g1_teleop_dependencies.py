@@ -40,7 +40,7 @@ class DependencyTests(unittest.TestCase):
             run.assert_not_called()
 
     def test_batch_is_only_embedded_python_shim(self):
-        source = (ROOT / "tools/START_G1_VR_TELEOP.bat").read_text(encoding="utf-8")
+        source = (ROOT / "START_G1_VR_TELEOP.bat").read_text(encoding="utf-8")
         self.assertIn(r"runtime\python\python.exe", source)
         self.assertIn("G1_PORTABLE.py", source)
         self.assertIn(" teleop ", source)

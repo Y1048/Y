@@ -65,7 +65,7 @@ tracked-file-only clean export도 별도 검증했다.
 
 ```bat
 runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
-tools\START_G1_VR_TELEOP.bat --check-only --host 192.168.123.164
+START_G1_VR_TELEOP.bat --check-only --host 192.168.123.164
 ```
 
 별도 `C:\Temp\G1PortableRelocationTest` 복사본에서는 `.git`, `.venv-teleop`,

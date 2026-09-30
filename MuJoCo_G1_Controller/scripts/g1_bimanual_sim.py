@@ -1,5 +1,4 @@
 """Isolated, kinematic two-arm Mink experiment. No transport or motor output."""
-from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S
 import argparse
 import json
 import tempfile
@@ -16,12 +15,12 @@ import g1_mink_shared as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
 from g1_bimanual_return import BimanualReturnMotion
-from g1_bimanual_limits import JOINT_VELOCITY_LIMIT_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2
+from g1_bimanual_profile import TRACKING as PROFILE
 
 
 class BimanualSimulation:
-    dt = 1.0 / 60
-    clearance_m = 0.005
+    dt = 1.0 / PROFILE.control_hz
+    clearance_m = PROFILE.hard_clearance_m
 
     def __init__(self):
         require_validated_engine()
@@ -44,7 +43,10 @@ class BimanualSimulation:
         self.dofs = self.model.jnt_dofadr[ids]
         for side in ("left", "right"):
             jid = base._joint_id(self.model, side + "_elbow_joint")
-            self.model.jnt_range[jid] = np.radians([5, 120])
+            self.model.jnt_range[jid] = [
+                PROFILE.elbow_operational_min_rad,
+                PROFILE.elbow_operational_max_rad,
+            ]
         self.home = base._initial_configuration(self.model)
         self.config = mink.Configuration(self.model)
         self.config.update(self.home)
@@ -70,24 +72,19 @@ class BimanualSimulation:
         self._clearance_local_centers = self.model.geom_aabb[:, :3].copy()
         self._clearance_bounding_radii = np.linalg.norm(
             self.model.geom_aabb[:, 3:], axis=1)
-        self.tasks = {side: mink.FrameTask(side + "_wrist_yaw_link", "body",
-                     position_cost=8., orientation_cost=2., gain=.35,
-                     lm_damping=1e-5) for side in ("left", "right")}
-        self.home_targets = {s: self.config.get_transform_frame_to_world(
-            s + "_wrist_yaw_link", "body") for s in self.tasks}
-        self.caps = np.asarray(JOINT_VELOCITY_LIMITS_RAD_S, dtype=float)
+        self.home_targets = {side: self.config.get_transform_frame_to_world(
+            side + "_wrist_yaw_link", "body") for side in ("left", "right")}
+        self.caps = np.asarray(PROFILE.joint_velocity_limits_rad_s, dtype=float)
         self.limits = [mink.ConfigurationLimit(self.model),
             mink.VelocityLimit(self.model, dict(zip(self.names, self.caps))),
             mink.CollisionAvoidanceLimit(self.model,
                 geom_pairs=[pairs[i] for i in keep],
-                minimum_distance_from_collisions=.006,
-                collision_detection_distance=.15, gain=.85)]
-        frozen = sorted(set(range(self.model.nv)) - set(self.dofs))
-        self.constraints = [mink.DofFreezingTask(self.model, dof_indices=frozen)]
+                minimum_distance_from_collisions=PROFILE.collision_minimum_m,
+                collision_detection_distance=PROFILE.collision_detection_distance_m,
+                gain=PROFILE.collision_gain)]
         self.ranges = self.model.jnt_range[ids].copy()
         self.motion = {side: ArmMotionPolicy(self.model, self.config, side,
                        self.home, self.dt, self.clearance_m) for side in ('left', 'right')}
-        self.tasks = {side: policy.wrist_task for side, policy in self.motion.items()}
         self._motion_returning = False
         self.policy_pairs = {}
         for side in self.motion:
@@ -210,7 +207,8 @@ class BimanualSimulation:
                 return False
             tasks.extend(policy.prepare(targets[side], clearance))
         self._motion_returning = False
-        problem = mink.build_ik(self.config, tasks, self.dt, damping=1e-6,
+        problem = mink.build_ik(
+            self.config, tasks, self.dt, damping=PROFILE.build_ik_damping,
                                 limits=self.limits[:2], constraints=[])
         collision = self.limits[2]
         bound = collision.compute_qp_inequalities(self.config, self.dt)
@@ -220,18 +218,22 @@ class BimanualSimulation:
         # established right-arm path does, now differentiating both arms.
         for i in np.flatnonzero(ch == collision.bound_relaxation):
             a, b = collision.geom_id_pairs[i]
-            raw = mujoco.mj_geomDistance(self.model, self.config.data, a, b, .15, None)
+            raw = mujoco.mj_geomDistance(
+                self.model, self.config.data, a, b,
+                PROFILE.collision_detection_distance_m, None)
             if abs(raw) > 1e-12 or base._has_exact_geom_contact(self.config.data, a, b):
                 continue
             def distance(q):
                 self.check_data.qpos[:] = q
                 mujoco.mj_forward(self.model, self.check_data)
-                return base._robust_geom_distance(self.model, self.check_data, a, b, .15, np.zeros(6))
+                return base._robust_geom_distance(
+                    self.model, self.check_data, a, b,
+                    PROFILE.collision_detection_distance_m, np.zeros(6))
             corrected = distance(self.config.q)
             if corrected <= 1e-12:
                 continue
             cg[i] = 0
-            if corrected >= .15:
+            if corrected >= PROFILE.collision_detection_distance_m:
                 ch[i] = np.inf
                 continue
             for dof, address in zip(self.dofs, self.qids):
@@ -239,12 +241,16 @@ class BimanualSimulation:
                 plus[address] += 1e-5
                 minus[address] -= 1e-5
                 cg[i, dof] = -(distance(plus) - distance(minus)) / 2e-5
-            ch[i] = collision.gain * max(0., corrected - .006) / self.dt
+            ch[i] = collision.gain * max(
+                0., corrected - PROFILE.collision_minimum_m) / self.dt
         collision_h = ch*self.dt
         if not returning:
             # Shared relative-distance braking headroom from the single-arm
             # policy. For an inter-arm row, both arms contribute acceleration.
-            normal_acceleration = .25*(np.abs(cg[:, self.dofs]) @ np.full(len(self.dofs), JOINT_ACCELERATION_LIMIT_RAD_S2))
+            normal_acceleration = (
+                PROFILE.collision_stopping_acceleration_scale
+                * (np.abs(cg[:, self.dofs]) @ np.full(
+                    len(self.dofs), PROFILE.joint_acceleration_limit_rad_s2)))
             remaining = np.maximum(0., np.where(np.isfinite(ch),
                 (ch-collision.bound_relaxation)*self.dt/collision.gain, 0.))
             stopping_speed = .5*(np.sqrt((normal_acceleration*self.dt)**2 +
@@ -255,16 +261,17 @@ class BimanualSimulation:
         problem.h = np.r_[problem.h, collision_h]
         # Mink solves joint displacement, not velocity.
         eye = np.eye(self.model.nv)[self.dofs]
-        dv = JOINT_ACCELERATION_LIMIT_RAD_S2 * self.dt
+        dv = PROFILE.joint_acceleration_limit_rad_s2 * self.dt
         hi = (self.velocity[self.dofs] + dv) * self.dt
         lo = (self.velocity[self.dofs] - dv) * self.dt
         problem.G = np.vstack([problem.G, eye, -eye])
         problem.h = np.concatenate([problem.h, hi, -lo])
         if not returning:
             # Approach hard joint limits with braking headroom, not nonzero speed.
-            a = JOINT_ACCELERATION_LIMIT_RAD_S2
+            a = PROFILE.joint_acceleration_limit_rad_s2
             q = self.config.q[self.qids]
-            speed = lambda d: .8*(np.sqrt((a*self.dt)**2 + 2*a*np.maximum(0., d))-a*self.dt)
+            speed = lambda d: PROFILE.joint_limit_stopping_speed_scale * (
+                np.sqrt((a*self.dt)**2 + 2*a*np.maximum(0., d)) - a*self.dt)
             problem.G = np.vstack([problem.G, eye, -eye])
             problem.h = np.r_[problem.h, speed(self.ranges[:, 1]-q)*self.dt,
                               speed(q-self.ranges[:, 0])*self.dt]
@@ -350,7 +357,7 @@ class BimanualSimulation:
         Validate every dt and at most .25 degree substeps. This is not a
         continuous collision proof or a physical robot braking model.
         """
-        dv = JOINT_ACCELERATION_LIMIT_RAD_S2 * self.dt
+        dv = PROFILE.joint_acceleration_limit_rad_s2 * self.dt
         if (not np.isfinite(first_velocity).all()
                 or np.any(np.abs(first_velocity[self.dofs]) > self.caps + 1e-6)
                 or np.any(np.abs(first_velocity-self.velocity) > dv + 1e-6)):
@@ -367,7 +374,8 @@ class BimanualSimulation:
             if (np.any(candidate[self.qids] < self.ranges[:, 0] - 1e-8)
                     or np.any(candidate[self.qids] > self.ranges[:, 1] + 1e-8)):
                 return None, "joint_range"
-            n = max(2, int(np.ceil(np.max(np.abs(candidate-q)) / np.radians(.25))))
+            n = max(2, int(np.ceil(
+                np.max(np.abs(candidate-q)) / PROFILE.checked_stop_substep_rad)))
             for fraction in np.linspace(0, 1, n + 1)[1:]:
                 clearance = self.clearance(q + fraction*(candidate-q), threshold=self.clearance_m)
                 if not np.isfinite(clearance) or clearance < self.clearance_m:

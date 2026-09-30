@@ -39,7 +39,7 @@ runtime 검증 실패 시 PC에서 pip install로 수리하지 않는다. 정상
 ## 4. Bilateral backend
 
 `g1_bimanual_runtime.py`가 실행 wrapper다. MuJoCo 기본 package root도 `runtime/python/Lib/site-packages`로 고정된다.
-`g1_bimanual_unity_sim.py`가 UDP 5020 packet과 state cycle을 관리하고, `g1_bimanual_sim.py`가 하나의 configuration에서 좌/우 task를 동시에 푼다.
+`g1_bimanual_unity_sim.py`는 UDP 5020 packet과 state cycle만 관리한다. 현재 absolute world-frame pose 변환은 `g1_bimanual_target.py`, historical relative-frame filtering/mapping은 `g1_bimanual_legacy_input.py`로 분리한다. `g1_bimanual_profile.py`는 현재 유효한 상체 tuning 값을 한곳에 노출하고, `g1_bimanual_sim.py`가 하나의 configuration에서 좌/우 task를 동시에 푼다.
 
 ## 5. Motion policy
 

@@ -405,3 +405,31 @@ Start R1 behavior-preserving structural cleanup only:
 6. keep all existing motion and safety math numerically unchanged
 
 After R1, a human should be able to follow one target from Quest wrist to QP to safety output without opening legacy/preview code. Only then begin heuristic ablation.
+
+## R1a implementation result — 2026-09-30
+
+Behavior-preserving structural cleanup completed:
+
+- removed redundant initial BimanualSimulation.self.tasks FrameTasks
+- removed unused self.constraints
+- moved canonical absolute world-frame target math to g1_bimanual_target.py
+- moved historical relative-frame filter/mapping to g1_bimanual_legacy_input.py
+- current world-frame engagement no longer captures an unused relative pose origin
+- centralized current effective tuning constants in immutable g1_bimanual_profile.py
+- removed canonical-scene no-op Binder options: palm-center, apply position/rotation toggles, reference-yaw flag, movement scale, position offset and smoothing
+- made G1HeadLockedCamera serialized defaults equal the already-effective runtime behavior: one-time alignment, no continuous position lock, 1.0 s stable-head gate
+- preserved dormant old right-arm Unity sender/preview code for a separate cleanup because Unity semantic compilation is currently blocked by Package Manager IPC
+
+Validation after the full R1a working tree:
+
+- backend: 223/223 PASS
+- hardware: 38/38 PASS
+- G1.zip archive-validate --strict: PASS
+- exact replay: true
+- accepted/state/reason mismatch: 0 / 0 / 0
+- maximum q difference: 2.00062189037453e-13 rad
+- changed C# files: Roslyn syntax diagnostics 0
+
+Unity Editor batch validation remains environmentally blocked before package initialization by UnityPackageManager IPC startup failure. The generated Assembly-CSharp.csproj is also stale and references four C# files already deleted before R1a, so its direct build failure is not evidence against the patch.
+
+R1a deliberately did not remove or retune any live heuristic. The next structural step is to isolate/remove the dormant right-arm-only Unity sender and then place the existing safety calculations behind a named safety boundary before starting any heuristic ablation.

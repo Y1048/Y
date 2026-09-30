@@ -72,8 +72,12 @@ def runtime_metadata(input_kind):
             packages[name] = None
     scripts = Path(__file__).resolve().parent
     sources = {name: hashlib.sha256((scripts/name).read_bytes()).hexdigest()
-               for name in ('g1_bimanual_runtime.py', 'g1_bimanual_sim.py', 'g1_bimanual_unity_sim.py',
-                            'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py', 'g1_bimanual_limits.py')}
+               for name in (
+                   'g1_bimanual_runtime.py', 'g1_bimanual_sim.py',
+                   'g1_bimanual_unity_sim.py', 'g1_bimanual_target.py',
+                   'g1_bimanual_legacy_input.py',
+                   'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py',
+                   'g1_bimanual_limits.py', 'g1_bimanual_profile.py')}
     return dict(schema='g1.bimanual.sim.run.v1', simulation_only=True,
                 hardware_output_authorized=False, input_kind=input_kind,
                 started_utc=datetime.now(timezone.utc).isoformat(),

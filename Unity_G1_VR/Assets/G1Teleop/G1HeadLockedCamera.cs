@@ -12,9 +12,9 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     public Transform xr_tracking_space;
     public G1UnityRightArmPreview robot_preview;
     public bool align_position_once = true;
-    public bool lock_position = true;
+    public bool lock_position = false;
     [Min(0.0f)]
-    public float head_tracking_stable_duration = 0.15f;
+    public float head_tracking_stable_duration = 1.0f;
     [Min(0.0f)]
     public float minimum_floor_head_height = 0.4f;
     public bool show_head_camera_pip = true;
@@ -47,8 +47,6 @@ public sealed class G1HeadLockedCamera : MonoBehaviour
     private void OnEnable()
     {
         IsInitialAlignmentApplied = false;
-        lock_position = false; // Keep the aligned Quest world fixed after startup.
-        head_tracking_stable_duration = Mathf.Max(1.0f, head_tracking_stable_duration);
         ResetHeadTrackingReadiness();
         if (head_camera_pip != null)
         {

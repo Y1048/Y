@@ -8,27 +8,26 @@ import numpy as np
 import mujoco
 import g1_mink_shared as base
 from g1_mink_trajectory import RuckigJointMotionLimiter
-from g1_bimanual_limits import (
-    JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_JERK_LIMIT_RAD_S3,
-    RETURN_RIGHT_WAYPOINT_RAD,
-)
+from g1_bimanual_profile import RETURN as PROFILE
 
 
 class BimanualReturnMotion:
     policy = 'bimanual_staged_return_v2'
-    settle_s = .5
-    maximum_duration_s = 30.
-    maximum_replans = 2
-    near_hands_threshold_m = .012
-    separation_probe_maximum_s = 10.
+    settle_s = PROFILE.settle_s
+    maximum_duration_s = PROFILE.maximum_duration_s
+    maximum_replans = PROFILE.maximum_replans
+    near_hands_threshold_m = PROFILE.near_hands_threshold_m
+    separation_probe_maximum_s = PROFILE.separation_probe_maximum_s
 
     def __init__(self, simulation):
         self.sim = simulation
         # Mirror the original seven-joint intermediate pose, not a new pose.
-        mirrored = RETURN_RIGHT_WAYPOINT_RAD * np.array([1., -1., -1., 1., -1., 1., -1.])
-        self.waypoint = np.r_[mirrored, RETURN_RIGHT_WAYPOINT_RAD].copy()
-        self.acceleration_limits = np.full(14, JOINT_ACCELERATION_LIMIT_RAD_S2)
-        self.jerk_limits = np.full(14, JOINT_JERK_LIMIT_RAD_S3)
+        right_waypoint = np.asarray(PROFILE.right_waypoint_rad)
+        mirrored = right_waypoint * np.array([1., -1., -1., 1., -1., 1., -1.])
+        self.waypoint = np.r_[mirrored, right_waypoint].copy()
+        self.acceleration_limits = np.full(
+            14, PROFILE.joint_acceleration_limit_rad_s2)
+        self.jerk_limits = np.full(14, PROFILE.joint_jerk_limit_rad_s3)
         left_pairs = {tuple(map(int, pair)) for pair in simulation.policy_pairs['left']}
         right_pairs = {tuple(map(int, pair)) for pair in simulation.policy_pairs['right']}
         self.inter_arm_pairs = [tuple(map(int, pair)) for pair in simulation.pairs

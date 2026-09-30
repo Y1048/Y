@@ -86,21 +86,11 @@ public static class G1TeleopBatchValidator
             binder_value.use_anatomical_hand_frame,
             "Anatomical hand frame must be enabled.");
         AssertCondition(
-            !binder_value.use_palm_center,
-            "Palm center must not drive wrist position.");
-        AssertCondition(
             binder_value.require_alignment_to_engage,
             "Alignment hold must be required before engagement.");
         AssertCondition(
             !binder_value.require_orientation_alignment_to_engage,
             "Engagement must use wrist contact, not an absolute hand-frame orientation gate.");
-        AssertCondition(
-            binder_value.apply_position && binder_value.apply_rotation,
-            "Position and rotation control must both be enabled.");
-        AssertVector(
-            binder_value.movement_scale,
-            Vector3.one,
-            "Operator motion scale must remain one-to-one.");
         AssertCondition(
             binder_value.target_transform != null,
             "Binder target transform is missing.");
@@ -289,12 +279,12 @@ public static class G1TeleopBatchValidator
             camera_lock_value.align_position_once,
             "G1 head camera must align to the robot head once at startup.");
         AssertCondition(
-            camera_lock_value.lock_position,
-            "G1 head camera position must continuously follow the robot head mount.");
+            !camera_lock_value.lock_position,
+            "Quest tracking space must remain fixed after the one-time G1 alignment.");
         AssertCondition(
-            camera_lock_value.head_tracking_stable_duration >= 0.1f
-                && camera_lock_value.head_tracking_stable_duration <= 0.5f,
-            "Initial G1 head alignment must wait for stable XR tracking.");
+            camera_lock_value.head_tracking_stable_duration >= 1.0f
+                && camera_lock_value.head_tracking_stable_duration <= 1.5f,
+            "Initial G1 head alignment must wait for the effective stable XR interval.");
         AssertCondition(
             camera_lock_value.minimum_floor_head_height >= 0.3f
                 && camera_lock_value.minimum_floor_head_height <= 0.6f,

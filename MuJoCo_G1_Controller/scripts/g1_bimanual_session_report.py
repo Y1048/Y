@@ -27,8 +27,10 @@ LEGACY_ACCELERATION_LIMIT_DEG_S2 = 60.0
 ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2 = float(np.rad2deg(1e-4))
 SOURCE_FILES = (
     'g1_bimanual_runtime.py', 'g1_bimanual_sim.py',
-    'g1_bimanual_unity_sim.py', 'g1_bimanual_motion_policy.py',
-    'g1_bimanual_return.py', 'g1_bimanual_limits.py')
+    'g1_bimanual_unity_sim.py', 'g1_bimanual_target.py',
+    'g1_bimanual_legacy_input.py',
+    'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py',
+    'g1_bimanual_limits.py', 'g1_bimanual_profile.py')
 
 
 def _recorded_motion_limits(run):

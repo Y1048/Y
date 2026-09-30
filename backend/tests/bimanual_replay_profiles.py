@@ -1,5 +1,6 @@
 """Test-only reconstruction of the limits used by the September 18 fixtures."""
 from contextlib import contextmanager
+from dataclasses import replace
 from unittest.mock import patch
 
 import mink
@@ -31,10 +32,11 @@ def _historical_prepare(self, goal, clearance):
 @contextmanager
 def historical_recording_profile():
     """Keep exact fixture replay independent of the current default profile."""
-    with patch.object(simulator, 'JOINT_ACCELERATION_LIMIT_RAD_S2',
-                      RECORDED_ACCELERATION_RAD_S2), patch.object(
-                          motion_policy.ArmMotionPolicy, 'prepare',
-                          _historical_prepare):
+    historical_profile = replace(
+        simulator.PROFILE,
+        joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2)
+    with patch.object(simulator, 'PROFILE', historical_profile), patch.object(
+            motion_policy.ArmMotionPolicy, 'prepare', _historical_prepare):
         sim = simulator.BimanualSimulation()
         sim.caps = np.tile(np.deg2rad([90.] * 4 + [180.] * 3), 2)
         velocity_indices = [i for i, limit in enumerate(sim.limits)

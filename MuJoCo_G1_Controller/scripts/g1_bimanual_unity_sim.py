@@ -12,11 +12,12 @@ import numpy as np
 import mink
 from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_runtime import runtime_metadata, startup_stage
+from g1_bimanual_legacy_input import PairedHandFilter, relative_targets
+from g1_bimanual_target import BASIS, copy_world_hands, world_targets
 
 SCHEMA = 'g1.bimanual.unity.sim.v1'
 WORLD_SCHEMA = 'g1.bimanual.unity.sim.v4'
 WORLD_FRAME = 'unity_display_world_v1'
-BASIS = np.array([[0., 0., 1.], [-1., 0., 0.], [0., 1., 0.]])
 
 
 def decode(raw):
@@ -129,52 +130,6 @@ def decode(raw):
     return x
 
 
-class PairedHandFilter:
-    """Calibrated per-hand pose filtering; never turns invalid input into tracking.
-
-    The old right-arm sender used 60ms position / 50ms rotation constants.
-    Here filtering lives in Python so both arms share tested reset behavior;
-    Unity raw input and validity bits remain unchanged in the input log.
-    """
-    position_tau_s = .060
-    rotation_tau_s = .050
-
-    def __init__(self):
-        self.hands = None
-        self.sender_time = None
-
-    def reset(self, packet):
-        self.hands = {side: dict(position_m=np.array(packet[side]['position_m'], dtype=float),
-            quaternion_wxyz=np.array(packet[side]['quaternion_wxyz'], dtype=float))
-            for side in ('left', 'right')}
-        for hand in self.hands.values():
-            hand['quaternion_wxyz'] /= np.linalg.norm(hand['quaternion_wxyz'])
-        self.sender_time = packet['sender_time_s']
-
-    def update(self, packet):
-        if self.hands is None:
-            self.reset(packet)
-            return
-        dt = packet['sender_time_s']-self.sender_time
-        if dt <= 0:
-            return
-        self.sender_time = packet['sender_time_s']
-        if not all(packet[side]['tracked'] for side in ('left', 'right')):
-            return
-        # A tracking/packet gap must not bypass smoothing with alpha almost 1.
-        dt = min(dt, .10)
-        position_alpha = -math.expm1(-dt/self.position_tau_s)
-        rotation_alpha = -math.expm1(-dt/self.rotation_tau_s)
-        for side, filtered in self.hands.items():
-            hand = packet[side]
-            filtered['position_m'] += position_alpha*(np.asarray(hand['position_m'])-filtered['position_m'])
-            previous = mink.SO3(filtered['quaternion_wxyz'])
-            raw_q = np.asarray(hand['quaternion_wxyz'], dtype=float)
-            desired = mink.SO3(raw_q/np.linalg.norm(raw_q))
-            filtered['quaternion_wxyz'] = (previous @ mink.SO3.exp(
-                rotation_alpha*(previous.inverse() @ desired).log())).wxyz.copy()
-
-
 class UnityCycle:
     """Receipt freshness is local monotonic time, never a cross-host subtraction."""
     def __init__(self, sim):
@@ -195,7 +150,8 @@ class UnityCycle:
         self.engage_offsets = {s: np.zeros(3) for s in ('left', 'right')}
         self.loss_since = None
         self.reason = ''
-        self.pose_filter = PairedHandFilter()
+        self.hands = None
+        self.legacy_filter = PairedHandFilter()
         self.last_tick_action = 'idle'
         self.checked_braking_applied = False
         self.world_input = False
@@ -210,6 +166,7 @@ class UnityCycle:
             self.sequence = -1
             self.sender_time = -1.
             self.armed = False
+            self.hands = None
             self.input_frame = None
         if packet['sequence'] <= self.sequence or packet['sender_time_s'] <= self.sender_time:
             return False
@@ -235,24 +192,41 @@ class UnityCycle:
             if not packet['engage']:
                 self.armed = True
             elif self.armed and not packet['return_home'] and all(packet[s]['tracked'] for s in ('left', 'right')):
-                self.pose_filter.reset(packet)
-                self.origins = {s: (hand['position_m'].copy(),
-                    mink.SO3(hand['quaternion_wxyz']).as_matrix())
-                    for s, hand in self.pose_filter.hands.items()}
-                # Capture once per engage; later packets cannot move this origin.
-                # Missing offsets retain the historical relative mapping for replay.
-                self.engage_offsets = {s: np.array(packet[s].get('engage_offset_m', [0., 0., 0.]), dtype=float)
-                                       for s in ('left', 'right')}
+                if self.world_input:
+                    # Current path is absolute. Engage does not create another
+                    # position or rotation origin.
+                    self.hands = copy_world_hands(packet)
+                    self.origins = None
+                else:
+                    self.legacy_filter.reset(packet)
+                    self.hands = self.legacy_filter.hands
+                    self.origins = {
+                        side: (
+                            hand['position_m'].copy(),
+                            mink.SO3(hand['quaternion_wxyz']).as_matrix(),
+                        )
+                        for side, hand in self.hands.items()
+                    }
+                    # Historical relative packets may contain an engage offset.
+                    self.engage_offsets = {
+                        side: np.array(
+                            packet[side].get('engage_offset_m', [0., 0., 0.]),
+                            dtype=float,
+                        )
+                        for side in ('left', 'right')
+                    }
                 self.armed = False
                 self.state = 'tracking'
                 self.reason = ''
         if self.state == 'tracking':
-            # This protocol already supplies a single aligned world target.
-            # Preserve it exactly; the arm motion policy performs command shaping.
             if self.world_input:
-                self.pose_filter.reset(packet)
+                # Current protocol: absolute aligned-world wrist targets go
+                # straight to target mapping with no legacy smoothing.
+                self.hands = copy_world_hands(packet)
             else:
-                self.pose_filter.update(packet)
+                # Historical relative-frame fixtures keep their original filter.
+                self.legacy_filter.update(packet)
+                self.hands = self.legacy_filter.hands
         return True
 
     def start_return(self, reason):
@@ -280,22 +254,16 @@ class UnityCycle:
                     self.sim.brake('tracking_unavailable')
             else:
                 self.loss_since = None
-                goals = {}
-                for side in ('left', 'right'):
-                    origin_p, origin_r = self.origins[side]
-                    hand = self.pose_filter.hands[side]
-                    home = self.sim.home_targets[side]
-                    hand_r = mink.SO3(np.array(hand['quaternion_wxyz'])).as_matrix()
-                    delta_r = hand_r @ origin_r.T
-                    robot_r = BASIS @ delta_r @ BASIS.T @ home.rotation().as_matrix()
-                    position = home.translation() + BASIS @ (
-                        np.array(hand['position_m']) - origin_p + self.engage_offsets[side])
-                    if self.world_input:
-                        # One direct aligned-world conversion. The prescribed base
-                        # is already rotated before Mink receives this world goal.
-                        position = BASIS @ np.asarray(hand['position_m'])
-                        robot_r = BASIS @ hand_r @ BASIS.T
-                    goals[side] = mink.SE3.from_rotation_and_translation(mink.SO3.from_matrix(robot_r), position)
+                goals = (
+                    world_targets(self.hands)
+                    if self.world_input
+                    else relative_targets(
+                        self.hands,
+                        self.origins,
+                        self.sim.home_targets,
+                        self.engage_offsets,
+                    )
+                )
                 self.last_tick_action = 'tracking'
                 self.sim.step(goals)
         if self.state == 'returning':

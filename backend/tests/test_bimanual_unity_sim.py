@@ -13,7 +13,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
-from g1_bimanual_unity_sim import UnityCycle, PairedHandFilter, decode, BASIS, SCHEMA, mink
+from g1_bimanual_unity_sim import (UnityCycle, PairedHandFilter, decode, BASIS, SCHEMA,
+                                   WORLD_SCHEMA, WORLD_FRAME, mink)
 from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 
@@ -58,6 +59,29 @@ class CycleTests(unittest.TestCase):
         self.cycle.receive(packet(1, False), .02)
         self.cycle.receive(packet(2, True), .04)
         self.assertEqual(self.cycle.state, 'tracking')
+
+    def test_world_frame_bypasses_legacy_filter(self):
+        p0 = packet(0, False)
+        p1 = packet(1, True)
+        p2 = packet(2, True)
+        for value in (p0, p1, p2):
+            value['schema'] = WORLD_SCHEMA
+            value['input_frame'] = WORLD_FRAME
+            value['base_yaw_rad'] = 0.0
+        p2['right']['position_m'][0] += .123
+        self.cycle.legacy_filter.reset = Mock(
+            side_effect=AssertionError('world path used legacy reset'))
+        self.cycle.legacy_filter.update = Mock(
+            side_effect=AssertionError('world path used legacy update'))
+        self.assertTrue(self.cycle.receive(p0, 0.0))
+        self.assertTrue(self.cycle.receive(p1, .02))
+        self.assertIsNone(self.cycle.origins)
+        self.assertTrue(self.cycle.receive(p2, .04))
+        np.testing.assert_allclose(
+            self.cycle.hands['right']['position_m'],
+            p2['right']['position_m'])
+        self.cycle.legacy_filter.reset.assert_not_called()
+        self.cycle.legacy_filter.update.assert_not_called()
 
     def test_mapping_same_frame_both_hands(self):
         self.engage()

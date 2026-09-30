@@ -124,8 +124,11 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(metadata['mujoco_version'], '3.12.0')
         self.assertEqual(metadata['mujoco_native_version'], '3.12.0')
         self.assertEqual(set(metadata['source_sha256']), {
-            'g1_bimanual_runtime.py', 'g1_bimanual_sim.py', 'g1_bimanual_unity_sim.py',
-            'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py', 'g1_bimanual_limits.py'})
+            'g1_bimanual_runtime.py', 'g1_bimanual_sim.py',
+            'g1_bimanual_unity_sim.py', 'g1_bimanual_target.py',
+            'g1_bimanual_legacy_input.py',
+            'g1_bimanual_motion_policy.py', 'g1_bimanual_return.py',
+            'g1_bimanual_limits.py', 'g1_bimanual_profile.py'})
         arm_velocity = [math.radians(90.0)] * 4 + [math.radians(180.0)] * 3
         self.assertEqual(metadata['motion_limits']['velocity_rad_s'], arm_velocity * 2)
         self.assertEqual(metadata['motion_limits']['acceleration_rad_s2'],

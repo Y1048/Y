@@ -16,20 +16,12 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public OVRSkeleton ovr_skeleton;
     public bool prefer_skeleton_wrist = true;
     public bool use_anatomical_hand_frame = true;
-    public bool use_palm_center = false;
     public bool require_tracked_hand = true;
-    public bool apply_position = true;
-    public bool apply_rotation = true;
     public bool auto_calibrate_on_first_track = true;
     public bool require_alignment_to_engage = true;
     public bool require_orientation_alignment_to_engage = false;
-    public bool use_reference_yaw = true;
     [FormerlySerializedAs("neutral_target_position")]
     public Vector3 preview_neutral_offset = new Vector3(0.22f, -0.24f, 0.48f);
-    public Vector3 movement_scale = Vector3.one;
-    public Vector3 position_offset = Vector3.zero;
-    [Range(0.01f, 1.0f)]
-    public float position_smoothing = 1.00f;
     public float auto_calibration_delay = 0.35f;
     public float engagement_distance = 0.10f;
     public float engagement_orientation_tolerance_degrees = 30.0f;
@@ -53,7 +45,6 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
     public Vector3 OperatorOrigin { get; private set; }
     public Quaternion OperatorHeading { get; private set; } = Quaternion.identity;
     public Vector3 TrackedWristPosition { get; private set; }
-    public Vector3 TrackedHandPosition { get; private set; }
     public Quaternion TrackedWristRotation { get; private set; } = Quaternion.identity;
     public Vector3 DisplayedWristPosition { get; private set; }
     public Quaternion DisplayedWristRotation { get; private set; } = Quaternion.identity;
@@ -188,18 +179,11 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
-        UpdateOperatorTarget();
+        UpdatePreviewTarget();
 
-        if (apply_position)
-        {
-            Vector3 local_target = preview_neutral_offset + position_offset + OperatorTargetDelta;
-            target_transform.position = OperatorOrigin + OperatorHeading * local_target;
-        }
-
-        if (apply_rotation)
-        {
-            target_transform.rotation = MappedHandRotation;
-        }
+        Vector3 local_target = preview_neutral_offset + OperatorTargetDelta;
+        target_transform.position = OperatorOrigin + OperatorHeading * local_target;
+        target_transform.rotation = MappedHandRotation;
 
         LogStatus(true);
     }
@@ -243,7 +227,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         EngagementProgress = 1.0f;
         EngagementState = "active";
 
-        Vector3 local_target = preview_neutral_offset + position_offset;
+        Vector3 local_target = preview_neutral_offset;
         target_transform.position = OperatorOrigin + OperatorHeading * local_target;
         target_transform.rotation = EngagementTargetRotation;
         Debug.Log("G1 right hand calibrated to the headset forward frame.");
@@ -298,8 +282,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         preview_neutral_offset = Quaternion.Inverse(OperatorHeading)
-            * (world_position - OperatorOrigin)
-            - position_offset;
+            * (world_position - OperatorOrigin);
         engagement_target_local_rotation = Quaternion.Inverse(OperatorHeading)
             * world_rotation;
         UpdateEngagementTargetPose();
@@ -312,7 +295,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             return;
         }
 
-        Vector3 local_target = preview_neutral_offset + position_offset;
+        Vector3 local_target = preview_neutral_offset;
         EngagementTargetPosition = OperatorOrigin + OperatorHeading * local_target;
         EngagementTargetRotation = OperatorHeading
             * engagement_target_local_rotation;
@@ -456,7 +439,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         return position_aligned && orientation_aligned;
     }
 
-    private void UpdateOperatorTarget()
+    private void UpdatePreviewTarget()
     {
         // 머리 이동을 무조건 빼면 고개만 움직여도 반대 방향의 팔 명령이 생긴다.
         // 손목과 머리가 같은 방향과 비슷한 거리로 움직인 프레임만 몸 이동으로 누적한다.
@@ -504,11 +487,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
         }
 
         Vector3 local_delta = Quaternion.Inverse(OperatorHeading) * hand_delta;
-        Vector3 scaled_delta = Vector3.Scale(local_delta, movement_scale);
-        OperatorTargetDelta = Vector3.Lerp(
-            OperatorTargetDelta,
-            scaled_delta,
-            Mathf.Clamp01(position_smoothing));
+        OperatorTargetDelta = local_delta;
 
         Quaternion hand_rotation_delta = TrackedWristRotation
             * Quaternion.Inverse(neutral_hand_rotation);
@@ -552,7 +531,6 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
             SourceWristRotation);
         TrackedWristRotation = current_wrist_rotation;
         DisplayedWristRotation = current_wrist_rotation;
-        TrackedHandPosition = GetPalmCenterPosition();
     }
 
     private void UpdateTrackedHead()
@@ -830,27 +808,6 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
                 pinky_finger_base_transform = bone_value.Transform;
             }
         }
-    }
-
-    private Vector3 GetPalmCenterPosition()
-    {
-        if (!use_palm_center || ovr_skeleton == null || ovr_skeleton.Bones == null)
-        {
-            return TrackedWristPosition;
-        }
-
-        foreach (OVRBone bone_value in ovr_skeleton.Bones)
-        {
-            if (bone_value != null && bone_value.Id == OVRSkeleton.BoneId.Hand_Middle1)
-            {
-                return Vector3.Lerp(
-                    TrackedWristPosition,
-                    CorrectInputPosition(bone_value.Transform.position),
-                    0.50f);
-            }
-        }
-
-        return TrackedWristPosition;
     }
 
     private Transform GetSkeletonWristTransform()

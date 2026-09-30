@@ -373,18 +373,11 @@ MonoBehaviour:
   ovr_skeleton: {fileID: 1556345699}
   prefer_skeleton_wrist: 1
   use_anatomical_hand_frame: 1
-  use_palm_center: 0
   require_tracked_hand: 1
-  apply_position: 1
-  apply_rotation: 1
   auto_calibrate_on_first_track: 1
   require_alignment_to_engage: 1
   require_orientation_alignment_to_engage: 0
-  use_reference_yaw: 1
   preview_neutral_offset: {x: 0.22, y: -0.24, z: 0.48}
-  movement_scale: {x: 1, y: 1, z: 1}
-  position_offset: {x: 0, y: 0, z: 0}
-  position_smoothing: 1
   auto_calibration_delay: 0.35
   engagement_distance: 0.07
   engagement_orientation_tolerance_degrees: 30
@@ -430,8 +423,8 @@ MonoBehaviour:
   xr_tracking_space: {fileID: 1630365235}
   robot_preview: {fileID: 539268364}
   align_position_once: 1
-  lock_position: 1
-  head_tracking_stable_duration: 0.15
+  lock_position: 0
+  head_tracking_stable_duration: 1
   operator_height_above_shoulders_m: 0.3
   operator_forward_offset_m: 0.05
   minimum_floor_head_height: 0.4
@@ -644,18 +637,11 @@ MonoBehaviour:
   ovr_skeleton: {fileID: 267485915}
   prefer_skeleton_wrist: 1
   use_anatomical_hand_frame: 1
-  use_palm_center: 0
   require_tracked_hand: 1
-  apply_position: 1
-  apply_rotation: 1
   auto_calibrate_on_first_track: 1
   require_alignment_to_engage: 1
   require_orientation_alignment_to_engage: 0
-  use_reference_yaw: 1
   preview_neutral_offset: {x: -0.22, y: -0.24, z: 0.48}
-  movement_scale: {x: 1, y: 1, z: 1}
-  position_offset: {x: 0, y: 0, z: 0}
-  position_smoothing: 1
   auto_calibration_delay: 0.35
   engagement_distance: 0.07
   engagement_orientation_tolerance_degrees: 30

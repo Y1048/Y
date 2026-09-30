@@ -71,7 +71,10 @@ G1 front camera
 핵심 파일:
 
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py`
-- `MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py`
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py`: packet/state cycle only
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_target.py`: current absolute world-frame target mapping
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_legacy_input.py`: historical relative-frame filter/mapping only
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py`: read-only effective upper-body tuning profile
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py`
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py`
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_return.py`

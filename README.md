@@ -75,8 +75,9 @@ G1 front camera
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_target.py`: current absolute world-frame target mapping
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_legacy_input.py`: historical relative-frame filter/mapping only
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py`: read-only effective upper-body tuning profile
-- `MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py`
-- `MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py`
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py`: bilateral QP orchestration
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py`: soft IK preferences/heuristics
+- `MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py`: hard limits, collision bounds, acceleration/braking bounds, checked stop-tail
 - `MuJoCo_G1_Controller/scripts/g1_bimanual_return.py`
 - `MuJoCo_G1_Controller/scripts/g1_mink_shared.py`
 - `MuJoCo_G1_Controller/scripts/g1_arm_common.py`

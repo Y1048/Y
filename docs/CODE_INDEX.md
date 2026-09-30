@@ -10,7 +10,7 @@
 - Python 선언은 AST로 추출하며 C#/C++/배치의 호출 그래프를 자동 추정하지 않는다.
 - 상태는 2026-09-03 확인 범위다. 이후 변경은 다시 검토해야 한다.
 
-대상 파일: **99개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
+대상 파일: **101개**. 해시 앞 12자리는 검토 시점 파일 비교용이다.
 
 ## 포함 범위
 
@@ -46,9 +46,10 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_motion_policy.py) | 366 | 목록 확인 | ElbowClearanceTask, ShoulderComfortTask, ArmMotionPolicy | `8cae026dcb8d` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py) | 101 | 목록 확인 | TrackingProfile, ReturnProfile | `f6f49e5ff7c1` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_return.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_return.py) | 288 | 목록 확인 | BimanualReturnMotion | `c61e80863c8a` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py) | 132 | 입출력 확인 | startup_stage, require_validated_engine, load_engine, runtime_metadata, main | `3a079f014e25` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py) | 591 | 목록 확인 | _recorded_motion_limits, _current_motion_limits, _open_text, _percentiles, _current_source_hashes (+7) | `1b3b54b43015` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py) | 458 | 입출력 확인 | BimanualSimulation, targets_from_json, main | `a991c6e01cb4` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py) | 133 | 입출력 확인 | startup_stage, require_validated_engine, load_engine, runtime_metadata, main | `aa48f69e5321` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py) | 278 | 목록 확인 | BimanualSafetyEnvelope | `c0ef748a801b` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py) | 592 | 목록 확인 | _recorded_motion_limits, _current_motion_limits, _open_text, _percentiles, _current_source_hashes (+7) | `416ae9b06f99` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py) | 319 | 입출력 확인 | BimanualSimulation, targets_from_json, main | `304e267cb4dc` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_target.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_target.py) | 44 | 목록 확인 | copy_world_hands, world_target, world_targets | `3a7a438354ab` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py) | 494 | 입출력 확인 | decode, UnityCycle, main | `3eee7c604033` |
 | [MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py](../MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py) | 426 | 목록 확인 | PositionProgressConstraint, FeasiblePlan, FeasibleTargetPlanner | `63e4696e742a` |
@@ -83,7 +84,8 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_bimanual_quest_reengage.py](../backend/tests/test_bimanual_quest_reengage.py) | 149 | 목록 확인 | rows, QuestReengageReplayTests | `b9c810f2463c` |
 | [backend/tests/test_bimanual_recorded_session.py](../backend/tests/test_bimanual_recorded_session.py) | 178 | 목록 확인 | load_fixture, RecordedStagedSessionTests | `b5171d78b2f4` |
 | [backend/tests/test_bimanual_return.py](../backend/tests/test_bimanual_return.py) | 483 | 목록 확인 | assert_output, recorded_return, StagedReturnTests | `4195b0221e6c` |
-| [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 150 | 목록 확인 | fake_engine, RuntimeTests | `f6a922866814` |
+| [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 151 | 목록 확인 | fake_engine, RuntimeTests | `fe3b34e2744f` |
+| [backend/tests/test_bimanual_safety_boundary.py](../backend/tests/test_bimanual_safety_boundary.py) | 57 | 목록 확인 | BimanualSafetyBoundaryTests | `c06c728a8444` |
 | [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 399 | 목록 확인 | SessionReportTests | `d3bf25568dfd` |
 | [backend/tests/test_bimanual_sim.py](../backend/tests/test_bimanual_sim.py) | 264 | 목록 확인 | BimanualTests | `2caea488127a` |
 | [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 295 | 목록 확인 | packet, CycleTests | `ae3499a9b387` |

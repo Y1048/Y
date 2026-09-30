@@ -57,13 +57,15 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 
 2026-09-30 R1a 재검증: backend 223/223 PASS, hardware 38/38 PASS, `G1.zip archive-validate --strict` PASS, bimanual exact replay state/reason/accepted mismatch 0, max q difference `2.00062189037453e-13 rad`. 변경 C# 3개는 Roslyn syntax error 0. Unity batch validator는 코드 오류가 아니라 기존 Package Manager IPC startup failure로 실행 전 종료되었고, 오래된 `.csproj` 직접 build는 이미 삭제된 과거 C# 파일 4개를 참조해 유효한 semantic compile gate가 아니다.
 
+2026-09-30 R1c 재검증: backend 226/226 PASS, hardware 38/38 PASS, `G1.zip archive-validate --strict` exact PASS, accepted/state/reason mismatch 0, max q difference `2.00062189037453e-13 rad`. `g1_bimanual_safety.py`가 hard geometry clearance, Mink collision bound, acceleration/joint-limit/yaw braking bounds와 checked stop-tail을 소유한다. `g1_bimanual_sim.py`에는 기존 테스트/진단 호환용 `limits`, `clearance()`, `checked_stop_plan()` proxy/alias만 남긴다.
+
 ## External dependencies
 
 Unity 6000.5.4f1, OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. Python package dependency만 project-local로 완전히 고정한다.
 
 ## Upper-body simplification discussion
 
-상체 제어 구조를 수정하거나 gain/limit를 재튜닝하기 전에 `docs/G1_UPPER_BODY_CONTROL_SIMPLIFICATION_AUDIT_20260929.md`를 먼저 읽는다. 2026-09-30 R1a에서 dead Python members를 제거하고, current `unity_display_world_v1` target mapping을 `g1_bimanual_target.py`, historical relative input을 `g1_bimanual_legacy_input.py`, 현재 tuning을 `g1_bimanual_profile.py`로 분리했다. Unity Binder의 canonical scene no-op 옵션도 제거하고 head-alignment serialized 값과 실제 runtime 값을 일치시켰다. R1b에서는 bilateral mode에서 이미 disabled였던 `G1ExistingTargetUdpSender`와 scene wiring, preview의 old command-overlay/transport diagnostics를 제거했다. 동작 변경 heuristic ablation은 아직 시작하지 않았다. 실제 replay profile에서는 QP solver 자체보다 checked stop-tail/geometry 검증이 지배적인 계산비용이다.
+상체 제어 구조를 수정하거나 gain/limit를 재튜닝하기 전에 `docs/G1_UPPER_BODY_CONTROL_SIMPLIFICATION_AUDIT_20260929.md`를 먼저 읽는다. 2026-09-30 R1a에서 dead Python members를 제거하고, current `unity_display_world_v1` target mapping을 `g1_bimanual_target.py`, historical relative input을 `g1_bimanual_legacy_input.py`, 현재 tuning을 `g1_bimanual_profile.py`로 분리했다. Unity Binder의 canonical scene no-op 옵션도 제거하고 head-alignment serialized 값과 실제 runtime 값을 일치시켰다. R1b에서는 bilateral mode에서 이미 disabled였던 `G1ExistingTargetUdpSender`와 scene wiring, preview의 old command-overlay/transport diagnostics를 제거했다. R1c에서는 기존 hard safety 계산을 `BimanualSafetyEnvelope`로 이동했다. 동작 변경 heuristic ablation은 아직 시작하지 않았다. 실제 replay profile에서는 QP solver 자체보다 checked stop-tail/geometry 검증이 지배적인 계산비용이다.
 
 ## 작업 원칙
 

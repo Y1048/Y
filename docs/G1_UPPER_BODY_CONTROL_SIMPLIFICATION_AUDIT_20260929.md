@@ -446,3 +446,32 @@ The dormant single-right-arm Unity command path was removed after R1a establishe
 - changed C# files pass Roslyn syntax parsing with 0 errors
 
 No Python controller or live heuristic was changed in R1b. The next structural step is to put the existing live safety calculations behind one named safety boundary while preserving numerical behavior.
+
+## R1c implementation result — 2026-09-30
+
+The existing hard safety math is now behind one named `BimanualSafetyEnvelope` boundary in `g1_bimanual_safety.py`.
+
+Owned by the safety boundary:
+
+- Mink configuration/velocity/collision limits
+- zero-distance collision witness correction
+- collision stopping-headroom QP bounds
+- acceleration QP bounds
+- hard joint-limit stopping-speed bounds
+- per-arm shoulder-yaw stopping bounds
+- hard geometry clearance data/calculation
+- acceleration-bounded sampled checked stopping tail
+
+`g1_bimanual_sim.py` now reads as task preparation -> `mink.build_ik` -> `safety.constrain_problem` -> QP solve -> `safety.checked_stop_plan` -> apply command. Compatibility aliases/proxies (`sim.limits`, `sim.clearance`, `sim.checked_stop_plan`, geometry check data) remain because return logic, diagnostics and regression fault-injection tests already depend on them.
+
+No safety formula or tuning value was intentionally changed. A historical 60 deg/s^2 replay regression initially exposed that the new module had captured the default 90 deg/s^2 profile independently; this was corrected by making the safety boundary share the simulation's exact profile instance. A later hard-clearance move initially bypassed the public `sim.clearance` fault-injection hook; checked-stop validation was corrected to call through that proxy while implementation ownership remains in the safety object.
+
+Final validation after these corrections:
+
+- backend: 226/226 PASS
+- hardware: 38/38 PASS
+- `G1.zip archive-validate --strict`: exact PASS
+- accepted/state/reason mismatch: 0 / 0 / 0
+- maximum q difference: `2.00062189037453e-13 rad`
+
+R1 structural cleanup is now sufficient to start separate heuristic ablation work. Any removal of torso projection, elbow assist, wrist priority, shoulder comfort/yaw envelope, or orientation priority must be a behavior-changing experiment with its own before/after evidence; it must not be folded into structural cleanup.

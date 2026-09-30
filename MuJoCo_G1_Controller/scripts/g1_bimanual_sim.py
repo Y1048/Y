@@ -15,6 +15,7 @@ import g1_mink_shared as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
 from g1_bimanual_return import BimanualReturnMotion
+from g1_bimanual_safety import BimanualSafetyEnvelope
 from g1_bimanual_profile import TRACKING as PROFILE
 
 
@@ -55,7 +56,6 @@ class BimanualSimulation:
             raise ValueError('Expected one prescribed G1 base joint')
         self.base_qadr = int(self.model.jnt_qposadr[free_ids[0]])
         self.initial_base_pose = self.home[self.base_qadr:self.base_qadr+7].copy()
-        self.check_data = mujoco.MjData(self.model)
         controlled = base.g1.LEFT_ARM_BODY_NAMES | base.g1.RIGHT_ARM_BODY_NAMES
         pairs, geom_ids = base._build_collision_pairs(self.model, controlled)
         # Mirror the existing right elbow/wrist structural exemption only.
@@ -66,22 +66,18 @@ class BimanualSimulation:
             if bodies != {"left_elbow_link", "left_wrist_yaw_link"}:
                 keep.append(i)
         self.pairs = [geom_ids[i] for i in keep]
-        self.pair_array = np.asarray(self.pairs, dtype=int)
-        # Bounding spheres enclose each geom's local AABB. If two such spheres
-        # are farther apart than the hard threshold, the actual geoms are too.
-        self._clearance_local_centers = self.model.geom_aabb[:, :3].copy()
-        self._clearance_bounding_radii = np.linalg.norm(
-            self.model.geom_aabb[:, 3:], axis=1)
         self.home_targets = {side: self.config.get_transform_frame_to_world(
             side + "_wrist_yaw_link", "body") for side in ("left", "right")}
         self.caps = np.asarray(PROFILE.joint_velocity_limits_rad_s, dtype=float)
-        self.limits = [mink.ConfigurationLimit(self.model),
-            mink.VelocityLimit(self.model, dict(zip(self.names, self.caps))),
-            mink.CollisionAvoidanceLimit(self.model,
-                geom_pairs=[pairs[i] for i in keep],
-                minimum_distance_from_collisions=PROFILE.collision_minimum_m,
-                collision_detection_distance=PROFILE.collision_detection_distance_m,
-                gain=PROFILE.collision_gain)]
+        self.profile = PROFILE
+        self.safety = BimanualSafetyEnvelope(
+            self, [pairs[i] for i in keep])
+        # Compatibility aliases: implementation ownership is in SafetyEnvelope.
+        self.limits = self.safety.limits
+        self.check_data = self.safety.check_data
+        self.pair_array = self.safety.pair_array
+        self._clearance_local_centers = self.safety.clearance_local_centers
+        self._clearance_bounding_radii = self.safety.clearance_bounding_radii
         self.ranges = self.model.jnt_range[ids].copy()
         self.motion = {side: ArmMotionPolicy(self.model, self.config, side,
                        self.home, self.dt, self.clearance_m) for side in ('left', 'right')}
@@ -104,41 +100,8 @@ class BimanualSimulation:
             raise ValueError("Initial bilateral model violates clearance")
 
     def clearance(self, q, threshold=None):
-        self.check_data.qpos[:] = q
-        # Geometry distance needs only kinematics in the normal non-contact path.
-        # If MuJoCo reports an exact zero, promote once to fwdPosition so the
-        # established exact-contact / zero-mesh probe logic still sees contacts.
-        mujoco.mj_kinematics(self.model, self.check_data)
-        pairs = self.pairs
-        if threshold is not None:
-            # Each sphere encloses its local geom AABB. Sphere separation is a
-            # conservative lower bound on real geometry distance, without the
-            # rotated-world-AABB extent calculation on every stopping sample.
-            rotation = self.check_data.geom_xmat.reshape(-1, 3, 3)
-            center = self.check_data.geom_xpos + np.einsum(
-                'nij,nj->ni', rotation, self._clearance_local_centers)
-            a, b = self.pair_array.T
-            lower = (np.linalg.norm(center[a]-center[b], axis=1)
-                     - self._clearance_bounding_radii[a]
-                     - self._clearance_bounding_radii[b])
-            if not np.isfinite(lower).all():
-                return float('nan')
-            pairs = self.pair_array[lower <= threshold + 1e-8]
-        nearest = None
-        fromto = np.zeros(6, dtype=float)
-        promoted = False
-        for first, second in pairs:
-            distance = float(mujoco.mj_geomDistance(
-                self.model, self.check_data, int(first), int(second), .2, fromto))
-            if abs(distance) <= base.ZERO_DISTANCE_TOLERANCE_M:
-                if not promoted:
-                    mujoco.mj_fwdPosition(self.model, self.check_data)
-                    promoted = True
-                distance = base._robust_geom_distance(
-                    self.model, self.check_data, int(first), int(second), .2, fromto)
-            if distance < .2 and (nearest is None or distance < nearest):
-                nearest = distance
-        return .2 if nearest is None else nearest
+        """Compatibility proxy for hard geometry safety."""
+        return self.safety.clearance(q, threshold=threshold)
 
     def set_base_yaw(self, yaw):
         """Prescribed Omni base pose; not a joint and never optimized by IK."""
@@ -210,75 +173,8 @@ class BimanualSimulation:
         problem = mink.build_ik(
             self.config, tasks, self.dt, damping=PROFILE.build_ik_damping,
                                 limits=self.limits[:2], constraints=[])
-        collision = self.limits[2]
-        bound = collision.compute_qp_inequalities(self.config, self.dt)
-        cg, ch = bound.G.copy(), bound.h.copy()
-        # Installed Mink collision bounds are velocity units; build_ik solves
-        # displacement. Correct spurious zero-distance mesh witnesses as the
-        # established right-arm path does, now differentiating both arms.
-        for i in np.flatnonzero(ch == collision.bound_relaxation):
-            a, b = collision.geom_id_pairs[i]
-            raw = mujoco.mj_geomDistance(
-                self.model, self.config.data, a, b,
-                PROFILE.collision_detection_distance_m, None)
-            if abs(raw) > 1e-12 or base._has_exact_geom_contact(self.config.data, a, b):
-                continue
-            def distance(q):
-                self.check_data.qpos[:] = q
-                mujoco.mj_forward(self.model, self.check_data)
-                return base._robust_geom_distance(
-                    self.model, self.check_data, a, b,
-                    PROFILE.collision_detection_distance_m, np.zeros(6))
-            corrected = distance(self.config.q)
-            if corrected <= 1e-12:
-                continue
-            cg[i] = 0
-            if corrected >= PROFILE.collision_detection_distance_m:
-                ch[i] = np.inf
-                continue
-            for dof, address in zip(self.dofs, self.qids):
-                plus, minus = self.config.q.copy(), self.config.q.copy()
-                plus[address] += 1e-5
-                minus[address] -= 1e-5
-                cg[i, dof] = -(distance(plus) - distance(minus)) / 2e-5
-            ch[i] = collision.gain * max(
-                0., corrected - PROFILE.collision_minimum_m) / self.dt
-        collision_h = ch*self.dt
-        if not returning:
-            # Shared relative-distance braking headroom from the single-arm
-            # policy. For an inter-arm row, both arms contribute acceleration.
-            normal_acceleration = (
-                PROFILE.collision_stopping_acceleration_scale
-                * (np.abs(cg[:, self.dofs]) @ np.full(
-                    len(self.dofs), PROFILE.joint_acceleration_limit_rad_s2)))
-            remaining = np.maximum(0., np.where(np.isfinite(ch),
-                (ch-collision.bound_relaxation)*self.dt/collision.gain, 0.))
-            stopping_speed = .5*(np.sqrt((normal_acceleration*self.dt)**2 +
-                2*normal_acceleration*remaining)-normal_acceleration*self.dt)
-            finite_stop = np.isfinite(ch) & np.isfinite(stopping_speed)
-            collision_h[finite_stop] = np.minimum(collision_h[finite_stop], stopping_speed[finite_stop]*self.dt)
-        problem.G = np.vstack([problem.G, cg])
-        problem.h = np.r_[problem.h, collision_h]
-        # Mink solves joint displacement, not velocity.
-        eye = np.eye(self.model.nv)[self.dofs]
-        dv = PROFILE.joint_acceleration_limit_rad_s2 * self.dt
-        hi = (self.velocity[self.dofs] + dv) * self.dt
-        lo = (self.velocity[self.dofs] - dv) * self.dt
-        problem.G = np.vstack([problem.G, eye, -eye])
-        problem.h = np.concatenate([problem.h, hi, -lo])
-        if not returning:
-            # Approach hard joint limits with braking headroom, not nonzero speed.
-            a = PROFILE.joint_acceleration_limit_rad_s2
-            q = self.config.q[self.qids]
-            speed = lambda d: PROFILE.joint_limit_stopping_speed_scale * (
-                np.sqrt((a*self.dt)**2 + 2*a*np.maximum(0., d)) - a*self.dt)
-            problem.G = np.vstack([problem.G, eye, -eye])
-            problem.h = np.r_[problem.h, speed(self.ranges[:, 1]-q)*self.dt,
-                              speed(q-self.ranges[:, 0])*self.dt]
-            for policy in self.motion.values():
-                rows, bounds = policy.yaw_velocity_bounds()
-                problem.G = np.vstack([problem.G, rows])
-                problem.h = np.r_[problem.h, bounds*self.dt]
+        problem = self.safety.constrain_problem(
+            problem, returning=returning)
         # Solve in rad/s, normalize constraint rows and objective like the
         # established single-arm path. All original delta-q bounds stay intact.
         g = problem.G[:, self.dofs]*self.dt
@@ -352,43 +248,8 @@ class BimanualSimulation:
         return self._apply_command(candidate, velocity, returning=returning)
 
     def checked_stop_plan(self, first_velocity):
-        """Discrete acceleration-bounded stopping tail, sampled geometry only.
-
-        Validate every dt and at most .25 degree substeps. This is not a
-        continuous collision proof or a physical robot braking model.
-        """
-        dv = PROFILE.joint_acceleration_limit_rad_s2 * self.dt
-        if (not np.isfinite(first_velocity).all()
-                or np.any(np.abs(first_velocity[self.dofs]) > self.caps + 1e-6)
-                or np.any(np.abs(first_velocity-self.velocity) > dv + 1e-6)):
-            return None, "velocity_acceleration"
-        q = self.config.q.copy()
-        velocity = first_velocity.copy()
-        plan = []
-        frozen = np.ones(self.model.nq, dtype=bool)
-        frozen[self.qids] = False
-        for _ in range(int(np.ceil(np.max(self.caps)/dv)) + 2):
-            candidate = q.copy()
-            mujoco.mj_integratePos(self.model, candidate, velocity, self.dt)
-            candidate[frozen] = self.home[frozen]
-            if (np.any(candidate[self.qids] < self.ranges[:, 0] - 1e-8)
-                    or np.any(candidate[self.qids] > self.ranges[:, 1] + 1e-8)):
-                return None, "joint_range"
-            n = max(2, int(np.ceil(
-                np.max(np.abs(candidate-q)) / PROFILE.checked_stop_substep_rad)))
-            for fraction in np.linspace(0, 1, n + 1)[1:]:
-                clearance = self.clearance(q + fraction*(candidate-q), threshold=self.clearance_m)
-                if not np.isfinite(clearance) or clearance < self.clearance_m:
-                    return None, "swept_clearance"
-            plan.append((candidate.copy(), velocity.copy()))
-            if not np.any(velocity):
-                # Keep a checked stationary tail available even at rest.
-                if len(plan) == 1:
-                    plan.append((candidate.copy(), velocity.copy()))
-                return plan, ""
-            q = candidate
-            velocity = np.sign(velocity) * np.maximum(0, np.abs(velocity)-dv)
-        return None, "braking_horizon"
+        """Compatibility proxy for the named safety boundary."""
+        return self.safety.checked_stop_plan(first_velocity)
 
 
 def targets_from_json(record):

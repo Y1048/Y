@@ -433,3 +433,16 @@ Validation after the full R1a working tree:
 Unity Editor batch validation remains environmentally blocked before package initialization by UnityPackageManager IPC startup failure. The generated Assembly-CSharp.csproj is also stale and references four C# files already deleted before R1a, so its direct build failure is not evidence against the patch.
 
 R1a deliberately did not remove or retune any live heuristic. The next structural step is to isolate/remove the dormant right-arm-only Unity sender and then place the existing safety calculations behind a named safety boundary before starting any heuristic ablation.
+
+## R1b implementation result — 2026-09-30
+
+The dormant single-right-arm Unity command path was removed after R1a established the canonical bilateral path.
+
+- deleted `G1ExistingTargetUdpSender.cs` and its scene component
+- removed `existingSender`/`target_sender` wiring from the bilateral sender and preview
+- removed preview logic that depended on the old sender: command overlay, legacy feasible-target/session coupling, workspace-command diagnostics, and old transport error logging
+- retained hardware/read-only display selection and the separate simulation-state receiver because they still serve display/inspection diagnostics independently of command output
+- updated the Unity batch validator to validate the bilateral sender directly
+- changed C# files pass Roslyn syntax parsing with 0 errors
+
+No Python controller or live heuristic was changed in R1b. The next structural step is to put the existing live safety calculations behind one named safety boundary while preserving numerical behavior.

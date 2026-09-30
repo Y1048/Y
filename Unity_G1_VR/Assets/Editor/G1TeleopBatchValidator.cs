@@ -16,21 +16,21 @@ public static class G1TeleopBatchValidator
 
         G1ExistingHandTargetBinder binder_value =
             FindSceneComponent<G1ExistingHandTargetBinder>();
-        G1ExistingTargetUdpSender sender_value =
-            FindSceneComponent<G1ExistingTargetUdpSender>();
+        G1BimanualSimulationSender bimanual_value =
+            FindSceneComponent<G1BimanualSimulationSender>();
         G1UnityRightArmPreview preview_value =
             FindSceneComponent<G1UnityRightArmPreview>();
         G1HeadLockedCamera camera_lock_value =
             FindSceneComponent<G1HeadLockedCamera>();
 
         AssertCondition(binder_value != null, "Hand target binder is missing.");
-        AssertCondition(sender_value != null, "UDP sender is missing.");
+        AssertCondition(bimanual_value != null, "Bimanual sender is missing.");
         AssertCondition(preview_value != null, "Unity arm preview is missing.");
         AssertCondition(camera_lock_value != null, "G1 head-locked camera is missing.");
 
         ValidateBinder(binder_value);
-        ValidateSender(sender_value, binder_value);
-        ValidateStateReceivers(sender_value, preview_value);
+        ValidateBimanualSender(bimanual_value, binder_value);
+        ValidateStateReceivers(preview_value);
         AssertCondition(
             !preview_value.show_inspection_scene,
             "Inspection panel visuals must remain hidden by default.");
@@ -41,7 +41,6 @@ public static class G1TeleopBatchValidator
         ValidateOfficialRig();
         ValidatePositionOnlyEngagement();
         ValidateTriggerRelativeRotation();
-        ValidateWorkspaceReengagement();
 
         Debug.Log("G1 teleoperation project validation passed.");
     }
@@ -118,25 +117,22 @@ public static class G1TeleopBatchValidator
             "An implausible tracked wrist step was accepted.");
     }
 
-    private static void ValidateSender(
-        G1ExistingTargetUdpSender sender_value,
+    private static void ValidateBimanualSender(
+        G1BimanualSimulationSender sender_value,
         G1ExistingHandTargetBinder binder_value)
     {
         AssertCondition(
-            sender_value.hand_binder == binder_value,
-            "UDP sender is not connected to the hand binder.");
+            sender_value.useExistingScene,
+            "Canonical teleoperation must use the existing-scene bilateral path.");
         AssertCondition(
-            !sender_value.disengage_on_workspace_exit,
-            "Automatic workspace disengagement must remain disabled.");
+            sender_value.rightBinder == binder_value,
+            "Bimanual sender is not connected to the right hand binder.");
         AssertCondition(
-            !sender_value.use_rectangular_workspace_fallback,
-            "Disabled rectangular workspace fallback must not clamp UDP targets.");
+            sender_value.leftBinder != null,
+            "Bimanual sender left hand binder is missing.");
         AssertCondition(
-            sender_value.disengage_on_tracking_loss,
-            "Confirmed hand-tracking loss must disengage teleoperation.");
-        AssertCondition(
-            sender_value.tracking_loss_confirm_seconds >= 0.30f,
-            "Tracking-loss disengagement debounce is too short.");
+            sender_value.port == 5020,
+            "Bimanual loopback port must remain 5020.");
     }
 
     private static void ValidateOfficialRig()
@@ -188,7 +184,6 @@ public static class G1TeleopBatchValidator
     }
 
     private static void ValidateStateReceivers(
-        G1ExistingTargetUdpSender sender_value,
         G1UnityRightArmPreview preview_value)
     {
         G1RobotStateUdpReceiver simulation_receiver = preview_value.state_receiver;
@@ -214,9 +209,6 @@ public static class G1TeleopBatchValidator
                     == G1RobotStateUdpReceiver.HardwareStateSource
                 && !hardware_receiver.accept_packets_without_source,
             "Read-only G1 hardware state receiver contract is invalid.");
-        AssertCondition(
-            sender_value.state_receiver == simulation_receiver,
-            "Target sender safety feedback must remain on the Mink receiver.");
     }
 
     private static void ValidateBaseCoordinateMapping()
@@ -606,59 +598,6 @@ public static class G1TeleopBatchValidator
                 95.0f,
                 30.0f),
             "The optional orientation gate must still work when explicitly enabled.");
-    }
-
-    private static void ValidateWorkspaceReengagement()
-    {
-        AssertCondition(
-            !G1ExistingTargetUdpSender.GetCommandValidity(true, false),
-            "Temporary tracking loss must emit an idle hold command.");
-        AssertCondition(
-            G1ExistingTargetUdpSender.GetCommandValidity(true, true),
-            "Calibrated valid tracking must emit an active command.");
-        AssertCondition(
-            !G1ExistingTargetUdpSender.GetCommandValidity(false, true),
-            "Tracking alone must not activate an uncalibrated command.");
-        AssertCondition(
-            !G1ExistingTargetUdpSender.ShouldDisengageForWorkspace(
-                false,
-                true,
-                false),
-            "A stale backend workspace limit must not cancel a new engagement.");
-        AssertCondition(
-            G1ExistingTargetUdpSender.ShouldDisengageForWorkspace(
-                true,
-                false,
-                false),
-            "A local workspace exit must always disengage teleoperation.");
-        AssertCondition(
-            G1ExistingTargetUdpSender.ShouldDisengageForWorkspace(
-                false,
-                true,
-                true),
-            "A fresh backend workspace limit must disengage teleoperation.");
-
-        AssertCondition(
-            !G1ExistingTargetUdpSender.ShouldDisengageForWorkspace(
-                false,
-                false,
-                true),
-            "Tracking continuity without a workspace exit must keep teleoperation engaged.");
-
-        float exit_duration = G1ExistingTargetUdpSender.UpdateWorkspaceExitDuration(
-            true,
-            0.0f,
-            0.08f);
-        AssertCondition(
-            !G1ExistingTargetUdpSender.IsWorkspaceExitConfirmed(exit_duration, 0.20f),
-            "A brief workspace excursion must not disengage teleoperation.");
-        exit_duration = G1ExistingTargetUdpSender.UpdateWorkspaceExitDuration(
-            false,
-            exit_duration,
-            0.02f);
-        AssertCondition(
-            Mathf.Approximately(exit_duration, 0.0f),
-            "Returning inside the workspace must clear the pending exit timer.");
     }
 
     private static void AssertVector(

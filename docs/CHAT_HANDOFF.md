@@ -63,7 +63,7 @@ Unity 6000.5.4f1, OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외
 
 ## Upper-body simplification discussion
 
-상체 제어 구조를 수정하거나 gain/limit를 재튜닝하기 전에 `docs/G1_UPPER_BODY_CONTROL_SIMPLIFICATION_AUDIT_20260929.md`를 먼저 읽는다. 2026-09-30 R1a에서 dead Python members를 제거하고, current `unity_display_world_v1` target mapping을 `g1_bimanual_target.py`, historical relative input을 `g1_bimanual_legacy_input.py`, 현재 tuning을 `g1_bimanual_profile.py`로 분리했다. Unity Binder의 canonical scene no-op 옵션도 제거하고 head-alignment serialized 값과 실제 runtime 값을 일치시켰다. 동작 변경 heuristic ablation은 아직 시작하지 않았다. 실제 replay profile에서는 QP solver 자체보다 checked stop-tail/geometry 검증이 지배적인 계산비용이다.
+상체 제어 구조를 수정하거나 gain/limit를 재튜닝하기 전에 `docs/G1_UPPER_BODY_CONTROL_SIMPLIFICATION_AUDIT_20260929.md`를 먼저 읽는다. 2026-09-30 R1a에서 dead Python members를 제거하고, current `unity_display_world_v1` target mapping을 `g1_bimanual_target.py`, historical relative input을 `g1_bimanual_legacy_input.py`, 현재 tuning을 `g1_bimanual_profile.py`로 분리했다. Unity Binder의 canonical scene no-op 옵션도 제거하고 head-alignment serialized 값과 실제 runtime 값을 일치시켰다. R1b에서는 bilateral mode에서 이미 disabled였던 `G1ExistingTargetUdpSender`와 scene wiring, preview의 old command-overlay/transport diagnostics를 제거했다. 동작 변경 heuristic ablation은 아직 시작하지 않았다. 실제 replay profile에서는 QP solver 자체보다 checked stop-tail/geometry 검증이 지배적인 계산비용이다.
 
 ## 작업 원칙
 

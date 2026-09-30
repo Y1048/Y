@@ -34,7 +34,6 @@ public class G1BimanualSimulationSender : MonoBehaviour
     public bool useExistingScene;
     public G1ExistingHandTargetBinder rightBinder;
     public G1ExistingHandTargetBinder leftBinder;
-    public G1ExistingTargetUdpSender existingSender;
     public bool UsesExistingScene => useExistingScene;
     public bool IsTracking => active && backendState == "tracking";
     public float[] LatestJoints { get; private set; }
@@ -207,7 +206,6 @@ public class G1BimanualSimulationSender : MonoBehaviour
                 leftBinder.reference_transform = rightBinder.reference_transform;
                 leftBinder.head_camera_alignment = rightBinder.head_camera_alignment;
             }
-            if (existingSender != null) existingSender.enabled = false;
             if (rightBinder != null) rightBinder.auto_calibrate_on_first_track = false;
             if (leftBinder != null) leftBinder.auto_calibrate_on_first_track = false;
         }

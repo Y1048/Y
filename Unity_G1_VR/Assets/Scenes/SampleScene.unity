@@ -268,7 +268,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 539268355}
-  - component: {fileID: 539268363}
   - component: {fileID: 539268365}
   - component: {fileID: 539268364}
   - component: {fileID: 539268367}
@@ -297,39 +296,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &539268363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539268351}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22a4ed705fa3eb64dbb4d479c3a71c9b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::G1ExistingTargetUdpSender
-  hand_binder: {fileID: 539268365}
-  state_receiver: {fileID: 539268367}
-  right_hand_target: {fileID: 539268355}
-  udp_host: 127.0.0.1
-  udp_port: 5005
-  send_hz: 60
-  robot_center: {x: 0.42, y: -0.16, z: 1.05}
-  position_offset: {x: 0, y: 0, z: 0}
-  robot_min: {x: 0.28, y: -0.38, z: 0.82}
-  robot_max: {x: 0.58, y: 0.22, z: 1.34}
-  disengage_on_workspace_exit: 0
-  workspace_exit_confirm_seconds: 0.8
-  workspace_exit_margin: 0.02
-  use_rectangular_workspace_fallback: 0
-  enable_pinch_disengage: 1
-  pinch_disengage_hold_seconds: 1
-  disengage_on_tracking_loss: 1
-  tracking_loss_confirm_seconds: 0.35
-  live_position_filter_time_constant_s: 0.06
-  live_rotation_filter_time_constant_s: 0.05
-  operator_forward_scale: 1
 --- !u!114 &539268364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -344,7 +310,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::G1UnityRightArmPreview
   hand_binder: {fileID: 539268365}
   bimanual_simulation: {fileID: 539268370}
-  target_sender: {fileID: 539268363}
   state_receiver: {fileID: 539268367}
   hardware_state_receiver: {fileID: 539268369}
   head_camera_alignment: {fileID: 539268368}
@@ -463,7 +428,6 @@ MonoBehaviour:
   useExistingScene: 1
   rightBinder: {fileID: 539268365}
   leftBinder: {fileID: 1302454211}
-  existingSender: {fileID: 539268363}
   head: {fileID: 1503043336}
   leftHand: {fileID: 267485916}
   rightHand: {fileID: 1503043337}

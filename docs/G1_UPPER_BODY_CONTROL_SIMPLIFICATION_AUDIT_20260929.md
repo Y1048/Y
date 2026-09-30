@@ -684,3 +684,62 @@ For the upward reach on both arms:
 Interpretation: the task is dormant for ordinary reaches inside its band. For a difficult high reach it deliberately trades about 8 mm of wrist tracking accuracy for a much less extreme shoulder posture. It is therefore not redundant with the main wrist task or generic posture cost.
 
 Conclusion: removal is rejected. Keep it as an explicit shoulder-posture preference. Its current name is appropriate; future tuning may revisit band/cost values, but that is a separate behavior decision from code simplification.
+
+## Heuristic ablation 5: shoulder-yaw envelope — keep as isolated fallback (2026-09-30)
+
+The +/-90 deg shoulder-yaw stopping envelope was removed experimentally by returning no yaw-bound rows from each arm policy.
+
+The model hard shoulder-yaw range is about +/-150 deg, so the envelope is not mathematically identical to the hard joint limit.
+
+G1.zip with the envelope disabled:
+- exact replay: PASS
+- accepted/state/reason mismatch: 0 / 0 / 0
+- maximum logged q difference: 1.745270594710746e-13 rad
+- logged shoulder yaw stayed roughly within -21..42 deg left and -46..45 deg right
+
+Additional targets were generated from valid configurations with shoulder yaw at 100 deg and 120 deg. With the current posture and shoulder-comfort objectives enabled, IK chose equivalent solutions around 43-45 deg shoulder yaw. Envelope ON and OFF produced identical joint trajectories, errors, clearance and braking in these tests.
+
+Conclusion: no current test demonstrates that this envelope changes normal behavior. However it remains an independent fallback because the model hard range extends to +/-150 deg. Unlike the earlier spaghetti structure, it is now isolated inside the named safety boundary and adds only two simple QP rows per arm. Removing a conservative fallback with no demonstrated runtime or maintenance benefit is not justified. Keep it inside SafetyEnvelope; do not treat it as a user-facing tuning heuristic.
+
+## Heuristic ablation 6: dynamic orientation priority — removal REJECTED (2026-09-30)
+
+The final planned heuristic ablation forced orientation priority to remain at scale 1.0, disabling the position-priority state machine while leaving every other task and limit unchanged.
+
+G1.zip without dynamic orientation priority:
+- accepted/state/reason mismatch: 0 / 0 / 0
+- current validation: PASS
+- exact replay: false
+- maximum logged q difference: 0.3525696625646579 rad (about 20.2 deg)
+- minimum sampled clearance: 5.1361 mm
+
+The recorded log contains substantial activation: 761 left-arm ticks and 1,460 right-arm ticks.
+
+Long right-arm active interval, feedback_sequence 38327-39420 (1,094 ticks):
+- position error mean: 100.04 mm ON vs 101.44 mm OFF
+- rotation error mean: 7.61 deg ON vs 4.44 deg OFF
+- no checked braking in either case
+- clearance remained similar
+
+This confirms the intended trade: position priority deliberately allows more orientation error to reduce position error.
+
+Boundary-heavy right-arm interval, feedback_sequence 42196-42406 (211 ticks):
+- position error mean: 69.93 mm ON vs 74.25 mm OFF
+- rotation error mean: 30.30 deg ON vs 28.99 deg OFF
+- normal checked-braking rows: 0
+- priority disabled checked-braking steps: 44
+- minimum clearance: 5.23 mm ON vs 5.14 mm OFF
+
+Conclusion: in ordinary constrained motion the trade can look modest, but near the hard boundary the state machine prevents repeated emergency braking and keeps position tracking better while intentionally giving up some rotation accuracy. Removal is rejected.
+
+## Heuristic ablation summary
+
+| Component | Removal result | Decision |
+|---|---|---|
+| torso target projection | hard boundary still safe, but clearance margin collapses and braking rises | KEEP as target-feasibility guard |
+| elbow assist | slightly lower wrist error OFF, but lower mean clearance and 18 extra braking steps in active interval | KEEP as boundary-posture helper |
+| wrist priority | OFF roughly doubles proximal motion during wrist-only rotation | KEEP as wrist-rotation allocation preference |
+| shoulder comfort | dormant in normal reach; OFF produces about 50-55 deg shoulder roll/yaw in high reach | KEEP as shoulder-posture preference |
+| shoulder-yaw +/-90 deg envelope | no current trajectory effect, but independent fallback inside +/-150 deg hard model range | KEEP inside SafetyEnvelope |
+| dynamic orientation priority | OFF improves rotation slightly but worsens position and causes 44 extra braking steps in boundary interval | KEEP as constrained-position priority |
+
+The ablation series did not find a live heuristic that can be deleted without losing a deliberate behavior or moving more work into emergency braking. The simplification gain therefore comes from the R1 structural separation, removal of dead/legacy paths, explicit naming, and central parameter ownership—not from deleting these remaining behaviors.

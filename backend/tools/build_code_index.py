@@ -25,6 +25,7 @@ EXCLUDED = {"__pycache__", "build", ".venv", "venv", "node_modules", "third_part
 BOUNDARY_REVIEWED = {
     "tools/START_G1_VR_TELEOP.bat",
     "tools/G1_VR_TELEOP_LAUNCH.py",
+    "tools/G1_GROOT_REMOTE_LAUNCH.py",
     "tools/G1_INPUT_OBSERVATION_LAUNCH.py",
     "tools/G1_CAMERA_LAUNCH.py",
     "tools/g1_camera_ssh.py",

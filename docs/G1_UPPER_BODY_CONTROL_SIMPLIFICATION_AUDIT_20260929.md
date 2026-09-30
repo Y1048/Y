@@ -768,3 +768,24 @@ Synthetic crossed-arm pressure:
 - neither mode blocked, so the final checked stop-tail still prevented a hard-clearance violation
 
 Conclusion: the headroom is not a redundant safety proof. The final stop-tail can still prevent a violation without it, but the controller then rides almost directly on the 5 mm hard boundary and relies on emergency checked braking far more often. Removal is rejected. Keep collision stopping-headroom as the pre-emptive collision braking layer; the next safety ablation should test the analogous joint-limit stopping bound independently.
+
+## Safety ablation 2: joint-limit stopping bound — removal REJECTED (2026-09-30)
+
+This experiment disabled only the pre-emptive joint-limit stopping-speed rows. Hard model/operational joint ranges, velocity and acceleration caps, collision safety, shoulder-yaw fallback and checked stop-tail validation remained active.
+
+Recorded G1.zip comparison:
+- baseline exact replay: PASS; max q difference 1.745270594710746e-13 rad
+- joint-limit bound OFF: accepted/state/reason mismatch 0 / 0 / 0, current validation PASS, exact replay false
+- maximum logged q difference OFF: 0.37755913222053633 rad (about 21.6 deg)
+- minimum sampled clearance: 5.2318 mm baseline vs 5.6552 mm OFF
+- maximum output acceleration remained at the 90 deg/s^2 limit within numerical tolerance
+
+The important difference is checked-stop rejection behavior:
+- baseline checked-stop rejects: 42 swept-clearance, 0 joint-range
+- bound OFF: 20 swept-clearance + 23 joint-range rejects
+- baseline brake calls: 4 QP infeasible, 42 swept-clearance, 3 tracking-unavailable
+- bound OFF: 8 QP infeasible, 23 joint-range, 20 swept-clearance, 3 tracking-unavailable
+
+The recorded path already reaches zero margin on some operational/model joint limits, so this is not a hypothetical-only fallback. With the stopping rows removed, the final checked stop-tail repeatedly rejects solver proposals that cannot brake before a joint range boundary.
+
+Conclusion: removal is rejected. Keep the joint-limit stopping bound as the pre-emptive layer that shapes feasible velocity before the final stop-tail proof. The next safety simplification candidate should be conditional/exception logic rather than another hard motion invariant.

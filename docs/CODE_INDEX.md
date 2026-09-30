@@ -47,7 +47,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py) | 109 | 목록 확인 | TrackingProfile, ReturnProfile | `81df9b978807` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_return.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_return.py) | 288 | 목록 확인 | BimanualReturnMotion | `c61e80863c8a` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py) | 133 | 입출력 확인 | startup_stage, require_validated_engine, load_engine, runtime_metadata, main | `aa48f69e5321` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py) | 278 | 목록 확인 | BimanualSafetyEnvelope | `c0ef748a801b` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_safety.py) | 232 | 목록 확인 | BimanualSafetyEnvelope | `3254375ffc00` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py) | 592 | 목록 확인 | _recorded_motion_limits, _current_motion_limits, _open_text, _percentiles, _current_source_hashes (+7) | `416ae9b06f99` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py) | 319 | 입출력 확인 | BimanualSimulation, targets_from_json, main | `304e267cb4dc` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_target.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_target.py) | 44 | 목록 확인 | copy_world_hands, world_target, world_targets | `3a7a438354ab` |

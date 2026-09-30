@@ -789,3 +789,35 @@ The important difference is checked-stop rejection behavior:
 The recorded path already reaches zero margin on some operational/model joint limits, so this is not a hypothetical-only fallback. With the stopping rows removed, the final checked stop-tail repeatedly rejects solver proposals that cannot brake before a joint range boundary.
 
 Conclusion: removal is rejected. Keep the joint-limit stopping bound as the pre-emptive layer that shapes feasible velocity before the final stop-tail proof. The next safety simplification candidate should be conditional/exception logic rather than another hard motion invariant.
+
+## Safety ablation 3: MuJoCo 3.11 zero-distance QP repair — removal ACCEPTED (2026-09-30)
+
+The removed block was not a general collision guard. It was a compatibility repair for an old MuJoCo mesh-distance failure where `mj_geomDistance` could report an isolated exact zero without contact and provide an unusable witness direction.
+
+Repository history records the original failure on MuJoCo 3.11.0 and the later upstream separation fix included in MuJoCo 3.12.0. The current bundled runtime is pinned to MuJoCo 3.12.0.
+
+Current evidence before removal:
+- G1.zip: 9,129 live `constrain_problem` calls
+- Mink `bound_relaxation` rows rechecked by the compatibility loop: 173
+- actual `raw distance == 0 && no contact` activations: 0
+- deterministic synthetic scan: 2,500 near-home + 2,500 wide-range postures
+- synthetic zero/no-contact activations: 0
+
+Only the QP-side finite-difference witness replacement was removed. The following safety remains unchanged:
+- Mink CollisionAvoidanceLimit
+- 6 mm QP collision minimum
+- collision stopping-headroom
+- acceleration bounds
+- joint-limit stopping bounds
+- shoulder-yaw fallback
+- `clearance()` robust geometry query
+- acceleration-bounded checked stop-tail with swept 5 mm hard-clearance validation
+
+Validation after removal:
+- safety/simulation/near-hands focused tests: PASS
+- motion-quality tests: 16/16 PASS
+- G1.zip archive-validate --strict: PASS
+- exact replay: PASS
+- accepted/state/reason mismatch: 0 / 0 / 0
+
+Conclusion: removal is accepted. The old QP repair was a 3.11 compatibility path, not a current 3.12 safety invariant. Keeping it would make the current controller harder to trace while duplicating a historical engine workaround that does not activate in the current recorded or synthetic coverage.

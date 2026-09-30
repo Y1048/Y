@@ -28,7 +28,7 @@
 - `g1_bimanual_profile.py`: current behavior-shaping constants in one read-only profile
 - `g1_bimanual_sim.py`: shared bilateral QP orchestration; safety math is delegated
 - `g1_bimanual_motion_policy.py`: soft IK preferences/heuristics
-- `g1_bimanual_safety.py`: hard limits, collision/acceleration/braking QP bounds, geometry clearance and checked stopping-tail validation
+- `g1_bimanual_safety.py`: hard limits, native MuJoCo 3.12/Mink collision bound, acceleration/braking QP bounds, robust geometry clearance and checked stopping-tail validation; old MuJoCo 3.11 zero-witness QP repair removed after exact replay/synthetic ablation
 - `g1_bimanual_return.py`: return-only Ruckig state machine
 - `g1_bimanual_limits.py`: primitive motion-limit constants
 - `g1_mink_shared.py`

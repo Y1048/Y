@@ -86,55 +86,9 @@ class BimanualSafetyEnvelope:
         bound = collision.compute_qp_inequalities(s.config, s.dt)
         cg, ch = bound.G.copy(), bound.h.copy()
 
-        # Installed Mink collision bounds are velocity units; build_ik solves
-        # displacement. Preserve the existing zero-distance mesh correction.
-        for index in np.flatnonzero(ch == collision.bound_relaxation):
-            first, second = collision.geom_id_pairs[index]
-            raw = mujoco.mj_geomDistance(
-                s.model,
-                s.config.data,
-                first,
-                second,
-                self.profile.collision_detection_distance_m,
-                None,
-            )
-            if (
-                abs(raw) > 1e-12
-                or base._has_exact_geom_contact(
-                    s.config.data, first, second)
-            ):
-                continue
-
-            def distance(q):
-                self.check_data.qpos[:] = q
-                mujoco.mj_forward(s.model, self.check_data)
-                return base._robust_geom_distance(
-                    s.model,
-                    self.check_data,
-                    first,
-                    second,
-                    self.profile.collision_detection_distance_m,
-                    np.zeros(6),
-                )
-
-            corrected = distance(s.config.q)
-            if corrected <= 1e-12:
-                continue
-            cg[index] = 0
-            if corrected >= self.profile.collision_detection_distance_m:
-                ch[index] = np.inf
-                continue
-            for dof, address in zip(s.dofs, s.qids):
-                plus = s.config.q.copy()
-                minus = s.config.q.copy()
-                plus[address] += 1e-5
-                minus[address] -= 1e-5
-                cg[index, dof] = -(
-                    distance(plus) - distance(minus)
-                ) / 2e-5
-            ch[index] = collision.gain * max(
-                0.0, corrected - self.profile.collision_minimum_m
-            ) / s.dt
+        # MuJoCo 3.12.0 contains the upstream mesh-distance separation fix
+        # that made the old 3.11 zero-witness finite-difference repair obsolete.
+        # Hard geometry is still rechecked by clearance()/checked_stop_plan().
 
         collision_h = ch * s.dt
         if not returning:

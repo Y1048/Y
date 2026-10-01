@@ -430,23 +430,32 @@ public static class G1TeleopBatchValidator
             typeof(Camera));
         GameObject robot_root_object = new GameObject(
             "g1_head_camera_pip_robot_root_validation");
+        GameObject robot_head_mount_object = new GameObject(
+            "g1_head_camera_pip_head_mount_validation");
         try
         {
             camera_object.transform.SetPositionAndRotation(
                 new Vector3(0.30f, 1.60f, -0.20f),
                 Quaternion.Euler(8.0f, 25.0f, 0.0f));
+            robot_head_mount_object.transform.SetParent(
+                robot_root_object.transform,
+                false);
+            robot_head_mount_object.transform.SetLocalPositionAndRotation(
+                new Vector3(0.0f, 1.25f, 0.10f),
+                Quaternion.Euler(-3.0f, -35.0f, 0.0f));
             Vector3 expected_initial_position =
-                camera_object.transform.TransformPoint(
+                robot_head_mount_object.transform.TransformPoint(
                     new Vector3(
                         0.0f,
                         G1HeadCameraPiP.DefaultCanvasVerticalOffset,
                         0.80f));
             Quaternion expected_initial_rotation =
-                camera_object.transform.rotation;
+                robot_head_mount_object.transform.rotation;
 
             G1HeadCameraPiP pip_value = G1HeadCameraPiP.Create(
                 camera_object.transform,
                 robot_root_object.transform,
+                robot_head_mount_object.transform,
                 G1HeadCameraPiP.DefaultTcpPort);
             AssertCondition(
                 pip_value != null,
@@ -461,7 +470,7 @@ public static class G1TeleopBatchValidator
                     && Quaternion.Angle(
                         pip_value.transform.rotation,
                         expected_initial_rotation) < 0.01f,
-                "G1 head-camera PiP initial world pose changed from the previous HMD-relative placement.");
+                "G1 head-camera PiP initial world pose must come from the G1 head mount, not the startup HMD pose.");
             AssertCondition(
                 pip_value.video_image != null
                     && pip_value.status_indicator != null,

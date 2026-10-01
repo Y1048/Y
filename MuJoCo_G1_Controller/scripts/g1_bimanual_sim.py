@@ -89,6 +89,13 @@ class BimanualSimulation:
                 mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_BODY,
                                  int(self.model.geom_bodyid[g])) in bodies for g in pair)]
         self.brake_plan = []
+        self.checked_target_data = mujoco.MjData(self.model)
+        self.checked_target_body_ids = {
+            side: mujoco.mj_name2id(
+                self.model, mujoco.mjtObj.mjOBJ_BODY,
+                side + "_wrist_yaw_link")
+            for side in ("left", "right")
+        }
         self.braking_steps = 0
         self.last_solver_error = None
         self.velocity = np.zeros(self.model.nv)
@@ -246,6 +253,24 @@ class BimanualSimulation:
         self.braking_steps += 1
         self.reason = 'checked_braking:' + reason
         return self._apply_command(candidate, velocity, returning=returning)
+
+    def checked_stop_target_poses(self):
+        """FK of the already-validated stationary endpoint of the active stop tail."""
+        if not self.brake_plan:
+            return None
+        q, velocity = self.brake_plan[-1]
+        if np.any(np.abs(velocity) > 1e-12):
+            return None
+        data = self.checked_target_data
+        data.qpos[:] = q
+        mujoco.mj_kinematics(self.model, data)
+        return {
+            side: (
+                data.xpos[body_id].copy(),
+                data.xmat[body_id].reshape(3, 3).copy(),
+            )
+            for side, body_id in self.checked_target_body_ids.items()
+        }
 
     def checked_stop_plan(self, first_velocity):
         """Compatibility proxy for the named safety boundary."""

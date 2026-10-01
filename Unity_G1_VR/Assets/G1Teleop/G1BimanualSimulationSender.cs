@@ -44,6 +44,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private bool worldTargetValid;
     private Vector3 leftWorldTarget, rightWorldTarget;
     private Quaternion rightWorldRotation;
+    private bool checkedWorldTargetValid;
+    private Vector3 leftCheckedWorldTarget, rightCheckedWorldTarget;
+    private Quaternion rightCheckedWorldRotation;
     private G1OmniBodyHeading Omni => rightBinder == null || rightBinder.head_camera_alignment == null
         ? null : rightBinder.head_camera_alignment.OmniBodyHeading;
 
@@ -51,13 +54,14 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         var binder = left ? leftBinder : rightBinder;
         position = Vector3.zero;
-        if (!IsTracking || !HasFreshJoints || !ikTargetValid || binder == null) return false;
-        if (useExistingScene && !worldTargetValid) return false;
-        if (worldTargetValid)
+        if (!IsTracking || !HasFreshJoints || binder == null) return false;
+        if (useExistingScene)
         {
-            position = left ? leftWorldTarget : rightWorldTarget;
+            if (!checkedWorldTargetValid) return false;
+            position = left ? leftCheckedWorldTarget : rightCheckedWorldTarget;
             return true;
         }
+        if (!ikTargetValid) return false;
         position = binder.EngagementTargetPosition + binder.OperatorHeading *
             (left ? leftIkDelta : rightIkDelta);
         return true;
@@ -65,6 +69,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
 
     public bool TryGetRightIkRotation(out Quaternion rotation)
     {
+        if (useExistingScene)
+        {
+            rotation = rightCheckedWorldRotation;
+            return IsTracking && HasFreshJoints && checkedWorldTargetValid;
+        }
         rotation = rightWorldRotation;
         return IsTracking && HasFreshJoints && worldTargetValid;
     }
@@ -163,6 +172,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         public bool ik_target_valid;
         public float[] left_ik_target_world_m, right_ik_target_world_m;
         public float[] right_ik_target_world_wxyz;
+        public bool checked_target_valid;
+        public float[] left_checked_target_world_m, right_checked_target_world_m;
+        public float[] right_checked_target_world_wxyz;
         public string input_frame;
         public float[] left_ik_target_operator_delta;
         public float[] right_ik_target_operator_delta;
@@ -398,6 +410,20 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     var q = feedback.right_ik_target_world_wxyz;
                     rightWorldRotation = new Quaternion(q[1], q[2], q[3], q[0]);
                     ikTargetValid = true;
+                }
+                checkedWorldTargetValid = feedback.input_frame == "unity_display_world_v1"
+                    && feedback.checked_target_valid
+                    && ValidDelta(feedback.left_checked_target_world_m)
+                    && ValidDelta(feedback.right_checked_target_world_m)
+                    && ValidRotation(feedback.right_checked_target_world_wxyz);
+                if (checkedWorldTargetValid)
+                {
+                    var l = feedback.left_checked_target_world_m;
+                    var r = feedback.right_checked_target_world_m;
+                    leftCheckedWorldTarget = new Vector3(l[0], l[1], l[2]);
+                    rightCheckedWorldTarget = new Vector3(r[0], r[1], r[2]);
+                    var q = feedback.right_checked_target_world_wxyz;
+                    rightCheckedWorldRotation = new Quaternion(q[1], q[2], q[3], q[0]);
                 }
                 if (ikTargetValid && ValidDelta(feedback.left_ik_target_operator_delta) && ValidDelta(feedback.right_ik_target_operator_delta))
                 {

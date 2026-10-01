@@ -140,6 +140,44 @@ class CycleTests(unittest.TestCase):
         self.cycle.tick(.05)
         self.assertEqual(self.cycle.state, 'blocked')
 
+    def test_checked_target_feedback_uses_stationary_checked_tail_fk(self):
+        sim = BimanualSimulation()
+        zero_velocity = np.zeros(sim.model.nv)
+        sim.brake_plan = [(sim.home.copy(), zero_velocity)]
+        cycle = UnityCycle(sim)
+        cycle.state = 'tracking'
+        cycle.last_tick_action = 'tracking'
+        cycle.world_input = True
+        cycle.input_frame = WORLD_FRAME
+        sim.state = 'tracking'
+        for side, policy in sim.motion.items():
+            policy.approach_rate_s = 1.0
+            policy.effective_target_position = np.array([9.0, 8.0, 7.0])
+            policy.effective_target_rotation = np.eye(3)
+
+        feedback = cycle.feedback()
+
+        self.assertTrue(feedback['checked_target_valid'])
+        for side in ('left', 'right'):
+            expected = BASIS.T @ sim.home_targets[side].translation()
+            np.testing.assert_allclose(
+                feedback[side+'_checked_target_world_m'],
+                expected,
+                atol=1e-10,
+                rtol=0,
+            )
+            self.assertFalse(np.allclose(
+                feedback[side+'_checked_target_world_m'],
+                feedback[side+'_ik_target_world_m'],
+            ))
+
+    def test_checked_target_rejects_nonstationary_tail_endpoint(self):
+        sim = BimanualSimulation()
+        velocity = np.zeros(sim.model.nv)
+        velocity[sim.dofs[0]] = 0.01
+        sim.brake_plan = [(sim.home.copy(), velocity)]
+        self.assertIsNone(sim.checked_stop_target_poses())
+
     def test_near_hands_tracking_lost_cycle_returns_ready(self):
         fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_near_hands_20260918.json').read_text())
         sim = BimanualSimulation()

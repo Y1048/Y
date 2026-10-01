@@ -317,6 +317,13 @@ class UnityCycle:
                              np.isfinite(p.effective_target_position).all()
                              for p in self.sim.motion.values()))
             result['ik_target_valid'] = valid
+            checked = self.sim.checked_stop_target_poses()
+            checked_valid = (
+                self.state == 'tracking'
+                and self.sim.state == 'tracking'
+                and checked is not None
+            )
+            result['checked_target_valid'] = checked_valid
             for side in ('left', 'right'):
                 position = self.sim.motion[side].effective_target_position
                 body_position = self.sim.base_rotation.T @ position if self.world_input else position
@@ -333,6 +340,20 @@ class UnityCycle:
                         self.sim.motion[side].effective_target_rotation @ BASIS).wxyz.tolist() if valid else None
                     result[side+'_ik_position_error_m'] = float(np.linalg.norm(
                         actual.translation()-position)) if valid else None
+                    checked_position, checked_rotation = (
+                        checked[side] if checked_valid
+                        else (None, None)
+                    )
+                    result[side+'_checked_target_world_m'] = (
+                        (BASIS.T @ checked_position).tolist()
+                        if checked_valid else None
+                    )
+                    result[side+'_checked_target_world_wxyz'] = (
+                        mink.SO3.from_matrix(
+                            BASIS.T @ checked_rotation @ BASIS
+                        ).wxyz.tolist()
+                        if checked_valid else None
+                    )
                 result[side+'_ik_target_operator_delta'] = delta.tolist() if valid else None
         return result
 

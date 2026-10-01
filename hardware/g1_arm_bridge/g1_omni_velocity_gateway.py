@@ -499,11 +499,16 @@ class ClockedOmniProcessor:
         gate_ready = True
         gate_session = None
         gate_age = None
+        gate_quest_yaw = None
+        gate_yaw_correction = None
         if self.require_unity_alignment:
             gate_status = (alignment or {}).get("status", "WAIT")
             gate_ready = bool((alignment or {}).get("ready"))
             gate_session = (alignment or {}).get("session")
             gate_age = (alignment or {}).get("age_s")
+            gate_quest_yaw = (alignment or {}).get("quest_yaw_deg")
+            gate_yaw_correction = (alignment or {}).get(
+                "yaw_correction_deg")
             if gate_ready and gate_session != self.unity_session:
                 self.unity_session = gate_session
                 self.runtime_yaw_offset_deg = yaw
@@ -537,6 +542,8 @@ class ClockedOmniProcessor:
             unity_alignment_status=gate_status,
             unity_alignment_session=gate_session,
             unity_alignment_age_s=gate_age,
+            unity_quest_yaw_deg=gate_quest_yaw,
+            unity_yaw_correction_deg=gate_yaw_correction,
             processing_hz=self.process_hz, process_tick=tick,
             processed_monotonic_s=processed_at, raw_samples_skipped=self.raw_samples_skipped,
             processing_deadlines_missed=deadline_misses,
@@ -575,7 +582,8 @@ def run_clocked_observation(args, observation, websocket_module):
                     'processed_monotonic_s', 'raw_samples_skipped', 'processing_deadlines_missed',
                     'source_clock', 'processing_clock', 'runtime_yaw_offset_deg',
                     'unity_alignment_status', 'unity_alignment_session',
-                    'unity_alignment_age_s', 'csv_row_kind']
+                    'unity_alignment_age_s', 'unity_quest_yaw_deg',
+                    'unity_yaw_correction_deg', 'csv_row_kind']
     if args.csv:
         args.csv.parent.mkdir(parents=True, exist_ok=True)
         csv_file = args.csv.open('x', newline='', encoding='utf-8')
@@ -597,6 +605,8 @@ def run_clocked_observation(args, observation, websocket_module):
     reader_error = None
     last_transport_status = None
     last_transport_print = -math.inf
+    last_alignment_status = None
+    last_runtime_offset = None
     reader.thread.start()
     try:
         while True:
@@ -623,6 +633,23 @@ def run_clocked_observation(args, observation, websocket_module):
                 sample, ticks, time.monotonic(), missed,
                 alignment_state)
             if values is not None:
+                if values['unity_alignment_status'] != last_alignment_status:
+                    print('[OMNI UNITY GATE] status=%s session=%s age=%s' % (
+                        values['unity_alignment_status'],
+                        values['unity_alignment_session'],
+                        values['unity_alignment_age_s']), flush=True)
+                    last_alignment_status = values['unity_alignment_status']
+                if (values['runtime_yaw_offset_deg'] is not None
+                        and values['runtime_yaw_offset_deg']
+                            != last_runtime_offset):
+                    print('[OMNI CALIBRATION] runtime_yaw_offset_deg=%.2f '
+                          'quest_yaw_deg=%s yaw_correction_deg=%s session=%s' % (
+                              values['runtime_yaw_offset_deg'],
+                              values['unity_quest_yaw_deg'],
+                              values['unity_yaw_correction_deg'],
+                              values['unity_alignment_session']),
+                          flush=True)
+                    last_runtime_offset = values['runtime_yaw_offset_deg']
                 # The envelope time is raw receipt time, never the scheduler tick.
                 observation.publish(values, sample.received_monotonic_s)
                 if writer is not None:
@@ -650,6 +677,8 @@ def run_clocked_observation(args, observation, websocket_module):
                    raw_samples_skipped=process.raw_samples_skipped,
                    processing_deadlines_missed=missed, elapsed_perf_s=processing_elapsed,
                    reader_thread_stopped=not reader.thread.is_alive(), reader_error=reader_error,
+                   runtime_yaw_offset_deg=process.runtime_yaw_offset_deg,
+                   unity_alignment_session=process.unity_session,
                    connection=reader.transport_status())
     print('[OMNI CLOCKED SUMMARY] ' + json.dumps(summary, allow_nan=False), flush=True)
     if reader_error:

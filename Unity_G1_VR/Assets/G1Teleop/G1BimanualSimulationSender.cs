@@ -296,12 +296,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         output.tracked = binder != null && binder.IsTrackingValid;
         if (!output.tracked) return false;
-        // Position stays absolute in the aligned Unity world. Rotation keeps
-        // the engage-relative contract: the engage hand orientation maps to the
-        // G1 engagement wrist orientation, then only subsequent relative hand
-        // rotation is applied.
+        // The displayed Quest wrist pose is the absolute IK input pose. Never
+        // apply a second command-only origin or engage-time position/rotation offset.
         Vector3 p = binder.TrackedWristPosition;
-        Quaternion q = binder.MappedHandRotation;
+        Quaternion q = binder.DisplayedWristRotation;
         Vector3 rawP = binder.DisplayedWristPosition;
         Quaternion rawQ = binder.SourceWristRotation;
         output.engage_offset_m = new float[3];

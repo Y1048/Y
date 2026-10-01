@@ -17,6 +17,7 @@ from g1_bimanual_unity_sim import (UnityCycle, PairedHandFilter, decode, BASIS, 
                                    WORLD_SCHEMA, WORLD_FRAME, mink)
 from g1_bimanual_limits import JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
+from g1_bimanual_return import BimanualReturnMotion
 
 
 def packet(sequence=0, engage=False, session='test', tracked=True, returning=False):
@@ -177,6 +178,28 @@ class CycleTests(unittest.TestCase):
         velocity[sim.dofs[0]] = 0.01
         sim.brake_plan = [(sim.home.copy(), velocity)]
         self.assertIsNone(sim.checked_stop_target_poses())
+
+    def test_near_hands_stop_consumes_residual_acceleration_before_probe(self):
+        motion = BimanualReturnMotion.__new__(BimanualReturnMotion)
+        sim = Mock()
+        sim.velocity = np.zeros(4)
+        sim.dofs = np.array([1, 2])
+        sim.acceleration = np.array([0.0, 0.25, 0.0, 0.0])
+
+        def consume_stationary_sample(reason, *, returning):
+            self.assertEqual(reason, 'return_near_hands_stop')
+            self.assertTrue(returning)
+            sim.acceleration[:] = 0.0
+            return True
+
+        sim.brake.side_effect = consume_stationary_sample
+        motion.sim = sim
+        motion._begin_separation = Mock(return_value=True)
+
+        self.assertTrue(motion._step_near_hands_stop())
+        sim.brake.assert_called_once_with(
+            'return_near_hands_stop', returning=True)
+        motion._begin_separation.assert_called_once_with()
 
     def test_near_hands_tracking_lost_cycle_returns_ready(self):
         fixture = json.loads((ROOT/'backend/tests/fixtures/bimanual_return_near_hands_20260918.json').read_text())

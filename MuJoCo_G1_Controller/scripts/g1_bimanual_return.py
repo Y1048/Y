@@ -156,10 +156,13 @@ class BimanualReturnMotion:
 
     def _step_near_hands_stop(self):
         s = self.sim
-        if np.any(s.velocity):
+        # Match the general return stop contract: the first zero-velocity
+        # command still carries braking acceleration. Consume one checked
+        # stationary sample before seeding a new Ruckig separation trajectory.
+        if np.any(s.velocity) or np.any(s.acceleration[s.dofs]):
             if not s.brake('return_near_hands_stop', returning=True):
                 return False
-            if np.any(s.velocity):
+            if np.any(s.velocity) or np.any(s.acceleration[s.dofs]):
                 return True
         return self._begin_separation()
 

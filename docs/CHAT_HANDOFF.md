@@ -1,6 +1,6 @@
 # G1 Teleop Current Handoff
 
-최종 갱신: 2026-09-30
+최종 갱신: 2026-10-01
 
 ## 현재 실행
 
@@ -10,13 +10,25 @@ START_G1_VR_TELEOP.bat
 
 BAT는 bundled `runtime/python/python.exe`로 `tools/G1_PORTABLE.py teleop`을 호출하는 3줄짜리 shim이다.
 
-일반 실행은 이제 기존 PC/Unity/camera worker와 함께 onboard GROOT pair도 통합한다. 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구하며, 이후 사용자가 별도 SSH 창 두 개를 열 필요는 없다.
+일반 실행은 기존 PC/Unity/camera worker와 함께 onboard GROOT pair도 통합한다. 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구하며, 이후 사용자가 별도 SSH 창 두 개를 열 필요는 없다.
+
+2026-10-01 실제 G1 로그에서 첫 통합 버전의 원격 실행 실패 원인을 확인했다. 기존 launcher가 `ssh -T`와 remote background child를 사용해 두 프로그램 모두 interactive-terminal 검사에서 종료됐다: actuator는 `walk keyboard requires an interactive terminal`, heading controller는 `controller requires an interactive terminal`이었다. Portable Python 자체의 문제가 아니다.
+
+현재 contract는 예전에 성공했던 수동 SSH 2개 구조를 자동화한다.
 
 ```text
-/home/unitree/groot_onboard_runtime
-  python3 tools/g1_omni_heading_controller.py --yaw-sign -1
-  ./build/groot_balance_actuator --normal --enable-actuation --acknowledge-harness --accept-handoff-risk --supervisor-off --external-controller --interface eth0 --duration 300
+SSH/PTTY A (-tt), foreground:
+  cd ~/groot_onboard_runtime
+  python3 -u tools/g1_omni_heading_controller.py --yaw-sign -1
+
+SSH/PTTY B (-tt), foreground:
+  cd ~/groot_onboard_runtime
+  ./build/groot_balance_actuator --normal --enable-actuation --acknowledge-harness --accept-handoff-risk --supervisor-off --external-controller --interface eth0 <duration-mode>
 ```
+
+각 remote process는 통합 세션 owner ID로 태그된다. 정상 종료는 main manager 또는 GROOT console에서 **Enter**를 눌러 요청한다. supervisor가 자신이 시작한 actuator에 먼저 SIGINT를 보내고 controlled damping 완료를 최대 12초 기다린 뒤 heading controller에 SIGINT를 보낸다. 정상 종료를 위해 창의 X 버튼으로 강제 종료하지 않는다.
+
+Actuator duration은 remote binary capability를 자동 검사한다. `--unlimited-duration`을 지원하면 무제한을 사용하고, 아직 지원하지 않으면 현재 binary 호환을 위해 `--duration 300`으로 fail-compatible 동작한다. G1 onboard source용 패치는 `tools/GROOT_ONBOARD_UNLIMITED_DURATION.patch`에 있다. 이 패치는 NORMAL 모드에만 unlimited를 추가하며 signal/emergency damping은 유지한다.
 
 `--check-only`은 remote login/actuation을 하지 않는다. 기존 observation-only 동작이 필요하면 `START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. exact existing remote process는 보존하고 다른 옵션/duplicate는 자동 종료하지 않고 fail closed한다.
 

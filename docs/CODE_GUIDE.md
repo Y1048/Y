@@ -13,8 +13,9 @@
 
 - `tools/G1_VR_TELEOP_LAUNCH.py`: worker/Unity/camera/GROOT orchestration and one-time actuation confirmation
 - `tools/G1_INPUT_OBSERVATION_LAUNCH.py`: observation-only send/receive/Omni/arm worker command; motor flags remain forbidden here
-- `tools/G1_GROOT_REMOTE_LAUNCH.py`: onboard heading + balance actuator SSH supervisor
-- `tools/g1_quiet_observation.py`: integrated child lifetime; owns only children started by the current invocation
+- `tools/G1_GROOT_REMOTE_LAUNCH.py`: onboard heading + balance actuator SSH supervisor. 각 프로그램을 별도 `ssh -tt` foreground session으로 실행해 remote `isatty()` contract를 보존하고, 세션 owner ID로 자신이 시작한 process만 추적한다. 정상 종료는 actuator SIGINT → controlled damping 완료 대기 → heading SIGINT 순서다.
+- `tools/g1_quiet_observation.py`: integrated child lifetime; main manager Enter 종료 시 GROOT supervisor에 CTRL_BREAK를 보내 controlled damping이 끝난 뒤 다른 worker를 정리한다. 정상 종료에서 창 강제 닫기를 사용하지 않는다.
+- `tools/GROOT_ONBOARD_UNLIMITED_DURATION.patch`: G1 onboard `g1_balance_actuator.cpp`의 NORMAL 모드에 명시적 `--unlimited-duration`을 추가하는 별도 patch. desktop launcher는 remote `--help`를 검사해 지원되면 unlimited, 아니면 300 s fallback을 선택한다.
 - `tools/g1_process_lifetime.py`: Windows kill-on-close job helper
 
 모든 local Python child process는 현재 `sys.executable`, 즉 bundled `runtime/python/python.exe`를 이어받는다. GROOT supervisor는 G1의 existing `python3`와 compiled actuator를 SSH로 실행한다.

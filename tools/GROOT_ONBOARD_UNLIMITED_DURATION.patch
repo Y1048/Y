@@ -1,0 +1,61 @@
+diff --git a/src/g1_balance_actuator.cpp b/src/g1_balance_actuator.cpp
+--- a/src/g1_balance_actuator.cpp
++++ b/src/g1_balance_actuator.cpp
+@@
+   std::array<float, 3> shadow_command{};
+   double duration_seconds{5.0};
+   bool duration_explicit{false};
++  bool unlimited_duration{false};
+   bool enable_actuation{false};
+@@
+       << "  " << executable
+       << " --normal --enable-actuation --acknowledge-harness"
+          " --accept-handoff-risk [--supervisor-off] [--external-controller]"
+-         " [--interface eth0] [--duration 300]\n\n"
++         " [--interface eth0] [--duration 300 | --unlimited-duration]\n\n"
+@@
+       << "--external-controller uses localhost UDP command port 15100 and "
+-         "state port 15101.\n";
++         "state port 15101.\n"
++      << "--unlimited-duration is NORMAL-only and disables only the planned "
++         "duration timeout; signal/emergency damping remains active.\n";
+@@
+     } else if (argument == "--duration" && i + 1 < argc) {
+       options.duration_seconds = std::stod(argv[++i]);
+       options.duration_explicit = true;
++    } else if (argument == "--unlimited-duration") {
++      options.unlimited_duration = true;
+@@
+   if (options.external_controller &&
+       options.mode != Options::Mode::kWalkKeyboard &&
+       options.mode != Options::Mode::kShadow) {
+@@
+   }
+-  if (!std::isfinite(options.duration_seconds) ||
+-      options.duration_seconds <= 0.0 || options.duration_seconds > 300.0) {
++  if (options.duration_explicit && options.unlimited_duration) {
++    throw std::runtime_error(
++        "Choose either --duration or --unlimited-duration, not both");
++  }
++  if (options.unlimited_duration &&
++      options.mode != Options::Mode::kWalkKeyboard) {
++    throw std::runtime_error(
++        "--unlimited-duration is supported only with --normal");
++  }
++  if (!options.unlimited_duration &&
++      (!std::isfinite(options.duration_seconds) ||
++       options.duration_seconds <= 0.0 || options.duration_seconds > 300.0)) {
+     throw std::runtime_error("Duration must be in (0, 300] seconds");
+   }
+@@
+-  if (!options.duration_explicit &&
++  if (!options.duration_explicit && !options.unlimited_duration &&
+       options.mode == Options::Mode::kWalkKeyboard) {
+     options.duration_seconds = 300.0;
+@@
+-    if (elapsed >= options.duration_seconds) {
++    if (!options.unlimited_duration &&
++        elapsed >= options.duration_seconds) {
+       controller.begin_damping("planned duration reached", true);
+       break;
+     }

@@ -92,7 +92,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 295 | 목록 확인 | packet, CycleTests | `ae3499a9b387` |
 | [backend/tests/test_g1_archive_offline_validate.py](../backend/tests/test_g1_archive_offline_validate.py) | 107 | 목록 확인 | ArchiveOfflineValidatorTests | `605586c5102c` |
 | [backend/tests/test_g1_camera_ssh.py](../backend/tests/test_g1_camera_ssh.py) | 75 | 목록 확인 | CameraTests | `040b3f661067` |
-| [backend/tests/test_g1_groot_remote_launch.py](../backend/tests/test_g1_groot_remote_launch.py) | 110 | 목록 확인 | CommandContractTests, LifetimeTests | `7ce8369983fe` |
+| [backend/tests/test_g1_groot_remote_launch.py](../backend/tests/test_g1_groot_remote_launch.py) | 170 | 목록 확인 | CommandContractTests, SpawnAndShutdownTests | `be22f3df4660` |
 | [backend/tests/test_g1_input_console.py](../backend/tests/test_g1_input_console.py) | 86 | 목록 확인 | arm_row, ConsoleTests | `9d264ab75632` |
 | [backend/tests/test_g1_lowstate_view.py](../backend/tests/test_g1_lowstate_view.py) | 28 | 목록 확인 | LowStateTests | `51a289d5a2b5` |
 | [backend/tests/test_g1_observation_audit.py](../backend/tests/test_g1_observation_audit.py) | 330 | 목록 확인 | packet, source_packet, AuditTests | `6037c1f78ca9` |
@@ -101,7 +101,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_g1_omni_transport_recovery.py](../backend/tests/test_g1_omni_transport_recovery.py) | 152 | 목록 확인 | LocalOmniServer, OmniTransportRecoveryTests | `dcc10160c2aa` |
 | [backend/tests/test_g1_portable_environment.py](../backend/tests/test_g1_portable_environment.py) | 89 | 목록 확인 | PortableTests | `003768f06a79` |
 | [backend/tests/test_g1_process_lifetime.py](../backend/tests/test_g1_process_lifetime.py) | 62 | 목록 확인 | LifetimeTests | `ebcce528a3f2` |
-| [backend/tests/test_g1_quiet_observation.py](../backend/tests/test_g1_quiet_observation.py) | 69 | 목록 확인 | QuietTests | `a7791435959d` |
+| [backend/tests/test_g1_quiet_observation.py](../backend/tests/test_g1_quiet_observation.py) | 127 | 목록 확인 | QuietTests | `3c17096ff086` |
 | [backend/tests/test_g1_ssh_login.py](../backend/tests/test_g1_ssh_login.py) | 56 | 목록 확인 | LoginTests | `1fca27bf0d14` |
 | [backend/tests/test_g1_teleop_dependencies.py](../backend/tests/test_g1_teleop_dependencies.py) | 52 | 목록 확인 | DependencyTests | `6ef2692a5559` |
 | [backend/tests/test_g1_vr_teleop_launch.py](../backend/tests/test_g1_vr_teleop_launch.py) | 371 | 목록 확인 | worker_row, WorkerRecognitionTests, UnityLaunchTests, OrchestrationTests, PreflightTests | `992077877b99` |
@@ -126,7 +126,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [tools/G1_CAMERA_LAUNCH.py](../tools/G1_CAMERA_LAUNCH.py) | 28 | 입출력 확인 | main | `4dd859cd3bc0` |
 | [tools/G1_ETHERNET_DNS.ps1](../tools/G1_ETHERNET_DNS.ps1) | 60 | 목록 확인 | - | `8405c5e3187b` |
 | [tools/G1_ETHERNET_TRANSACTION.ps1](../tools/G1_ETHERNET_TRANSACTION.ps1) | 126 | 목록 확인 | - | `e49e43ff9063` |
-| [tools/G1_GROOT_REMOTE_LAUNCH.py](../tools/G1_GROOT_REMOTE_LAUNCH.py) | 254 | 입출력 확인 | _ssh_base, _managed_remote_command, ssh_command, inspect_remote, _match_process (+5) | `895440948a0c` |
+| [tools/G1_GROOT_REMOTE_LAUNCH.py](../tools/G1_GROOT_REMOTE_LAUNCH.py) | 492 | 입출력 확인 | actuator_argv, _ssh_base, _foreground_remote_command, ssh_command, inspect_remote (+11) | `597cc4b88f10` |
 | [tools/G1_INPUT_OBSERVATION_LAUNCH.py](../tools/G1_INPUT_OBSERVATION_LAUNCH.py) | 128 | 입출력 확인 | worker_command, engine_environment, preflight, main | `e767f04935e6` |
 | [tools/G1_INPUT_RECEIVE_AUDIT.py](../tools/G1_INPUT_RECEIVE_AUDIT.py) | 597 | 목록 확인 | _stdout_line, LatestOutput, _aged_payload, display_view, AsyncLog (+15) | `338dfea129c7` |
 | [tools/G1_PORTABLE.py](../tools/G1_PORTABLE.py) | 265 | 목록 확인 | stamp, run_checked, engine_env, check_runtime, teleop (+9) | `da77a19f5427` |
@@ -140,6 +140,6 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [tools/g1_observation_tap.py](../tools/g1_observation_tap.py) | 85 | 목록 확인 | next_deadline, ObservationTap | `2f68783b528c` |
 | [tools/g1_portable_environment.py](../tools/g1_portable_environment.py) | 46 | 목록 확인 | select_robot_host, check_python | `f42974bdaabb` |
 | [tools/g1_process_lifetime.py](../tools/g1_process_lifetime.py) | 57 | 목록 확인 | bind_session_lifetime | `73562a1df329` |
-| [tools/g1_quiet_observation.py](../tools/g1_quiet_observation.py) | 98 | 목록 확인 | receive, run_workers | `d712843e297e` |
+| [tools/g1_quiet_observation.py](../tools/g1_quiet_observation.py) | 147 | 목록 확인 | receive, _stop_groot_supervisor, run_workers | `570372a67140` |
 | [tools/g1_ssh_login.py](../tools/g1_ssh_login.py) | 86 | 목록 확인 | key_path, identity_options, registration_command, probe, ensure_login (+1) | `c19bc5adaefe` |
 | [tools/g1_teleop_dependencies.py](../tools/g1_teleop_dependencies.py) | 132 | 목록 확인 | runtime_manifest, sha256, requirements, probe, validate (+2) | `a0f0171925fe` |

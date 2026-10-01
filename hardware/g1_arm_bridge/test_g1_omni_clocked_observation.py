@@ -121,6 +121,89 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual(values['processing_deadlines_missed'], 2)
         self.assertIsNone(processor.process(self.sample(2, .05), 7, .12, 2))
 
+    def test_unity_alignment_state_requires_fresh_aligned_session(self):
+        state = gateway.UnityAlignmentState()
+        packet = dict(
+            schema=gateway.UNITY_ALIGNMENT_SCHEMA,
+            session='a' * 32,
+            sequence=0,
+            aligned=False,
+            quest_yaw_deg=0.0,
+            yaw_correction_deg=12.5,
+        )
+        self.assertTrue(state.accept(
+            json.dumps(packet).encode(),
+            ('127.0.0.1', 40000),
+            10.0))
+        self.assertEqual(state.snapshot(10.1)['status'], 'NOT_ALIGNED')
+        packet.update(sequence=1, aligned=True, quest_yaw_deg=3.0)
+        self.assertTrue(state.accept(
+            json.dumps(packet).encode(),
+            ('127.0.0.1', 40000),
+            10.2))
+        ready = state.snapshot(10.21)
+        self.assertTrue(ready['ready'])
+        self.assertEqual(ready['session'], 'a' * 32)
+        self.assertEqual(ready['quest_yaw_deg'], 3.0)
+        self.assertEqual(state.snapshot(11.0)['status'], 'STALE')
+
+    def test_unity_gate_holds_zero_then_captures_current_omni_yaw_offset(self):
+        mapper = gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(
+            calibration_s=.1,
+            movement_deadzone=0.,
+            forward_max_m_s=1.,
+            lateral_max_m_s=1.,
+            yaw_deadzone_deg_s=1000.))
+        processor = gateway.ClockedOmniProcessor(
+            mapper, 60., 0.,
+            require_unity_alignment=True,
+            calibration_delay_s=0.)
+        waiting = dict(
+            status='WAIT', ready=False, session=None, age_s=None)
+        first = processor.process(
+            self.sample(0, 0., 128.9), 0, 0., 0, waiting)
+        self.assertEqual((first['vx'], first['vy'], first['yaw_rate']),
+                         (0., 0., 0.))
+        self.assertFalse(first['calibrated'])
+        ready = dict(
+            status='READY', ready=True, session='b' * 32, age_s=0.)
+        processor.process(
+            self.sample(1, .1, 128.9), 1, .1, 0, ready)
+        calibrated = processor.process(
+            self.sample(2, .2, 128.9), 2, .2, 0, ready)
+        self.assertTrue(calibrated['calibrated'])
+        self.assertAlmostEqual(
+            calibrated['runtime_yaw_offset_deg'], 128.9)
+        theta = math.radians(128.9)
+        raw_x = .4 * math.sin(theta) + .2 * math.cos(theta)
+        raw_y = .4 * math.cos(theta) - .2 * math.sin(theta)
+        raw = json.dumps(dict(movementXY=[raw_x, raw_y], armYaw=128.9))
+        moving = gateway.ReceivedOmniSample(
+            3, .3, (raw_x, raw_y, 128.9), raw)
+        values = processor.process(
+            moving, 3, .3, 0, ready)
+        self.assertAlmostEqual(values['vx'], .4, places=10)
+        self.assertAlmostEqual(values['vy'], -.2, places=10)
+
+    def test_new_unity_session_recaptures_offset_and_recalibrates(self):
+        mapper = gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(
+            calibration_s=.1))
+        processor = gateway.ClockedOmniProcessor(
+            mapper, 60., 0., require_unity_alignment=True)
+        ready_a = dict(
+            status='READY', ready=True, session='a' * 32, age_s=0.)
+        processor.process(self.sample(0, 0., 120.), 0, 0., 0, ready_a)
+        processor.process(self.sample(1, .1, 120.), 1, .1, 0, ready_a)
+        self.assertTrue(processor.mapper.calibrated)
+        ready_b = dict(
+            status='READY', ready=True, session='b' * 32, age_s=0.)
+        values = processor.process(
+            self.sample(2, .2, 137.), 2, .2, 0, ready_b)
+        self.assertFalse(values['calibrated'])
+        self.assertEqual(values['runtime_yaw_offset_deg'], 137.)
+        self.assertEqual((values['vx'], values['vy'], values['yaw_rate']),
+                         (0., 0., 0.))
+
     def test_scheduler_skips_deadlines_without_catchup(self):
         period = 1. / 60.
         deadline, missed = gateway.next_processing_deadline(1., 1.002, period)
@@ -135,7 +218,11 @@ class ClockedOmniObservationTests(unittest.TestCase):
         cases = [(['--dry-run', '--process-hz', value], {'G1_OBSERVATION_TAP': '1'})
                  for value in ('nan', 'inf', '-1', '9', '121')]
         cases += [(['--dry-run', '--process-hz', '60'], {}),
-                  (['--process-hz', '60'], {'G1_OBSERVATION_TAP': '1'})]
+                  (['--process-hz', '60'], {'G1_OBSERVATION_TAP': '1'}),
+                  (['--dry-run', '--process-hz', '60', '--unity-alignment-port', '80'],
+                   {'G1_OBSERVATION_TAP': '1'}),
+                  (['--dry-run', '--unity-alignment-port', '55074'],
+                   {'G1_OBSERVATION_TAP': '1'})]
         for arguments, environment in cases:
             with self.subTest(arguments=arguments, environment=environment), \
                     patch.dict(gateway.os.environ, environment, clear=True), \

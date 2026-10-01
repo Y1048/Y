@@ -258,7 +258,11 @@ class OrchestrationTests(unittest.TestCase):
             self.assertEqual(ROOT, call.kwargs['cwd'])
             self.assertEqual(environment, call.kwargs['env'])
             self.assertEqual(subprocess.CREATE_NEW_CONSOLE, call.kwargs['creationflags'])
-        self.assertIn('--dry-run', worker_row('omni'))
+        omni_command = worker_row('omni')
+        self.assertIn('--dry-run', omni_command)
+        self.assertEqual(
+            str(launcher.observation.UNITY_ALIGNMENT_PORT),
+            launcher.option(omni_command, '--unity-alignment-port'))
 
     def test_all_running_produces_no_new_windows(self):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
@@ -338,7 +342,10 @@ class OrchestrationTests(unittest.TestCase):
 @unittest.skipUnless(os.name == 'nt', 'Windows socket and subprocess constants')
 class PreflightTests(unittest.TestCase):
     def test_unrelated_udp_owner_blocks_before_any_dependency_process(self):
-        for worker, port in (('send', 55071), ('arm', 5020)):
+        for worker, port in (
+                ('send', 55071),
+                ('arm', 5020),
+                ('omni', launcher.observation.UNITY_ALIGNMENT_PORT)):
             with self.subTest(worker=worker), \
                     mock.patch.object(launcher.shutil, 'which', return_value='available.exe'), \
                     mock.patch.object(launcher.socket, 'socket') as socket_factory, \

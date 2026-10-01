@@ -17,6 +17,7 @@ REMOTE_DIR = '/home/unitree/g1_input_audit_20260921_7e83c4'
 WORKERS = ('receive', 'send', 'omni', 'arm')
 COMPUTE_HZ = 60
 DISPLAY_HZ = 100
+UNITY_ALIGNMENT_PORT = 55074
 
 
 def worker_command(worker, host, stamp):
@@ -32,7 +33,8 @@ def worker_command(worker, host, stamp):
                          '--print-hz', str(DISPLAY_HZ)]
     if worker == 'omni':
         return python + [str(ROOT/'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py'),
-                         '--dry-run', '--process-hz', str(COMPUTE_HZ), '--csv',
+                         '--dry-run', '--process-hz', str(COMPUTE_HZ),
+                         '--unity-alignment-port', str(UNITY_ALIGNMENT_PORT), '--csv',
                          str(ROOT/'logs/test_results/omni_gateway_readonly'/('omni_observation_'+stamp+'.csv'))]
     if worker == 'arm':
         return python + [str(ROOT/'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py'),
@@ -56,7 +58,7 @@ def engine_environment():
 def preflight(env):
     if not shutil.which('ssh.exe'):
         raise RuntimeError('ssh.exe is missing')
-    for port in (5020, 55071):
+    for port in (5020, 55071, UNITY_ALIGNMENT_PORT):
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)

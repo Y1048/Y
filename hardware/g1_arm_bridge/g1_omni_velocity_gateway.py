@@ -39,6 +39,9 @@ OMNI_CSV_HEADER = [
 
 YAW_OFFSET_DEG = 120.0
 MOVEMENT_DEADZONE = 0.10
+UNITY_ALIGNMENT_SCHEMA = "g1.unity.omni.calibration.v1"
+UNITY_ALIGNMENT_PORT = 55074
+UNITY_ALIGNMENT_FRESHNESS_S = 0.75
 
 
 def clamp(value: float, limit: float) -> float:
@@ -100,6 +103,13 @@ class OmniVelocityConfig:
 class OmniVelocityMapper:
     def __init__(self, config: OmniVelocityConfig | None = None):
         self.config = config or OmniVelocityConfig()
+        self.reset_calibration()
+
+    def reset_calibration(self, yaw_offset_deg: float | None = None) -> None:
+        if yaw_offset_deg is not None:
+            if not math.isfinite(yaw_offset_deg):
+                raise ValueError("nonfinite yaw offset")
+            self.config.yaw_offset_deg = float(yaw_offset_deg)
         self.started_s: float | None = None
         self.zero_x_samples: list[float] = []
         self.zero_y_samples: list[float] = []
@@ -252,6 +262,104 @@ def omni_csv_row(now_s: float, run_started_s: float, sequence: int,
     ]
 
 
+class UnityAlignmentState:
+    """Fresh Unity/Quest readiness only; never compares Unity and Python clocks."""
+    def __init__(self):
+        self.session = None
+        self.sequence = -1
+        self.aligned = False
+        self.quest_yaw_deg = 0.0
+        self.yaw_correction_deg = 0.0
+        self.last_receipt = -math.inf
+        self.retired = set()
+
+    def accept(self, raw, peer, now):
+        try:
+            if peer[0] != "127.0.0.1" or len(raw) > 1024:
+                raise ValueError("unity_alignment_peer_or_size")
+            packet = json.loads(raw.decode("utf-8") if isinstance(raw, bytes) else raw)
+            if not isinstance(packet, dict) or packet.get("schema") != UNITY_ALIGNMENT_SCHEMA:
+                raise ValueError("unity_alignment_schema")
+            session = packet.get("session")
+            sequence = packet.get("sequence")
+            aligned = packet.get("aligned")
+            quest_yaw = packet.get("quest_yaw_deg")
+            correction = packet.get("yaw_correction_deg")
+            if (not isinstance(session, str) or len(session) != 32
+                    or any(c not in "0123456789abcdef" for c in session)):
+                raise ValueError("unity_alignment_session")
+            if type(sequence) is not int or not 0 <= sequence < 2**53:
+                raise ValueError("unity_alignment_sequence")
+            if type(aligned) is not bool:
+                raise ValueError("unity_alignment_flag")
+            if (type(quest_yaw) not in (int, float)
+                    or type(correction) not in (int, float)
+                    or not math.isfinite(quest_yaw)
+                    or not math.isfinite(correction)):
+                raise ValueError("unity_alignment_yaw")
+            if session in self.retired:
+                raise ValueError("unity_alignment_retired")
+            if self.session is not None and session != self.session:
+                if len(self.retired) >= 64:
+                    raise ValueError("unity_alignment_session_capacity")
+                self.retired.add(self.session)
+                self.sequence = -1
+            if session == self.session and sequence <= self.sequence:
+                raise ValueError("unity_alignment_reordered")
+            self.session = session
+            self.sequence = sequence
+            self.aligned = aligned
+            self.quest_yaw_deg = float(quest_yaw)
+            self.yaw_correction_deg = float(correction)
+            self.last_receipt = now
+            return True
+        except (ValueError, TypeError, UnicodeError, json.JSONDecodeError):
+            return False
+
+    def snapshot(self, now):
+        if self.session is None:
+            return dict(status="WAIT", ready=False, session=None, age_s=None,
+                        quest_yaw_deg=None, yaw_correction_deg=None)
+        age = max(0.0, now - self.last_receipt)
+        fresh = age <= UNITY_ALIGNMENT_FRESHNESS_S
+        ready = fresh and self.aligned
+        return dict(
+            status=("READY" if ready else "NOT_ALIGNED" if fresh else "STALE"),
+            ready=ready,
+            session=self.session,
+            age_s=age,
+            quest_yaw_deg=self.quest_yaw_deg,
+            yaw_correction_deg=self.yaw_correction_deg,
+        )
+
+
+class UnityAlignmentReceiver:
+    def __init__(self, port):
+        self.state = UnityAlignmentState()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.sock.setsockopt(
+                socket.SOL_SOCKET,
+                socket.SO_EXCLUSIVEADDRUSE,
+                1)
+        self.sock.bind(("127.0.0.1", port))
+        self.sock.setblocking(False)
+        if hasattr(socket, "SIO_UDP_CONNRESET"):
+            self.sock.ioctl(socket.SIO_UDP_CONNRESET, False)
+
+    def snapshot(self, now):
+        for _ in range(64):
+            try:
+                raw, peer = self.sock.recvfrom(1025)
+            except (BlockingIOError, ConnectionResetError):
+                break
+            self.state.accept(raw, peer, time.monotonic())
+        return self.state.snapshot(now)
+
+    def close(self):
+        self.sock.close()
+
+
 @dataclass(frozen=True)
 class ReceivedOmniSample:
     sequence: int
@@ -366,27 +474,69 @@ class LatestOmniReader:
 
 class ClockedOmniProcessor:
     """Map each new raw sample at most once; repeats never acquire a new source time."""
-    def __init__(self, mapper, process_hz, calibration_starts):
+    def __init__(self, mapper, process_hz, calibration_starts,
+                 require_unity_alignment=False, calibration_delay_s=0.0):
         self.mapper, self.process_hz = mapper, process_hz
         self.calibration_starts = calibration_starts
+        self.require_unity_alignment = require_unity_alignment
+        self.calibration_delay_s = calibration_delay_s
+        self.unity_session = None
+        self.runtime_yaw_offset_deg = (
+            None if require_unity_alignment
+            else mapper.config.yaw_offset_deg)
         self.last_sequence = -1
         self.processed_samples = self.raw_samples_skipped = 0
 
-    def process(self, sample, tick, processed_at, deadline_misses):
+    def process(self, sample, tick, processed_at, deadline_misses,
+                alignment=None):
         if sample is None or sample.sequence <= self.last_sequence:
             return None
         self.raw_samples_skipped += sample.sequence - self.last_sequence - 1
         self.last_sequence = sample.sequence
         self.processed_samples += 1
         x, y, yaw = sample.values
-        velocity = ((0., 0., 0.) if sample.received_monotonic_s < self.calibration_starts
-                    else self.mapper.update(x, y, yaw, sample.received_monotonic_s))
+        gate_status = "DISABLED"
+        gate_ready = True
+        gate_session = None
+        gate_age = None
+        if self.require_unity_alignment:
+            gate_status = (alignment or {}).get("status", "WAIT")
+            gate_ready = bool((alignment or {}).get("ready"))
+            gate_session = (alignment or {}).get("session")
+            gate_age = (alignment or {}).get("age_s")
+            if gate_ready and gate_session != self.unity_session:
+                self.unity_session = gate_session
+                self.runtime_yaw_offset_deg = yaw
+                self.mapper.reset_calibration(yaw_offset_deg=yaw)
+                self.calibration_starts = (
+                    sample.received_monotonic_s
+                    + self.calibration_delay_s)
+            velocity = (
+                (0., 0., 0.)
+                if (not gate_ready
+                    or sample.received_monotonic_s < self.calibration_starts)
+                else self.mapper.update(
+                    x, y, yaw, sample.received_monotonic_s)
+            )
+        else:
+            velocity = (
+                (0., 0., 0.)
+                if sample.received_monotonic_s < self.calibration_starts
+                else self.mapper.update(
+                    x, y, yaw, sample.received_monotonic_s)
+            )
+        calibrated = self.mapper.calibrated and gate_ready
         return dict(source_origin='omni_connect_readonly', sample_sequence=sample.sequence,
             raw_sample_sequence=sample.sequence, mx=x, my=y, arm_yaw_deg=yaw,
             omni_yaw_rate_deg_s=self.mapper.yaw_rate_raw_deg_s,
             vx=velocity[0], vy=velocity[1], yaw_rate=velocity[2],
             yaw_diff_deg=self.mapper.yaw_from_origin_deg,
-            yaw_step_diff_deg=self.mapper.yaw_step_diff_deg, calibrated=self.mapper.calibrated,
+            yaw_step_diff_deg=self.mapper.yaw_step_diff_deg,
+            calibrated=calibrated,
+            runtime_yaw_offset_deg=self.runtime_yaw_offset_deg,
+            unity_alignment_status=gate_status,
+            unity_alignment_session=gate_session,
+            unity_alignment_age_s=gate_age,
             processing_hz=self.process_hz, process_tick=tick,
             processed_monotonic_s=processed_at, raw_samples_skipped=self.raw_samples_skipped,
             processing_deadlines_missed=deadline_misses,
@@ -408,13 +558,24 @@ def run_clocked_observation(args, observation, websocket_module):
     """Opt-in dry-run only; CSV rows are processed new samples, not all WS messages."""
     mapper = OmniVelocityMapper(OmniVelocityConfig(calibration_s=args.calibration_seconds))
     started = time.monotonic()
-    process = ClockedOmniProcessor(mapper, args.process_hz, started + args.start_delay_seconds)
+    alignment_port = getattr(args, "unity_alignment_port", 0)
+    alignment = (
+        UnityAlignmentReceiver(alignment_port)
+        if alignment_port else None)
+    process = ClockedOmniProcessor(
+        mapper,
+        args.process_hz,
+        started + args.start_delay_seconds,
+        require_unity_alignment=alignment is not None,
+        calibration_delay_s=args.start_delay_seconds)
     reader = LatestOmniReader(args.omni_url, websocket_module)
     csv_file = None
     writer = None
     extra_fields = ['raw_sample_sequence', 'processing_hz', 'process_tick',
                     'processed_monotonic_s', 'raw_samples_skipped', 'processing_deadlines_missed',
-                    'source_clock', 'processing_clock', 'csv_row_kind']
+                    'source_clock', 'processing_clock', 'runtime_yaw_offset_deg',
+                    'unity_alignment_status', 'unity_alignment_session',
+                    'unity_alignment_age_s', 'csv_row_kind']
     if args.csv:
         args.csv.parent.mkdir(parents=True, exist_ok=True)
         csv_file = args.csv.open('x', newline='', encoding='utf-8')
@@ -422,8 +583,12 @@ def run_clocked_observation(args, observation, websocket_module):
         writer.writerow(OMNI_CSV_HEADER + extra_fields)
     print('[OMNI CLOCKED OBSERVATION] processing %.3f Hz; raw WS receipt independent; '
           'only new samples published; no command/discovery transport' % args.process_hz, flush=True)
-    print('[OMNI FRAME] mx/my -> body vx/vy using initial-relative armYaw + 120 deg; '
-          'vx forward-positive, vy left-positive.', flush=True)
+    if alignment is None:
+        print('[OMNI FRAME] standalone fallback: initial-relative armYaw + 120 deg; '
+              'vx forward-positive, vy left-positive.', flush=True)
+    else:
+        print('[OMNI FRAME] integrated calibration: hold zero until Unity/Quest alignment; '
+              'capture current armYaw as the session offset.', flush=True)
     print('[CSV] processed-new samples only, original raw JSON/timestamp preserved; '
           'raw_samples_skipped reports samples superseded before processing', flush=True)
     period = 1. / args.process_hz
@@ -451,7 +616,12 @@ def run_clocked_observation(args, observation, websocket_module):
                 print('[OMNI CONNECTION] ' + json.dumps(transport, allow_nan=False), flush=True)
                 last_transport_status = transport['status']
                 last_transport_print = time.perf_counter()
-            values = process.process(sample, ticks, time.monotonic(), missed)
+            alignment_state = (
+                alignment.snapshot(time.monotonic())
+                if alignment is not None else None)
+            values = process.process(
+                sample, ticks, time.monotonic(), missed,
+                alignment_state)
             if values is not None:
                 # The envelope time is raw receipt time, never the scheduler tick.
                 observation.publish(values, sample.received_monotonic_s)
@@ -469,6 +639,8 @@ def run_clocked_observation(args, observation, websocket_module):
     finally:
         processing_elapsed = time.perf_counter() - started_perf
         reader.close()
+        if alignment is not None:
+            alignment.close()
         observation.close()
         if csv_file is not None:
             csv_file.close()
@@ -501,12 +673,18 @@ def main() -> None:
                         help=argparse.SUPPRESS)
     parser.add_argument('--process-hz', type=float, default=0.,
                         help='0 keeps event-driven mapping; 10..120 enables clocked observation only')
+    parser.add_argument('--unity-alignment-port', type=int, default=0,
+                        help='0: fixed 120 deg fallback; integrated mode uses localhost Unity readiness')
     args = parser.parse_args()
     if (not math.isfinite(args.process_hz) or
             (args.process_hz != 0 and not 10 <= args.process_hz <= 120)):
         raise ValueError('process-hz must be zero or finite 10..120')
     if args.process_hz and (not args.dry_run or os.environ.get('G1_OBSERVATION_TAP') != '1'):
         raise ValueError('process-hz requires --dry-run and G1_OBSERVATION_TAP=1')
+    if args.unity_alignment_port and (
+            not args.process_hz
+            or not 1024 <= args.unity_alignment_port <= 65535):
+        raise ValueError('unity alignment port requires clocked mode and port 1024..65535')
     observation = None
     if os.environ.get('G1_OBSERVATION_TAP') == '1':
         if not args.dry_run:

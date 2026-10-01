@@ -37,6 +37,33 @@ binder 내부에는 relative delta/body-translation helper가 남아 있지만 �
 
 position과 orientation은 Python bimanual policy의 wrist FrameTask에서 함께 풀린다.
 
+## 통합 시작 시 Omni 방향 보정
+
+기존 PC 보행 매핑의 `120°`는 standalone 호환 기본값으로만 남긴다.
+
+통합 launcher에서는 Unity가 localhost UDP `55074`로 별도 readiness
+heartbeat를 보낸다. 이 heartbeat는 다음 조건이 모두 만족된 뒤에만
+`aligned=true`가 된다.
+
+- Quest head pose가 유효하고 안정됨
+- `G1HeadLockedCamera`의 one-time alignment가 실제 적용됨
+- `G1OmniBodyHeading`이 최초 Omni sample과 G1 shoulder frame을 확보함
+
+PC Omni worker는 이 heartbeat가 fresh하지 않으면 `vx/vy/yaw_rate=0`을
+유지한다. 새 Unity Play session에서 처음 fresh `aligned=true`를 받은 뒤,
+차렷 자세의 **현재 Omni `armYaw`** 를 그 session의 runtime
+`yaw_offset_deg`로 캡처하고 그 시점부터 movement bias calibration을
+시작한다.
+
+따라서 통합 경로는 더 이상 시작 순간을 무조건 `120°`로 가정하지 않는다.
+Quest yaw 값은 readiness/진단에만 사용하고 Omni movement 식에 직접
+혼합하지 않는다. `g1_omni_heading_controller.py --yaw-sign -1`의
+상대 G1 yaw 방향 계약은 별개이며 변경하지 않는다.
+
+Unity heartbeat가 stale해지면 PC Omni mapping output은 즉시 zero hold한다.
+같은 Unity session이 다시 fresh해지면 기존 calibration을 유지하고,
+새 Unity session이면 새 `armYaw`로 다시 calibration한다.
+
 ## Omni observation
 
 Omni Connect endpoint:

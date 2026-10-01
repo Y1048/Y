@@ -207,7 +207,10 @@ def running_workers(rows, root, host):
                 'lowstate': option(argv, '--host') == host,
                 'send': 'send-live' in argv and option(argv, '--host') == host
                         and option(argv, '--send-hz') == str(observation.COMPUTE_HZ),
-                'omni': '--dry-run' in argv and option(argv, '--process-hz') == str(observation.COMPUTE_HZ),
+                'omni': '--dry-run' in argv
+                        and option(argv, '--process-hz') == str(observation.COMPUTE_HZ)
+                        and option(argv, '--unity-alignment-port')
+                            == str(observation.UNITY_ALIGNMENT_PORT),
                 'arm': option(argv, '--mode') == 'unity'
                        and option(argv, '--compute-hz') == str(observation.COMPUTE_HZ)
                        and '--headless' in argv,
@@ -226,7 +229,10 @@ def preflight(missing, env):
     for executable in ('ssh.exe',):
         if not shutil.which(executable):
             raise RuntimeError(executable + ' is missing')
-    for worker, port in (('send', 55071), ('arm', 5020)):
+    for worker, port in (
+            ('send', 55071),
+            ('arm', 5020),
+            ('omni', observation.UNITY_ALIGNMENT_PORT)):
         if worker not in missing:
             continue
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:

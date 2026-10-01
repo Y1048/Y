@@ -19,7 +19,7 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
     public const int MaximumJpegBytes = 4 * 1024 * 1024;
     private const int FrameAssemblyTimeoutMs = 2000;
     public const float DefaultCanvasScale = 0.00180f;
-    public const float DefaultCanvasVerticalOffset = -0.04f;
+    public const float DefaultCanvasVerticalOffset = 0.09f;
     public const float DefaultCanvasWidth = 320.0f;
     public const float DefaultCanvasHeight = 240.0f;
     public const string ObjectName = "G1_Head_Camera_PiP";

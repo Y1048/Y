@@ -74,8 +74,6 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
 
     public static G1HeadCameraPiP Create(
         Transform center_eye,
-        Transform robot_root,
-        Transform robot_head_mount,
         int camera_tcp_port = DefaultTcpPort)
     {
         if (center_eye == null)
@@ -83,15 +81,8 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
             return null;
         }
 
-        Transform parent_transform = robot_root == null
-            ? center_eye
-            : robot_root;
-        Transform pose_reference = robot_root != null
-            && robot_head_mount != null
-            ? robot_head_mount
-            : center_eye;
         G1HeadCameraPiP existing_value =
-            GetDirectChildComponent(parent_transform);
+            GetDirectChildComponent(center_eye);
         if (existing_value != null)
         {
             existing_value.tcp_port = camera_tcp_port;
@@ -107,16 +98,12 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         canvas_object.SetActive(false);
         RectTransform canvas_transform =
             canvas_object.GetComponent<RectTransform>();
-        Vector3 initial_world_position = pose_reference.TransformPoint(
-            new Vector3(
-                0.0f,
-                DefaultCanvasVerticalOffset,
-                0.80f));
-        Quaternion initial_world_rotation = pose_reference.rotation;
-        canvas_transform.SetParent(parent_transform, false);
-        canvas_transform.SetPositionAndRotation(
-            initial_world_position,
-            initial_world_rotation);
+        canvas_transform.SetParent(center_eye, false);
+        canvas_transform.localPosition = new Vector3(
+            0.0f,
+            DefaultCanvasVerticalOffset,
+            0.80f);
+        canvas_transform.localRotation = Quaternion.identity;
         canvas_transform.localScale = Vector3.one * DefaultCanvasScale;
         canvas_transform.sizeDelta = new Vector2(
             DefaultCanvasWidth,

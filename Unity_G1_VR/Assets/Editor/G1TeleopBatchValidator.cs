@@ -428,49 +428,38 @@ public static class G1TeleopBatchValidator
         GameObject camera_object = new GameObject(
             "g1_head_camera_pip_validation",
             typeof(Camera));
-        GameObject robot_root_object = new GameObject(
-            "g1_head_camera_pip_robot_root_validation");
-        GameObject robot_head_mount_object = new GameObject(
-            "g1_head_camera_pip_head_mount_validation");
         try
         {
             camera_object.transform.SetPositionAndRotation(
                 new Vector3(0.30f, 1.60f, -0.20f),
                 Quaternion.Euler(8.0f, 25.0f, 0.0f));
-            robot_head_mount_object.transform.SetParent(
-                robot_root_object.transform,
-                false);
-            robot_head_mount_object.transform.SetLocalPositionAndRotation(
-                new Vector3(0.0f, 1.25f, 0.10f),
-                Quaternion.Euler(-3.0f, -35.0f, 0.0f));
-            Vector3 expected_initial_position =
-                robot_head_mount_object.transform.TransformPoint(
-                    new Vector3(
-                        0.0f,
-                        G1HeadCameraPiP.DefaultCanvasVerticalOffset,
-                        0.80f));
-            Quaternion expected_initial_rotation =
-                robot_head_mount_object.transform.rotation;
 
             G1HeadCameraPiP pip_value = G1HeadCameraPiP.Create(
                 camera_object.transform,
-                robot_root_object.transform,
-                robot_head_mount_object.transform,
                 G1HeadCameraPiP.DefaultTcpPort);
             AssertCondition(
                 pip_value != null,
                 "G1 head-camera PiP could not be created.");
             AssertCondition(
-                pip_value.transform.parent == robot_root_object.transform,
-                "G1 head-camera PiP must be parented to the G1 root.");
+                pip_value.transform.parent == camera_object.transform,
+                "G1 head-camera PiP must be view-locked to CenterEyeAnchor.");
+            RectTransform pip_transform =
+                pip_value.GetComponent<RectTransform>();
             AssertCondition(
-                Vector3.Distance(
-                    pip_value.transform.position,
-                    expected_initial_position) < 0.0001f
+                pip_transform != null
+                    && Mathf.Approximately(
+                        pip_transform.localPosition.x,
+                        0.0f)
+                    && Mathf.Approximately(
+                        pip_transform.localPosition.y,
+                        G1HeadCameraPiP.DefaultCanvasVerticalOffset)
+                    && Mathf.Approximately(
+                        pip_transform.localPosition.z,
+                        0.80f)
                     && Quaternion.Angle(
-                        pip_value.transform.rotation,
-                        expected_initial_rotation) < 0.01f,
-                "G1 head-camera PiP initial world pose must come from the G1 head mount, not the startup HMD pose.");
+                        pip_transform.localRotation,
+                        Quaternion.identity) < 0.01f,
+                "G1 head-camera PiP local HMD pose is invalid.");
             AssertCondition(
                 pip_value.video_image != null
                     && pip_value.status_indicator != null,
@@ -480,13 +469,10 @@ public static class G1TeleopBatchValidator
                     && pip_value.GetComponent<Canvas>().renderMode
                         == RenderMode.WorldSpace,
                 "G1 head-camera PiP must use a world-space canvas.");
-            RectTransform pip_transform =
-                pip_value.GetComponent<RectTransform>();
             AssertCondition(
-                pip_transform != null
-                    && Mathf.Approximately(
-                        pip_transform.localScale.x,
-                        G1HeadCameraPiP.DefaultCanvasScale)
+                Mathf.Approximately(
+                    pip_transform.localScale.x,
+                    G1HeadCameraPiP.DefaultCanvasScale)
                     && Mathf.Approximately(
                         pip_transform.localScale.y,
                         G1HeadCameraPiP.DefaultCanvasScale),
@@ -501,18 +487,19 @@ public static class G1TeleopBatchValidator
             Vector3 local_before = pip_value.transform.localPosition;
             Quaternion local_rotation_before =
                 pip_value.transform.localRotation;
-            robot_root_object.transform.rotation =
-                Quaternion.AngleAxis(90.0f, Vector3.up);
+            camera_object.transform.SetPositionAndRotation(
+                new Vector3(-0.40f, 1.75f, 0.55f),
+                Quaternion.Euler(-5.0f, -40.0f, 3.0f));
             AssertVector(
                 pip_value.transform.position,
-                robot_root_object.transform.TransformPoint(local_before),
-                "G1 head-camera PiP did not follow the G1 root transform.");
+                camera_object.transform.TransformPoint(local_before),
+                "G1 head-camera PiP did not follow CenterEyeAnchor position.");
             AssertCondition(
                 Quaternion.Angle(
                     pip_value.transform.rotation,
-                    robot_root_object.transform.rotation
+                    camera_object.transform.rotation
                         * local_rotation_before) < 0.01f,
-                "G1 head-camera PiP rotation did not follow the G1 root.");
+                "G1 head-camera PiP did not follow CenterEyeAnchor rotation.");
 
             AssertCondition(
                 G1HeadCameraPiP.IsValidLoopbackPort(
@@ -543,7 +530,6 @@ public static class G1TeleopBatchValidator
         }
         finally
         {
-            UnityEngine.Object.DestroyImmediate(robot_root_object);
             UnityEngine.Object.DestroyImmediate(camera_object);
         }
     }

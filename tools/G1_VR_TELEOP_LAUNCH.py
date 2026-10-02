@@ -183,6 +183,7 @@ def start_unity(editor, project=UNITY_PROJECT):
 def running_workers(rows, root, host):
     """Recognize active children, not launch windows waiting after a child exits."""
     paths = {
+        'camera_follow': root / 'tools/G1_CAMERA_FOLLOW_LAUNCH.py',
         'lowstate': root / 'tools/g1_lowstate_view.py',
         'send': root / 'tools/G1_INPUT_RECEIVE_AUDIT.py',
         'omni': root / 'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py',
@@ -204,6 +205,7 @@ def running_workers(rows, root, host):
             if normalize(path) not in [normalize(arg) for arg in argv[1:]]:
                 continue
             valid = {
+                'camera_follow': option(argv, '--host') == host,
                 'lowstate': option(argv, '--host') == host,
                 'send': 'send-live' in argv and option(argv, '--host') == host
                         and option(argv, '--send-hz') == str(observation.COMPUTE_HZ),
@@ -259,6 +261,8 @@ def launch_plan(existing, has_camera, has_groot=False,
         plan.append('camera')
     if not no_groot_actuation and not has_groot:
         plan.append('groot')
+    if 'camera_follow' not in existing:
+        plan.append('camera_follow')
     return plan
 
 
@@ -318,12 +322,16 @@ def main(argv=None):
         print('[UNITY] existing Unity_G1_VR editor kept')
     else:
         print('[UNITY] open Unity_G1_VR with Unity ' + UNITY_VERSION)
+    print('[QUEST CAMERA] Automatic pan/tilt follower via SSH (existing compatible follower kept):')
+    print('  cd ~/groot_onboard_runtime && python3 -u receive_mink_ik_udp.py --camera-follow --pan-sign 1  (opens its own silent keep-awake stream)')
+    print('  Add --dry-run to check directions without camera movement. See docs/QUEST_CAMERA_PAN_TILT_20261001.md')
+    print('  Use the existing heading controller; do not start a second UDP 55070 receiver.')
     if args.check_only:
         print('PASS: launch plan checked; no Unity, workers, camera SDK initialization, SSH login, or GROOT actuation. Auto mode probes TCP 22 only.')
         return 0
     if 'groot' in plan:
         confirm_groot_actuation()
-    if 'lowstate' in plan:
+    if 'lowstate' in plan or 'camera_follow' in plan:
         ensure_login(args.host)
     if unity_editor is not None:
         # This must precede run_workers(): that function binds its own process to
@@ -342,6 +350,9 @@ def main(argv=None):
                 str(ROOT / 'tools/G1_CAMERA_LAUNCH.py'),
                 '--robot-host', args.host,
             ]
+        elif worker == 'camera_follow':
+            command = [sys.executable, '-I', '-u', '-B',
+                       str(ROOT / 'tools/G1_CAMERA_FOLLOW_LAUNCH.py'), '--host', args.host]
         elif worker == 'groot':
             command = [
                 sys.executable, '-I', '-u', '-B', str(GROOT_LAUNCHER),

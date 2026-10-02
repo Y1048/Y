@@ -93,6 +93,14 @@ def run_workers(root, workers, host, env):
                     creationflags=(
                         subprocess.CREATE_NEW_CONSOLE
                         | subprocess.CREATE_NEW_PROCESS_GROUP))
+            elif worker == 'camera_follow':
+                with logfile.open('ab') as output:
+                    child = subprocess.Popen(
+                        [sys.executable, '-I', '-u', '-B',
+                         str(root / 'tools/G1_CAMERA_FOLLOW_LAUNCH.py'), '--host', host],
+                        cwd=root, env=env, stdin=subprocess.DEVNULL,
+                        stdout=output, stderr=subprocess.STDOUT,
+                        creationflags=subprocess.CREATE_NO_WINDOW)
             elif worker == 'receive':
                 command = [
                     sys.executable, '-I', '-u', '-B',

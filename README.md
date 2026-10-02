@@ -18,6 +18,8 @@ runtime/python/RUNTIME_MANIFEST.json
 
 남겨둔 사용자용 BAT 4개에는 환경 설정 로직이 없다. 모두 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다.
 
+BAT는 Quest 카메라 pan·tilt 추종기도 자동 시작한다. 실행 순서와 부호 옵션: [실시간 UDP 카메라 안내](docs/QUEST_CAMERA_PAN_TILT_20261001.md).
+
 ## 기본 실행
 
 ```bat

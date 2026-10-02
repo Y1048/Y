@@ -21,8 +21,8 @@ class QuietTests(unittest.TestCase):
             child.poll.return_value = None
             spawn.return_value = child
             quiet.run_workers(
-                Path(directory), ['send', 'omni', 'arm'], 'example', {})
-            self.assertEqual(3, spawn.call_count)
+                Path(directory), ['send', 'omni', 'arm', 'camera_follow'], 'example', {})
+            self.assertEqual(4, spawn.call_count)
             for call in spawn.call_args_list:
                 self.assertEqual(
                     quiet.subprocess.CREATE_NO_WINDOW,
@@ -35,7 +35,7 @@ class QuietTests(unittest.TestCase):
                 send_command[send_command.index('--print-hz') + 1], '1')
             self.assertEqual(
                 send_command[send_command.index('--send-hz') + 1], '60')
-            self.assertEqual(3, kill.call_count)
+            self.assertEqual(4, kill.call_count)
             self.assertEqual(0, child.terminate.call_count)
             for call in kill.call_args_list:
                 self.assertIn('/T', call.args[0])

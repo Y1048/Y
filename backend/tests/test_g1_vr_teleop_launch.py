@@ -35,10 +35,10 @@ class WorkerRecognitionTests(unittest.TestCase):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
         existing = launcher.running_workers(rows, ROOT, HOST)
         self.assertEqual(set(launcher.INTEGRATED_WORKERS), existing)
-        self.assertEqual([], launcher.launch_plan(existing, True, True))
-        self.assertEqual(['omni', 'lowstate', 'camera', 'groot'],
+        self.assertEqual([], launcher.launch_plan(existing | {'camera_follow'}, True, True))
+        self.assertEqual(['omni', 'lowstate', 'camera', 'groot', 'camera_follow'],
                          launcher.launch_plan({'send', 'arm'}, False, False))
-        self.assertEqual(['omni', 'lowstate'],
+        self.assertEqual(['omni', 'lowstate', 'camera_follow'],
                          launcher.launch_plan(
                              {'send', 'arm'}, True, True, no_receiver=True))
 
@@ -49,7 +49,7 @@ class WorkerRecognitionTests(unittest.TestCase):
                 for worker in launcher.INTEGRATED_WORKERS]
         self.assertEqual(set(), launcher.running_workers(rows, ROOT, HOST))
         self.assertEqual(
-            ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot'],
+            ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot', 'camera_follow'],
             launcher.launch_plan(set(), False))
 
     def test_incompatible_worker_options_are_refused(self):
@@ -238,9 +238,9 @@ class OrchestrationTests(unittest.TestCase):
         result, spawn, check, confirm, environment, unity_start = self.invoke()
         self.assertEqual(0, result)
         check.assert_called_once_with(
-            ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot'], environment)
+            ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot', 'camera_follow'], environment)
         confirm.assert_called_once_with()
-        self.assertEqual(6, spawn.call_count)
+        self.assertEqual(7, spawn.call_count)
         unity_start.assert_called_once()
         commands = [call.args[0] for call in spawn.call_args_list]
         self.assertEqual(
@@ -266,6 +266,7 @@ class OrchestrationTests(unittest.TestCase):
 
     def test_all_running_produces_no_new_windows(self):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
+        rows.append([sys.executable, str(TOOLS/'G1_CAMERA_FOLLOW_LAUNCH.py'), '--host', HOST])
         result, spawn, check, confirm, environment, unity_start = self.invoke(
             rows, camera=True, unity=True, groot=True)
         self.assertEqual(0, result)
@@ -287,11 +288,11 @@ class OrchestrationTests(unittest.TestCase):
         result, spawn, check, confirm, environment, _ = self.invoke(
             [worker_row('send'), worker_row('arm')], camera=True, groot=True)
         self.assertEqual(0, result)
-        check.assert_called_once_with(['omni', 'lowstate'], environment)
+        check.assert_called_once_with(['omni', 'lowstate', 'camera_follow'], environment)
         confirm.assert_not_called()
         self.assertEqual(
-            ['omni', 'lowstate'],
-            [launcher.option(call.args[0], '--worker') for call in spawn.call_args_list])
+            ['omni', 'lowstate', 'camera_follow'],
+            [launcher.option(call.args[0], '--worker') or 'camera_follow' for call in spawn.call_args_list])
 
     def test_check_only_never_confirms_or_starts_groot(self):
         result, spawn, check, confirm, _, unity_start = self.invoke(
@@ -307,9 +308,9 @@ class OrchestrationTests(unittest.TestCase):
             args=['--no-groot-actuation'])
         self.assertEqual(0, result)
         check.assert_called_once_with(
-            ['send', 'omni', 'arm', 'lowstate', 'camera'], environment)
+            ['send', 'omni', 'arm', 'lowstate', 'camera', 'camera_follow'], environment)
         confirm.assert_not_called()
-        self.assertEqual(5, spawn.call_count)
+        self.assertEqual(6, spawn.call_count)
         self.assertFalse(any(
             str(launcher.GROOT_LAUNCHER) in call.args[0]
             for call in spawn.call_args_list))

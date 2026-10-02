@@ -26,6 +26,7 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         public long sequence;
         public bool aligned;
         public float quest_yaw_deg;
+        public float quest_pitch_deg;
         public float yaw_correction_deg;
         public double omni_origin_yaw_deg;
     }
@@ -35,6 +36,8 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
     private string calibrationSession;
     private long calibrationSequence;
     private double nextCalibrationHeartbeat;
+    private double nextHeadLog;
+    private string lastHeadState;
     private G1HeadLockedCamera alignment;
     private G1OmniHeadingState state = new G1OmniHeadingState();
     private double originYaw;
@@ -156,10 +159,12 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
             aligned = ready,
             omni_origin_yaw_deg = rawOriginYaw,
             quest_yaw_deg = questYaw,
+            quest_pitch_deg = ready ? ElevationDegrees(alignment.xr_center_eye) : 0.0f,
             yaw_correction_deg = ready
                 ? alignment.LastYawCorrectionDegrees
                 : 0.0f,
         };
+        LogHeadState(now, packet);
         byte[] raw = Encoding.UTF8.GetBytes(
             JsonUtility.ToJson(packet));
         try
@@ -173,6 +178,27 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         {
             // The integrated Omni worker may not be running yet.
         }
+    }
+
+    // Diagnostics for the camera follower: 1 Hz, plus immediately on a state change.
+    // The PC gateway rejects non-finite angles, which otherwise looks like Unity went silent.
+    private void LogHeadState(double now, CalibrationPacket packet)
+    {
+        bool finite = !float.IsNaN(packet.quest_yaw_deg) && !float.IsInfinity(packet.quest_yaw_deg)
+            && !float.IsNaN(packet.quest_pitch_deg) && !float.IsInfinity(packet.quest_pitch_deg);
+        bool tracked = OVRPlugin.GetNodeOrientationTracked(OVRPlugin.Node.EyeCenter)
+            && OVRPlugin.GetNodePositionTracked(OVRPlugin.Node.EyeCenter);
+        string state = string.Format("aligned={0} finite={1} hmd_tracked={2} focused={3}",
+            packet.aligned, finite, tracked, Application.isFocused);
+        if (now < nextHeadLog && state == lastHeadState)
+        {
+            return;
+        }
+        nextHeadLog = now + 1.0;
+        Debug.Log(string.Format("[QUEST HEAD] {0} yaw={1:F1} pitch={2:F1} seq={3}{4}",
+            state, packet.quest_yaw_deg, packet.quest_pitch_deg, packet.sequence,
+            state == lastHeadState ? "" : " (state changed)"));
+        lastHeadState = state;
     }
 
     public static float HorizontalYawDegrees(Transform value)
@@ -191,6 +217,16 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         forward.Normalize();
         return Mathf.Atan2(forward.x, forward.z)
             * Mathf.Rad2Deg;
+    }
+
+    // Camera/keyboard convention: looking up is positive tilt. Euler X has
+    // the opposite sign and wraps at 360, so use the HMD forward vector.
+    public static float ElevationDegrees(Transform value)
+    {
+        if (value == null) return 0.0f;
+        Vector3 forward = value.forward;
+        return Mathf.Atan2(forward.y,
+            Mathf.Sqrt(forward.x * forward.x + forward.z * forward.z)) * Mathf.Rad2Deg;
     }
 
     // The whole Quest TrackingSpace is placed once by G1HeadLockedCamera.

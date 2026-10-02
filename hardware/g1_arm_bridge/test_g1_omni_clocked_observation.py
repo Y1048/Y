@@ -122,6 +122,29 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual(values['processing_deadlines_missed'], 2)
         self.assertIsNone(processor.process(self.sample(2, .05), 7, .12, 2))
 
+    def test_camera_pitch_passthrough_and_legacy_absence(self):
+        state = gateway.UnityAlignmentState()
+        packet = dict(schema=gateway.UNITY_ALIGNMENT_SCHEMA, session='a'*32,
+                      sequence=0, aligned=True, quest_yaw_deg=-20.,
+                      quest_pitch_deg=15., yaw_correction_deg=0.)
+        self.assertTrue(state.accept(json.dumps(packet).encode(), ('127.0.0.1', 1), 10.))
+        ready = state.snapshot(10.01)
+        self.assertEqual(ready['quest_pitch_deg'], 15.)
+        processor = gateway.ClockedOmniProcessor(
+            gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(calibration_s=.1)),
+            60., 0., require_unity_alignment=True, calibration_delay_s=0.)
+        values = processor.process(self.sample(0, 10.), 0, 10., 0, ready)
+        self.assertEqual(values['unity_quest_yaw_deg'], -20.)
+        self.assertEqual(values['unity_quest_pitch_deg'], 15.)
+        for invalid in (True, '15', float('nan'), float('inf'), -91, 91):
+            packet.update(sequence=1, quest_pitch_deg=invalid)
+            self.assertFalse(state.accept(json.dumps(packet).encode(), ('127.0.0.1',1),10.02))
+        del packet['quest_pitch_deg']
+        self.assertTrue(state.accept(json.dumps(packet).encode(), ('127.0.0.1',1),10.03))
+        self.assertIsNone(state.snapshot(10.04)['quest_pitch_deg'])
+        self.assertTrue(state.snapshot(10.04)['ready'])  # No new locomotion gate.
+        self.assertEqual(state.snapshot(11.)['status'], 'STALE')
+
     def test_unity_alignment_state_requires_fresh_aligned_session(self):
         state = gateway.UnityAlignmentState()
         packet = dict(
@@ -147,6 +170,17 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual(ready['session'], 'a' * 32)
         self.assertEqual(ready['quest_yaw_deg'], 3.0)
         self.assertEqual(state.snapshot(11.0)['status'], 'STALE')
+
+    def test_unity_alignment_rejections_are_recorded_for_diagnostics(self):
+        state = gateway.UnityAlignmentState()
+        raw = ('{"schema":"%s","session":"%s","sequence":0,"aligned":true,'
+               '"quest_yaw_deg":NaN,"quest_pitch_deg":0.0,"yaw_correction_deg":0.0}'
+               % (gateway.UNITY_ALIGNMENT_SCHEMA, 'a' * 32)).encode()
+        self.assertFalse(state.accept(raw, ('127.0.0.1', 40000), 10.0))
+        self.assertEqual(state.rejected, 1)
+        self.assertEqual(state.last_rejection, 'unity_alignment_yaw')
+        self.assertIn('NaN', state.last_rejected_raw)
+        self.assertEqual(state.snapshot(10.0)['status'], 'WAIT')
 
     def test_fallback_then_uses_unity_captured_origin_not_receipt_yaw(self):
         mapper = gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(

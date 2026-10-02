@@ -1,3 +1,25 @@
+## 2026-10-02 G1 live Insta360 / SSH 검증
+
+G1 closed network `192.168.10.165`에서 실기 확인했다. Insta360 Link 2 Pro는
+`/dev/v4l/by-id/...video-index0 -> /dev/video6`, metadata `video-index1 -> /dev/video7`이며
+D435i는 `/dev/video0..5`로 분리된다. index0은 1920x1080 MJPEG 30/60 fps를 지원하고
+30 fps 설정 실캡처에서 camera-side 약 30.3~31 fps를 확인했다. PTZ receiver는
+`--camera-follow --pan-sign 1 --no-camera-stream --dry-run`으로 정상 기동하고 영상 장치를
+점유하지 않은 채 Quest 입력 전 `WAIT_ZERO`로 대기한다.
+
+현재 PC의 `C:\Windows\System32\OpenSSH\ssh.exe`는 `ssh -V`도 정상 동작하지 않는
+실행 불능 상태였지만 G1/키 문제는 아니었다. `tools/g1_ssh_login.py`가 OpenSSH를 실제
+health-check한 뒤 자동 탐색에서 깨진 Windows OpenSSH를 건너뛰고
+`C:\Program Files\Git\usr\bin\ssh.exe`를 선택하도록 수정했다. `SSH_EXE`가 있으면
+그 경로를 엄격히 사용한다. 현재 자동 선택값으로 G1 key probe PASS, 통합
+`--check-only --no-groot-actuation --no-unity` PASS.
+
+카메라 전송 성능은 closed-network Wi-Fi에서 camera 자체 30 fps와 분리해 기록한다.
+직접 MJPEG->SSH는 약 27.7 fps, 현 G1CM->SSH->PC 경로는 약 24.6 fps였다. G1 wlan0은
+-37 dBm / 1.2 Gbps PHY였고 eth0은 1 Gbps Full Duplex link-up이지만, PC Realtek Ethernet은
+당시 Disconnected였다. 따라서 정확한 30 fps end-to-end 검증은 유선 `192.168.123.164`
+경로 연결 후 다시 측정한다. 15 fps 이상이라는 기존 최소 체감 목표는 현재 무선에서도 넘는다.
+
 ## 2026-10-01 BAT 카메라 추종 자동 시작
 
 기본 BAT의 launcher가 camera_follow worker도 시작한다. Ubuntu 수신부는
@@ -6,7 +28,7 @@
 MJPEG 30 fps를 재인코딩 없이 기존 G1CM/TCP 5011로 보낸다. Unity PiP는 HMD-follow다.
 동일한 원격 프로세스는 재사용, 다른 옵션/수동 키보드는 보존하고 오류 표시.
 SSH stdin 종료 시 이번에 생성한 카메라 자식만 정리한다. 로봇/GROOT 동작은 변경 없음.
---check-only는 기존대로 실행 없이 계획 검사. 실제 카메라 자동 실행 검증은 하지 않았음.
+--check-only는 기존대로 실행 없이 계획 검사. 2026-10-02 실기에서 Insta360 discovery/capture, PTZ dry-run, SSH transport 및 통합 check-only까지 검증함.
 
 ## 2026-10-01 Quest 카메라 pan/tilt 실시간 UDP
 
@@ -103,7 +125,7 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 
 ## External dependencies
 
-Unity 6000.5.4f1, OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. Python package dependency만 project-local로 완전히 고정한다.
+Unity 6000.5.4f1, working OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency만 project-local로 완전히 고정한다.
 
 ## Upper-body simplification discussion
 

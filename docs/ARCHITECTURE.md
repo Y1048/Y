@@ -72,7 +72,7 @@ port        = 5020
 - observation sender: 60 Hz
 - observation display: 100 Hz
 - LowState: read-only
-- camera: G1 VideoClient → SSH → TCP 5011 → Unity PiP
+- camera: Insta360 Link 2 Pro UVC `video-index0` MJPEG → SSH/G1CM → TCP 5011 → Unity PiP
 - onboard runtime: `/home/unitree/groot_onboard_runtime`
 - heading controller: `python3 tools/g1_omni_heading_controller.py --yaw-sign -1`
 - actuator: `./build/groot_balance_actuator --normal --enable-actuation --acknowledge-harness --accept-handoff-risk --supervisor-off --external-controller --interface eth0 --duration 300`
@@ -85,7 +85,7 @@ port        = 5020
 Embedded Python으로 해결하지 않는 항목:
 
 - Unity installation
-- OpenSSH executable
+- working OpenSSH executable; `g1_ssh_login.py`가 Windows OpenSSH를 health-check하고 필요 시 Git for Windows OpenSSH로 fallback하며 `SSH_EXE` override를 지원
 - Quest/ADB/driver
 - Omni Connect process
 - privileged Windows NetTCPIP/DNS administration

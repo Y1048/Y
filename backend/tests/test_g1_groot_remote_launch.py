@@ -25,6 +25,11 @@ OWNER = "test-owner"
 
 
 class CommandContractTests(unittest.TestCase):
+    def setUp(self):
+        patcher = mock.patch.object(groot, 'ssh_executable', return_value='ssh-test.exe')
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_manual_command_contract_and_duration_selection(self):
         self.assertEqual(
             ("python3", "-u", "tools/g1_omni_heading_controller.py",
@@ -110,6 +115,11 @@ class CommandContractTests(unittest.TestCase):
 
 
 class SpawnAndShutdownTests(unittest.TestCase):
+    def setUp(self):
+        patcher = mock.patch.object(groot, 'ssh_executable', return_value='ssh-test.exe')
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_spawn_separates_stdin_from_supervisor(self):
         child = mock.MagicMock()
         thread = mock.MagicMock()

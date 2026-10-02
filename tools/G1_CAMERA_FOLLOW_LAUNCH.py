@@ -5,7 +5,7 @@ import re
 import shlex
 import subprocess
 import time
-from g1_ssh_login import identity_options
+from g1_ssh_login import identity_options, ssh_executable
 
 REMOTE = r"""
 import fcntl, os, select, signal, subprocess, sys, time
@@ -74,7 +74,7 @@ def ssh_command(host):
         raise ValueError('Invalid host')
     encoded=base64.b64encode(REMOTE.encode()).decode()
     command='python3 -u -c '+shlex.quote('import base64;exec(base64.b64decode('+repr(encoded)+'))')
-    return ['ssh.exe',*identity_options(),'-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
+    return [ssh_executable(),*identity_options(),'-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
             '-o','ServerAliveInterval=5','-o','ServerAliveCountMax=2','unitree@'+host,command]
 
 

@@ -18,6 +18,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest import mock
 import uuid
 
 
@@ -376,8 +377,9 @@ class ObservationLauncherTests(unittest.TestCase):
             spec.loader.exec_module(module)
         finally:
             sys.path.remove(tools)
-        commands = {worker: module.worker_command(worker, '127.0.0.1', 'generated_fixture')
-                    for worker in module.WORKERS}
+        with mock.patch.object(module,'ssh_executable',return_value='ssh-test.exe'):
+            commands = {worker: module.worker_command(worker, '127.0.0.1', 'generated_fixture')
+                        for worker in module.WORKERS}
         self.assertIn('--dry-run', commands['omni'])
         self.assertIn('send-live', commands['send'])
         self.assertIn('--mode', commands['arm'])

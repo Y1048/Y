@@ -5,11 +5,10 @@ from datetime import datetime
 import os
 from pathlib import Path
 import re
-import shutil
 import socket
 import subprocess
 import sys
-from g1_ssh_login import identity_options
+from g1_ssh_login import identity_options, ssh_executable
 from g1_portable_environment import select_robot_host
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +24,7 @@ def worker_command(worker, host, stamp):
     if worker == 'lowstate':
         return python + [str(ROOT/'tools/g1_lowstate_view.py'), '--host', host]
     if worker == 'receive':
-        return ['ssh.exe', '-t'] + identity_options() + ['unitree@'+host,
+        return [ssh_executable(), '-t'] + identity_options() + ['unitree@'+host,
                 'cd '+REMOTE_DIR+' && python3 -u G1_INPUT_RECEIVE_AUDIT.py receive --print-hz '+str(DISPLAY_HZ)]
     if worker == 'send':
         return python + [str(ROOT/'tools/G1_INPUT_RECEIVE_AUDIT.py'),
@@ -56,8 +55,7 @@ def engine_environment():
 
 
 def preflight(env):
-    if not shutil.which('ssh.exe'):
-        raise RuntimeError('ssh.exe is missing')
+    ssh_executable()
     for port in (5020, 55071, UNITY_ALIGNMENT_PORT):
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):

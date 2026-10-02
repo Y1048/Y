@@ -27,7 +27,8 @@ HOST = '192.168.123.164'
 
 
 def worker_row(worker, host=HOST):
-    return launcher.observation.worker_command(worker, host, 'test_only')
+    with mock.patch.object(launcher.observation, 'ssh_executable', return_value='ssh.exe'):
+        return launcher.observation.worker_command(worker, host, 'test_only')
 
 
 class WorkerRecognitionTests(unittest.TestCase):
@@ -219,6 +220,7 @@ class OrchestrationTests(unittest.TestCase):
         stack.enter_context(mock.patch.object(launcher, 'process_arguments', return_value=inventory))
         environment = {'G1_OBSERVATION_TAP': '1', 'TEST_ONLY': '1'}
         stack.enter_context(mock.patch.object(launcher.observation, 'engine_environment', return_value=environment))
+        stack.enter_context(mock.patch.object(launcher.observation, 'ssh_executable', return_value='ssh.exe'))
         check = stack.enter_context(mock.patch.object(launcher, 'preflight', side_effect=preflight_error))
         stack.enter_context(mock.patch.object(launcher, 'ensure_login'))
         stack.enter_context(mock.patch.object(launcher, 'validate_unity_project'))
@@ -323,6 +325,7 @@ class OrchestrationTests(unittest.TestCase):
     def test_conflicting_inventory_fails_before_any_spawn(self):
         with mock.patch.object(launcher, 'select_robot_host', return_value=HOST), \
                 mock.patch.object(launcher, 'process_arguments', return_value=[worker_row('send', 'other-host')]), \
+                mock.patch.object(launcher.observation, 'ssh_executable', return_value='ssh.exe'), \
                 mock.patch.object(launcher.subprocess, 'Popen') as spawn, \
                 mock.patch.object(launcher.subprocess, 'run') as run:
             with self.assertRaises(RuntimeError):
@@ -348,7 +351,7 @@ class PreflightTests(unittest.TestCase):
                 ('arm', 5020),
                 ('omni', launcher.observation.UNITY_ALIGNMENT_PORT)):
             with self.subTest(worker=worker), \
-                    mock.patch.object(launcher.shutil, 'which', return_value='available.exe'), \
+                    mock.patch.object(launcher, 'ssh_executable', return_value='ssh-test.exe'), \
                     mock.patch.object(launcher.socket, 'socket') as socket_factory, \
                     mock.patch.object(launcher.subprocess, 'run') as run:
                 sock = socket_factory.return_value.__enter__.return_value
@@ -359,14 +362,16 @@ class PreflightTests(unittest.TestCase):
                 run.assert_not_called()
 
     def test_ssh_camera_preflight_requires_only_local_ssh(self):
-        with mock.patch.object(launcher.shutil, 'which',
-                               side_effect=lambda name: 'ssh.exe' if name == 'ssh.exe' else None), \
+        with mock.patch.object(launcher, 'ssh_executable', return_value='ssh-test.exe') as resolve, \
+                mock.patch.object(launcher, 'check_camera_environment') as camera_check, \
                 mock.patch.object(launcher.subprocess, 'run',
                                   side_effect=AssertionError('No subprocess required')):
             launcher.preflight(['camera'], {})
+        resolve.assert_called_once_with()
+        camera_check.assert_called_once_with()
 
     def test_reused_workers_do_not_probe_their_occupied_udp_ports(self):
-        with mock.patch.object(launcher.shutil, 'which', return_value='available.exe'), \
+        with mock.patch.object(launcher, 'ssh_executable', return_value='ssh-test.exe'), \
                 mock.patch.object(launcher.socket, 'socket') as socket_factory, \
                 mock.patch.object(launcher.subprocess, 'run') as run:
             launcher.preflight([], {})

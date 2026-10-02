@@ -7,7 +7,7 @@ from pathlib import Path
 import socket
 import subprocess
 import time
-from g1_ssh_login import identity_options
+from g1_ssh_login import identity_options, ssh_executable
 
 NAMES = [side+'_'+joint for side in ('left','right') for joint in
          ('hip_pitch','hip_roll','hip_yaw','knee','ankle_pitch','ankle_roll')]
@@ -61,7 +61,7 @@ def validate(x):
 
 
 def run(host):
-    command=['ssh.exe']+identity_options()+['-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
+    command=[ssh_executable()]+identity_options()+['-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
         '-o','ServerAliveInterval=5','-o','ServerAliveCountMax=2','unitree@'+host,'python3 -u -']
     root=Path(__file__).resolve().parents[1]
     folder=root/'logs/test_results/lowstate_view';folder.mkdir(parents=True,exist_ok=True)

@@ -6,11 +6,10 @@ import os
 from pathlib import Path
 import re
 import shlex
-import shutil
 import socket
 import subprocess
 import sys
-from g1_ssh_login import ensure_login
+from g1_ssh_login import ensure_login, ssh_executable
 from g1_camera_ssh import check_environment as check_camera_environment
 
 import G1_INPUT_OBSERVATION_LAUNCH as observation
@@ -228,9 +227,7 @@ def running_workers(rows, root, host):
 
 
 def preflight(missing, env):
-    for executable in ('ssh.exe',):
-        if not shutil.which(executable):
-            raise RuntimeError(executable + ' is missing')
+    ssh_executable()
     for worker, port in (
             ('send', 55071),
             ('arm', 5020),

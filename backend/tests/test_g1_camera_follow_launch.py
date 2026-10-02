@@ -58,7 +58,8 @@ class FollowTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):self.execute(args)
 
     def test_ssh_shell_quoting_roundtrips_exact_script(self):
-        command=follow.ssh_command('192.168.10.165')
+        with patch.object(follow,'ssh_executable',return_value='ssh-test.exe'):
+            command=follow.ssh_command('192.168.10.165')
         tokens=shlex.split(command[-1]);self.assertEqual(tokens[:3],['python3','-u','-c'])
         captured=[]
         exec(tokens[3],{'exec':captured.append})

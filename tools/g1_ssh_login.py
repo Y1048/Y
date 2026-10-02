@@ -1,7 +1,76 @@
 """Per-PC OpenSSH enrollment; passwords stay in the SSH terminal, never Python/logs."""
 from pathlib import Path
+import os
 import shlex
+import shutil
 import subprocess
+
+
+def _ssh_healthy(path):
+    try:
+        result = subprocess.run(
+            [str(path), '-V'], stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, encoding='utf-8', errors='replace', timeout=5,
+            creationflags=(subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0))
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and 'OpenSSH_' in (result.stdout or '')
+
+
+def _ssh_candidates(environment):
+    candidates = []
+    seen = set()
+    def add(path):
+        if not path:
+            return
+        path = Path(path).expanduser()
+        key = str(path).casefold()
+        if key not in seen:
+            seen.add(key)
+            candidates.append(path)
+    windows = environment.get('WINDIR') or environment.get('SystemRoot')
+    if windows:
+        add(Path(windows) / 'System32/OpenSSH/ssh.exe')
+    for key in ('ProgramW6432', 'ProgramFiles', 'ProgramFiles(x86)'):
+        root = environment.get(key)
+        if root:
+            add(Path(root) / 'Git/usr/bin/ssh.exe')
+            add(Path(root) / 'Git/bin/ssh.exe')
+    local = environment.get('LOCALAPPDATA')
+    if local:
+        add(Path(local) / 'Programs/Git/usr/bin/ssh.exe')
+    for folder in environment.get('PATH', '').split(os.pathsep):
+        if folder:
+            add(Path(folder.strip('"')) / 'ssh.exe')
+    return candidates
+
+
+def ssh_executable(environment=None):
+    environment = os.environ if environment is None else environment
+    override = environment.get('SSH_EXE')
+    if override:
+        candidate = Path(override).expanduser()
+        if not _ssh_healthy(candidate):
+            raise RuntimeError('SSH_EXE is not a working OpenSSH client: ' + str(candidate))
+        return str(candidate)
+    for candidate in _ssh_candidates(environment):
+        if candidate.is_file() and _ssh_healthy(candidate):
+            return str(candidate)
+    raise RuntimeError(
+        'No working OpenSSH client found. Checked Windows OpenSSH and Git for Windows; '
+        'install one or set SSH_EXE explicitly.')
+
+
+def ssh_keygen_executable(environment=None):
+    ssh = Path(ssh_executable(environment))
+    sibling = ssh.with_name('ssh-keygen.exe' if os.name == 'nt' else 'ssh-keygen')
+    if sibling.is_file():
+        return str(sibling)
+    fallback = shutil.which('ssh-keygen.exe' if os.name == 'nt' else 'ssh-keygen')
+    if fallback:
+        return fallback
+    raise RuntimeError('ssh-keygen was not found beside the selected OpenSSH client')
 
 
 def key_path():
@@ -24,7 +93,7 @@ def registration_command(public_key):
 
 
 def probe(host):
-    return subprocess.run(['ssh.exe'] + identity_options() +
+    return subprocess.run([ssh_executable()] + identity_options() +
         ['-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=yes',
          '-o', 'ConnectTimeout=5', 'unitree@' + host, 'true'],
         stdin=subprocess.DEVNULL, capture_output=True, timeout=15).returncode == 0
@@ -37,7 +106,7 @@ def ensure_login(host):
         raise RuntimeError('Incomplete G1 SSH key pair; preserve it and repair manually: ' + str(key))
     if not key.exists():
         key.parent.mkdir(parents=True, exist_ok=True)
-        subprocess.run(['ssh-keygen.exe', '-q', '-t', 'ed25519', '-f', str(key),
+        subprocess.run([ssh_keygen_executable(), '-q', '-t', 'ed25519', '-f', str(key),
                         '-N', '', '-C', 'g1-teleop'], check=True, stdin=subprocess.DEVNULL)
     if probe(host):
         print('[SSH] Key login verified; no password required.', flush=True)
@@ -46,7 +115,7 @@ def ensure_login(host):
           'It is not saved. A new host key is remembered; changed host keys are rejected.', flush=True)
     command = registration_command(public.read_text(encoding='ascii'))
     # Inherit the real terminal so OpenSSH handles its own password prompt.
-    subprocess.run(['ssh.exe', '-o', 'StrictHostKeyChecking=accept-new',
+    subprocess.run([ssh_executable(), '-o', 'StrictHostKeyChecking=accept-new',
         '-o', 'ConnectTimeout=5', '-o', 'PubkeyAuthentication=no',
         '-o', 'NumberOfPasswordPrompts=1', 'unitree@' + host, command], check=True)
     if not probe(host):
@@ -71,7 +140,7 @@ else:
         result.append({'args':args,'cwd':os.readlink('/proc/'+pid+'/cwd')})
     print(json.dumps(result))
 """
-    result = subprocess.run(['ssh.exe']+identity_options()+['-T','-o','BatchMode=yes',
+    result = subprocess.run([ssh_executable()]+identity_options()+['-T','-o','BatchMode=yes',
         '-o','ConnectTimeout=5','unitree@'+host,'python3 -'],
         input=code, capture_output=True, text=True, check=True, timeout=15)
     rows=json.loads(result.stdout)

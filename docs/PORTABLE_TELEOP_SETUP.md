@@ -18,7 +18,7 @@ runtime/python/RUNTIME_MANIFEST.json
 - Unity 6000.5.4f1
 - Meta Quest / Link 환경과 필요한 드라이버
 - Omni Connect
-- Windows OpenSSH client (`ssh.exe`, `ssh-keygen.exe`)
+- working OpenSSH client (`ssh.exe`, `ssh-keygen.exe`): Windows OpenSSH 또는 Git for Windows OpenSSH
 - G1 Ethernet 또는 closed network
 - G1 onboard `/home/unitree/groot_onboard_runtime`에 heading controller와 executable `build/groot_balance_actuator`
 - APK 설치 시 Meta Quest Developer Hub의 `adb.exe`
@@ -30,6 +30,7 @@ runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 ```
 
 별도 setup BAT는 유지하지 않는다. 위 명령은 bundled runtime 자체만 사용해 PC-side Python 환경을 검사한다.
+SSH 실행기는 `tools/g1_ssh_login.py`가 health check한다. `SSH_EXE`가 있으면 그 경로를 엄격히 사용하고, 자동 탐색에서는 Windows OpenSSH가 실행 불능이면 Git for Windows OpenSSH로 fallback한다.
 
 검사 항목:
 

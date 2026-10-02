@@ -2,11 +2,10 @@
 import os
 from pathlib import Path
 import socket
-import shutil
 import struct
 import subprocess
 import time
-from g1_ssh_login import ensure_login, identity_options
+from g1_ssh_login import ensure_login, identity_options, ssh_executable
 
 HEADER = struct.Struct('!4sIIQI')
 MAX_JPEG = 4 * 1024 * 1024
@@ -135,14 +134,13 @@ def read_packet(stream):
         raise RuntimeError('Invalid JPEG frame')
     return raw + jpeg
 def check_environment():
-    if not shutil.which('ssh.exe'):
-        raise RuntimeError('Windows OpenSSH client (ssh.exe) is required')
-    print('[CAMERA CHECK] SSH ready; Insta360/v4l2 checked on G1 at runtime.',
+    client = ssh_executable()
+    print('[CAMERA CHECK] SSH ready (' + client + '); Insta360/v4l2 checked on G1 at runtime.',
           flush=True)
 
 def run(host):
     ensure_login(host)
-    command = ['ssh.exe'] + identity_options() + [
+    command = [ssh_executable()] + identity_options() + [
         '-T', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=5',
         '-o', 'ServerAliveInterval=5', '-o', 'ServerAliveCountMax=2',
         'unitree@' + host, 'python3 -u -']

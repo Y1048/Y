@@ -133,7 +133,7 @@ Python dependency는 프로젝트 안에 포함하지만 다음은 외부 환경
 - Unity 6000.5.4f1
 - Meta Quest/Link 및 드라이버
 - Omni Connect
-- Windows OpenSSH client
+- working OpenSSH client: Windows OpenSSH 또는 Git for Windows OpenSSH (`SSH_EXE`로 명시 가능)
 - G1 network access
 - APK 설치 시 Meta Quest Developer Hub ADB
 

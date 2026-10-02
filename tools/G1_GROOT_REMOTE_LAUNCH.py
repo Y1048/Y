@@ -21,7 +21,7 @@ import threading
 import time
 import uuid
 
-from g1_ssh_login import ensure_login, identity_options
+from g1_ssh_login import ensure_login, identity_options, ssh_executable
 
 ROOT = Path(__file__).resolve().parents[1]
 REMOTE_DIR = "/home/unitree/groot_onboard_runtime"
@@ -159,7 +159,7 @@ def actuator_argv(supports_unlimited_duration: bool) -> tuple[str, ...]:
 
 def _ssh_base(host: str, *, tty: bool) -> list[str]:
     return [
-        "ssh.exe", *identity_options(), "-tt" if tty else "-T",
+        ssh_executable(), *identity_options(), "-tt" if tty else "-T",
         "-o", "BatchMode=yes", "-o", "ConnectTimeout=5",
         "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=2",
         "unitree@" + host,

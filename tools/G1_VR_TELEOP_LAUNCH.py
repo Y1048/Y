@@ -368,7 +368,7 @@ def main(argv=None):
             command, cwd=ROOT, env=env,
             creationflags=subprocess.CREATE_NEW_CONSOLE)
     print('Unity_G1_VR is open. Press Play in Unity, then use Quest and Omni Connect.')
-    print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: 15 fps target.')
+    print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: 30 fps target.')
     print('Close owned worker/GROOT windows to stop them. Unity Play is not changed automatically.')
     return 0
 

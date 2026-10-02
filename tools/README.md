@@ -30,7 +30,7 @@ runtime\python\python.exe -I -B tools\G1_PORTABLE.py teleop
 - Omni dry-run worker 60 Hz
 - observation send 60 Hz / display 100 Hz
 - LowState read-only
-- front camera 15 fps target
+- front camera 30 fps target
 - Unity open/reuse
 - explicit `ACTUATE` confirmation 후 onboard GROOT heading + balance actuator
 - `--no-groot-actuation` 사용 시 위 GROOT motor output만 생략

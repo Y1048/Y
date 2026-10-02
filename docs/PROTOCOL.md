@@ -42,15 +42,16 @@ LowState는 G1에서 read-only로 읽고 observation/Unity display에 전달한�
 ## 8. Camera
 
 ```text
-G1 VideoClient.GetImageSample()
- -> JPEG
- -> SSH stdout
+Insta360 Link 2 Pro
+ -> /dev/v4l/by-id/*Insta360*video-index0
+ -> UVC MJPEG 1920×1080@30 on G1
+ -> SSH stdout (G1CM framing)
  -> PC g1_camera_ssh.py
  -> TCP 127.0.0.1:5011
  -> Unity G1HeadCameraPiP
 ```
 
-현재 target은 1920×1080 / 15 fps / 16:9이며 JPEG는 PC에서 재인코딩하지 않는다.
+현재 target은 1920×1080 / 30 fps / 16:9이며 G1과 PC 모두 JPEG를 재인코딩하지 않는다. PTZ follower는 `--no-camera-stream`으로 실행되어 영상 device를 소유하지 않는다.
 
 ## 9. Compatibility scene wiring
 

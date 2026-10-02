@@ -319,10 +319,10 @@ def main(argv=None):
         print('[UNITY] existing Unity_G1_VR editor kept')
     else:
         print('[UNITY] open Unity_G1_VR with Unity ' + UNITY_VERSION)
-    print('[QUEST CAMERA] Automatic pan/tilt follower via SSH (existing compatible follower kept):')
-    print('  cd ~/groot_onboard_runtime && python3 -u receive_mink_ik_udp.py --camera-follow --pan-sign 1 --no-camera-stream  (camera worker owns Insta360 video)')
-    print('  Add --dry-run to check directions without camera movement. See docs/QUEST_CAMERA_PAN_TILT_20261001.md')
-    print('  Use the existing heading controller; do not start a second UDP 55070 receiver.')
+    print('[QUEST CAMERA] Automatic pan/tilt follower via independent Unity->SSH pose bridge:')
+    print('  Unity 127.0.0.1:55075 -> camera_follow SSH stdin -> G1 loopback:15103')
+    print('  receive_mink_ik_udp.py --camera-follow --pan-sign 1 --no-camera-stream --port 15104 --quest-port 15103')
+    print('  Camera PTZ no longer depends on the GROOT heading controller or UDP 55070 ownership.')
     if args.check_only:
         print('PASS: launch plan checked; no Unity, workers, camera SDK initialization, SSH login, or GROOT actuation. Auto mode probes TCP 22 only.')
         return 0

@@ -123,8 +123,10 @@ READY heartbeat를 받은 순간의 현재 Omni yaw로 fallback한다. Quest pit
 현재 target은 **Insta360 Link 2 Pro / 1920×1080 MJPEG / 30 fps / 16:9**이다.
 `g1_camera_ssh.py`는 `/dev/v4l/by-id/*Insta360*video-index0`을 자동 탐색하고
 JPEG를 재인코딩하지 않고 기존 G1CM/TCP 5011 경로로 전달한다.
-Unity PiP는 HMD에 고정된다. Quest yaw/pitch는 별도 observation 경로로 G1 PTZ follower에
-전달되며 follower는 `--no-camera-stream`으로 영상 device를 소유하지 않는다.
+Unity PiP는 HMD에 고정된다. Quest yaw/pitch는 Unity loopback UDP 55075에서 시작하는
+카메라 전용 SSH bridge를 통해 G1 loopback UDP 15103의 PTZ follower로 전달된다.
+이 경로는 GROOT heading controller/UDP 55070/Omni calibration과 독립이며, follower는
+`--no-camera-stream --port 15104 --quest-port 15103`으로 영상 device를 소유하지 않는다.
 
 ## 외부 dependency
 

@@ -105,6 +105,7 @@ class QuietTests(unittest.TestCase):
 
     def test_receive_hides_only_after_stdout_and_preserves_auth_stdin(self):
         with tempfile.TemporaryDirectory() as directory, \
+                patch.object(quiet.observation, 'ssh_executable', return_value='ssh.exe'), \
                 patch.object(quiet.subprocess, 'Popen') as spawn, \
                 patch.object(quiet.ctypes, 'windll') as win:
             child = spawn.return_value

@@ -9,8 +9,11 @@ using UnityEngine;
 public sealed class G1OmniBodyHeading : MonoBehaviour
 {
     public const int CalibrationReadyPort = 55074;
+    public const int CameraPosePort = 55075;
     public const string CalibrationReadySchema =
         "g1.unity.omni.calibration.v1";
+    public const string CameraPoseSchema =
+        "g1.unity.quest.camera.v1";
     private const double CalibrationHeartbeatPeriodSeconds = 0.05;
 
     [Serializable] private sealed class Packet
@@ -30,11 +33,24 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         public float yaw_correction_deg;
         public double omni_origin_yaw_deg;
     }
+
+    [Serializable] private sealed class CameraPosePacket
+    {
+        public string schema = CameraPoseSchema;
+        public string session;
+        public long sequence;
+        public bool ready;
+        public float yaw_deg;
+        public float pitch_deg;
+    }
     private UdpClient receiver;
     private UdpClient calibrationSender;
+    private UdpClient cameraPoseSender;
     private IPEndPoint calibrationEndpoint;
+    private IPEndPoint cameraPoseEndpoint;
     private string calibrationSession;
     private long calibrationSequence;
+    private long cameraPoseSequence;
     private double nextCalibrationHeartbeat;
     private double nextHeadLog;
     private string lastHeadState;
@@ -65,10 +81,14 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         alignment = cameraAlignment;
         calibrationSession = Guid.NewGuid().ToString("N");
         calibrationSequence = 0;
+        cameraPoseSequence = 0;
         nextCalibrationHeartbeat = 0.0;
         calibrationEndpoint = new IPEndPoint(
             IPAddress.Loopback,
             CalibrationReadyPort);
+        cameraPoseEndpoint = new IPEndPoint(
+            IPAddress.Loopback,
+            CameraPosePort);
         try
         {
             receiver = new UdpClient(AddressFamily.InterNetwork);
@@ -90,6 +110,16 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         {
             calibrationSender?.Close();
             calibrationSender = null;
+            Debug.LogError(error.Message);
+        }
+        try
+        {
+            cameraPoseSender = new UdpClient(AddressFamily.InterNetwork);
+        }
+        catch (SocketException error)
+        {
+            cameraPoseSender?.Close();
+            cameraPoseSender = null;
             Debug.LogError(error.Message);
         }
     }
@@ -116,29 +146,27 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         }
         if (!IsAligned && HasSample && alignment != null && alignment.IsInitialAlignmentApplied)
         {
-            if (alignment.xr_center_eye == null
-                || alignment.robot_preview == null
-                || !alignment.robot_preview.TryGetBimanualWorldFrame(
+            if (alignment.xr_center_eye != null
+                && alignment.robot_preview != null
+                && alignment.robot_preview.TryGetBimanualWorldFrame(
                     out _, out _, out robotShoulderOriginWorld, out _, out _))
             {
-                return;
+                questOriginWorld = alignment.xr_center_eye.position;
+                HasSpatialOrigin = true;
+                originYaw = state.Degrees;
+                rawOriginYaw = state.RawYawDegrees;
+                IsAligned = true;
+                Debug.Log(string.Format(
+                    "[OMNI ALIGNMENT] ALIGNED: displayed HMD={0}, G1 shoulder center={1}; release external hold.",
+                    questOriginWorld.ToString("F3"), robotShoulderOriginWorld.ToString("F3")));
             }
-            questOriginWorld = alignment.xr_center_eye.position;
-            HasSpatialOrigin = true;
-            originYaw = state.Degrees;
-            rawOriginYaw = state.RawYawDegrees;
-            IsAligned = true;
-            Debug.Log(string.Format(
-                "[OMNI ALIGNMENT] ALIGNED: displayed HMD={0}, G1 shoulder center={1}; release external hold.",
-                questOriginWorld.ToString("F3"), robotShoulderOriginWorld.ToString("F3")));
         }
         PublishCalibrationHeartbeat(now);
     }
 
     private void PublishCalibrationHeartbeat(double now)
     {
-        if (calibrationSender == null
-            || calibrationEndpoint == null
+        if ((calibrationSender == null && cameraPoseSender == null)
             || now < nextCalibrationHeartbeat)
         {
             return;
@@ -164,41 +192,83 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
                 ? alignment.LastYawCorrectionDegrees
                 : 0.0f,
         };
-        LogHeadState(now, packet);
+        Transform centerEye = alignment == null ? null : alignment.xr_center_eye;
+        bool cameraReady = alignment != null
+            && alignment.IsInitialAlignmentApplied
+            && centerEye != null
+            && IsCurrentHeadOrientationTracked();
+        var cameraPacket = new CameraPosePacket
+        {
+            session = calibrationSession,
+            sequence = cameraPoseSequence++,
+            ready = cameraReady,
+            yaw_deg = centerEye == null ? 0.0f : HorizontalYawDegrees(centerEye),
+            pitch_deg = centerEye == null ? 0.0f : ElevationDegrees(centerEye),
+        };
+        LogHeadState(now, packet, cameraPacket);
         byte[] raw = Encoding.UTF8.GetBytes(
             JsonUtility.ToJson(packet));
-        try
+        byte[] cameraRaw = Encoding.UTF8.GetBytes(
+            JsonUtility.ToJson(cameraPacket));
+        if (calibrationSender != null && calibrationEndpoint != null)
         {
-            calibrationSender.Send(
-                raw,
-                raw.Length,
-                calibrationEndpoint);
+            try
+            {
+                calibrationSender.Send(
+                    raw,
+                    raw.Length,
+                    calibrationEndpoint);
+            }
+            catch (SocketException)
+            {
+                // The integrated Omni worker may not be running yet.
+            }
         }
-        catch (SocketException)
+        if (cameraPoseSender != null && cameraPoseEndpoint != null)
         {
-            // The integrated Omni worker may not be running yet.
+            try
+            {
+                cameraPoseSender.Send(
+                    cameraRaw,
+                    cameraRaw.Length,
+                    cameraPoseEndpoint);
+            }
+            catch (SocketException)
+            {
+                // The independent camera follower may not be running yet.
+            }
         }
     }
 
     // Diagnostics for the camera follower: 1 Hz, plus immediately on a state change.
     // The PC gateway rejects non-finite angles, which otherwise looks like Unity went silent.
-    private void LogHeadState(double now, CalibrationPacket packet)
+    private void LogHeadState(
+        double now,
+        CalibrationPacket packet,
+        CameraPosePacket cameraPacket)
     {
-        bool finite = !float.IsNaN(packet.quest_yaw_deg) && !float.IsInfinity(packet.quest_yaw_deg)
-            && !float.IsNaN(packet.quest_pitch_deg) && !float.IsInfinity(packet.quest_pitch_deg);
-        bool tracked = OVRPlugin.GetNodeOrientationTracked(OVRPlugin.Node.EyeCenter)
-            && OVRPlugin.GetNodePositionTracked(OVRPlugin.Node.EyeCenter);
-        string state = string.Format("aligned={0} finite={1} hmd_tracked={2} focused={3}",
-            packet.aligned, finite, tracked, Application.isFocused);
+        bool finite = !float.IsNaN(cameraPacket.yaw_deg) && !float.IsInfinity(cameraPacket.yaw_deg)
+            && !float.IsNaN(cameraPacket.pitch_deg) && !float.IsInfinity(cameraPacket.pitch_deg);
+        bool orientationTracked = IsCurrentHeadOrientationTracked();
+        bool positionTracked = OVRPlugin.GetNodePositionTracked(OVRPlugin.Node.EyeCenter)
+            && OVRPlugin.GetNodePositionValid(OVRPlugin.Node.EyeCenter);
+        string state = string.Format("aligned={0} camera_ready={1} finite={2} orientation_tracked={3} position_tracked={4} focused={5}",
+            packet.aligned, cameraPacket.ready, finite, orientationTracked, positionTracked, Application.isFocused);
         if (now < nextHeadLog && state == lastHeadState)
         {
             return;
         }
         nextHeadLog = now + 1.0;
         Debug.Log(string.Format("[QUEST HEAD] {0} yaw={1:F1} pitch={2:F1} seq={3}{4}",
-            state, packet.quest_yaw_deg, packet.quest_pitch_deg, packet.sequence,
+            state, cameraPacket.yaw_deg, cameraPacket.pitch_deg, cameraPacket.sequence,
             state == lastHeadState ? "" : " (state changed)"));
         lastHeadState = state;
+    }
+
+    private static bool IsCurrentHeadOrientationTracked()
+    {
+        return OVRPlugin.GetNodeOrientationTracked(OVRPlugin.Node.EyeCenter)
+            && OVRPlugin.GetNodeOrientationValid(OVRPlugin.Node.EyeCenter);
     }
 
     public static float HorizontalYawDegrees(Transform value)
@@ -239,5 +309,6 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
     {
         receiver?.Close();
         calibrationSender?.Close();
+        cameraPoseSender?.Close();
     }
 }

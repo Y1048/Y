@@ -1,3 +1,11 @@
+## 2026-10-02 Quest PTZ intermittent 원인 및 분리 수정
+
+기존 PTZ는 `Unity -> Omni gateway -> UDP 55070 -> g1_omni_heading_controller.py -> localhost 15102 -> camera follower`에 의존했다. 따라서 GROOT heading controller가 없는 camera-only/`--no-groot-actuation` 세션, heading controller 시작 전, Omni WebSocket/보정이 준비되지 않은 구간에서는 follower가 살아 있어도 Quest pose `rx=0` 또는 rejection이 되어 카메라가 움직이지 않았다. 이 시작 순서 의존성이 "될 때도 있고 안 될 때도"의 소프트웨어 원인이었다.
+
+수정 후 Unity는 initial HMD alignment 이후 orientation tracked+valid만으로 camera-only schema를 `127.0.0.1:55075`에 20 Hz 전송한다. 위치 tracking이나 Omni readiness는 PTZ에 필요하지 않다. 카메라 pose는 55074 Omni heartbeat와 별도 `UdpClient`를 사용해 camera-only 세션의 닫힌 55074 포트 오류에도 영향받지 않는다. `G1_CAMERA_FOLLOW_LAUNCH.py`가 이를 검증하고 SSH stdin을 통해 G1 `127.0.0.1:15103`으로 전달하며, onboard `receive_mink_ik_udp.py`는 `--camera-follow --pan-sign 1 --no-camera-stream --port 15104 --quest-port 15103`으로 실행된다. 기존 non-camera Mink receiver는 보존/공존하고, manual keyboard PTZ나 다른 camera-follow 옵션은 계속 fail-closed한다. locomotion의 UDP 55070/55074 READY·STALE zero-hold는 변경하지 않았다.
+
+별개로 2026-10-02 16:00:39 G1 kernel에 `uvcvideo: Non-zero status (-75) in video completion handler`가 실제 기록됐다. 따라서 USB/UVC 불안정은 두 번째 독립 원인이며, 기존 Link 2 Pro device rediscovery/set_ctrl retry 로직을 유지한다.
+
 ## 2026-10-02 G1 live Insta360 / SSH 검증
 
 G1 closed network `192.168.10.165`에서 실기 확인했다. Insta360 Link 2 Pro는

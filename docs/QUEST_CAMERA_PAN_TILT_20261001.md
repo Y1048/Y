@@ -8,66 +8,49 @@ Unity와 PC gateway를 재시작해야 새 pitch 필드가 적용된다.
 
 Unity HMD forward의 elevation을 `atan2(y, sqrt(x*x+z*z))`로 계산한다.
 위를 보면 양수이며 Unity Euler X를 그대로 쓰지 않는다.
-`quest_pitch_deg`를 localhost 55074 정렬 heartbeat에 추가하고 gateway가
-`unity_quest_pitch_deg`로 live observation payload에 보존한다. yaw와 동일한
-실시간 관측 경로를 사용하며 JSONL은 제어 입력으로 읽지 않는다.
-구형 Unity가 pitch를 보내지 않으면 None을 보존한다. 이동/팔 readiness는
-유지하지만 새 카메라 수신부는 pitch 누락을 표시하며 영점을 잡지 않는다.
+
+2026-10-02부터 카메라 PTZ 자세는 locomotion 정렬 heartbeat와 분리한다. Unity는
+`g1.unity.quest.camera.v1`을 loopback UDP 55075에 20 Hz로 보내고,
+`G1_CAMERA_FOLLOW_LAUNCH.py`가 이를 엄격히 검증한 뒤 기존 SSH 연결의 stdin으로 운반해
+G1 loopback UDP 15103으로 전달한다. 카메라 `ready`는 initial HMD alignment 이후
+orientation tracked+valid만 요구하며 위치 tracking과 Omni `FRESH_LIVE`/calibrated 상태는 요구하지 않는다.
+기존 UDP 55074의 Omni/locomotion READY·STALE zero-hold 계약은 그대로 유지한다.
 
 ## 실행 순서
 
-### 기존 수동 Ubuntu 컨트롤러를 사용하는 경우
+기본 `START_G1_VR_TELEOP.bat`은 camera worker와 camera_follow worker를 함께 관리한다.
+GROOT를 시작하든 `--no-groot-actuation`을 쓰든 PTZ pose 경로는 동일하며 heading
+controller를 카메라 때문에 별도로 실행할 필요가 없다. `--check-only`는 계획만 확인한다.
 
-Windows에서는 다음으로 시작한다.
+카메라만 시각 테스트할 때는 Unity Play + `G1_PORTABLE.py camera`로 영상 스트림을 띄우고,
+PTZ만 추가로 검증하려면 별도 콘솔에서 다음을 실행할 수 있다.
 
 ```bat
-START_G1_VR_TELEOP.bat --no-groot-actuation
+runtime\python\python.exe -I -u -B tools\G1_CAMERA_FOLLOW_LAUNCH.py --host 192.168.10.165
 ```
 
-Ubuntu 터미널 1:
+remote follower는 기존 onboard 스크립트를 다음 전용 포트로 실행한다.
 
 ```bash
-cd ~/groot_onboard_runtime
-python3 tools/g1_omni_heading_controller.py --yaw-sign -1
+python3 -B -u ~/groot_onboard_runtime/receive_mink_ik_udp.py \
+  --camera-follow --pan-sign 1 --no-camera-stream --port 15104 --quest-port 15103
 ```
 
-이미 실행 중인 heading controller가 있으면 재실행하지 않는다.
-이 옵션은 기존 GROOT 프로세스를 정지시키는 옵션이 아니라 새로 시작하지 않는 옵션이다.
-
-카메라 추종기는 이제 BAT가 자동으로 SSH 실행한다.
-`G1_CAMERA_FOLLOW_LAUNCH.py`가 아래 옵션으로 실행한다. Link 2 Pro 영상은 별도 camera worker가 단독 소유해 기존 TCP 5011 PiP로 전달한다. PTZ 추종기는 `--no-camera-stream`으로 실행하며 영상 장치를 열지 않는다.
-
-```bash
-python3 -B -u ~/groot_onboard_runtime/receive_mink_ik_udp.py --camera-follow --pan-sign 1 --no-camera-stream
-```
-
-같은 옵션의 추종기가 있으면 재사용한다. 수동 키보드 또는 다른 옵션의 수신기가
-실행 중이면 보존하고 오류를 표시한다. 정상 종료하거나 SSH 연결이 끊기면
-이번 실행이 시작한 카메라 추종기만 정리하며, 재사용한 프로세스는 종료하지 않는다.
-로그는 `logs/test_results/teleop_background/<시각>/camera_follow.log`에 저장된다.
-`--show-consoles`에서는 추종기 콘솔을 별도로 표시한다.
-
-### 기본 BAT로 GROOT까지 실행하는 경우
-
-기본 `START_G1_VR_TELEOP.bat`은 기존대로 ACTUATE 확인을 거쳐 onboard supervisor와
-heading controller를 시작할 수 있다. 이때 heading controller나 카메라 추종기를
-추가로 수동 실행하지 않는다. `--no-groot-actuation`에서도 카메라 추종기는 자동으로
-시작하지만, heading controller는 기존 수동 프로세스가 필요하다.
-`--check-only`는 계획만 확인하며 추종기/SSH/카메라/모터를 시작하지 않는다.
+`15104`는 camera follower 전용 dummy Mink receive port라 기존 5014 receiver와 충돌하지 않는다.
+같은 camera-follow 옵션은 재사용하고, 다른 camera-follow 옵션이나 수동 keyboard PTZ는
+자동 종료하지 않고 fail-closed한다.
 
 ## 카메라 동작
 
-- `55070 원본 패킷 → 메모리 복제 → localhost 15102 → 카메라 추종`.
-- 기존 Mink UDP 5014 수신도 유지. 외부 수신부는 Ubuntu에서 직접 수정되었으므로
-  Windows 프로젝트 압축만으로 Ubuntu 변경까지 배포되는 것은 아니다.
-- READY + calibrated + fresh이며 yaw와 pitch가 1.5초 안정되면 둘 다 영점 포착.
-- 영점 포착 시 카메라 pan=0, tilt=0 명령이 나간다. 이후 상대 yaw/pitch를 추종한다.
+- `Unity HMD -> localhost 55075 -> camera_follow SSH stdin -> G1 localhost 15103 -> PTZ`.
+- 영상은 별도 camera worker가 Insta360 `video-index0`을 소유하므로 PTZ follower는 `--no-camera-stream`을 유지한다.
+- camera pose가 ready이고 yaw/pitch가 0.5초 범위 5° 안에서 안정되면 영점을 포착한다.
+- 영점 포착 시 카메라 pan=0, tilt=0 명령이 나가며 이후 상대 yaw/pitch를 추종한다.
 - 키보드 방향과 동일: D=pan 양수, W=tilt 양수, C=(0,0).
 - `--pan-sign -1`은 pan 반전, 필요시 `--tilt-sign -1`은 tilt 반전.
-- 데이터 단절 시 양축 마지막 목표 유지. 카메라 수신부는 로봇 DDS/모터 명령을 보내지 않는다.
+- HMD pose가 stale되면 마지막 PTZ 목표를 유지하고 새 명령을 멈춘다. 로봇 DDS/모터 명령은 보내지 않는다.
 - `link2_keyboard.py`와 자동 추종기를 동시에 실행하지 않는다.
-- 현재 기존 프로토콜의 fresh Omni/정렬 관측 조건을 사용한다. Omni 관측이 stale이면
-  카메라도 마지막 목표를 유지한다. 이번 변경은 하체의 freshness 판정을 바꾸지 않는다.
+- USB/UVC 오류나 재열거는 별도 failure domain이다. follower는 set_ctrl 실패 시 device를 버리고 by-id/capability 기반으로 다시 찾는다.
 
 카메라를 움직이지 않는 확인:
 
@@ -80,33 +63,38 @@ python3 -u receive_mink_ik_udp.py --camera-follow --pan-sign 1 --dry-run
 
 ## 검증
 
-Windows gateway pitch 전달/범위/구형 패킷/stale 테스트, runtime C# 컴파일과
-Ubuntu의 양축 UDP 드라이런 테스트를 사용한다. 실제 G1/카메라/Unity Play 자동 실행 없음.
+2026-10-02 source 회귀와 portable live 경로를 함께 검증했다. Unity C#은 portable Editor에서
+실제 `Assembly-CSharp.dll` 재컴파일/domain reload PASS. direct camera packet validation과
+camera follower launcher 테스트도 PASS했다.
 
-검증 결과: Windows gateway 18개, Ubuntu pan/tilt 5개 테스트 통과.
-Windows gateway → live audit envelope → Ubuntu parser 통합 확인(yaw=-20°, pitch=+15°) 통과.
-Unity runtime C# 컴파일 성공. 기존 DevAgentSettings.asset 변경은 보존했다.
+실기에서는 GROOT/Omni/UDP 55070 없이 camera-only + camera_follow만 실행한 뒤 합성 pose를
+`0° -> +8° -> 0°`로 보냈다. 결과는 `[ZERO CAPTURED]`, `[CAMERA CMD] pan=+8`,
+`[CAMERA CMD] pan=+0`, 이후 `[QUEST STALE] hold last pan/tilt`까지 확인했다.
+즉 Unity용 localhost 55075 -> SSH stdin -> G1 localhost 15103 -> Insta360 V4L2 PTZ가
+robot actuation 없이 end-to-end PASS다. 실제 HMD 방향 검증 시에는 헤드셋 orientation tracking이
+유효해야 하며 initial HMD alignment 후 정면을 약 0.5초 안정시켜 zero를 잡는다.
 
 ## 로그 확인법 (카메라가 안 움직일 때)
 
-순서대로 확인한다. 앞 단계가 끊기면 뒤 단계는 볼 필요가 없다.
+순서대로 확인한다. Omni/GROOT 로그는 더 이상 PTZ 선행 조건이 아니다.
 
 1. Unity `Unity_G1_VR/Logs/Editor.log`
-   - `[OMNI ALIGNMENT] ALIGNED`: Quest 정렬 완료.
-   - `[QUEST HEAD] aligned=… finite=… hmd_tracked=… focused=… yaw=… pitch=…`: 1초마다 + 상태 변화 즉시.
-     `finite=False`(각도 NaN)나 `hmd_tracked=False`이면 Unity가 머리 자세를 잃은 것.
-2. PC gateway `logs/test_results/teleop_background/<시각>/omni.log`
-   - `[OMNI UNITY GATE] status=READY/STALE`: Unity 하트비트 수신 상태.
-   - `[OMNI UNITY REJECT] count=… reason=… raw=…`: Unity 패킷을 거부한 이유(예: `unity_alignment_yaw` = NaN 각도).
-3. G1 추종기 `logs/test_results/teleop_background/<시각>/camera_follow.log`
-   - `[CAMERA STREAM] keep-awake stream pid=…`: Link 2 Pro 깨움(PTZ는 스트림이 열려 있어야 동작).
-   - `[ZERO CAPTURED]`, `[CAMERA CMD] pan=… tilt=… stream=on`: 실제로 보낸 명령.
-   - 상태줄 `last_rejection=`: `unity_alignment=STALE`(Unity 하트비트 끊김), `omni_status=…`, `omni_not_calibrated`.
+   - `[QUEST HEAD] ... camera_ready=... orientation_tracked=... position_tracked=... yaw=... pitch=...`.
+   - `camera_ready=False`이면 initial HMD alignment 또는 orientation tracking부터 확인한다. 위치 tracking만 false인 것은 PTZ를 막지 않는다.
+2. PC camera follower 콘솔/`camera_follow.log`
+   - `[QUEST CAMERA BRIDGE] rx=... forwarded=... waiting=... rejected=...`.
+   - `rx=0`: Unity 55075 heartbeat가 없음. `waiting` 증가: heartbeat는 오지만 camera_ready가 false. `rejected` 증가: schema/range/session 검증 실패.
+3. G1 follower 상태
+   - `[ZERO CAPTURED]`: 안정된 정면 zero 포착.
+   - `[CAMERA CMD] pan=... tilt=...`: 실제 V4L2 명령.
+   - `[QUEST STALE]`: 새 pose가 0.6초 이상 끊겨 마지막 목표 hold.
+   - `[CAMERA LOST]`/`[CAMERA WAIT]`: USB/UVC device 재탐색 중.
 
 ## USB 끊김 대응 (2026-10-02)
 
-- 실측: Insta360이 G1의 USB 2.0 허브(1-2.3, Wi-Fi 동글과 같은 허브)에서 스트리밍/PTZ 중
-  `uvcvideo: Non-zero status (-71)` 후 `USB disconnect`되고 다른 `/dev/videoN`으로 재연결됨.
+- 실측: 과거 Insta360이 G1의 USB 2.0 허브(1-2.3, Wi-Fi 동글과 같은 허브)에서 스트리밍/PTZ 중
+  `uvcvideo: Non-zero status (-71)` 후 `USB disconnect`되고 다른 `/dev/videoN`으로 재연결된 기록이 있다.
+  2026-10-02 현재 세션에서도 `uvcvideo: Non-zero status (-75) in video completion handler`가 별도로 관측됐다.
   케이블/전원(모터 구동 전류) 문제로 추정. 전원 공급 USB 허브나 USB 3 포트 직결 권장.
 - 추종기는 카메라가 사라져도 종료하지 않는다. `[CAMERA LOST]` → 1초마다 재탐색(`[CAMERA WAIT]`)
   → 새 번호로 `[CAMERA] Link 2 Pro device …` → 스트림 재시작 → 마지막 목표 재전송 `(resend after reconnect)`.

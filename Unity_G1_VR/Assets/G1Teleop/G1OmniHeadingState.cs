@@ -8,6 +8,7 @@ public sealed class G1OmniHeadingState
     // Hold the last heading without pausing upper-body tracking or IK.
     public const double StaleSeconds = .50;
     public double Degrees { get; private set; }
+    public double RawYawDegrees => yaw;
     public double LastReceipt { get; private set; } = double.NegativeInfinity;
     private string session;
     private double sequence = -1, stamp, yaw;

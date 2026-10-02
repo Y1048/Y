@@ -27,6 +27,7 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
         public bool aligned;
         public float quest_yaw_deg;
         public float yaw_correction_deg;
+        public double omni_origin_yaw_deg;
     }
     private UdpClient receiver;
     private UdpClient calibrationSender;
@@ -37,6 +38,7 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
     private G1HeadLockedCamera alignment;
     private G1OmniHeadingState state = new G1OmniHeadingState();
     private double originYaw;
+    private double rawOriginYaw;
     private Vector3 questOriginWorld;
     private Vector3 robotShoulderOriginWorld;
     public bool HasSpatialOrigin { get; private set; }
@@ -121,6 +123,7 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
             questOriginWorld = alignment.xr_center_eye.position;
             HasSpatialOrigin = true;
             originYaw = state.Degrees;
+            rawOriginYaw = state.RawYawDegrees;
             IsAligned = true;
             Debug.Log(string.Format(
                 "[OMNI ALIGNMENT] ALIGNED: displayed HMD={0}, G1 shoulder center={1}; release external hold.",
@@ -151,6 +154,7 @@ public sealed class G1OmniBodyHeading : MonoBehaviour
             session = calibrationSession,
             sequence = calibrationSequence++,
             aligned = ready,
+            omni_origin_yaw_deg = rawOriginYaw,
             quest_yaw_deg = questYaw,
             yaw_correction_deg = ready
                 ? alignment.LastYawCorrectionDegrees

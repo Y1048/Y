@@ -270,6 +270,7 @@ class UnityAlignmentState:
         self.aligned = False
         self.quest_yaw_deg = 0.0
         self.yaw_correction_deg = 0.0
+        self.omni_origin_yaw_deg = None
         self.last_receipt = -math.inf
         self.retired = set()
 
@@ -285,6 +286,12 @@ class UnityAlignmentState:
             aligned = packet.get("aligned")
             quest_yaw = packet.get("quest_yaw_deg")
             correction = packet.get("yaw_correction_deg")
+            omni_origin = packet.get("omni_origin_yaw_deg")
+            if omni_origin is not None and (
+                    type(omni_origin) not in (int, float)
+                    or not math.isfinite(omni_origin)):
+                raise ValueError("unity_alignment_omni_origin")
+
             if (not isinstance(session, str) or len(session) != 32
                     or any(c not in "0123456789abcdef" for c in session)):
                 raise ValueError("unity_alignment_session")
@@ -311,6 +318,7 @@ class UnityAlignmentState:
             self.aligned = aligned
             self.quest_yaw_deg = float(quest_yaw)
             self.yaw_correction_deg = float(correction)
+            self.omni_origin_yaw_deg = omni_origin
             self.last_receipt = now
             return True
         except (ValueError, TypeError, UnicodeError, json.JSONDecodeError):
@@ -330,6 +338,7 @@ class UnityAlignmentState:
             age_s=age,
             quest_yaw_deg=self.quest_yaw_deg,
             yaw_correction_deg=self.yaw_correction_deg,
+            omni_origin_yaw_deg=self.omni_origin_yaw_deg,
         )
 
 
@@ -481,9 +490,7 @@ class ClockedOmniProcessor:
         self.require_unity_alignment = require_unity_alignment
         self.calibration_delay_s = calibration_delay_s
         self.unity_session = None
-        self.runtime_yaw_offset_deg = (
-            None if require_unity_alignment
-            else mapper.config.yaw_offset_deg)
+        self.runtime_yaw_offset_deg = mapper.config.yaw_offset_deg
         self.last_sequence = -1
         self.processed_samples = self.raw_samples_skipped = 0
 
@@ -509,28 +516,23 @@ class ClockedOmniProcessor:
             gate_quest_yaw = (alignment or {}).get("quest_yaw_deg")
             gate_yaw_correction = (alignment or {}).get(
                 "yaw_correction_deg")
-            if gate_ready and gate_session != self.unity_session:
+            origin = (alignment or {}).get("omni_origin_yaw_deg")
+            if (gate_ready and origin is not None
+                    and gate_session != self.unity_session):
                 self.unity_session = gate_session
-                self.runtime_yaw_offset_deg = yaw
-                self.mapper.reset_calibration(yaw_offset_deg=yaw)
-                self.calibration_starts = (
-                    sample.received_monotonic_s
-                    + self.calibration_delay_s)
-            velocity = (
-                (0., 0., 0.)
-                if (not gate_ready
-                    or sample.received_monotonic_s < self.calibration_starts)
-                else self.mapper.update(
-                    x, y, yaw, sample.received_monotonic_s)
-            )
-        else:
-            velocity = (
-                (0., 0., 0.)
-                if sample.received_monotonic_s < self.calibration_starts
-                else self.mapper.update(
-                    x, y, yaw, sample.received_monotonic_s)
-            )
-        calibrated = self.mapper.calibrated and gate_ready
+                self.runtime_yaw_offset_deg = float(origin)
+                # Use Unity's captured raw heading for BOTH terms of
+                # theta = (current - origin) + offset, even if UDP arrived late.
+                # Keep the movement bias and yaw-rate history: the operator
+                # may already be walking when this heartbeat is received.
+                self.mapper.zero_yaw_deg = float(origin)
+                self.mapper.config.yaw_offset_deg = float(origin)
+        velocity = (
+            (0., 0., 0.)
+            if sample.received_monotonic_s < self.calibration_starts
+            else self.mapper.update(x, y, yaw, sample.received_monotonic_s)
+        )
+        calibrated = self.mapper.calibrated
         return dict(source_origin='omni_connect_readonly', sample_sequence=sample.sequence,
             raw_sample_sequence=sample.sequence, mx=x, my=y, arm_yaw_deg=yaw,
             omni_yaw_rate_deg_s=self.mapper.yaw_rate_raw_deg_s,
@@ -595,8 +597,8 @@ def run_clocked_observation(args, observation, websocket_module):
         print('[OMNI FRAME] standalone fallback: initial-relative armYaw + 120 deg; '
               'vx forward-positive, vy left-positive.', flush=True)
     else:
-        print('[OMNI FRAME] integrated calibration: hold zero until Unity/Quest alignment; '
-              'capture current armYaw as the session offset.', flush=True)
+        print('[OMNI FRAME] 120 deg fallback until Unity supplies its captured Omni origin; '
+              'retain the session origin across heartbeat gaps.', flush=True)
     print('[CSV] processed-new samples only, original raw JSON/timestamp preserved; '
           'raw_samples_skipped reports samples superseded before processing', flush=True)
     period = 1. / args.process_hz
@@ -702,18 +704,16 @@ def main() -> None:
                         help=argparse.SUPPRESS)
     parser.add_argument('--process-hz', type=float, default=0.,
                         help='0 keeps event-driven mapping; 10..120 enables clocked observation only')
-    parser.add_argument('--unity-alignment-port', type=int, default=0,
-                        help='0: fixed 120 deg fallback; integrated mode uses localhost Unity readiness')
+    parser.add_argument('--unity-alignment-port', type=int, default=UNITY_ALIGNMENT_PORT,
+                        help='localhost Unity captured Omni origin; 0 disables reception (120 deg fallback)')
     args = parser.parse_args()
     if (not math.isfinite(args.process_hz) or
             (args.process_hz != 0 and not 10 <= args.process_hz <= 120)):
         raise ValueError('process-hz must be zero or finite 10..120')
     if args.process_hz and (not args.dry_run or os.environ.get('G1_OBSERVATION_TAP') != '1'):
         raise ValueError('process-hz requires --dry-run and G1_OBSERVATION_TAP=1')
-    if args.unity_alignment_port and (
-            not args.process_hz
-            or not 1024 <= args.unity_alignment_port <= 65535):
-        raise ValueError('unity alignment port requires clocked mode and port 1024..65535')
+    if args.unity_alignment_port and not 1024 <= args.unity_alignment_port <= 65535:
+        raise ValueError('unity alignment port requires port 1024..65535')
     observation = None
     if os.environ.get('G1_OBSERVATION_TAP') == '1':
         if not args.dry_run:
@@ -763,6 +763,11 @@ def main() -> None:
     last_printed = -math.inf
     run_started = time.monotonic()
     calibration_starts = run_started + args.start_delay_seconds
+    alignment = (UnityAlignmentReceiver(args.unity_alignment_port)
+                 if args.unity_alignment_port else None)
+    processor = ClockedOmniProcessor(
+        mapper, 0., calibration_starts,
+        require_unity_alignment=alignment is not None)
     csv_file = None
     csv_writer = None
     if args.csv:
@@ -773,7 +778,7 @@ def main() -> None:
     print(f"[OMNI] connected {args.omni_url}; preparation delay "
           f"{args.start_delay_seconds:.1f} s, then calibrating for "
           f"{mapper.config.calibration_s:.1f} s", flush=True)
-    print('[OMNI FRAME] mx/my -> body vx/vy using initial-relative armYaw + 120 deg; '
+    print('[OMNI FRAME] mx/my -> body vx/vy: 120 deg fallback until Unity Omni origin; '
           'vx forward-positive, vy left-positive.', flush=True)
     if observation:
         print('[OBSERVATION] sample copy -> localhost:55071; no G1 command transport', flush=True)
@@ -807,10 +812,11 @@ def main() -> None:
         last_omni_received = now
         stale_zero_sent = False
         movement_x, movement_y, yaw = parse_omni_message(raw_message)
-        if now < calibration_starts:
-            velocity = (0.0, 0.0, 0.0)
-        else:
-            velocity = mapper.update(movement_x, movement_y, yaw, now)
+        values = processor.process(
+            ReceivedOmniSample(sample_count, now, (movement_x, movement_y, yaw), raw_message),
+            sample_count, now, 0,
+            alignment.snapshot(now) if alignment is not None else None)
+        velocity = (values['vx'], values['vy'], values['yaw_rate'])
         if observation:
             observation.publish(dict(source_origin='omni_connect_readonly',
                 sample_sequence=sample_count, mx=movement_x, my=movement_y,
@@ -845,6 +851,8 @@ def main() -> None:
                                        (0.0, 0.0, 0.0),
                                        args.relay_token), target)
     ws.close()
+    if alignment is not None:
+        alignment.close()
     if observation:
         observation.close()
     if csv_file is not None:

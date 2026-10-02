@@ -76,6 +76,22 @@ Integrated onboard GROOT
   -> 300 s actuation window
 ```
 
+## Omni 이동 방향 기준각
+
+Omni의 `movementXY`/`armYaw`는 WebSocket으로 PC gateway에 들어온다.
+통합 실행에서는 관측 UDP(55071)와 함께 원본 yaw를 Unity UDP(55072)로 복사한다.
+Unity가 초기 HMD 얼라인을 완료하면 그때의 원본 Omni yaw를 저장하고,
+기존 얼라인 heartbeat UDP(55074)의 `omni_origin_yaw_deg`로 반복 전송한다.
+
+gateway는 이 값을 받기 전에는 기존 120° 오프셋으로 `mx/my → vx/vy`를 계산한다.
+수신 후에는 `theta = wrap(현재 armYaw - 얼라인 Omni yaw) + 얼라인 Omni yaw`를 사용한다.
+Unity의 상대 누적 회전값이나 UDP 수신 순간의 각도를 기준각으로 대신 사용하지 않는다.
+기존 시작 지연/정지 입력 보정은 유지하며, 기준각 수신 때문에 이동 입력 보정을 다시 하지 않는다.
+heartbeat가 끊겨도 마지막 기준각을 유지하고, 새 Unity 실행 세션의 기준각이 오면 갱신한다.
+구버전 Unity처럼 필드가 없으면 120° fallback을 유지한다.
+관측 모드와 직접 velocity UDP 명령 모드 모두 동일한 변환부를 사용하며,
+`--unity-alignment-port 0`으로 기준각 수신을 끌 수 있다(기본값 55074).
+
 ## 양팔 IK
 
 왼팔 IK는 오른팔 IK를 단순 반전한 별도 solver가 아니다. 하나의 MuJoCo configuration에서 좌/우 hand task를 만들고 같은 QP로 동시에 푼다.

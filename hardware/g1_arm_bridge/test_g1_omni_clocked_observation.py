@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import math
+import socket
 from pathlib import Path
 import tempfile
 import threading
@@ -147,7 +148,7 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual(ready['quest_yaw_deg'], 3.0)
         self.assertEqual(state.snapshot(11.0)['status'], 'STALE')
 
-    def test_unity_gate_holds_zero_then_captures_current_omni_yaw_offset(self):
+    def test_fallback_then_uses_unity_captured_origin_not_receipt_yaw(self):
         mapper = gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(
             calibration_s=.1,
             movement_deadzone=0.,
@@ -165,44 +166,119 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual((first['vx'], first['vy'], first['yaw_rate']),
                          (0., 0., 0.))
         self.assertFalse(first['calibrated'])
+        self.assertEqual(first['runtime_yaw_offset_deg'], 120.)
+        processor.process(self.sample(1, .1, 128.9), 1, .1, 0, waiting)
+        fallback = gateway.ReceivedOmniSample(2, .2, (0., .5, 128.9), '')
+        values = processor.process(fallback, 2, .2, 0, waiting)
+        self.assertAlmostEqual(values['vx'], -.25)
+        self.assertAlmostEqual(values['vy'], .5 * math.sin(math.radians(120.)))
         ready = dict(
-            status='READY', ready=True, session='b' * 32, age_s=0.)
-        processor.process(
-            self.sample(1, .1, 128.9), 1, .1, 0, ready)
-        calibrated = processor.process(
-            self.sample(2, .2, 128.9), 2, .2, 0, ready)
-        self.assertTrue(calibrated['calibrated'])
-        self.assertAlmostEqual(
-            calibrated['runtime_yaw_offset_deg'], 128.9)
-        theta = math.radians(128.9)
+            status='READY', ready=True, session='b' * 32, age_s=0.,
+            omni_origin_yaw_deg=128.9)
+        # User rotated after alignment but before the packet arrived.
+        theta = math.radians(143.9)
         raw_x = .4 * math.sin(theta) + .2 * math.cos(theta)
         raw_y = .4 * math.cos(theta) - .2 * math.sin(theta)
         raw = json.dumps(dict(movementXY=[raw_x, raw_y], armYaw=128.9))
         moving = gateway.ReceivedOmniSample(
-            3, .3, (raw_x, raw_y, 128.9), raw)
+            3, .3, (raw_x, raw_y, 143.9), raw)
         values = processor.process(
             moving, 3, .3, 0, ready)
         self.assertAlmostEqual(values['vx'], .4, places=10)
         self.assertAlmostEqual(values['vy'], -.2, places=10)
+        self.assertEqual(values['runtime_yaw_offset_deg'], 128.9)
+        self.assertAlmostEqual(values['yaw_diff_deg'], 15.)
+        self.assertTrue(values['calibrated'])
+        # Lost heartbeats retain calibration and do not gate mapping.
+        stale = dict(ready=False, status='STALE', session='b' * 32)
+        held = processor.process(gateway.ReceivedOmniSample(
+            4, .4, moving.values, raw), 4, .4, 0, stale)
+        self.assertAlmostEqual(held['vx'], .4)
+        self.assertAlmostEqual(held['vy'], -.2)
 
-    def test_new_unity_session_recaptures_offset_and_recalibrates(self):
+    def test_new_unity_session_updates_origin_without_relearning_movement_bias(self):
         mapper = gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(
             calibration_s=.1))
         processor = gateway.ClockedOmniProcessor(
             mapper, 60., 0., require_unity_alignment=True)
         ready_a = dict(
-            status='READY', ready=True, session='a' * 32, age_s=0.)
+            status='READY', ready=True, session='a' * 32, age_s=0.,
+            omni_origin_yaw_deg=120.)
         processor.process(self.sample(0, 0., 120.), 0, 0., 0, ready_a)
         processor.process(self.sample(1, .1, 120.), 1, .1, 0, ready_a)
         self.assertTrue(processor.mapper.calibrated)
         ready_b = dict(
-            status='READY', ready=True, session='b' * 32, age_s=0.)
+            status='READY', ready=True, session='b' * 32, age_s=0.,
+            omni_origin_yaw_deg=137.)
         values = processor.process(
             self.sample(2, .2, 137.), 2, .2, 0, ready_b)
-        self.assertFalse(values['calibrated'])
+        self.assertTrue(values['calibrated'])
         self.assertEqual(values['runtime_yaw_offset_deg'], 137.)
-        self.assertEqual((values['vx'], values['vy'], values['yaw_rate']),
-                         (0., 0., 0.))
+        self.assertEqual((mapper.zero_x, mapper.zero_y), (0., 0.))
+        # Repeated heartbeat must not recapture the moving user's heading.
+        processor.process(self.sample(3, .3, 150.), 3, .3, 0, ready_b)
+        self.assertEqual(mapper.zero_yaw_deg, 137.)
+
+    def test_origin_validation_legacy_fallback_and_zero_degree_origin(self):
+        state = gateway.UnityAlignmentState()
+        packet = dict(schema=gateway.UNITY_ALIGNMENT_SCHEMA, session='a'*32,
+                      sequence=0, aligned=True, quest_yaw_deg=0., yaw_correction_deg=0.)
+        peer = ('127.0.0.1', 1)
+        self.assertTrue(state.accept(json.dumps(packet), peer, 0.))
+        processor = gateway.ClockedOmniProcessor(
+            gateway.OmniVelocityMapper(), 60., 0., require_unity_alignment=True)
+        processor.process(self.sample(0, 0.), 0, 0., 0, state.snapshot(0.))
+        self.assertEqual(processor.runtime_yaw_offset_deg, 120.)
+        for invalid in (True, '20', float('nan'), float('inf')):
+            packet.update(sequence=1, omni_origin_yaw_deg=invalid)
+            self.assertFalse(state.accept(json.dumps(packet), peer, .1))
+        packet.update(omni_origin_yaw_deg=0.)
+        self.assertTrue(state.accept(json.dumps(packet), peer, .1))
+        processor.process(self.sample(1, .1, 20.), 1, .1, 0, state.snapshot(.1))
+        self.assertEqual(processor.runtime_yaw_offset_deg, 0.)
+        self.assertEqual(processor.mapper.zero_yaw_deg, 0.)
+
+    def test_event_driven_gateway_receives_udp_origin_and_maps_csv(self):
+        receiver = gateway.UnityAlignmentReceiver(0)
+        port = receiver.sock.getsockname()[1]
+        clock = [0.]
+        index = [0]
+        sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        def receive():
+            i = index[0]
+            index[0] += 1
+            clock[0] = i * .1
+            if i == 3:
+                sender.sendto(json.dumps(dict(
+                    schema=gateway.UNITY_ALIGNMENT_SCHEMA, session='c'*32,
+                    sequence=0, aligned=True, quest_yaw_deg=0.,
+                    yaw_correction_deg=0., omni_origin_yaw_deg=0.)).encode(),
+                    ('127.0.0.1', port))
+            return json.dumps(dict(movementXY=[0., .5 if i >= 2 else 0.], armYaw=0.))
+
+        connection = SimpleNamespace(recv=receive, close=lambda: None)
+        websocket = SimpleNamespace(create_connection=lambda *a, **k: connection,
+                                    WebSocketTimeoutException=SyntheticTimeout)
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / 'mapped.csv'
+                with patch.dict(sys.modules, websocket=websocket), \
+                        patch.dict(gateway.os.environ, {}, clear=True), \
+                        patch.object(gateway, 'UnityAlignmentReceiver', return_value=receiver), \
+                        patch.object(gateway.time, 'monotonic', side_effect=lambda: clock[0]), \
+                        patch('sys.argv', ['gateway', '--dry-run', '--max-samples', '4',
+                              '--calibration-seconds', '.1', '--unity-alignment-port', str(port),
+                              '--csv', str(path)]), contextlib.redirect_stdout(io.StringIO()):
+                    gateway.main()
+                with path.open(newline='') as stream:
+                    rows = list(csv.DictReader(stream))
+                self.assertAlmostEqual(float(rows[2]['vx']), -.2)
+                self.assertAlmostEqual(float(rows[3]['vx']), .4)
+                self.assertAlmostEqual(float(rows[3]['vy']), 0.)
+        finally:
+            receiver.close()
+            sender.close()
 
     def test_scheduler_skips_deadlines_without_catchup(self):
         period = 1. / 60.
@@ -221,7 +297,7 @@ class ClockedOmniObservationTests(unittest.TestCase):
                   (['--process-hz', '60'], {'G1_OBSERVATION_TAP': '1'}),
                   (['--dry-run', '--process-hz', '60', '--unity-alignment-port', '80'],
                    {'G1_OBSERVATION_TAP': '1'}),
-                  (['--dry-run', '--unity-alignment-port', '55074'],
+                  (['--dry-run', '--unity-alignment-port', '65536'],
                    {'G1_OBSERVATION_TAP': '1'})]
         for arguments, environment in cases:
             with self.subTest(arguments=arguments, environment=environment), \

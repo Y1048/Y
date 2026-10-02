@@ -1,4 +1,4 @@
-"""Launch the read-only G1 camera over SSH, or check local prerequisites."""
+"""Launch the read-only Insta360 Link 2 Pro stream over SSH, or check prerequisites."""
 import argparse
 import sys
 

@@ -121,6 +121,36 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual(values['processing_deadlines_missed'], 2)
         self.assertIsNone(processor.process(self.sample(2, .05), 7, .12, 2))
 
+    def test_camera_pitch_and_alignment_origin_passthrough(self):
+        state = gateway.UnityAlignmentState()
+        packet = dict(
+            schema=gateway.UNITY_ALIGNMENT_SCHEMA,
+            session='a' * 32, sequence=0, aligned=True,
+            quest_yaw_deg=-20., quest_pitch_deg=15.,
+            yaw_correction_deg=0., omni_origin_yaw_deg=128.9)
+        peer = ('127.0.0.1', 1)
+        self.assertTrue(state.accept(json.dumps(packet).encode(), peer, 10.))
+        ready = state.snapshot(10.01)
+        self.assertEqual(ready['quest_pitch_deg'], 15.)
+        self.assertEqual(ready['omni_origin_yaw_deg'], 128.9)
+        del packet['quest_pitch_deg']
+        packet['sequence'] = 1
+        self.assertTrue(state.accept(json.dumps(packet).encode(), peer, 10.02))
+        self.assertIsNone(state.snapshot(10.03)['quest_pitch_deg'])
+
+    def test_unity_alignment_rejections_are_diagnostic_only(self):
+        state = gateway.UnityAlignmentState()
+        raw = (
+            '{"schema":"%s","session":"%s","sequence":0,"aligned":true,'
+            '"quest_yaw_deg":NaN,"quest_pitch_deg":0.0,'
+            '"yaw_correction_deg":0.0}'
+            % (gateway.UNITY_ALIGNMENT_SCHEMA, 'a' * 32)).encode()
+        self.assertFalse(state.accept(raw, ('127.0.0.1', 1), 10.))
+        self.assertEqual(state.rejected, 1)
+        self.assertEqual(state.last_rejection, 'unity_alignment_yaw')
+        self.assertIn('NaN', state.last_rejected_raw)
+        self.assertEqual(state.snapshot(10.)['status'], 'WAIT')
+
     def test_unity_alignment_state_requires_fresh_aligned_session(self):
         state = gateway.UnityAlignmentState()
         packet = dict(
@@ -146,6 +176,45 @@ class ClockedOmniObservationTests(unittest.TestCase):
         self.assertEqual(ready['session'], 'a' * 32)
         self.assertEqual(ready['quest_yaw_deg'], 3.0)
         self.assertEqual(state.snapshot(11.0)['status'], 'STALE')
+
+    def test_unity_gate_uses_captured_origin_and_still_zero_holds(self):
+        mapper = gateway.OmniVelocityMapper(
+            gateway.OmniVelocityConfig(
+                calibration_s=.1, movement_deadzone=0.,
+                forward_max_m_s=1., lateral_max_m_s=1.))
+        processor = gateway.ClockedOmniProcessor(
+            mapper, 60., 0., require_unity_alignment=True)
+        waiting = dict(
+            status='WAIT', ready=False, session=None, age_s=None,
+            quest_yaw_deg=None, quest_pitch_deg=None,
+            yaw_correction_deg=None, omni_origin_yaw_deg=None)
+        first = processor.process(
+            self.sample(0, 0., 143.9), 0, 0., 0, waiting)
+        self.assertEqual((first['vx'], first['vy'], first['yaw_rate']),
+                         (0., 0., 0.))
+        ready = dict(
+            status='READY', ready=True, session='b' * 32, age_s=0.,
+            quest_yaw_deg=0., quest_pitch_deg=0.,
+            yaw_correction_deg=0., omni_origin_yaw_deg=128.9)
+        processor.process(self.sample(1, .1, 143.9), 1, .1, 0, ready)
+        processor.process(self.sample(2, .2, 143.9), 2, .2, 0, ready)
+        self.assertEqual(processor.runtime_yaw_offset_deg, 128.9)
+        self.assertEqual(processor.mapper.zero_yaw_deg, 128.9)
+        theta = math.radians(143.9)
+        raw_x = .4 * math.sin(theta) + .2 * math.cos(theta)
+        raw_y = .4 * math.cos(theta) - .2 * math.sin(theta)
+        moving = gateway.ReceivedOmniSample(
+            3, .3, (raw_x, raw_y, 143.9), '')
+        values = processor.process(moving, 3, .3, 0, ready)
+        self.assertAlmostEqual(values['vx'], .4, places=8)
+        self.assertAlmostEqual(values['vy'], -.2, places=8)
+        stale = dict(ready, status='STALE', ready=False, age_s=1.)
+        held = processor.process(
+            gateway.ReceivedOmniSample(4, .4, moving.values, ''),
+            4, .4, 0, stale)
+        self.assertEqual((held['vx'], held['vy'], held['yaw_rate']),
+                         (0., 0., 0.))
+        self.assertFalse(held['calibrated'])
 
     def test_unity_gate_holds_zero_then_captures_current_omni_yaw_offset(self):
         mapper = gateway.OmniVelocityMapper(gateway.OmniVelocityConfig(

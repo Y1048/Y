@@ -269,9 +269,14 @@ class UnityAlignmentState:
         self.sequence = -1
         self.aligned = False
         self.quest_yaw_deg = 0.0
+        self.quest_pitch_deg = None
         self.yaw_correction_deg = 0.0
+        self.omni_origin_yaw_deg = None
         self.last_receipt = -math.inf
         self.retired = set()
+        self.rejected = 0
+        self.last_rejection = None
+        self.last_rejected_raw = None
 
     def accept(self, raw, peer, now):
         try:
@@ -284,7 +289,18 @@ class UnityAlignmentState:
             sequence = packet.get("sequence")
             aligned = packet.get("aligned")
             quest_yaw = packet.get("quest_yaw_deg")
+            quest_pitch = packet.get("quest_pitch_deg")
+            if quest_pitch is not None and (
+                    type(quest_pitch) not in (int, float)
+                    or not math.isfinite(quest_pitch)
+                    or not -90 <= quest_pitch <= 90):
+                raise ValueError("unity_alignment_pitch")
             correction = packet.get("yaw_correction_deg")
+            omni_origin = packet.get("omni_origin_yaw_deg")
+            if omni_origin is not None and (
+                    type(omni_origin) not in (int, float)
+                    or not math.isfinite(omni_origin)):
+                raise ValueError("unity_alignment_omni_origin")
             if (not isinstance(session, str) or len(session) != 32
                     or any(c not in "0123456789abcdef" for c in session)):
                 raise ValueError("unity_alignment_session")
@@ -310,16 +326,26 @@ class UnityAlignmentState:
             self.sequence = sequence
             self.aligned = aligned
             self.quest_yaw_deg = float(quest_yaw)
+            self.quest_pitch_deg = (
+                None if quest_pitch is None else float(quest_pitch))
             self.yaw_correction_deg = float(correction)
+            self.omni_origin_yaw_deg = (
+                None if omni_origin is None else float(omni_origin))
             self.last_receipt = now
             return True
-        except (ValueError, TypeError, UnicodeError, json.JSONDecodeError):
+        except (ValueError, TypeError, UnicodeError, json.JSONDecodeError) as error:
+            self.rejected += 1
+            self.last_rejection = str(error)
+            self.last_rejected_raw = (
+                raw.decode("utf-8", "backslashreplace")
+                if isinstance(raw, bytes) else str(raw))[:300]
             return False
 
     def snapshot(self, now):
         if self.session is None:
             return dict(status="WAIT", ready=False, session=None, age_s=None,
-                        quest_yaw_deg=None, yaw_correction_deg=None)
+                        quest_yaw_deg=None, quest_pitch_deg=None,
+                        yaw_correction_deg=None, omni_origin_yaw_deg=None)
         age = max(0.0, now - self.last_receipt)
         fresh = age <= UNITY_ALIGNMENT_FRESHNESS_S
         ready = fresh and self.aligned
@@ -329,7 +355,9 @@ class UnityAlignmentState:
             session=self.session,
             age_s=age,
             quest_yaw_deg=self.quest_yaw_deg,
+            quest_pitch_deg=self.quest_pitch_deg,
             yaw_correction_deg=self.yaw_correction_deg,
+            omni_origin_yaw_deg=self.omni_origin_yaw_deg,
         )
 
 
@@ -500,6 +528,7 @@ class ClockedOmniProcessor:
         gate_session = None
         gate_age = None
         gate_quest_yaw = None
+        gate_quest_pitch = None
         gate_yaw_correction = None
         if self.require_unity_alignment:
             gate_status = (alignment or {}).get("status", "WAIT")
@@ -507,12 +536,18 @@ class ClockedOmniProcessor:
             gate_session = (alignment or {}).get("session")
             gate_age = (alignment or {}).get("age_s")
             gate_quest_yaw = (alignment or {}).get("quest_yaw_deg")
+            gate_quest_pitch = (alignment or {}).get("quest_pitch_deg")
             gate_yaw_correction = (alignment or {}).get(
                 "yaw_correction_deg")
+            captured_origin = (alignment or {}).get("omni_origin_yaw_deg")
             if gate_ready and gate_session != self.unity_session:
                 self.unity_session = gate_session
-                self.runtime_yaw_offset_deg = yaw
-                self.mapper.reset_calibration(yaw_offset_deg=yaw)
+                origin_yaw = (
+                    yaw if captured_origin is None
+                    else float(captured_origin))
+                self.runtime_yaw_offset_deg = origin_yaw
+                self.mapper.reset_calibration(yaw_offset_deg=origin_yaw)
+                self.mapper.zero_yaw_deg = origin_yaw
                 self.calibration_starts = (
                     sample.received_monotonic_s
                     + self.calibration_delay_s)
@@ -543,6 +578,7 @@ class ClockedOmniProcessor:
             unity_alignment_session=gate_session,
             unity_alignment_age_s=gate_age,
             unity_quest_yaw_deg=gate_quest_yaw,
+            unity_quest_pitch_deg=gate_quest_pitch,
             unity_yaw_correction_deg=gate_yaw_correction,
             processing_hz=self.process_hz, process_tick=tick,
             processed_monotonic_s=processed_at, raw_samples_skipped=self.raw_samples_skipped,
@@ -583,7 +619,8 @@ def run_clocked_observation(args, observation, websocket_module):
                     'source_clock', 'processing_clock', 'runtime_yaw_offset_deg',
                     'unity_alignment_status', 'unity_alignment_session',
                     'unity_alignment_age_s', 'unity_quest_yaw_deg',
-                    'unity_yaw_correction_deg', 'csv_row_kind']
+                    'unity_quest_pitch_deg', 'unity_yaw_correction_deg',
+                    'csv_row_kind']
     if args.csv:
         args.csv.parent.mkdir(parents=True, exist_ok=True)
         csv_file = args.csv.open('x', newline='', encoding='utf-8')
@@ -607,6 +644,8 @@ def run_clocked_observation(args, observation, websocket_module):
     last_transport_print = -math.inf
     last_alignment_status = None
     last_runtime_offset = None
+    last_reject_count = 0
+    last_reject_print = -math.inf
     reader.thread.start()
     try:
         while True:
@@ -629,6 +668,22 @@ def run_clocked_observation(args, observation, websocket_module):
             alignment_state = (
                 alignment.snapshot(time.monotonic())
                 if alignment is not None else None)
+            if alignment is not None:
+                rejected = alignment.state.rejected
+                if (rejected != last_reject_count
+                        and time.perf_counter() - last_reject_print >= 1.):
+                    print(
+                        '[OMNI UNITY REJECT] count=%d new=%d reason=%s raw=%s'
+                        % (
+                            rejected,
+                            rejected - last_reject_count,
+                            alignment.state.last_rejection,
+                            alignment.state.last_rejected_raw,
+                        ),
+                        flush=True,
+                    )
+                    last_reject_count = rejected
+                    last_reject_print = time.perf_counter()
             values = process.process(
                 sample, ticks, time.monotonic(), missed,
                 alignment_state)
@@ -643,9 +698,11 @@ def run_clocked_observation(args, observation, websocket_module):
                         and values['runtime_yaw_offset_deg']
                             != last_runtime_offset):
                     print('[OMNI CALIBRATION] runtime_yaw_offset_deg=%.2f '
-                          'quest_yaw_deg=%s yaw_correction_deg=%s session=%s' % (
+                          'quest_yaw_deg=%s quest_pitch_deg=%s '
+                          'yaw_correction_deg=%s session=%s' % (
                               values['runtime_yaw_offset_deg'],
                               values['unity_quest_yaw_deg'],
+                              values['unity_quest_pitch_deg'],
                               values['unity_yaw_correction_deg'],
                               values['unity_alignment_session']),
                           flush=True)

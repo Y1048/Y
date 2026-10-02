@@ -18,6 +18,8 @@ runtime/python/RUNTIME_MANIFEST.json
 
 남겨둔 사용자용 BAT 4개에는 환경 설정 로직이 없다. 모두 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다.
 
+BAT는 Quest 카메라 pan·tilt 추종기도 자동 시작한다. 실행 순서와 부호 옵션: [실시간 UDP 카메라 안내](docs/QUEST_CAMERA_PAN_TILT_20261001.md).
+
 ## 기본 실행
 
 ```bat
@@ -62,12 +64,12 @@ G1 LowState
   -> SSH read-only
   -> observation / Unity display
 
-G1 front camera
-  -> Unitree VideoClient JPEG
+Insta360 Link 2 Pro
+  -> G1 UVC video-index0 MJPEG 1920x1080@30
   -> SSH stdout
   -> g1_camera_ssh.py
   -> TCP 127.0.0.1:5011
-  -> Unity PiP on G1 RobotRoot
+  -> Unity HMD-follow PiP
 
 Integrated onboard GROOT
   -> SSH unitree@G1
@@ -75,6 +77,19 @@ Integrated onboard GROOT
   -> groot_balance_actuator --external-controller --interface eth0
   -> 300 s actuation window
 ```
+
+## Omni 이동 방향 기준각
+
+Omni의 `movementXY`/`armYaw`는 WebSocket으로 PC gateway에 들어온다.
+통합 실행은 Unity/Quest initial alignment 전과 alignment heartbeat가 stale인 동안
+이동 출력을 **zero-hold**한다. Unity가 초기 HMD 얼라인을 완료하면 그 순간의
+raw Omni yaw를 `omni_origin_yaw_deg`로 저장해 UDP 55074 heartbeat에 반복 전송한다.
+
+새 Unity session이 READY가 되면 gateway는 이 캡처값을 yaw origin/offset으로 사용하고
+movement bias calibration도 다시 수행한다. 구버전 Unity처럼 origin 필드가 없으면
+READY heartbeat를 받은 순간의 현재 Omni yaw로 fallback한다. Quest pitch는
+`quest_pitch_deg`로 같은 heartbeat에 전달되지만 locomotion readiness와는 분리된
+카메라 PTZ 관측값이다.
 
 ## 양팔 IK
 
@@ -99,14 +114,17 @@ Integrated onboard GROOT
 - proximal arm joints: 90 deg/s
 - wrist joints: 180 deg/s
 - joint acceleration: 90 deg/s²
-- IK tracking rate constant: 1.0 s
+- IK tracking rate constant: 1.5 s⁻¹
 - compute/send: 60 Hz
 - observation display: 100 Hz
 
 ## Camera
 
-현재 target은 **1920×1080 JPEG / 15 fps / 16:9**이다.
-`g1_camera_ssh.py`는 JPEG를 재인코딩하지 않고 전달하며 Unity PiP는 1920×1080을 320×180으로 표시한다.
+현재 target은 **Insta360 Link 2 Pro / 1920×1080 MJPEG / 30 fps / 16:9**이다.
+`g1_camera_ssh.py`는 `/dev/v4l/by-id/*Insta360*video-index0`을 자동 탐색하고
+JPEG를 재인코딩하지 않고 기존 G1CM/TCP 5011 경로로 전달한다.
+Unity PiP는 HMD에 고정된다. Quest yaw/pitch는 별도 observation 경로로 G1 PTZ follower에
+전달되며 follower는 `--no-camera-stream`으로 영상 device를 소유하지 않는다.
 
 ## 외부 dependency
 

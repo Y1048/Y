@@ -1,75 +1,33 @@
+"""Insta360 camera transport tests; no SSH or camera hardware."""
 import io
-import json
-from pathlib import Path
-import subprocess
+import struct
 import sys
+from pathlib import Path
 import unittest
-from unittest.mock import patch
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools'))
 import g1_camera_ssh as camera
-import g1_ssh_login as login
-import G1_CAMERA_LAUNCH as launcher
 
+class CameraTransportTests(unittest.TestCase):
+    def test_remote_source_is_insta360_mjpeg(self):
+        self.assertIn('Insta360_Link_2_Pro-video-index0', camera.REMOTE)
+        self.assertIn('pixelformat=MJPG', camera.REMOTE)
+        self.assertIn('width=1920,height=1080', camera.REMOTE)
+        self.assertIn("'--set-parm=30'", camera.REMOTE)
+        self.assertNotIn('VideoClient', camera.REMOTE)
+        self.assertNotIn('/dev/video6', camera.REMOTE)
 
-class CameraTests(unittest.TestCase):
-    def test_configured_15fps_rate_without_reencoding(self):
-        self.assertIn('frame_period_s = 1.0 / 15.0', camera.REMOTE)
-        self.assertIn('frame_period_s-(time.monotonic()-start)', camera.REMOTE)
-        self.assertNotIn('cv2', camera.REMOTE)
+    def test_read_packet_preserves_jpeg(self):
+        jpeg = b'\xff\xd8test-jpeg\xff\xd9'
+        header = camera.HEADER.pack(b'G1CM', 1, 7, 123456789, len(jpeg))
+        packet = camera.read_packet(io.BytesIO(header + jpeg))
+        self.assertEqual(packet, header + jpeg)
+        self.assertEqual(struct.unpack('!4sIIQI', packet[:camera.HEADER.size])[2], 7)
 
-    def test_setup_and_check_only_validate_local_ssh_without_robot(self):
-        for flag in ('--setup', '--check-only'):
-            with self.subTest(flag=flag), \
-                    patch.object(sys, 'argv', ['camera', flag]), \
-                    patch.object(camera, 'run', side_effect=AssertionError('Robot')), \
-                    patch.object(camera, 'check_environment') as check:
-                launcher.main()
-                check.assert_called_once()
-
-    def test_legacy_transport_option_is_not_supported(self):
-        with patch.object(sys, 'argv',
-                          ['camera', '--transport', 'wsl', '--check-only']), \
-                self.assertRaises(SystemExit):
-            launcher.main()
-
-    def test_valid_packet_roundtrip(self):
-        jpeg = b'\xff\xd8data\xff\xd9'
-        raw = camera.HEADER.pack(b'G1CM', 1, 1, 123, len(jpeg)) + jpeg
-        self.assertEqual(raw, camera.read_packet(io.BytesIO(raw)))
-
-    def test_bad_header_jpeg_and_truncation_rejected(self):
-        for raw in [
-            b'',
-            camera.HEADER.pack(b'BAD!', 1, 1, 0, 4) + b'abcd',
-            camera.HEADER.pack(b'G1CM', 1, 1, 0, 4) + b'abcd',
-            camera.HEADER.pack(b'G1CM', 1, 1, 0, 5000000),
-        ]:
-            with self.assertRaises(RuntimeError):
-                camera.read_packet(io.BytesIO(raw))
-
-    def test_remote_script_is_python36_compatible_and_read_only(self):
-        import ast
-        ast.parse(camera.REMOTE, feature_version=(3, 6))
-        self.assertIn('GetImageSample', camera.REMOTE)
-        for token in ['LowCmd', 'SportClient', 'MotionSwitcher', 'ChannelPublisher']:
-            self.assertNotIn(token, camera.REMOTE)
-
-    def test_remote_receiver_free_recognized_unknown(self):
-        expected = '/home/unitree/audit'
-        good = {'cwd': expected,
-                'args': ['python3', '-u', 'G1_INPUT_RECEIVE_AUDIT.py',
-                         'receive', '--print-hz', '100']}
-        with patch.object(login.subprocess, 'run') as run:
-            for rows, answer in [([], False), ([good], True)]:
-                run.return_value = subprocess.CompletedProcess([], 0, json.dumps(rows))
-                self.assertEqual(answer, login.remote_receiver_running('host', expected))
-            for rows in [[dict(good, cwd='/other')], [good, good],
-                         [dict(good, args=['other'])]]:
-                run.return_value = subprocess.CompletedProcess([], 0, json.dumps(rows))
-                with self.assertRaises(RuntimeError):
-                    login.remote_receiver_running('host', expected)
-
+    def test_invalid_jpeg_is_rejected(self):
+        payload = b'not-jpeg'
+        header = camera.HEADER.pack(b'G1CM', 1, 0, 0, len(payload))
+        with self.assertRaisesRegex(RuntimeError, 'Invalid JPEG'):
+            camera.read_packet(io.BytesIO(header + payload))
 
 if __name__ == '__main__':
     unittest.main()

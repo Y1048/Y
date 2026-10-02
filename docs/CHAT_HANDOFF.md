@@ -1,6 +1,24 @@
+## 2026-10-01 BAT 카메라 추종 자동 시작
+
+기본 BAT의 launcher가 camera_follow worker도 시작한다. Ubuntu 수신부는
+--camera-follow --pan-sign 1 --no-camera-stream 옵션이다. Insta360 Link 2 Pro 영상은
+별도 camera worker가 /dev/v4l/by-id/*Insta360*video-index0을 단독 소유해 1920x1080
+MJPEG 30 fps를 재인코딩 없이 기존 G1CM/TCP 5011로 보낸다. Unity PiP는 HMD-follow다.
+동일한 원격 프로세스는 재사용, 다른 옵션/수동 키보드는 보존하고 오류 표시.
+SSH stdin 종료 시 이번에 생성한 카메라 자식만 정리한다. 로봇/GROOT 동작은 변경 없음.
+--check-only는 기존대로 실행 없이 계획 검사. 실제 카메라 자동 실행 검증은 하지 않았음.
+
+## 2026-10-01 Quest 카메라 pan/tilt 실시간 UDP
+
+압축 대기 시간 이후 Windows HMD pitch heartbeat와 gateway passthrough를 추가.
+위쪽 양수 elevation → quest_pitch_deg → unity_quest_pitch_deg. 기존 yaw/이동/팔
+계산은 유지. Ubuntu receive_mink_ik_udp.py는 별도로 pan/tilt 구현 및 테스트 완료.
+BAT의 위임 경로 launcher에 실행 명령을 표시하며 자동으로 카메라 추종을 시작하지 않는다.
+실행 순서는 docs/QUEST_CAMERA_PAN_TILT_20261001.md 참조. Unity/gateway 재시작 필요.
+
 # G1 Teleop Current Handoff
 
-최종 갱신: 2026-10-01
+최종 갱신: 2026-10-02
 
 ## 현재 실행
 
@@ -52,15 +70,17 @@ Actuator duration은 remote binary capability를 자동 검사한다. `--unlimit
 - proximal 90 deg/s
 - wrist 180 deg/s
 - acceleration 90 deg/s²
+- IK tracking rate 1.5 s⁻¹ (live-test candidate; existing motion-quality gates still reflect 1.0)
 - compute 60 Hz
 
 ## Camera
 
 ```text
-1920x1080 JPEG
-15 fps target
-16:9 PiP
-PiP parent = G1 RobotRoot
+Insta360 Link 2 Pro UVC MJPEG
+1920x1080 / 30 fps target
+stable by-id video-index0 auto-discovery
+PiP parent = HMD CenterEyeAnchor
+PTZ follower uses --no-camera-stream
 SSH transport only
 ```
 

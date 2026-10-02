@@ -75,14 +75,14 @@ UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell he
 ## 4. Camera
 
 ```text
-G1 VideoClient
+Insta360 Link 2 Pro UVC MJPEG
  -> SSH
  -> bundled Python g1_camera_ssh.py
  -> TCP 127.0.0.1:5011
- -> Unity PiP
+ -> Unity HMD-follow PiP
 ```
 
-현재 target은 1920×1080 / 15 fps / 16:9이다.
+현재 target은 1920×1080 MJPEG / 30 fps / 16:9이며 G1에서 재인코딩하지 않는다.
 
 ## 5. 테스트
 

@@ -245,7 +245,8 @@ def preflight(missing, env):
     for worker, port in (
             ('send', 55071),
             ('arm', 5020),
-            ('omni', observation.UNITY_ALIGNMENT_PORT)):
+            ('omni', observation.UNITY_ALIGNMENT_PORT),
+            ('camera_follow', 55075)):
         if worker not in missing:
             continue
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:

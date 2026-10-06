@@ -382,7 +382,8 @@ class PreflightTests(unittest.TestCase):
         for worker, port in (
                 ('send', 55071),
                 ('arm', 5020),
-                ('omni', launcher.observation.UNITY_ALIGNMENT_PORT)):
+                ('omni', launcher.observation.UNITY_ALIGNMENT_PORT),
+                ('camera_follow', 55075)):
             with self.subTest(worker=worker), \
                     mock.patch.object(launcher, 'ssh_executable', return_value='ssh-test.exe'), \
                     mock.patch.object(launcher.socket, 'socket') as socket_factory, \

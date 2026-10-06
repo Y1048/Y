@@ -10,20 +10,31 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'MuJoCo_G1_Controller/scripts'))
 sys.path.insert(0, str(ROOT/'backend/tests'))
 from g1_bimanual_limits import (
-    JOINT_VELOCITY_LIMITS_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2,
-    JOINT_VELOCITY_LIMIT_RAD_S, JOINT_JERK_LIMIT_RAD_S3,
+    JOINT_JERK_LIMIT_RAD_S3,
+    RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
     RETURN_RIGHT_WAYPOINT_RAD,
+    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    TRACKING_JOINT_VELOCITY_LIMITS_RAD_S,
 )
 from g1_bimanual_sim import BimanualSimulation, base, mink
 from g1_bimanual_return import BimanualReturnMotion, RuckigJointMotionLimiter
 
 
-def assert_output(sim, before, previous_velocity):
+def assert_output(sim, before, previous_velocity, *, returning=True):
     velocity = (sim.config.q[sim.qids]-before[sim.qids])/sim.dt
-    np.testing.assert_allclose(velocity, sim.velocity[sim.dofs], atol=1e-10, rtol=0)
-    acceleration = np.max(np.abs(velocity-previous_velocity))/sim.dt
-    assert acceleration <= JOINT_ACCELERATION_LIMIT_RAD_S2+1e-5, acceleration
-    assert np.all(np.abs(velocity) <= sim.caps+1e-6)
+    np.testing.assert_allclose(
+        velocity, sim.velocity[sim.dofs], atol=1e-10, rtol=0)
+    acceleration = np.max(
+        np.abs(velocity-previous_velocity))/sim.dt
+    acceleration_limit = (
+        RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2
+        if returning else TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2)
+    velocity_limits = (
+        sim.return_motion.velocity_limits
+        if returning else sim.caps)
+    assert acceleration <= acceleration_limit+1e-5, acceleration
+    assert np.all(np.abs(velocity) <= velocity_limits+1e-6)
     assert np.all(sim.config.q[sim.qids] >= sim.ranges[:, 0]-1e-8)
     assert np.all(sim.config.q[sim.qids] <= sim.ranges[:, 1]+1e-8)
     frozen = np.ones(sim.model.nq, dtype=bool)
@@ -41,8 +52,11 @@ def recorded_return(entry):
     sim.config.update(q)
     sim.velocity[sim.dofs] = entry['initial_velocity']
     sim.acceleration[sim.dofs] = entry['initial_acceleration']
-    next_velocity = np.sign(sim.velocity)*np.maximum(0., np.abs(sim.velocity)-JOINT_ACCELERATION_LIMIT_RAD_S2*sim.dt)
-    sim.brake_plan, reason = sim.checked_stop_plan(next_velocity)
+    next_velocity = np.sign(sim.velocity)*np.maximum(
+        0., np.abs(sim.velocity)
+        - RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2 * sim.dt)
+    sim.brake_plan, reason = sim.checked_stop_plan(
+        next_velocity, returning=True)
     assert sim.brake_plan is not None, reason
     stages, poses = [], {}
     previous_stage = 'inactive'
@@ -98,8 +112,15 @@ class StagedReturnTests(unittest.TestCase):
         np.testing.assert_array_equal(policy.waypoint[7:], RETURN_RIGHT_WAYPOINT_RAD)
         np.testing.assert_allclose(np.rad2deg(policy.waypoint[:7]), [10,35,0,70,0,0,0])
         np.testing.assert_allclose(policy.jerk_limits, JOINT_JERK_LIMIT_RAD_S3)
-        np.testing.assert_allclose(policy.acceleration_limits, JOINT_ACCELERATION_LIMIT_RAD_S2)
-        np.testing.assert_allclose(sim.caps, np.asarray(JOINT_VELOCITY_LIMITS_RAD_S))
+        np.testing.assert_allclose(
+            policy.acceleration_limits,
+            RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2)
+        np.testing.assert_allclose(
+            policy.velocity_limits,
+            np.asarray(RETURN_JOINT_VELOCITY_LIMITS_RAD_S))
+        np.testing.assert_allclose(
+            sim.caps,
+            np.asarray(TRACKING_JOINT_VELOCITY_LIMITS_RAD_S))
         self.assertEqual(policy.settle_s, .5)
         self.assertEqual(policy.policy, 'bimanual_staged_return_v2')
         self.assertEqual(policy.near_hands_threshold_m, .012)
@@ -154,7 +175,7 @@ class StagedReturnTests(unittest.TestCase):
         self.assertGreaterEqual(sim.return_motion.separation_probe_clearance_m['left'], sim.clearance_m)
         self.assertEqual(stages, ['near_hands_stop','separate_left','safe_waypoint','home','complete'])
         self.assertGreaterEqual(minimum, sim.clearance_m)
-        self.assertLessEqual(max_acceleration, JOINT_ACCELERATION_LIMIT_RAD_S2+1e-5)
+        self.assertLessEqual(max_acceleration, RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2+1e-5)
         self.assertLess((tick+1)*sim.dt, 10.)
         self.assertEqual(sim.return_motion.replans, 0)
         np.testing.assert_allclose(sim.config.q[sim.qids], sim.home[sim.qids], atol=1e-6, rtol=0)
@@ -224,11 +245,11 @@ class StagedReturnTests(unittest.TestCase):
                 return sim.clearance_m + .001
             return original_probe(side)
 
-        def reject_first_left_separation(velocity):
+        def reject_first_left_separation(velocity, *, returning=False):
             if sim.return_motion.stage == 'separate_left' and not rejected:
                 rejected.append('left')
                 return None, 'swept_clearance'
-            return original_checked_stop_plan(velocity)
+            return original_checked_stop_plan(velocity, returning=returning)
 
         with patch.object(sim.return_motion, '_probe_separation_side',
                           side_effect=probe_with_safe_retry), \
@@ -258,11 +279,11 @@ class StagedReturnTests(unittest.TestCase):
         rejected = []
         minimum = sim.clearance(sim.config.q)
 
-        def reject_first_left_separation(velocity):
+        def reject_first_left_separation(velocity, *, returning=False):
             if sim.return_motion.stage == 'separate_left' and not rejected:
                 rejected.append('left')
                 return None, 'swept_clearance'
-            return original_checked_stop_plan(velocity)
+            return original_checked_stop_plan(velocity, returning=returning)
 
         with patch.object(sim, 'checked_stop_plan', side_effect=reject_first_left_separation):
             for _ in range(120):
@@ -331,7 +352,7 @@ class StagedReturnTests(unittest.TestCase):
         q[sim.motion['left'].qpos_ids[4]] = -.3
         sim.config.update(q)
         single = RuckigJointMotionLimiter(q[sim.qids[7:]], sim.caps[7:],
-            np.full(7,JOINT_ACCELERATION_LIMIT_RAD_S2), np.full(7,JOINT_JERK_LIMIT_RAD_S3),sim.dt)
+            np.full(7,RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2), np.full(7,JOINT_JERK_LIMIT_RAD_S3),sim.dt)
         for _ in range(600):
             expected = single.Step(RETURN_RIGHT_WAYPOINT_RAD,sim.dt)
             self.assertTrue(sim.step(returning=True),sim.reason)
@@ -348,7 +369,7 @@ class StagedReturnTests(unittest.TestCase):
         sim._motion_returning = True
         sim.return_motion.stage = 'home'
         single = RuckigJointMotionLimiter(q[sim.qids[7:]],sim.caps[7:],
-            np.full(7,JOINT_ACCELERATION_LIMIT_RAD_S2),np.full(7,JOINT_JERK_LIMIT_RAD_S3),sim.dt)
+            np.full(7,RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2),np.full(7,JOINT_JERK_LIMIT_RAD_S3),sim.dt)
         for _ in range(600):
             expected = single.Step(sim.home[sim.qids[7:]],sim.dt)
             self.assertTrue(sim.step(returning=True),sim.reason)
@@ -389,7 +410,9 @@ class StagedReturnTests(unittest.TestCase):
             cycle.receive(message, now)
             before = sim.config.q.copy()
             cycle.tick(now)
-            velocity, _, _ = assert_output(sim, before, previous_velocity)
+            velocity, _, _ = assert_output(
+                sim, before, previous_velocity,
+                returning=(cycle.last_tick_action == 'returning'))
             previous_velocity = velocity
 
         cycle.receive(packet(0), 0.)
@@ -436,6 +459,56 @@ class StagedReturnTests(unittest.TestCase):
             self.assertTrue(sim.step(goals))
         self.assertGreater(np.max(np.abs(sim.velocity)),.01)
         return sim
+
+    def test_rejected_slow_transition_keeps_the_verified_tracking_tail(self):
+        sim = self.moving_sim()
+        original_tail = [(q.copy(), v.copy()) for q, v in sim.brake_plan]
+        before = sim.config.q.copy()
+        previous = sim.velocity[sim.dofs].copy()
+        with patch.object(sim.safety, 'return_transition_stop_plan',
+                          return_value=(None, 'swept_clearance')):
+            applied = sim.step(returning=True)
+        self.assertTrue(applied, sim.reason)
+        self.assertNotEqual(sim.state, 'blocked')
+        np.testing.assert_array_equal(sim.config.q, original_tail[0][0])
+        np.testing.assert_array_equal(sim.velocity, original_tail[0][1])
+        assert_output(sim, before, previous, returning=False)
+        # This exception must use the exact old tail, not arbitrary new fast
+        # return commands. The ordinary return generator remains conservative.
+        for expected_q, expected_velocity in original_tail[1:]:
+            if not np.any(sim.velocity) and not np.any(sim.acceleration):
+                break
+            self.assertTrue(sim.step(returning=True), sim.reason)
+            np.testing.assert_array_equal(sim.config.q, expected_q)
+            np.testing.assert_array_equal(sim.velocity, expected_velocity)
+        for _ in range(900):
+            before, previous = sim.config.q.copy(), sim.velocity[sim.dofs].copy()
+            self.assertTrue(sim.step(returning=True), sim.reason)
+            assert_output(sim, before, previous)
+            if sim.state == 'ready':
+                break
+        self.assertEqual(sim.state, 'ready')
+        self.assertEqual(sim.return_motion.replans, 0)
+
+    def test_above_return_cap_transition_stops_before_seeding_ruckig(self):
+        sim = BimanualSimulation()
+        dof = sim.motion['left'].dofs[4]
+        sim.velocity[dof] = 0.2
+        # Create a valid conservative transition but force the return velocity
+        # envelope below the current speed to exercise the mode boundary.
+        sim.return_caps = sim.return_caps.copy()
+        sim.return_caps[4] = 0.1
+        sim.return_motion.velocity_limits = sim.return_caps.copy()
+        checked, reason = sim.checked_stop_plan(sim.velocity.copy())
+        self.assertIsNotNone(checked, reason)
+        sim.brake_plan = checked
+        with patch.object(sim.return_motion, '_make_limiter') as seed:
+            self.assertTrue(sim.step(returning=True), sim.reason)
+            seed.assert_not_called()
+        self.assertTrue(sim.return_motion.recovering)
+        self.assertGreater(sim.velocity[dof], sim.return_caps[4])
+        self.assertAlmostEqual(sim.velocity[dof],
+                               0.2 - RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2 * sim.dt)
 
     def assert_stops_on_return_fault(self, sim):
         for _ in range(200):

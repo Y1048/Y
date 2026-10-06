@@ -113,11 +113,15 @@ READY heartbeat를 받은 순간의 현재 Omni yaw로 fallback한다. Quest pit
 
 현재 controller-side profile:
 
-- proximal arm joints: 90 deg/s
-- wrist joints: 180 deg/s
-- joint acceleration: 90 deg/s²
-- IK tracking rate constant: 1.5 s⁻¹
+- live tracking proximal arm joints: 150 deg/s
+- live tracking wrist joints: 180 deg/s
+- live tracking joint acceleration: 300 deg/s²
+- position tracking rate: 12.0 s⁻¹
+- orientation tracking rate: 1.5 s⁻¹
+- shoulder yaw comfort: ±15 deg, cost 1.2
 - wrist-rotation proximal damping scale: 14.0
+- staged return proximal/wrist: 90/180 deg/s
+- staged return acceleration: 90 deg/s²
 - compute/send: 60 Hz
 - observation display: 100 Hz
 

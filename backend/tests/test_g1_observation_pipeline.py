@@ -27,8 +27,10 @@ SCRIPTS = ROOT / 'MuJoCo_G1_Controller/scripts'
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 from g1_bimanual_limits import (  # noqa: E402
-    JOINT_VELOCITY_LIMITS_RAD_S,
-    JOINT_ACCELERATION_LIMIT_RAD_S2,
+    RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
+    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    TRACKING_JOINT_VELOCITY_LIMITS_RAD_S,
 )
 
 AUDIT = ROOT / 'tools/G1_INPUT_RECEIVE_AUDIT.py'
@@ -185,12 +187,26 @@ class ObservationPipelineTests(unittest.TestCase):
                 received = [row for row in rows if row.get('kind') == 'received_observation']
                 sim_rows = [json.loads(line) for line in (tmp/'generated_unity.jsonl').read_text(encoding='utf-8').splitlines()]
                 run = sim_rows[0]
-                expected_velocity = list(JOINT_VELOCITY_LIMITS_RAD_S)
-                expected_acceleration = [JOINT_ACCELERATION_LIMIT_RAD_S2] * 14
-                self.assertEqual(run['motion_limits']['velocity_rad_s'], expected_velocity)
-                self.assertEqual(run['motion_limits']['acceleration_rad_s2'], expected_acceleration)
-                self.assertEqual(run['return_profile']['velocity_rad_s'], expected_velocity)
-                self.assertEqual(run['return_profile']['acceleration_rad_s2'], expected_acceleration)
+                expected_velocity = list(
+                    TRACKING_JOINT_VELOCITY_LIMITS_RAD_S)
+                expected_acceleration = [
+                    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2] * 14
+                expected_return_velocity = list(
+                    RETURN_JOINT_VELOCITY_LIMITS_RAD_S)
+                expected_return_acceleration = [
+                    RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2] * 14
+                self.assertEqual(
+                    run['motion_limits']['velocity_rad_s'],
+                    expected_velocity)
+                self.assertEqual(
+                    run['motion_limits']['acceleration_rad_s2'],
+                    expected_acceleration)
+                self.assertEqual(
+                    run['return_profile']['velocity_rad_s'],
+                    expected_return_velocity)
+                self.assertEqual(
+                    run['return_profile']['acceleration_rad_s2'],
+                    expected_return_acceleration)
                 self.assertIs(run['simulation_only'], True)
                 self.assertIs(run['hardware_output_authorized'], False)
                 states = [row for row in sim_rows if row.get('kind') == 'state']
@@ -220,7 +236,7 @@ class ObservationPipelineTests(unittest.TestCase):
                             maximum_acceleration[joint] = max(maximum_acceleration[joint], acceleration)
                             self.assertLessEqual(
                                 acceleration,
-                                JOINT_ACCELERATION_LIMIT_RAD_S2 + 1e-3,
+                                TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2 + 1e-3,
                                 JOINT_NAMES[joint])
                     previous_velocity = velocity
                 self.assertGreater(max(maximum_speed[:7]), .001, 'left IK output did not move')

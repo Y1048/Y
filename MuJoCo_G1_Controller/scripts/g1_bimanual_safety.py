@@ -18,6 +18,7 @@ class BimanualSafetyEnvelope:
     def __init__(self, simulation, collision_pairs):
         self.sim = simulation
         self.profile = simulation.profile
+        self.return_profile = simulation.return_profile
         self.check_data = mujoco.MjData(simulation.model)
         self.pair_array = np.asarray(simulation.pairs, dtype=int)
         self.clearance_local_centers = (
@@ -132,7 +133,8 @@ class BimanualSafetyEnvelope:
 
         # Mink solves joint displacement, not velocity.
         eye = np.eye(s.model.nv)[s.dofs]
-        dv = self.profile.joint_acceleration_limit_rad_s2 * s.dt
+        motion_profile = self.return_profile if returning else self.profile
+        dv = motion_profile.joint_acceleration_limit_rad_s2 * s.dt
         hi = (s.velocity[s.dofs] + dv) * s.dt
         lo = (s.velocity[s.dofs] - dv) * s.dt
         problem.G = np.vstack([problem.G, eye, -eye])
@@ -164,13 +166,13 @@ class BimanualSafetyEnvelope:
 
         return problem
 
-    def checked_stop_plan(self, first_velocity):
-        """Return the existing discrete acceleration-bounded checked stop tail."""
+    def _checked_stop_plan(
+            self, first_velocity, *, caps, acceleration_rad_s2):
         s = self.sim
-        dv = self.profile.joint_acceleration_limit_rad_s2 * s.dt
+        dv = acceleration_rad_s2 * s.dt
         if (
             not np.isfinite(first_velocity).all()
-            or np.any(np.abs(first_velocity[s.dofs]) > s.caps + 1e-6)
+            or np.any(np.abs(first_velocity[s.dofs]) > caps + 1e-6)
             or np.any(np.abs(first_velocity - s.velocity) > dv + 1e-6)
         ):
             return None, "velocity_acceleration"
@@ -181,7 +183,7 @@ class BimanualSafetyEnvelope:
         frozen = np.ones(s.model.nq, dtype=bool)
         frozen[s.qids] = False
 
-        for _ in range(int(np.ceil(np.max(s.caps) / dv)) + 2):
+        for _ in range(int(np.ceil(np.max(caps) / dv)) + 2):
             candidate = q.copy()
             mujoco.mj_integratePos(
                 s.model, candidate, velocity, s.dt)
@@ -204,9 +206,6 @@ class BimanualSafetyEnvelope:
                 ),
             )
             for fraction in np.linspace(0, 1, substeps + 1)[1:]:
-                # Call through the simulation compatibility proxy so
-                # existing safety fault-injection tests and diagnostics keep
-                # their public hook while implementation stays here.
                 clearance = s.clearance(
                     q + fraction * (candidate - q),
                     threshold=s.clearance_m,
@@ -219,7 +218,6 @@ class BimanualSafetyEnvelope:
 
             plan.append((candidate.copy(), velocity.copy()))
             if not np.any(velocity):
-                # Keep a checked stationary tail available even at rest.
                 if len(plan) == 1:
                     plan.append(
                         (candidate.copy(), velocity.copy()))
@@ -230,3 +228,35 @@ class BimanualSafetyEnvelope:
                 0, np.abs(velocity) - dv)
 
         return None, "braking_horizon"
+
+    def checked_stop_plan(self, first_velocity, *, returning=False):
+        """Return a checked stop tail under the active motion profile."""
+        profile = self.return_profile if returning else self.profile
+        caps = self.sim.return_caps if returning else self.sim.caps
+        return self._checked_stop_plan(
+            first_velocity,
+            caps=caps,
+            acceleration_rad_s2=profile.joint_acceleration_limit_rad_s2,
+        )
+
+    def return_transition_stop_plan(self):
+        """Brake a tracking command with return acceleration before return.
+
+        A tracking pose may legitimately be moving faster than the conservative
+        return velocity cap. The transition cannot reduce that speed
+        instantaneously, so it preserves the tracking velocity envelope while
+        decelerating at the return acceleration limit until rest.
+        """
+        s = self.sim
+        dv = self.return_profile.joint_acceleration_limit_rad_s2 * s.dt
+        first_velocity = s.velocity.copy()
+        first_velocity[s.dofs] = (
+            np.sign(first_velocity[s.dofs])
+            * np.maximum(0.0, np.abs(first_velocity[s.dofs]) - dv)
+        )
+        return self._checked_stop_plan(
+            first_velocity,
+            caps=s.caps,
+            acceleration_rad_s2=(
+                self.return_profile.joint_acceleration_limit_rad_s2),
+        )

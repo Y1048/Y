@@ -63,9 +63,15 @@ class ArmMotionPolicy:
         self.joint_ids = np.array([base._joint_id(model, name) for name in names])
         self.qpos_ids = model.jnt_qposadr[self.joint_ids]
         self.dofs = model.jnt_dofadr[self.joint_ids]
-        self.acceleration_limits = np.full(7, PROFILE.joint_acceleration_limit_rad_s2)
-        self.wrist_task = mink.FrameTask(side + '_wrist_yaw_link', 'body',
-            PROFILE.position_cost, PROFILE.orientation_cost,
+        self.acceleration_limits = np.full(
+            7, PROFILE.joint_acceleration_limit_rad_s2)
+        self.position_task = mink.FrameTask(
+            side + '_wrist_yaw_link', 'body',
+            PROFILE.position_cost, 0.0,
+            gain=PROFILE.frame_gain, lm_damping=PROFILE.lm_damping)
+        self.orientation_task = mink.FrameTask(
+            side + '_wrist_yaw_link', 'body',
+            0.0, PROFILE.orientation_cost,
             gain=PROFILE.frame_gain, lm_damping=PROFILE.lm_damping)
         cost = np.zeros(model.nv)
         cost[self.dofs] = PROFILE.posture_cost
@@ -86,7 +92,8 @@ class ArmMotionPolicy:
         if not radii:
             raise ValueError('Missing wrist collision geometry: ' + side)
         self.wrist_target_radius_m = max(radii)
-        self._orientation_cost = np.asarray(self.wrist_task.orientation_cost).copy()
+        self._orientation_cost = np.asarray(
+            self.orientation_task.orientation_cost).copy()
         self.orientation_priority_enabled = True
         self.priority_shoulder_yaw_envelope_rad = PROFILE.shoulder_yaw_envelope_rad
         self.reset(reference)
@@ -101,7 +108,8 @@ class ArmMotionPolicy:
         self.wrist_priority_weight = 0.
         self.wrist_priority_task.cost[:] = 0.
         self.target_projection_distance_m = 0.
-        self.approach_rate_s = 0.
+        self.position_approach_rate_s = 0.
+        self.orientation_approach_rate_s = 0.
         self.raw_target_position = np.zeros(3)
         self.effective_target_position = np.zeros(3)
 
@@ -116,18 +124,27 @@ class ArmMotionPolicy:
         self.target_projection_distance_m = 0.
         self.effective_target_position = goal.translation().copy()
         self.effective_target_rotation = goal.rotation().as_matrix().copy()
-        self.wrist_task.set_target(goal)
+        self.position_task.set_target(goal)
+        self.orientation_task.set_target(goal)
         self._update_orientation_priority(current_q, goal, clearance)
         self._update_elbow_assist(current_q, current_pose, goal)
         self._update_wrist_priority(current_q, current_pose, goal, clearance)
-        self.approach_rate_s = PROFILE.ik_tracking_rate_s
-        self.wrist_task.gain = min(
-            PROFILE.frame_gain, self.dt_s * PROFILE.ik_tracking_rate_s)
-        # Same task/posture equilibrium as the single-arm controller (not .01).
-        self.posture_task.gain = self.wrist_task.gain / PROFILE.frame_gain
-        self.shoulder_comfort_task.reference = self.posture_reference[self.qpos_ids[1:3]].copy()
-        self.shoulder_comfort_task.gain = self.wrist_task.gain
-        tasks = [self.wrist_task, self.posture_task, self.damping_task,
+        self.position_approach_rate_s = PROFILE.position_tracking_rate_s
+        self.orientation_approach_rate_s = PROFILE.orientation_tracking_rate_s
+        self.position_task.gain = min(
+            PROFILE.frame_gain,
+            self.dt_s * PROFILE.position_tracking_rate_s)
+        self.orientation_task.gain = min(
+            PROFILE.frame_gain,
+            self.dt_s * PROFILE.orientation_tracking_rate_s)
+        # Keep posture and shoulder comfort on the conservative orientation rate.
+        self.posture_task.gain = (
+            self.orientation_task.gain / PROFILE.frame_gain)
+        self.shoulder_comfort_task.reference = (
+            self.posture_reference[self.qpos_ids[1:3]].copy())
+        self.shoulder_comfort_task.gain = self.orientation_task.gain
+        tasks = [self.position_task, self.orientation_task,
+                 self.posture_task, self.damping_task,
                  self.wrist_priority_task, self.shoulder_comfort_task]
         if self.elbow_assist_active:
             tasks.append(self.elbow_task)
@@ -152,14 +169,18 @@ class ArmMotionPolicy:
                     position_priority_active=bool(self.position_priority_active),
                     elbow_assist_active=bool(self.elbow_assist_active),
                     target_projected=bool(self.target_projected),
-                    target_projection_distance_m=float(self.target_projection_distance_m),
-                    approach_rate_s=float(self.approach_rate_s))
+                    target_projection_distance_m=float(
+                        self.target_projection_distance_m),
+                    position_approach_rate_s=float(
+                        self.position_approach_rate_s),
+                    orientation_approach_rate_s=float(
+                        self.orientation_approach_rate_s))
 
     def _reset_orientation_priority(self):
         self.position_priority_active = False
         self.orientation_priority_scale = 1.
         self._priority_dwell = 0.
-        self.wrist_task.set_orientation_cost(self._orientation_cost)
+        self.orientation_task.set_orientation_cost(self._orientation_cost)
 
 
     def _update_orientation_priority(self, current_q, goal, clearance):
@@ -209,7 +230,7 @@ class ArmMotionPolicy:
         slew = self.dt_s * PROFILE.orientation_scale_slew_per_second
         self.orientation_priority_scale += float(np.clip(
             target - self.orientation_priority_scale, -slew, slew))
-        p.wrist_task.set_orientation_cost(
+        p.orientation_task.set_orientation_cost(
             self._orientation_cost * self.orientation_priority_scale)
 
 

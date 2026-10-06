@@ -4,6 +4,8 @@ Baseline: f0b6828 on main. G1.zip full offline validation PASS.
 
 Purpose: make the bilateral upper-body controller traceable by a person. This audit does not authorize a behavior change. It separates the canonical path into target mapping, IK objective, safety, return motion, and diagnostics; identifies dead, legacy, and preview-only logic; inventories material tuning parameters; and defines an ablation order.
 
+> **2026-10-06 current-profile note:** the numeric 90/180 deg/s, 90 deg/s^2 and single-rate 1.5 s^-1 values below describe this audit's historical 2026-09-29 baseline. The current live-tracking controller supersedes them with split position/orientation tasks (12.0/1.5 s^-1), 150/180 deg/s tracking caps and 300 deg/s^2 tracking acceleration, while staged return remains 90/180 deg/s and 90 deg/s^2. See `docs/CHAT_HANDOFF.md` for the validated current contract and replay evidence.
+
 ## Main conclusion
 
 The controller has two different complexity problems.

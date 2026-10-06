@@ -10,11 +10,14 @@ import math
 
 import g1_mink_shared as base
 from g1_bimanual_limits import (
-    IK_TRACKING_RATE_S,
-    JOINT_ACCELERATION_LIMIT_RAD_S2,
     JOINT_JERK_LIMIT_RAD_S3,
-    JOINT_VELOCITY_LIMITS_RAD_S,
+    ORIENTATION_TRACKING_RATE_S,
+    POSITION_TRACKING_RATE_S,
+    RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
     RETURN_RIGHT_WAYPOINT_RAD,
+    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    TRACKING_JOINT_VELOCITY_LIMITS_RAD_S,
 )
 
 
@@ -37,9 +40,9 @@ class TrackingProfile:
     wrist_damping_cost: float = base.WRIST_DAMPING_COST
 
     # Shoulder posture preference; inactive inside the comfort bands.
-    shoulder_comfort_cost: float = .6
+    shoulder_comfort_cost: float = 1.2
     shoulder_comfort_roll_band_rad: float = math.radians(20.0)
-    shoulder_comfort_yaw_band_rad: float = math.radians(45.0)
+    shoulder_comfort_yaw_band_rad: float = math.radians(15.0)
     shoulder_yaw_envelope_rad: float = math.radians(90.0)
     shoulder_yaw_stop_scale: float = .8
 
@@ -87,10 +90,13 @@ class TrackingProfile:
     joint_limit_stopping_speed_scale: float = .8
     checked_stop_substep_rad: float = math.radians(.25)
 
-    # Shared tracking and motion limits.
-    ik_tracking_rate_s: float = IK_TRACKING_RATE_S
-    joint_acceleration_limit_rad_s2: float = JOINT_ACCELERATION_LIMIT_RAD_S2
-    joint_velocity_limits_rad_s: tuple = JOINT_VELOCITY_LIMITS_RAD_S
+    # Position and orientation use independent approach rates.
+    position_tracking_rate_s: float = POSITION_TRACKING_RATE_S
+    orientation_tracking_rate_s: float = ORIENTATION_TRACKING_RATE_S
+    joint_acceleration_limit_rad_s2: float = (
+        TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2)
+    joint_velocity_limits_rad_s: tuple = (
+        TRACKING_JOINT_VELOCITY_LIMITS_RAD_S)
 
 
 @dataclass(frozen=True)
@@ -100,9 +106,13 @@ class ReturnProfile:
     maximum_replans: int = 2
     near_hands_threshold_m: float = .012
     separation_probe_maximum_s: float = 10.0
-    joint_acceleration_limit_rad_s2: float = JOINT_ACCELERATION_LIMIT_RAD_S2
+    joint_velocity_limits_rad_s: tuple = (
+        RETURN_JOINT_VELOCITY_LIMITS_RAD_S)
+    joint_acceleration_limit_rad_s2: float = (
+        RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2)
     joint_jerk_limit_rad_s3: float = JOINT_JERK_LIMIT_RAD_S3
-    right_waypoint_rad: tuple = tuple(float(value) for value in RETURN_RIGHT_WAYPOINT_RAD)
+    right_waypoint_rad: tuple = tuple(
+        float(value) for value in RETURN_RIGHT_WAYPOINT_RAD)
 
 
 TRACKING = TrackingProfile()

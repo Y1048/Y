@@ -25,6 +25,8 @@ class BimanualReturnMotion:
         right_waypoint = np.asarray(PROFILE.right_waypoint_rad)
         mirrored = right_waypoint * np.array([1., -1., -1., 1., -1., 1., -1.])
         self.waypoint = np.r_[mirrored, right_waypoint].copy()
+        self.velocity_limits = np.asarray(
+            PROFILE.joint_velocity_limits_rad_s, dtype=float)
         self.acceleration_limits = np.full(
             14, PROFILE.joint_acceleration_limit_rad_s2)
         self.jerk_limits = np.full(14, PROFILE.joint_jerk_limit_rad_s3)
@@ -93,7 +95,7 @@ class BimanualReturnMotion:
         s = self.sim
         target = self._separation_target_for(side)
         limiter = RuckigJointMotionLimiter(
-            s.config.q[s.qids], s.caps, self.acceleration_limits,
+            s.config.q[s.qids], self.velocity_limits, self.acceleration_limits,
             self.jerk_limits, s.dt,
             initial_velocity_rad_s=s.velocity[s.dofs],
             initial_acceleration_rad_s2=np.clip(
@@ -169,7 +171,7 @@ class BimanualReturnMotion:
     def _make_limiter(self):
         s = self.sim
         self.limiter = RuckigJointMotionLimiter(
-            s.config.q[s.qids], s.caps, self.acceleration_limits,
+            s.config.q[s.qids], self.velocity_limits, self.acceleration_limits,
             self.jerk_limits, s.dt,
             initial_velocity_rad_s=s.velocity[s.dofs],
             initial_acceleration_rad_s2=np.clip(
@@ -261,7 +263,7 @@ class BimanualReturnMotion:
             displacement = np.zeros_like(displacement)  # Only roundoff at rest.
         velocity = np.zeros(s.model.nv)
         velocity[s.dofs] = displacement/s.dt
-        plan, reason = s.checked_stop_plan(velocity)
+        plan, reason = s.checked_stop_plan(velocity, returning=True)
         if plan is None:
             return self._reject('return_' + reason)
         candidate, velocity = plan.pop(0)

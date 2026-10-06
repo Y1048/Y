@@ -16,7 +16,7 @@ from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
 from g1_bimanual_return import BimanualReturnMotion
 from g1_bimanual_safety import BimanualSafetyEnvelope
-from g1_bimanual_profile import TRACKING as PROFILE
+from g1_bimanual_profile import RETURN as RETURN_PROFILE, TRACKING as PROFILE
 
 
 class BimanualSimulation:
@@ -69,7 +69,10 @@ class BimanualSimulation:
         self.home_targets = {side: self.config.get_transform_frame_to_world(
             side + "_wrist_yaw_link", "body") for side in ("left", "right")}
         self.caps = np.asarray(PROFILE.joint_velocity_limits_rad_s, dtype=float)
+        self.return_caps = np.asarray(
+            RETURN_PROFILE.joint_velocity_limits_rad_s, dtype=float)
         self.profile = PROFILE
+        self.return_profile = RETURN_PROFILE
         self.safety = BimanualSafetyEnvelope(
             self, [pairs[i] for i in keep])
         # Compatibility aliases: implementation ownership is in SafetyEnvelope.
@@ -157,6 +160,24 @@ class BimanualSimulation:
         if returning:
             if not self._motion_returning:
                 self.return_motion.reset()
+                transition_plan, reason = (
+                    self.safety.return_transition_stop_plan())
+                if transition_plan is None:
+                    # A slower stop travels farther and may be unsafe. Never
+                    # discard the already-verified tracking tail or freeze at
+                    # speed merely because the conservative alternative fails.
+                    self.return_motion.recovering = True
+                    self.return_motion.rejected_reason = (
+                        "return_transition_original_tail:" + reason)
+                else:
+                    self.brake_plan = transition_plan
+                    if np.any(np.abs(self.velocity[self.dofs])
+                              > self.return_caps + 1e-6):
+                        # Do not seed the low-speed return trajectory from an
+                        # above-cap tracking velocity. Finish this checked stop.
+                        self.return_motion.recovering = True
+                        self.return_motion.rejected_reason = (
+                            "return_transition_above_velocity_cap")
             self._motion_returning = True
             return self.return_motion.step()
         if not isinstance(targets, dict) or set(targets) != {"left", "right"}:
@@ -210,7 +231,7 @@ class BimanualSimulation:
         if result is not None and result.found and result.x is not None and np.isfinite(result.x).all():
             velocity = np.zeros(self.model.nv)
             velocity[self.dofs] = result.x
-            plan, reason = self.checked_stop_plan(velocity)
+            plan, reason = self.checked_stop_plan(velocity, returning=returning)
         if plan is not None:
             candidate, velocity = plan.pop(0)
             self.brake_plan = plan
@@ -242,7 +263,8 @@ class BimanualSimulation:
             if np.any(self.velocity):
                 self.state, self.reason = 'blocked', 'missing_checked_tail:' + reason
                 return False
-            plan, rejected = self.checked_stop_plan(np.zeros(self.model.nv))
+            plan, rejected = self.checked_stop_plan(
+                np.zeros(self.model.nv), returning=returning)
             if plan is None:
                 self.state, self.reason = 'blocked', rejected
                 return False
@@ -272,9 +294,10 @@ class BimanualSimulation:
             for side, body_id in self.checked_target_body_ids.items()
         }
 
-    def checked_stop_plan(self, first_velocity):
+    def checked_stop_plan(self, first_velocity, *, returning=False):
         """Compatibility proxy for the named safety boundary."""
-        return self.safety.checked_stop_plan(first_velocity)
+        return self.safety.checked_stop_plan(
+            first_velocity, returning=returning)
 
 
 def targets_from_json(record):

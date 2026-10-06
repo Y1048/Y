@@ -38,7 +38,7 @@ class BimanualSafetyBoundaryTests(unittest.TestCase):
         velocity = np.zeros(sim.model.nv)
         actual = sim.checked_stop_plan(velocity)
         self.assertIs(actual, expected)
-        delegate.assert_called_once_with(velocity)
+        delegate.assert_called_once_with(velocity, returning=False)
 
     def test_raw_torso_intrusion_stays_outside_hard_clearance_and_recovers(self):
         for side in ("left", "right"):

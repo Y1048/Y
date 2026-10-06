@@ -46,11 +46,14 @@ runtime 검증 실패 시 PC에서 pip install로 수리하지 않는다. 정상
 
 ## 5. Motion policy
 
-- 14 arm joints
-- proximal velocity 90 deg/s
-- wrist velocity 180 deg/s
-- acceleration 90 deg/s²
-- jerk limit 1.28 rad/s³
+- 14 arm joints in one shared bilateral QP
+- live position task rate 12.0 s^-1
+- live orientation task rate 1.5 s^-1
+- live proximal/wrist velocity 150/180 deg/s
+- live acceleration 300 deg/s²
+- shoulder yaw comfort band ±15 deg, cost 1.2
+- staged return remains separate at proximal/wrist 90/180 deg/s, acceleration 90 deg/s² and jerk 1.28 rad/s³
+- tracking-to-return first checks a 90 deg/s^2 stop; if unsafe, it consumes the exact previously verified tracking stop tail (which may retain up to 300 deg/s^2), never freezing a moving command. New staged-return trajectories remain at 90 deg/s^2.
 - compute 60 Hz
 - staged return: `g1_bimanual_return.py`
 

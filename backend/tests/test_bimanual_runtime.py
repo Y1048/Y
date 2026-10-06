@@ -130,11 +130,27 @@ class RuntimeTests(unittest.TestCase):
             'g1_bimanual_motion_policy.py', 'g1_bimanual_safety.py',
             'g1_bimanual_return.py', 'g1_bimanual_limits.py',
             'g1_bimanual_profile.py'})
-        arm_velocity = [math.radians(90.0)] * 4 + [math.radians(180.0)] * 3
-        self.assertEqual(metadata['motion_limits']['velocity_rad_s'], arm_velocity * 2)
-        self.assertEqual(metadata['motion_limits']['acceleration_rad_s2'],
-                         [math.radians(90.0)] * 14)
-        self.assertTrue(all(len(value) == 64 for value in metadata['source_sha256'].values()))
+        tracking_velocity = (
+            [math.radians(150.0)] * 4
+            + [math.radians(180.0)] * 3)
+        return_velocity = (
+            [math.radians(90.0)] * 4
+            + [math.radians(180.0)] * 3)
+        self.assertEqual(
+            metadata['motion_limits']['velocity_rad_s'],
+            tracking_velocity * 2)
+        self.assertEqual(
+            metadata['motion_limits']['acceleration_rad_s2'],
+            [math.radians(300.0)] * 14)
+        self.assertEqual(
+            metadata['return_motion_limits']['velocity_rad_s'],
+            return_velocity * 2)
+        self.assertEqual(
+            metadata['return_motion_limits']['acceleration_rad_s2'],
+            [math.radians(90.0)] * 14)
+        self.assertTrue(all(
+            len(value) == 64
+            for value in metadata['source_sha256'].values()))
         json.dumps(metadata, allow_nan=False)
 
     def test_report_mode_propagates_runner_exit_code(self):

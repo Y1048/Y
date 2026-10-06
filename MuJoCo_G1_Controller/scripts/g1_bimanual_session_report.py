@@ -3,7 +3,7 @@
 Static analysis does not replay control. --replay uses the validated simulator
 selected by g1_bimanual_runtime.py. No Unity, G1, DDS, SSH or motor output.
 """
-from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S
+from g1_bimanual_limits import TRACKING_JOINT_VELOCITY_LIMITS_RAD_S
 import argparse
 from collections import Counter
 import gzip
@@ -15,8 +15,8 @@ from pathlib import Path
 import numpy as np
 
 from g1_bimanual_limits import (
-    JOINT_ACCELERATION_LIMIT_RAD_S2, JOINT_VELOCITY_LIMIT_RAD_S,
-    PROXIMAL_VELOCITY_LIMIT_DEG_S, WRIST_VELOCITY_LIMIT_DEG_S)
+    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2, TRACKING_JOINT_VELOCITY_LIMIT_RAD_S,
+    TRACKING_PROXIMAL_VELOCITY_LIMIT_DEG_S, TRACKING_WRIST_VELOCITY_LIMIT_DEG_S)
 
 ROOT = Path(__file__).resolve().parents[2]
 SIM_DT = 1.0 / 60.0
@@ -65,8 +65,8 @@ def _recorded_motion_limits(run):
 def _current_motion_limits():
     return dict(
         source='current_code',
-        velocity_rad_s=list(JOINT_VELOCITY_LIMITS_RAD_S),
-        acceleration_rad_s2=[JOINT_ACCELERATION_LIMIT_RAD_S2] * 14)
+        velocity_rad_s=list(TRACKING_JOINT_VELOCITY_LIMITS_RAD_S),
+        acceleration_rad_s2=[TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2] * 14)
 
 
 def _open_text(path):
@@ -456,7 +456,7 @@ def replay_session(path):
         current_failures.append('clearance_limit_exceeded')
     if maximum_speed_ratio > 1.0 + 1e-6:
         current_failures.append('output_speed_limit_exceeded')
-    if maximum_acceleration > (math.degrees(JOINT_ACCELERATION_LIMIT_RAD_S2)
+    if maximum_acceleration > (math.degrees(TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2)
                                + ACCELERATION_NUMERICAL_TOLERANCE_DEG_S2):
         current_failures.append('output_acceleration_limit_exceeded')
     logged_flow, current_flow = flows['logged'], flows['current']
@@ -532,9 +532,9 @@ def markdown_report(report):
             f"- Current validation passed: {replay['current_validation']['passed']}",
             f"- Current validation failures: {', '.join(replay['current_validation']['failures']) or 'none'}",
             f"- Validation limits: current code, shoulder/elbow "
-            f"{PROXIMAL_VELOCITY_LIMIT_DEG_S:g} deg/s, wrist "
-            f"{WRIST_VELOCITY_LIMIT_DEG_S:g} deg/s and "
-            f"{JOINT_ACCELERATION_LIMIT_RAD_S2:g} rad/s^2",
+            f"{TRACKING_PROXIMAL_VELOCITY_LIMIT_DEG_S:g} deg/s, wrist "
+            f"{TRACKING_WRIST_VELOCITY_LIMIT_DEG_S:g} deg/s and "
+            f"{TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2:g} rad/s^2",
             f"- Max logged-q difference: {replay['maximum_logged_q_difference_rad']:.9g} rad",
             f"- Minimum sampled clearance: {replay['minimum_sampled_clearance_mm']:.6f} mm",
             f"- Max output speed: {replay['max_output_speed_deg_s']:.6f} deg/s",

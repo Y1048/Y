@@ -313,9 +313,11 @@ class UnityCycle:
             # not FK of the current command. This is not a reachability claim.
             valid = (self.state == 'tracking' and self.last_tick_action == 'tracking'
                      and self.sim.state == 'tracking'
-                     and all(p.approach_rate_s > 0 and
-                             np.isfinite(p.effective_target_position).all()
-                             for p in self.sim.motion.values()))
+                     and all(
+                         p.position_approach_rate_s > 0
+                         and p.orientation_approach_rate_s > 0
+                         and np.isfinite(p.effective_target_position).all()
+                         for p in self.sim.motion.values()))
             result['ik_target_valid'] = valid
             checked = self.sim.checked_stop_target_poses()
             checked_valid = (
@@ -404,7 +406,7 @@ def main():
                 motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
                 return_policy=sim.return_motion.policy,
                 return_profile=dict(waypoint_rad=sim.return_motion.waypoint.tolist(),
-                    velocity_rad_s=sim.caps.tolist(),
+                    velocity_rad_s=sim.return_motion.velocity_limits.tolist(),
                     acceleration_rad_s2=sim.return_motion.acceleration_limits.tolist(),
                     jerk_rad_s3=sim.return_motion.jerk_limits.tolist(),
                     settle_s=sim.return_motion.settle_s),

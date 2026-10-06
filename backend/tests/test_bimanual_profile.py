@@ -9,9 +9,13 @@ sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
 
 import g1_mink_shared as base
 from g1_bimanual_limits import (
-    JOINT_ACCELERATION_LIMIT_RAD_S2,
     JOINT_JERK_LIMIT_RAD_S3,
-    JOINT_VELOCITY_LIMITS_RAD_S,
+    ORIENTATION_TRACKING_RATE_S,
+    POSITION_TRACKING_RATE_S,
+    RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
+    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    TRACKING_JOINT_VELOCITY_LIMITS_RAD_S,
 )
 from g1_bimanual_profile import TRACKING, RETURN
 
@@ -26,11 +30,21 @@ class BimanualProfileTests(unittest.TestCase):
         self.assertEqual(TRACKING.frame_gain, base.FRAME_GAIN)
         self.assertEqual(TRACKING.lm_damping, base.LM_DAMPING)
         self.assertEqual(
+            TRACKING.position_tracking_rate_s,
+            POSITION_TRACKING_RATE_S)
+        self.assertEqual(
+            TRACKING.orientation_tracking_rate_s,
+            ORIENTATION_TRACKING_RATE_S)
+        self.assertEqual(
             TRACKING.joint_acceleration_limit_rad_s2,
-            JOINT_ACCELERATION_LIMIT_RAD_S2)
+            TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2)
         self.assertEqual(
             tuple(TRACKING.joint_velocity_limits_rad_s),
-            tuple(JOINT_VELOCITY_LIMITS_RAD_S))
+            tuple(TRACKING_JOINT_VELOCITY_LIMITS_RAD_S))
+        self.assertEqual(TRACKING.shoulder_comfort_cost, 1.2)
+        self.assertEqual(
+            TRACKING.shoulder_comfort_yaw_band_rad,
+            math.radians(15.0))
         self.assertEqual(
             TRACKING.elbow_operational_min_rad, math.radians(5.0))
         self.assertEqual(
@@ -38,8 +52,11 @@ class BimanualProfileTests(unittest.TestCase):
 
     def test_return_profile_preserves_effective_baseline(self):
         self.assertEqual(
+            tuple(RETURN.joint_velocity_limits_rad_s),
+            tuple(RETURN_JOINT_VELOCITY_LIMITS_RAD_S))
+        self.assertEqual(
             RETURN.joint_acceleration_limit_rad_s2,
-            JOINT_ACCELERATION_LIMIT_RAD_S2)
+            RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2)
         self.assertEqual(
             RETURN.joint_jerk_limit_rad_s3,
             JOINT_JERK_LIMIT_RAD_S3)

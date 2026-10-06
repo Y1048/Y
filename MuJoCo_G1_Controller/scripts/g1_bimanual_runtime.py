@@ -62,7 +62,12 @@ def load_engine(engine_root=None):
 
 
 def runtime_metadata(input_kind):
-    from g1_bimanual_limits import JOINT_VELOCITY_LIMITS_RAD_S, JOINT_VELOCITY_LIMIT_RAD_S, JOINT_ACCELERATION_LIMIT_RAD_S2
+    from g1_bimanual_limits import (
+        RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
+        RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
+        TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+        TRACKING_JOINT_VELOCITY_LIMITS_RAD_S,
+    )
     engine = require_validated_engine()
     packages = {}
     for name in ('mink', 'qpsolvers', 'daqp', 'numpy', 'ruckig'):
@@ -86,8 +91,14 @@ def runtime_metadata(input_kind):
                 mujoco_version=engine.__version__, mujoco_native_version=engine.mj_versionString(),
                 mujoco_module=str(Path(engine.__file__).resolve()), packages=packages,
                 source_sha256=sources,
-                motion_limits=dict(velocity_rad_s=list(JOINT_VELOCITY_LIMITS_RAD_S),
-                                   acceleration_rad_s2=[JOINT_ACCELERATION_LIMIT_RAD_S2]*14))
+                motion_limits=dict(
+                    velocity_rad_s=list(TRACKING_JOINT_VELOCITY_LIMITS_RAD_S),
+                    acceleration_rad_s2=[
+                        TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2] * 14),
+                return_motion_limits=dict(
+                    velocity_rad_s=list(RETURN_JOINT_VELOCITY_LIMITS_RAD_S),
+                    acceleration_rad_s2=[
+                        RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2] * 14))
 
 
 def main(argv=None):

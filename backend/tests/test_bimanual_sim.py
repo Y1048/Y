@@ -11,8 +11,14 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'MuJoCo_G1_Controller/scripts'))
 from g1_bimanual_limits import (
-    IK_TRACKING_RATE_S, JOINT_ACCELERATION_LIMIT_RAD_S2,
-    JOINT_VELOCITY_LIMIT_RAD_S)
+    ORIENTATION_TRACKING_RATE_S,
+    POSITION_TRACKING_RATE_S,
+    RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
+    TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+    TRACKING_JOINT_VELOCITY_LIMITS_RAD_S,
+    TRACKING_JOINT_VELOCITY_LIMIT_RAD_S,
+)
 import g1_bimanual_sim as module
 from g1_bimanual_sim import BimanualSimulation, targets_from_json, mink, mujoco
 
@@ -30,50 +36,78 @@ class BimanualTests(unittest.TestCase):
         self.assertIn(tuple(sorted(hands)), [tuple(sorted(p)) for p in s.pairs])
         self.assertGreater(s.clearance(s.home), .005)
 
-    def test_all_fourteen_limits_and_checked_stop_use_90_180_90(self):
+    def test_tracking_and_return_limits_are_independent(self):
         s = self.s
-        wrist_cap = np.deg2rad(180.)
-        acceleration_cap = np.deg2rad(90.)
-        self.assertAlmostEqual(JOINT_VELOCITY_LIMIT_RAD_S, wrist_cap)
-        self.assertAlmostEqual(JOINT_ACCELERATION_LIMIT_RAD_S2, acceleration_cap)
-        self.assertEqual(IK_TRACKING_RATE_S, 1.5)
+        tracking_acceleration = np.deg2rad(300.)
+        return_acceleration = np.deg2rad(90.)
+        self.assertAlmostEqual(
+            TRACKING_JOINT_VELOCITY_LIMIT_RAD_S, np.deg2rad(180.))
+        self.assertAlmostEqual(
+            TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
+            tracking_acceleration)
+        self.assertEqual(POSITION_TRACKING_RATE_S, 12.0)
+        self.assertEqual(ORIENTATION_TRACKING_RATE_S, 1.5)
         np.testing.assert_array_equal(
-            s.caps, np.tile(np.deg2rad([90]*4+[180]*3), 2))
+            s.caps, np.asarray(TRACKING_JOINT_VELOCITY_LIMITS_RAD_S))
+        np.testing.assert_array_equal(
+            s.return_caps,
+            np.asarray(RETURN_JOINT_VELOCITY_LIMITS_RAD_S))
+        np.testing.assert_array_equal(
+            s.return_motion.velocity_limits, s.return_caps)
         np.testing.assert_array_equal(
             s.return_motion.acceleration_limits,
-            np.full(14, acceleration_cap))
+            np.full(14, return_acceleration))
+
         for policy in s.motion.values():
             np.testing.assert_array_equal(
                 policy.acceleration_limits,
-                np.full(7, acceleration_cap))
-            policy.prepare(s.home_targets[policy.side], .2)
+                np.full(7, tracking_acceleration))
+            tasks = policy.prepare(s.home_targets[policy.side], .2)
+            self.assertIn(policy.position_task, tasks)
+            self.assertIn(policy.orientation_task, tasks)
             self.assertAlmostEqual(
-                policy.approach_rate_s, IK_TRACKING_RATE_S)
-        # Isolate the discrete limit boundary from the independent geometry guard.
-        wrist = s.motion['right'].dofs[4]
-        s.velocity[wrist] = wrist_cap - acceleration_cap*s.dt
-        proposed = s.velocity.copy()
-        proposed[wrist] = wrist_cap
-        # Isolate numerical velocity/acceleration boundaries from travel limits.
+                policy.position_approach_rate_s,
+                POSITION_TRACKING_RATE_S)
+            self.assertAlmostEqual(
+                policy.orientation_approach_rate_s,
+                ORIENTATION_TRACKING_RATE_S)
+
+        # Isolate checked-stop boundaries from the independent geometry guard.
         with patch.object(s, 'clearance', return_value=.2), patch.object(
                 s, 'ranges', np.tile([-100., 100.], (14, 1))):
+            wrist = s.motion['right'].dofs[4]
+            wrist_cap = s.caps[11]
+            s.velocity[:] = 0.
+            s.velocity[wrist] = (
+                wrist_cap - tracking_acceleration * s.dt)
+            proposed = s.velocity.copy()
+            proposed[wrist] = wrist_cap
             plan, reason = s.checked_stop_plan(proposed)
+            self.assertIsNotNone(plan, reason)
+            proposed[wrist] = wrist_cap + .001
+            self.assertEqual(
+                s.checked_stop_plan(proposed),
+                (None, 'velocity_acceleration'))
+
+            proximal = s.motion['right'].dofs[0]
+            return_cap = s.return_caps[7]
+            s.velocity[:] = 0.
+            s.velocity[proximal] = (
+                return_cap - return_acceleration * s.dt)
+            proposed = s.velocity.copy()
+            proposed[proximal] = return_cap
+            plan, reason = s.checked_stop_plan(
+                proposed, returning=True)
             self.assertIsNotNone(plan, reason)
             previous = s.velocity.copy()
             for _, velocity in plan:
                 self.assertLessEqual(
                     np.max(np.abs(velocity-previous))/s.dt,
-                    acceleration_cap+1e-6)
+                    return_acceleration+1e-6)
                 previous = velocity
-            self.assertEqual(np.max(np.abs(previous)), 0.)
-            proposed[wrist] = wrist_cap + .001
+            proposed[proximal] = return_cap + .001
             self.assertEqual(
-                s.checked_stop_plan(proposed),
-                (None, 'velocity_acceleration'))
-            s.velocity[wrist] = 0.
-            proposed[wrist] = acceleration_cap*s.dt + .001
-            self.assertEqual(
-                s.checked_stop_plan(proposed),
+                s.checked_stop_plan(proposed, returning=True),
                 (None, 'velocity_acceleration'))
 
     def test_no_transport_in_entrypoint(self):
@@ -123,7 +157,7 @@ class BimanualTests(unittest.TestCase):
             moved = np.maximum(moved, np.abs((s.config.q-s.home)[s.qids]))
             if not accepted:
                 break
-            self.assertLessEqual(np.max(np.abs(s.velocity-old_v)), JOINT_ACCELERATION_LIMIT_RAD_S2*s.dt+1e-6)
+            self.assertLessEqual(np.max(np.abs(s.velocity-old_v)), TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2*s.dt+1e-6)
             self.assertTrue(np.all(np.abs(s.velocity[s.dofs]) <= s.caps+1e-6))
         self.assertGreaterEqual(minimum, .005)
         self.assertGreater(np.max(moved[:7]), .05)
@@ -144,7 +178,7 @@ class BimanualTests(unittest.TestCase):
             for _ in range(100):
                 previous = self.s.velocity.copy()
                 self.assertTrue(self.s.step(targets))
-                self.assertLessEqual(np.max(np.abs(self.s.velocity-previous)), JOINT_ACCELERATION_LIMIT_RAD_S2*self.s.dt+1e-6)
+                self.assertLessEqual(np.max(np.abs(self.s.velocity-previous)), TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2*self.s.dt+1e-6)
                 self.assertGreaterEqual(self.s.clearance(self.s.config.q), .005)
         self.assertEqual(np.max(np.abs(self.s.velocity)), 0)
         self.assertTrue(self.s.step(targets))
@@ -236,7 +270,7 @@ class BimanualTests(unittest.TestCase):
                 timing.append((time.perf_counter()-start)*1000)
                 states.add(cycle.state)
                 self.assertNotEqual(cycle.state, 'blocked', cycle.reason)
-                self.assertLessEqual(np.max(np.abs(self.s.velocity-old_v)), JOINT_ACCELERATION_LIMIT_RAD_S2*self.s.dt+1e-6)
+                self.assertLessEqual(np.max(np.abs(self.s.velocity-old_v)), TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2*self.s.dt+1e-6)
                 self.assertTrue(np.all(np.abs(self.s.velocity[self.s.dofs]) <= self.s.caps+1e-6))
                 self.assertTrue(np.all(self.s.config.q[self.s.qids] >= self.s.ranges[:,0]-1e-8))
                 self.assertTrue(np.all(self.s.config.q[self.s.qids] <= self.s.ranges[:,1]+1e-8))

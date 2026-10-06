@@ -122,15 +122,30 @@ Actuator duration은 remote binary capability를 자동 검사한다. `--unlimit
 
 ## Bilateral IK
 
-- 14 arm joints
-- one MuJoCo configuration
-- left/right tasks solved in the same QP
-- proximal 90 deg/s
-- wrist 180 deg/s
-- acceleration 90 deg/s²
-- IK tracking rate 1.5 s⁻¹
-- wrist-rotation proximal damping scale 14.0; 1.5 tracking의 translation 응답성을 유지하면서 bilateral wrist-dominance motion-quality gate를 복구
+- 14 arm joints, one MuJoCo configuration, left/right tasks solved in the same QP
+- live position task rate: 12.0 s^-1
+- live orientation task rate: 1.5 s^-1
+- live proximal/wrist velocity caps: 150/180 deg/s
+- live tracking acceleration: 300 deg/s^2
+- shoulder yaw comfort: +/-15 deg, cost 1.2
+- wrist-rotation proximal damping scale: 14.0
+- staged return remains conservative: proximal/wrist 90/180 deg/s, acceleration 90 deg/s^2, jerk 1.28 rad/s^3
+- tracking-to-return prefers a checked 90 deg/s^2 stop; an unsafe slower alternative never discards the verified tracking tail. That inherited tail can retain the tracking envelope until rest. Above-return-cap speed is stopped before seeding the conservative return generator.
 - compute 60 Hz
+
+### 2026-10-06 low-latency split tracking
+
+Status: **OFFLINE_VALIDATED_LIVE_UNVERIFIED**. Detailed gates and limitations: `docs/G1_SPLIT_TRACKING_VALIDATION_20261006.md`.
+
+Single-rate `1.5 -> 3.0` was rejected: pure wrist rotation pulled proximal joints to about 18 deg and violated the existing `<10 deg` wrist-dominance gate. The accepted architecture therefore splits position and orientation into two FrameTasks instead of raising one shared SE(3) gain.
+
+Reference session: `logs/test_results/bimanual/unity_20261006_153832_043972.jsonl`.
+
+Before this change, exact replay of that session produced about 500/516.7 ms simulated wrist lag (L/R), 66.73/70.22 mm mean position error, and 10.963 mm minimum clearance. The implemented split controller replays the same inputs at 150.0/166.7 ms simulated lag, 40.37/42.55 mm mean error, 11.147 mm minimum clearance, 23 braking ticks, zero solver-error ticks, 129.15 deg/s peak proximal speed and 156.91 deg/s peak wrist speed.
+
+The earlier ~105 ms LowState trajectory-alignment estimate is not an independently measured physical/transport delay: the source and PC clocks are not synchronized, and minimum-offset correction removes excess jitter rather than proving absolute latency. Do not add it to the new replay lag to claim 255/272 ms end-to-end performance. The timestamp-based, fixed-comparison-window replay fit is 165/180 ms (L/R); the earlier sample-index method remains 150/166.7 ms. Both are simulated trajectory-alignment estimates, not live G1 measurements. See `docs/G1_SPLIT_TRACKING_VALIDATION_20261006.md`.
+
+Historical September fixtures remain isolated by `backend/tests/bimanual_replay_profiles.py`; exact historical replay still uses the old combined SE(3) task/profile.
 
 ## Camera
 

@@ -63,6 +63,14 @@ Windows build는 `G1VRBuild.BuildWindows()`가 `resources.assets`의 로컬 Meta
 
 ## 3. Ethernet
 
+`START_G1_VR_TELEOP.bat`은 G1 전용 ASIX USB 랜 어댑터가 연결됐지만
+PC 주소가 `192.168.123.99/24`가 아니면 해당 어댑터만 찾아 Windows UAC로
+주소 복구를 요청한다. 복구 뒤 `192.168.123.164:22`가 응답해야 입력·카메라·
+GROOT 실행 단계로 진행한다. G1이 응답하지 않으면 원래 IPv4/DNS 설정으로
+되돌리고 실행을 중단한다. 다른 어댑터에 `192.168.123.x`가 이미 있거나
+ASIX 어댑터가 여러 개면 자동 변경하지 않는다. `--check-only`와 명시적
+`--host` 실행은 자동 변경하지 않는다. UAC를 취소해도 로봇 프로그램은 시작되지 않는다.
+
 필요 시:
 
 ```bat

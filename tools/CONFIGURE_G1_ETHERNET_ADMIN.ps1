@@ -1,4 +1,4 @@
-param([int]$InterfaceIndex = 0)
+param([int]$InterfaceIndex = 0, [switch]$VerifyRobotSsh)
 $ErrorActionPreference = "Stop"
 
 $adapters = @(Get-NetAdapter | Where-Object { $_.InterfaceDescription -like "ASIX AX88772A*" })
@@ -11,6 +11,16 @@ if ($adapters.Count -ne 1)
     throw "Expected one ASIX AX88772A adapter. Check Get-NetAdapter and specify -InterfaceIndex explicitly; no settings were changed."
 }
 $adapter = $adapters[0]
+if ([string]$adapter.Status -ne 'Up')
+{
+    throw 'Dedicated G1 USB Ethernet link is disconnected; no settings were changed.'
+}
+$other_g1_subnet = @(Get-NetIPAddress -AddressFamily IPv4 -PolicyStore ActiveStore -ErrorAction Stop |
+    Where-Object { $_.InterfaceIndex -ne $adapter.ifIndex -and $_.IPAddress -like '192.168.123.*' })
+if ($other_g1_subnet.Count)
+{
+    throw 'Another adapter already uses 192.168.123.x; no settings were changed.'
+}
 $interface_index = $adapter.ifIndex
 $interface_alias = $adapter.Name
 $ip_address = "192.168.123.99"
@@ -22,4 +32,4 @@ if (Test-Path -LiteralPath $status_path) { Remove-Item -LiteralPath $status_path
 
 . (Join-Path $PSScriptRoot 'G1_ETHERNET_DNS.ps1')
 . (Join-Path $PSScriptRoot 'G1_ETHERNET_TRANSACTION.ps1')
-InvokeG1EthernetChange $adapter $false $status_path
+InvokeG1EthernetChange $adapter $false $status_path ([bool]$VerifyRobotSsh)

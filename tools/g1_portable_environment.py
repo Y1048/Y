@@ -1,8 +1,40 @@
 """Path-independent helpers for the current Windows SSH teleop path."""
 from pathlib import Path
 import socket
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def dedicated_wired_adapter_needing_address():
+    """Return the one connected G1 USB adapter's index if its PC address drifted.
+
+    Read-only Windows inspection. A missing or ambiguous adapter is never changed.
+    """
+    query = (
+        "$ErrorActionPreference='Stop'; "
+        "$a=@(Get-NetAdapter | Where-Object { "
+        "$_.InterfaceDescription -like 'ASIX AX88772A*' -and $_.Status -eq 'Up' }); "
+        "if($a.Count -eq 0){exit 0}; "
+        "if($a.Count -ne 1){throw 'Ambiguous connected G1 adapters'}; "
+        "$ip=@(Get-NetIPAddress -InterfaceIndex $a[0].ifIndex "
+        "-AddressFamily IPv4 -PolicyStore ActiveStore | "
+        "Where-Object { $_.IPAddress -eq '192.168.123.99' -and $_.PrefixLength -eq 24 }); "
+        "if($ip.Count -eq 0){Write-Output $a[0].ifIndex}"
+    )
+    completed = subprocess.run(
+        ['powershell.exe', '-NoProfile', '-Command', query],
+        capture_output=True, text=True, encoding='utf-8', timeout=15,
+        check=False,
+    )
+    if completed.returncode:
+        raise RuntimeError('Cannot inspect the G1 USB Ethernet adapter; no network setting changed')
+    result = completed.stdout.strip()
+    if not result:
+        return None
+    if not result.isdecimal() or int(result) <= 0:
+        raise RuntimeError('Invalid G1 USB Ethernet adapter index; no network setting changed')
+    return int(result)
 
 
 def select_robot_host(requested='auto'):

@@ -1,7 +1,7 @@
 # G1 VR Bimanual Teleoperation
 
 현재 기본 경로는 **Quest/Unity → bilateral Mink/MuJoCo → Omni/LowState/camera observation + onboard GROOT actuation**이다.
-`START_G1_VR_TELEOP.bat`이 사용자 진입점이며, 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`을 주면 기존 observation-only 경로를 유지한다.
+`START_G1_VR_TELEOP.bat`이 사용자 진입점이며, 기본적으로 prebuilt Windows player `Builds/Windows/G1Teleop.exe`를 자동 실행하므로 Unity Editor를 열거나 Play를 누를 필요가 없다. 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`을 주면 motor output 없이 player/observation 경로를 유지하고, 개발용 Editor 실행은 `--unity-editor`로 명시한다.
 
 ## Portable Python runtime
 
@@ -133,7 +133,8 @@ Unity PiP는 HMD에 고정된다. Quest yaw/pitch는 Unity loopback UDP 55075에
 
 Python dependency는 프로젝트 안에 포함하지만 다음은 외부 환경이다.
 
-- Unity Editor: `Unity_G1_VR/ProjectSettings/ProjectVersion.txt`의 선언 버전을 자동 탐색 (현재 6000.5.4f1, `UNITY_EXE` override 지원)
+- prebuilt Windows player `Builds/Windows/G1Teleop.exe` (사용자 실행 PC에는 Unity Editor 불필요)
+- Unity Editor는 player를 다시 빌드하거나 `--unity-editor` 개발 fallback을 사용할 때만 필요하며, 프로젝트 선언 버전을 자동 탐색 (`UNITY_EXE` override 지원)
 - Meta Quest/Link 및 드라이버
 - Omni Connect
 - working OpenSSH client: Windows OpenSSH 또는 Git for Windows OpenSSH (`SSH_EXE`로 명시 가능)

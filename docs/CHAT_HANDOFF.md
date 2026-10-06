@@ -1,3 +1,29 @@
+## 2026-10-06 Windows standalone 기본 실행
+
+기본 사용자 실행은 Unity Editor + Play가 아니라 `Builds/Windows/G1Teleop.exe`다.
+`START_G1_VR_TELEOP.bat`가 standalone player를 자동 시작하고, 동일 player가 이미
+실행 중이면 재사용한다. 개발용 기존 Editor 경로는 `--unity-editor`, Unity 없이
+workers만 실행하는 경로는 `--no-unity`로 보존한다. standalone과 Editor가 동시에
+같은 loopback port를 소유하지 않도록 서로 충돌하면 fail closed한다.
+
+2026-10-06 standalone smoke에서 player가 6초 이상 정상 유지됐고 Oculus XR input/display
+provider 등록, display start, eye texture 생성까지 확인했다. G1 motor command는 사용하지
+않았다. smoke log의 유일한 XR 오류 문자열은 optional MRUK PcaCamera 기능의
+`XR_ERROR_FUNCTION_UNSUPPORTED`였고 player 종료이나 G1 teleop runtime 오류는 아니었다.
+
+초기 Windows build의 `resources.assets`에 로컬 Meta DevAgent access token/server address가
+포함된 것을 발견해 해당 build는 그대로 배포하지 않았다. 현재 `Builds/Windows` 전체를
+source 원본 token/address로 재검색해 둘 다 0 occurrence를 확인했고 이 상태에서 standalone
+smoke PASS했다. `G1VRBuild.BuildWindows()`에도 post-build fail-closed sanitization을 추가해
+향후 build가 `resources.assets`의 DevAgent token/address를 유일하게 찾지 못하거나 제거하지
+못하면 성공으로 판정하지 않는다. source의 `DevAgentSettings.asset` 로컬 값은 변경/commit하지
+않는다.
+
+현재 이 PC의 Unity batch mode는 Package Manager IPC startup failure로 새 build가 중단되는
+환경 이슈가 있다. `-noUpm`은 OVR/UGUI/Newtonsoft package assembly reference가 빠져 사용할
+수 없다. 따라서 현재 검증된 prebuilt player를 기본 사용하며, UPM이 정상화된 환경에서
+`G1VRBuild.BuildWindows()`로 재빌드한다.
+
 ## 2026-10-02 Quest PTZ intermittent 원인 및 분리 수정
 
 기존 PTZ는 `Unity -> Omni gateway -> UDP 55070 -> g1_omni_heading_controller.py -> localhost 15102 -> camera follower`에 의존했다. 따라서 GROOT heading controller가 없는 camera-only/`--no-groot-actuation` 세션, heading controller 시작 전, Omni WebSocket/보정이 준비되지 않은 구간에서는 follower가 살아 있어도 Quest pose `rx=0` 또는 rejection이 되어 카메라가 움직이지 않았다. 이 시작 순서 의존성이 "될 때도 있고 안 될 때도"의 소프트웨어 원인이었다.
@@ -48,7 +74,7 @@ BAT의 위임 경로 launcher에 실행 명령을 표시하며 자동으로 카�
 
 # G1 Teleop Current Handoff
 
-최종 갱신: 2026-10-02
+최종 갱신: 2026-10-06
 
 ## 현재 실행
 
@@ -58,7 +84,7 @@ START_G1_VR_TELEOP.bat
 
 BAT는 bundled `runtime/python/python.exe`로 `tools/G1_PORTABLE.py teleop`을 호출하는 3줄짜리 shim이다.
 
-일반 실행은 기존 PC/Unity/camera worker와 함께 onboard GROOT pair도 통합한다. 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구하며, 이후 사용자가 별도 SSH 창 두 개를 열 필요는 없다.
+기본 사용자 경로는 Unity Editor가 아니라 prebuilt `Builds/Windows/G1Teleop.exe`다. BAT가 standalone player를 자동 실행하므로 Play 버튼이 필요 없고 사용자 PC에는 Unity Editor 설치가 필요 없다. `--unity-editor`는 개발 fallback으로만 보존한다. 일반 실행은 camera worker와 onboard GROOT pair도 통합하며, 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구한다.
 
 2026-10-01 실제 G1 로그에서 첫 통합 버전의 원격 실행 실패 원인을 확인했다. 기존 launcher가 `ssh -T`와 remote background child를 사용해 두 프로그램 모두 interactive-terminal 검사에서 종료됐다: actuator는 `walk keyboard requires an interactive terminal`, heading controller는 `controller requires an interactive terminal`이었다. Portable Python 자체의 문제가 아니다.
 
@@ -134,7 +160,7 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 
 ## External dependencies
 
-Unity Editor, working OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. Unity launcher는 하드코딩된 버전 상수 대신 `Unity_G1_VR/ProjectSettings/ProjectVersion.txt`의 `m_EditorVersion`을 자동 탐색하며 `UNITY_EXE` override를 지원한다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency만 project-local로 완전히 고정한다.
+사용자 실행 PC의 외부 dependency는 working OpenSSH, Quest/Link tooling·driver, Omni Connect, G1 network다. Unity Editor는 prebuilt Windows player를 다시 빌드하거나 `--unity-editor` 개발 fallback을 사용할 때만 필요하다. Editor fallback은 `ProjectVersion.txt`의 `m_EditorVersion`을 자동 탐색하며 `UNITY_EXE` override를 지원한다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency는 project-local로 고정한다.
 
 ## Upper-body simplification discussion
 

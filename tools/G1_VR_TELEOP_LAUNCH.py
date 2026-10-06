@@ -9,6 +9,7 @@ import shlex
 import socket
 import subprocess
 import sys
+import time
 from g1_ssh_login import ensure_login, ssh_executable
 from g1_camera_ssh import check_environment as check_camera_environment
 
@@ -19,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INTEGRATED_WORKERS = observation.WORKERS + ('lowstate',)
 GROOT_LAUNCHER = ROOT / 'tools/G1_GROOT_REMOTE_LAUNCH.py'
 UNITY_PROJECT = ROOT / 'Unity_G1_VR'
+UNITY_PLAYER = ROOT / 'Builds/Windows/G1Teleop.exe'
 
 
 def windows_arguments(command_line):
@@ -43,7 +45,7 @@ def process_arguments():
     query = ("$ErrorActionPreference='Stop'; "
              "[Console]::OutputEncoding=[Text.UTF8Encoding]::new(); "
              "@(Get-CimInstance Win32_Process | Where-Object { "
-             "$_.Name -in @('python.exe','pythonw.exe','ssh.exe','Unity.exe') } | "
+             "$_.Name -in @('python.exe','pythonw.exe','ssh.exe','Unity.exe','G1Teleop.exe') } | "
              "Select-Object ProcessId,ParentProcessId,ExecutablePath,CommandLine) | ConvertTo-Json -Compress")
     result = subprocess.run(['powershell.exe', '-NoProfile', '-Command', query],
                             capture_output=True, text=True, encoding='utf-8',
@@ -99,6 +101,48 @@ def confirm_groot_actuation():
     answer = input('Type ACTUATE to start the integrated GROOT heading/controller pair: ').strip()
     if answer != 'ACTUATE':
         raise RuntimeError('GROOT actuation was not confirmed; nothing new was started.')
+
+
+def unity_player_running(rows, player=UNITY_PLAYER):
+    """Reuse only the standalone player from this portable folder."""
+    target = normalized_path(player)
+    matches = []
+    for argv in rows:
+        if not argv or Path(argv[0]).name.casefold() != player.name.casefold():
+            continue
+        if normalized_path(argv[0]) == target:
+            matches.append(argv)
+    if len(matches) > 1:
+        raise RuntimeError('Duplicate G1Teleop players found; close extras first.')
+    return bool(matches)
+
+
+def validate_unity_player(player=UNITY_PLAYER):
+    player = Path(player)
+    data_dir = player.with_name(player.stem + '_Data')
+    unity_player = player.parent / 'UnityPlayer.dll'
+    missing = [
+        str(path) for path in (player, data_dir, unity_player)
+        if not (path.is_file() if path.suffix else path.is_dir())
+    ]
+    if missing:
+        raise RuntimeError(
+            'Windows standalone build is incomplete. Missing: ' + ', '.join(missing))
+    return player.resolve()
+
+
+def start_unity_player(player=UNITY_PLAYER):
+    """Start the standalone player outside the quiet-worker job object."""
+    player = validate_unity_player(player)
+    logdir = ROOT / 'logs/test_results/unity_player'
+    logdir.mkdir(parents=True, exist_ok=True)
+    logfile = logdir / (time.strftime('%Y%m%d_%H%M%S') + '.log')
+    subprocess.Popen(
+        [str(player), '-logFile', str(logfile)],
+        cwd=player.parent,
+        creationflags=(subprocess.DETACHED_PROCESS |
+                       subprocess.CREATE_NEW_PROCESS_GROUP))
+    return logfile
 
 
 def unity_project_running(rows, project=UNITY_PROJECT):
@@ -286,17 +330,30 @@ def main(argv=None):
                         help='Compatibility flag; this launcher never starts a G1 audit receiver.')
     parser.add_argument('--show-consoles', action='store_true', help='Show legacy diagnostic windows')
     parser.add_argument('--no-unity', action='store_true',
-                        help='Start/reuse observation workers without opening the Unity editor.')
+                        help='Start/reuse workers without the standalone player or Unity editor.')
+    parser.add_argument('--unity-editor', action='store_true',
+                        help='Developer fallback: open/reuse Unity Editor instead of G1Teleop.exe.')
     parser.add_argument('--no-groot-actuation', action='store_true',
                         help='Keep the integrated launch observation-only; do not start GROOT motor output.')
     args = parser.parse_args(argv)
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', args.host):
         parser.error('host must be a hostname or IPv4 address')
+    if args.no_unity and args.unity_editor:
+        parser.error('--no-unity and --unity-editor cannot be used together')
     if os.name != 'nt':
         raise RuntimeError('Use this launcher on Windows')
     args.host = select_robot_host(args.host)
     process_rows = process_arguments()
-    has_unity = unity_project_running(process_rows)
+    has_editor = unity_project_running(process_rows)
+    has_player = unity_player_running(process_rows)
+    if not args.no_unity:
+        if args.unity_editor and has_player:
+            raise RuntimeError(
+                'G1Teleop.exe is already running; close it before using --unity-editor.')
+        if not args.unity_editor and has_editor:
+            raise RuntimeError(
+                'Unity_G1_VR editor is open. Close it before standalone launch, '
+                'or use --unity-editor for development.')
     existing = running_workers([row for row in process_rows
                                 if row and Path(row[0]).name.lower() != 'ssh.exe'], ROOT, args.host)
     camera_rows = [row for row in process_rows if any(
@@ -313,10 +370,14 @@ def main(argv=None):
     env = observation.engine_environment()
     preflight(plan, env)
     unity_editor = None
+    unity_player = None
     if not args.no_unity:
-        validate_unity_project()
-        if not has_unity:
-            unity_editor = resolve_unity_editor()
+        if args.unity_editor:
+            validate_unity_project()
+            if not has_editor:
+                unity_editor = resolve_unity_editor()
+        elif not has_player:
+            unity_player = validate_unity_player()
     if args.no_groot_actuation:
         print('G1 VR TELEOP: observation + camera; this invocation will not start GROOT motor output.')
     else:
@@ -330,21 +391,29 @@ def main(argv=None):
     print('[START] ' + (', '.join(plan) or 'none; existing processes are kept'))
     if args.no_unity:
         print('[UNITY] disabled by --no-unity')
-    elif has_unity:
-        print('[UNITY] existing Unity_G1_VR editor kept')
+    elif args.unity_editor:
+        if has_editor:
+            print('[UNITY] existing Unity_G1_VR editor kept')
+        else:
+            print('[UNITY] developer fallback: open Unity_G1_VR with Unity '
+                  + unity_project_version())
+    elif has_player:
+        print('[UNITY] existing standalone G1Teleop.exe kept')
     else:
-        print('[UNITY] open Unity_G1_VR with Unity ' + unity_project_version())
+        print('[UNITY] start standalone ' + str(UNITY_PLAYER))
     print('[QUEST CAMERA] Automatic pan/tilt follower via independent Unity->SSH pose bridge:')
     print('  Unity 127.0.0.1:55075 -> camera_follow SSH stdin -> G1 loopback:15103')
     print('  receive_mink_ik_udp.py --camera-follow --pan-sign 1 --no-camera-stream --port 15104 --quest-port 15103')
     print('  Camera PTZ no longer depends on the GROOT heading controller or UDP 55070 ownership.')
     if args.check_only:
-        print('PASS: launch plan checked; no Unity, workers, camera SDK initialization, SSH login, or GROOT actuation. Auto mode probes TCP 22 only.')
+        print('PASS: launch plan checked; no player/editor, workers, camera SDK initialization, SSH login, or GROOT actuation. Auto mode probes TCP 22 only.')
         return 0
     if 'groot' in plan:
         confirm_groot_actuation()
     if 'lowstate' in plan or 'camera_follow' in plan:
         ensure_login(args.host)
+    if unity_player is not None:
+        start_unity_player(unity_player)
     if unity_editor is not None:
         # This must precede run_workers(): that function binds its own process to
         # a kill-on-close job, while Unity must remain independently user-owned.
@@ -379,9 +448,12 @@ def main(argv=None):
         subprocess.Popen(
             command, cwd=ROOT, env=env,
             creationflags=subprocess.CREATE_NEW_CONSOLE)
-    print('Unity_G1_VR is open. Press Play in Unity, then use Quest and Omni Connect.')
+    if args.unity_editor:
+        print('Unity_G1_VR editor is open. Press Play, then use Quest and Omni Connect.')
+    elif not args.no_unity:
+        print('G1Teleop.exe is running; no Unity Play action is required.')
     print('Input compute/send: 60 Hz; observation display: 100 Hz; camera: 30 fps target.')
-    print('Close owned worker/GROOT windows to stop them. Unity Play is not changed automatically.')
+    print('Close owned worker/GROOT windows for controlled shutdown; close G1Teleop.exe separately.')
     return 0
 
 

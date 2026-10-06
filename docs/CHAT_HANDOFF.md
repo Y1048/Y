@@ -84,7 +84,7 @@ START_G1_VR_TELEOP.bat
 
 BAT는 bundled `runtime/python/python.exe`로 `tools/G1_PORTABLE.py teleop`을 호출하는 3줄짜리 shim이다.
 
-기본 사용자 경로는 Unity Editor가 아니라 prebuilt `Builds/Windows/G1Teleop.exe`다. BAT가 standalone player를 자동 실행하므로 Play 버튼이 필요 없고 사용자 PC에는 Unity Editor 설치가 필요 없다. `--unity-editor`는 개발 fallback으로만 보존한다. 일반 실행은 camera worker와 onboard GROOT pair도 통합하며, 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구한다.
+2026-10-06 standalone 실기에서 HMD tracking, Oculus XR, Insta360/PiP는 정상이나 `OVRHand` 좌/우가 세션 전체에서 `tracked=false`, `high_confidence=false`였고 시작 로그에 `Failed to set multimodal hands and controllers mode!`가 기록됐다. 따라서 Windows standalone은 기본 teleop 경로에서 제외하고 `--standalone` 진단용으로만 유지한다. 현재 기본 사용자 경로는 Unity Editor를 launcher가 자동 실행하고 `Library/G1TeleopAutoPlay.request`를 Editor-only helper가 소비해 자동 Play mode로 진입하는 방식이다. 사용자는 Play 버튼을 누를 필요가 없다. 최종 제품 목표는 Quest APK가 HMD/양손 tracking을 on-device에서 수행해 PC Portable로 pose를 전송하도록 바꾸어 운영 PC의 Unity Editor 의존성을 제거하는 것이다. 일반 실행은 camera worker와 onboard GROOT pair도 통합하며, 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구한다.
 
 2026-10-01 실제 G1 로그에서 첫 통합 버전의 원격 실행 실패 원인을 확인했다. 기존 launcher가 `ssh -T`와 remote background child를 사용해 두 프로그램 모두 interactive-terminal 검사에서 종료됐다: actuator는 `walk keyboard requires an interactive terminal`, heading controller는 `controller requires an interactive terminal`이었다. Portable Python 자체의 문제가 아니다.
 
@@ -160,7 +160,7 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 
 ## External dependencies
 
-사용자 실행 PC의 외부 dependency는 working OpenSSH, Quest/Link tooling·driver, Omni Connect, G1 network다. Unity Editor는 prebuilt Windows player를 다시 빌드하거나 `--unity-editor` 개발 fallback을 사용할 때만 필요하다. Editor fallback은 `ProjectVersion.txt`의 `m_EditorVersion`을 자동 탐색하며 `UNITY_EXE` override를 지원한다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency는 project-local로 고정한다.
+현재 Quest Link 양손 실기 개발 경로의 외부 dependency는 Unity Editor, working OpenSSH, Quest/Link tooling·driver, Omni Connect, G1 network다. launcher는 `ProjectVersion.txt`의 `m_EditorVersion`을 자동 탐색하며 `UNITY_EXE` override를 지원한다. 사용자는 Editor를 직접 조작하지 않는다. `--standalone`은 손 tracking이 필요 없는 진단용이다. 최종 운영 목표는 Quest APK on-device tracking으로 Unity Editor를 runtime dependency에서 제거하는 것이다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency는 project-local로 고정한다.
 
 ## Upper-body simplification discussion
 

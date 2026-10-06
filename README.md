@@ -1,7 +1,7 @@
 # G1 VR Bimanual Teleoperation
 
 현재 기본 경로는 **Quest/Unity → bilateral Mink/MuJoCo → Omni/LowState/camera observation + onboard GROOT actuation**이다.
-`START_G1_VR_TELEOP.bat`이 사용자 진입점이며, 기본적으로 prebuilt Windows player `Builds/Windows/G1Teleop.exe`를 자동 실행하므로 Unity Editor를 열거나 Play를 누를 필요가 없다. 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`을 주면 motor output 없이 player/observation 경로를 유지하고, 개발용 Editor 실행은 `--unity-editor`로 명시한다.
+`START_G1_VR_TELEOP.bat`이 사용자 진입점이다. 현재 실기 개발 경로는 **Quest Link hand tracking 지원을 위해 Unity Editor를 자동 실행하고 Play mode도 자동 시작**하므로 사용자가 Editor를 조작하거나 Play를 누를 필요는 없다. 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`은 motor output 없이 Editor/observation 경로를 유지한다. Windows standalone player는 `--standalone` 진단용으로만 남긴다. 최종 제품 경로는 Quest APK가 HMD/양손 tracking을 직접 수행하고 PC Portable로 pose를 전송해 **운영 PC의 Unity Editor 의존성을 제거**하는 것이다.
 
 ## Portable Python runtime
 
@@ -133,8 +133,9 @@ Unity PiP는 HMD에 고정된다. Quest yaw/pitch는 Unity loopback UDP 55075에
 
 Python dependency는 프로젝트 안에 포함하지만 다음은 외부 환경이다.
 
-- prebuilt Windows player `Builds/Windows/G1Teleop.exe` (사용자 실행 PC에는 Unity Editor 불필요)
-- Unity Editor는 player를 다시 빌드하거나 `--unity-editor` 개발 fallback을 사용할 때만 필요하며, 프로젝트 선언 버전을 자동 탐색 (`UNITY_EXE` override 지원)
+- 현재 Quest Link 양손 실기 경로에는 Unity Editor가 필요하며 launcher가 프로젝트 선언 버전을 자동 탐색한다 (`UNITY_EXE` override 지원)
+- `Builds/Windows/G1Teleop.exe`는 HMD/카메라 standalone 진단용이며 Quest Link hand tracking의 기본 경로가 아니다
+- 최종 운영 목표는 Quest APK on-device hand/HMD tracking + PC Portable transport로 Unity Editor를 운영 dependency에서 제거하는 것이다
 - Meta Quest/Link 및 드라이버
 - Omni Connect
 - working OpenSSH client: Windows OpenSSH 또는 Git for Windows OpenSSH (`SSH_EXE`로 명시 가능)

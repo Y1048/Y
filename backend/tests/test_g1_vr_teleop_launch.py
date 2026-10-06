@@ -252,6 +252,15 @@ class UnityLaunchTests(unittest.TestCase):
         self.assertEqual(ROOT, spawn.call_args.kwargs['cwd'])
         self.assertTrue(spawn.call_args.kwargs['creationflags'] & subprocess.DETACHED_PROCESS)
 
+    def test_auto_play_request_is_project_local_and_timestamped(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / 'UnityProject'
+            request = launcher.request_unity_auto_play(project, now=1234567890)
+            self.assertEqual(
+                project / 'Library/G1TeleopAutoPlay.request',
+                request)
+            self.assertEqual('1234567890', request.read_text(encoding='ascii'))
+
     def test_unity_environment_fills_process_local_windows_defaults(self):
         with tempfile.TemporaryDirectory() as temporary:
             local = Path(temporary)
@@ -313,6 +322,8 @@ class OrchestrationTests(unittest.TestCase):
         unity_start = stack.enter_context(mock.patch.object(launcher, 'start_unity'))
         player_start = stack.enter_context(
             mock.patch.object(launcher, 'start_unity_player'))
+        auto_play = stack.enter_context(
+            mock.patch.object(launcher, 'request_unity_auto_play'))
         confirm = stack.enter_context(
             mock.patch.object(launcher, 'confirm_groot_actuation'))
         spawn = stack.enter_context(mock.patch.object(launcher.subprocess, 'Popen'))
@@ -320,17 +331,18 @@ class OrchestrationTests(unittest.TestCase):
                                                    side_effect=AssertionError('Unexpected subprocess execution')))
         result = launcher.main(['--show-consoles'] + list(args))
         run.assert_not_called()
-        return result, spawn, check, confirm, environment, unity_start, player_start
+        return result, spawn, check, confirm, environment, unity_start, player_start, auto_play
 
     def test_fresh_start_adds_groot_after_explicit_confirmation(self):
-        result, spawn, check, confirm, environment, unity_start, player_start = self.invoke()
+        result, spawn, check, confirm, environment, unity_start, player_start, auto_play = self.invoke()
         self.assertEqual(0, result)
         check.assert_called_once_with(
             ['send', 'omni', 'arm', 'lowstate', 'camera', 'groot', 'camera_follow'], environment)
         confirm.assert_called_once_with()
         self.assertEqual(7, spawn.call_count)
-        unity_start.assert_not_called()
-        player_start.assert_called_once_with(launcher.UNITY_PLAYER)
+        unity_start.assert_called_once_with(Path(r'C:\Unity\Unity.exe'))
+        player_start.assert_not_called()
+        auto_play.assert_called_once_with()
         commands = [call.args[0] for call in spawn.call_args_list]
         self.assertEqual(
             ['send', 'omni', 'arm', 'lowstate'],
@@ -356,26 +368,28 @@ class OrchestrationTests(unittest.TestCase):
     def test_all_running_produces_no_new_windows(self):
         rows = [worker_row(worker) for worker in launcher.INTEGRATED_WORKERS]
         rows.append([sys.executable, str(TOOLS/'G1_CAMERA_FOLLOW_LAUNCH.py'), '--host', HOST])
-        result, spawn, check, confirm, environment, unity_start, player_start = self.invoke(
-            rows, camera=True, player=True, groot=True)
+        result, spawn, check, confirm, environment, unity_start, player_start, auto_play = self.invoke(
+            rows, camera=True, unity=True, groot=True)
         self.assertEqual(0, result)
         check.assert_called_once_with([], environment)
         confirm.assert_not_called()
         spawn.assert_not_called()
         unity_start.assert_not_called()
         player_start.assert_not_called()
+        auto_play.assert_called_once_with()
 
     def test_closed_network_host_reaches_all_integrated_launches(self):
-        result, spawn, _, _, _, _, _ = self.invoke(args=['--host', '192.168.10.165'])
+        result, spawn, _, _, _, _, _, auto_play = self.invoke(args=['--host', '192.168.10.165'])
         self.assertEqual(0, result)
         commands = [call.args[0] for call in spawn.call_args_list]
         for command in commands[:4]:
             self.assertEqual('192.168.10.165', launcher.option(command, '--host'))
         self.assertEqual('192.168.10.165', launcher.option(commands[4], '--robot-host'))
         self.assertEqual('192.168.10.165', launcher.option(commands[5], '--host'))
+        auto_play.assert_called_once_with()
 
     def test_partial_start_only_creates_missing_workers(self):
-        result, spawn, check, confirm, environment, _, _ = self.invoke(
+        result, spawn, check, confirm, environment, _, _, auto_play = self.invoke(
             [worker_row('send'), worker_row('arm')], camera=True, groot=True)
         self.assertEqual(0, result)
         check.assert_called_once_with(['omni', 'lowstate', 'camera_follow'], environment)
@@ -383,9 +397,10 @@ class OrchestrationTests(unittest.TestCase):
         self.assertEqual(
             ['omni', 'lowstate', 'camera_follow'],
             [launcher.option(call.args[0], '--worker') or 'camera_follow' for call in spawn.call_args_list])
+        auto_play.assert_called_once_with()
 
     def test_check_only_never_confirms_or_starts_groot(self):
-        result, spawn, check, confirm, _, unity_start, player_start = self.invoke(
+        result, spawn, check, confirm, _, unity_start, player_start, auto_play = self.invoke(
             args=['--check-only'])
         self.assertEqual(0, result)
         check.assert_called_once()
@@ -393,40 +408,53 @@ class OrchestrationTests(unittest.TestCase):
         spawn.assert_not_called()
         unity_start.assert_not_called()
         player_start.assert_not_called()
+        auto_play.assert_not_called()
 
     def test_no_groot_actuation_preserves_old_observation_only_start(self):
-        result, spawn, check, confirm, environment, _, player_start = self.invoke(
+        result, spawn, check, confirm, environment, unity_start, player_start, auto_play = self.invoke(
             args=['--no-groot-actuation'])
         self.assertEqual(0, result)
         check.assert_called_once_with(
             ['send', 'omni', 'arm', 'lowstate', 'camera', 'camera_follow'], environment)
         confirm.assert_not_called()
         self.assertEqual(6, spawn.call_count)
-        player_start.assert_called_once_with(launcher.UNITY_PLAYER)
+        unity_start.assert_called_once_with(Path(r'C:\Unity\Unity.exe'))
+        player_start.assert_not_called()
+        auto_play.assert_called_once_with()
         self.assertFalse(any(
             str(launcher.GROOT_LAUNCHER) in call.args[0]
             for call in spawn.call_args_list))
 
     def test_no_unity_skips_resolution_and_launch(self):
-        result, _, _, _, _, unity_start, player_start = self.invoke(args=['--no-unity'])
+        result, _, _, _, _, unity_start, player_start, auto_play = self.invoke(args=['--no-unity'])
         self.assertEqual(0, result)
         unity_start.assert_not_called()
         player_start.assert_not_called()
+        auto_play.assert_not_called()
 
     def test_unity_editor_flag_uses_editor_fallback_only(self):
-        result, _, _, _, _, unity_start, player_start = self.invoke(
+        result, _, _, _, _, unity_start, player_start, auto_play = self.invoke(
             args=['--unity-editor'])
         self.assertEqual(0, result)
         unity_start.assert_called_once_with(Path(r'C:\Unity\Unity.exe'))
         player_start.assert_not_called()
+        auto_play.assert_called_once_with()
 
-    def test_default_standalone_refuses_open_editor(self):
-        with self.assertRaisesRegex(RuntimeError, 'editor is open'):
-            self.invoke(unity=True)
+    def test_standalone_flag_uses_player_without_auto_play(self):
+        result, _, _, _, _, unity_start, player_start, auto_play = self.invoke(
+            args=['--standalone'])
+        self.assertEqual(0, result)
+        unity_start.assert_not_called()
+        player_start.assert_called_once_with(launcher.UNITY_PLAYER)
+        auto_play.assert_not_called()
 
-    def test_editor_fallback_refuses_running_player(self):
+    def test_standalone_refuses_open_editor(self):
+        with self.assertRaisesRegex(RuntimeError, 'editor is already open'):
+            self.invoke(unity=True, args=['--standalone'])
+
+    def test_editor_default_refuses_running_player(self):
         with self.assertRaisesRegex(RuntimeError, 'G1Teleop.exe is already running'):
-            self.invoke(player=True, args=['--unity-editor'])
+            self.invoke(player=True)
 
     def test_conflicting_inventory_fails_before_any_spawn(self):
         with mock.patch.object(launcher, 'select_robot_host', return_value=HOST), \

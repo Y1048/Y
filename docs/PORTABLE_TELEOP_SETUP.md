@@ -15,8 +15,9 @@ runtime/python/RUNTIME_MANIFEST.json
 ## 여전히 외부에 필요한 것
 
 - Windows 11 x64
-- prebuilt Windows player `Builds/Windows/G1Teleop.exe` 및 동반 `G1Teleop_Data/`, `UnityPlayer.dll`
-- Unity Editor는 **사용자 실행 PC에는 불필요**하며 Windows player를 다시 빌드하는 개발 PC에만 필요
+- 현재 Quest Link 양손 실기에는 프로젝트 `ProjectVersion.txt`의 Unity Editor가 필요하다. launcher가 자동 탐색하며 사용자가 Editor를 직접 조작할 필요는 없다
+- prebuilt Windows player `Builds/Windows/G1Teleop.exe` 및 동반 파일은 standalone 진단용으로 유지한다
+- 최종 운영 구조는 Quest APK가 손/HMD tracking을 직접 수집해 PC Portable로 전송하여 운영 PC의 Unity Editor 의존성을 제거하는 것이다
 - Meta Quest / Link 환경과 필요한 드라이버
 - Omni Connect
 - working OpenSSH client (`ssh.exe`, `ssh-keygen.exe`): Windows OpenSSH 또는 Git for Windows OpenSSH
@@ -56,7 +57,7 @@ START_G1_VR_TELEOP.bat
 START_G1_VR_TELEOP.bat --check-only
 ```
 
-BAT는 환경 로직을 갖지 않고 Embedded Python dispatcher만 호출한다. 기본 실행은 **Unity Editor를 열지 않고 `Builds/Windows/G1Teleop.exe`를 자동 실행**하므로 사용자가 Play를 누를 필요가 없다. GROOT supervisor를 새로 시작해야 할 때만 `ACTUATE` 확인을 요구한다. motor output 없이 player/observation만 실행하려면 `START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. 개발 시 기존 Editor 경로가 필요하면 `START_G1_VR_TELEOP.bat --unity-editor`를 사용한다. `--check-only`은 GROOT remote login이나 actuation을 수행하지 않는다.
+BAT는 환경 로직을 갖지 않고 Embedded Python dispatcher만 호출한다. 기본 실행은 **Unity Editor를 자동 실행하고 launcher 요청을 받은 Editor가 자동으로 Play mode에 진입**하므로 사용자가 Play를 누를 필요가 없다. GROOT supervisor를 새로 시작해야 할 때만 `ACTUATE` 확인을 요구한다. motor output 없이 Editor/observation만 실행하려면 `START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. `--standalone`은 손 tracking이 필요 없는 Windows player 진단용이다. `--check-only`은 Editor/worker/GROOT를 시작하지 않는다.
 
 Windows build는 `G1VRBuild.BuildWindows()`가 `resources.assets`의 로컬 Meta DevAgent access token/server address를 post-build 단계에서 제거하고, 유일 occurrence를 검증하지 못하면 fail closed한다. `DevAgentSettings.asset`의 로컬 값 자체는 build 과정에서 수정하지 않는다.
 

@@ -77,7 +77,7 @@ class TrackingProfile:
     wrist_priority_margin_full_rad: float = math.radians(28.0)
     wrist_priority_clearance_min_m: float = .005
     wrist_priority_clearance_full_m: float = .025
-    wrist_priority_proximal_damping_scale: float = 5.0
+    wrist_priority_proximal_damping_scale: float = 14.0
 
     # Collision and stopping parameters.
     collision_minimum_m: float = .006

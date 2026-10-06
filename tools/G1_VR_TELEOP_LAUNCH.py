@@ -18,7 +18,6 @@ from g1_portable_environment import select_robot_host
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATED_WORKERS = observation.WORKERS + ('lowstate',)
 GROOT_LAUNCHER = ROOT / 'tools/G1_GROOT_REMOTE_LAUNCH.py'
-UNITY_VERSION = '6000.5.4f1'
 UNITY_PROJECT = ROOT / 'Unity_G1_VR'
 
 
@@ -138,14 +137,32 @@ def unity_environment(environment=None):
     return env
 
 
-def resolve_unity_editor(environment=None):
-    """Resolve the pinned Unity editor without starting Unity or Unity Hub."""
+def unity_project_version(project=UNITY_PROJECT):
+    """Read the editor version declared by the Unity project itself."""
+    version_file = project / 'ProjectSettings/ProjectVersion.txt'
+    if not version_file.is_file():
+        raise RuntimeError('Unity_G1_VR project metadata is missing')
+    match = re.search(
+        r'^m_EditorVersion:\s*([^\s]+)\s*$',
+        version_file.read_text(encoding='utf-8'),
+        flags=re.MULTILINE)
+    if not match:
+        raise RuntimeError('Unity_G1_VR ProjectVersion.txt has no m_EditorVersion')
+    version = match.group(1)
+    if not re.fullmatch(r'[0-9A-Za-z][0-9A-Za-z._-]{0,63}', version):
+        raise RuntimeError('Unity_G1_VR declares an invalid editor version')
+    return version
+
+
+def resolve_unity_editor(environment=None, project=UNITY_PROJECT):
+    """Resolve the editor declared by ProjectVersion.txt without launching Unity Hub."""
     environment = unity_environment(environment)
+    version = unity_project_version(project)
     candidates = []
     if environment.get('UNITY_EXE'):
         candidates.append(Path(environment['UNITY_EXE']))
 
-    suffix = Path('Unity/Hub/Editor') / UNITY_VERSION / 'Editor/Unity.exe'
+    suffix = Path('Unity/Hub/Editor') / version / 'Editor/Unity.exe'
     for key in ('ProgramW6432', 'ProgramFiles'):
         value = environment.get(key)
         if value:
@@ -159,16 +176,13 @@ def resolve_unity_editor(environment=None):
     for candidate in candidates:
         if candidate.is_file():
             return candidate.resolve()
-    raise RuntimeError('Unity %s was not found. Install it with Unity Hub or set UNITY_EXE.' % UNITY_VERSION)
+    raise RuntimeError(
+        'Unity %s declared by ProjectVersion.txt was not found. '
+        'Install it with Unity Hub or set UNITY_EXE.' % version)
 
 
 def validate_unity_project(project=UNITY_PROJECT):
-    version_file = project / 'ProjectSettings/ProjectVersion.txt'
-    if not version_file.is_file():
-        raise RuntimeError('Unity_G1_VR project metadata is missing')
-    expected = 'm_EditorVersion: ' + UNITY_VERSION
-    if expected not in version_file.read_text(encoding='utf-8'):
-        raise RuntimeError('Unity_G1_VR is not pinned to Unity ' + UNITY_VERSION)
+    return unity_project_version(project)
 
 
 def start_unity(editor, project=UNITY_PROJECT):
@@ -318,7 +332,7 @@ def main(argv=None):
     elif has_unity:
         print('[UNITY] existing Unity_G1_VR editor kept')
     else:
-        print('[UNITY] open Unity_G1_VR with Unity ' + UNITY_VERSION)
+        print('[UNITY] open Unity_G1_VR with Unity ' + unity_project_version())
     print('[QUEST CAMERA] Automatic pan/tilt follower via independent Unity->SSH pose bridge:')
     print('  Unity 127.0.0.1:55075 -> camera_follow SSH stdin -> G1 loopback:15103')
     print('  receive_mink_ik_udp.py --camera-follow --pan-sign 1 --no-camera-stream --port 15104 --quest-port 15103')

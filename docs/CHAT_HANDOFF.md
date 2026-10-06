@@ -100,7 +100,8 @@ Actuator duration은 remote binary capability를 자동 검사한다. `--unlimit
 - proximal 90 deg/s
 - wrist 180 deg/s
 - acceleration 90 deg/s²
-- IK tracking rate 1.5 s⁻¹ (live-test candidate; existing motion-quality gates still reflect 1.0)
+- IK tracking rate 1.5 s⁻¹
+- wrist-rotation proximal damping scale 14.0; 1.5 tracking의 translation 응답성을 유지하면서 bilateral wrist-dominance motion-quality gate를 복구
 - compute 60 Hz
 
 ## Camera
@@ -133,7 +134,7 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 
 ## External dependencies
 
-Unity 6000.5.4f1, working OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency만 project-local로 완전히 고정한다.
+Unity Editor, working OpenSSH, Quest tooling/driver, Omni Connect, G1 network는 외부 dependency다. Unity launcher는 하드코딩된 버전 상수 대신 `Unity_G1_VR/ProjectSettings/ProjectVersion.txt`의 `m_EditorVersion`을 자동 탐색하며 `UNITY_EXE` override를 지원한다. OpenSSH는 Windows/Git 구현을 health-check해 선택하며 `SSH_EXE` override를 지원한다. Python package dependency만 project-local로 완전히 고정한다.
 
 ## Upper-body simplification discussion
 

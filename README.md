@@ -115,6 +115,7 @@ READY heartbeat를 받은 순간의 현재 Omni yaw로 fallback한다. Quest pit
 - wrist joints: 180 deg/s
 - joint acceleration: 90 deg/s²
 - IK tracking rate constant: 1.5 s⁻¹
+- wrist-rotation proximal damping scale: 14.0
 - compute/send: 60 Hz
 - observation display: 100 Hz
 
@@ -132,7 +133,7 @@ Unity PiP는 HMD에 고정된다. Quest yaw/pitch는 Unity loopback UDP 55075에
 
 Python dependency는 프로젝트 안에 포함하지만 다음은 외부 환경이다.
 
-- Unity 6000.5.4f1
+- Unity Editor: `Unity_G1_VR/ProjectSettings/ProjectVersion.txt`의 선언 버전을 자동 탐색 (현재 6000.5.4f1, `UNITY_EXE` override 지원)
 - Meta Quest/Link 및 드라이버
 - Omni Connect
 - working OpenSSH client: Windows OpenSSH 또는 Git for Windows OpenSSH (`SSH_EXE`로 명시 가능)

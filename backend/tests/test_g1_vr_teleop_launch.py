@@ -157,13 +157,46 @@ class UnityLaunchTests(unittest.TestCase):
 
     def test_editor_resolution_uses_system_drive_program_files_fallback(self):
         expected = (Path(r'C:\Program Files') / 'Unity/Hub/Editor' /
-                    launcher.UNITY_VERSION / 'Editor/Unity.exe')
+                    launcher.unity_project_version() / 'Editor/Unity.exe')
         environment = {'SystemDrive': 'C:', 'USERPROFILE': r'C:\NoUnityHere'}
+        version_file = (launcher.UNITY_PROJECT
+                        / 'ProjectSettings/ProjectVersion.txt')
+        valid_paths = {
+            str(expected).casefold(),
+            str(version_file).casefold(),
+        }
         with mock.patch.object(
                 Path, 'is_file', autospec=True,
-                side_effect=lambda path: str(path).casefold() == str(expected).casefold()):
+                side_effect=lambda path: str(path).casefold() in valid_paths):
             resolved = launcher.resolve_unity_editor(environment)
         self.assertEqual(expected.resolve(), resolved)
+
+    def test_editor_version_comes_from_project_metadata(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = root / 'UnityProject'
+            settings = project / 'ProjectSettings'
+            settings.mkdir(parents=True)
+            (settings / 'ProjectVersion.txt').write_text(
+                'm_EditorVersion: 6000.9.8f7\n'
+                'm_EditorVersionWithRevision: 6000.9.8f7 (test)\n',
+                encoding='utf-8')
+            program_files = root / 'Program Files'
+            editor = (program_files / 'Unity/Hub/Editor/6000.9.8f7'
+                      / 'Editor/Unity.exe')
+            editor.parent.mkdir(parents=True)
+            editor.write_bytes(b'editor')
+            environment = {
+                'ProgramFiles': str(program_files),
+                'ProgramW6432': str(program_files),
+                'SystemDrive': 'Z:',
+                'USERPROFILE': str(root / 'NoUnityHere'),
+            }
+            self.assertEqual('6000.9.8f7',
+                             launcher.unity_project_version(project))
+            self.assertEqual(
+                editor.resolve(),
+                launcher.resolve_unity_editor(environment, project))
 
     def test_start_uses_detached_editor_without_play_mode(self):
         editor = Path(r'C:\Unity\Unity.exe')

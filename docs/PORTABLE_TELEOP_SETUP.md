@@ -15,7 +15,7 @@ runtime/python/RUNTIME_MANIFEST.json
 ## 여전히 외부에 필요한 것
 
 - Windows 11 x64
-- Unity 6000.5.4f1
+- Unity Editor: 프로젝트 `ProjectVersion.txt`의 선언 버전을 자동 탐색 (현재 6000.5.4f1, 필요 시 `UNITY_EXE`로 명시)
 - Meta Quest / Link 환경과 필요한 드라이버
 - Omni Connect
 - working OpenSSH client (`ssh.exe`, `ssh-keygen.exe`): Windows OpenSSH 또는 Git for Windows OpenSSH

@@ -34,8 +34,10 @@ def historical_recording_profile():
     """Keep exact fixture replay independent of the current default profile."""
     historical_profile = replace(
         simulator.PROFILE,
-        joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2)
+        joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2,
+        wrist_priority_proximal_damping_scale=5.0)
     with patch.object(simulator, 'PROFILE', historical_profile), patch.object(
+            motion_policy, 'PROFILE', historical_profile), patch.object(
             motion_policy.ArmMotionPolicy, 'prepare', _historical_prepare):
         sim = simulator.BimanualSimulation()
         sim.caps = np.tile(np.deg2rad([90.] * 4 + [180.] * 3), 2)

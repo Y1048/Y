@@ -36,7 +36,7 @@ class BimanualTests(unittest.TestCase):
         acceleration_cap = np.deg2rad(90.)
         self.assertAlmostEqual(JOINT_VELOCITY_LIMIT_RAD_S, wrist_cap)
         self.assertAlmostEqual(JOINT_ACCELERATION_LIMIT_RAD_S2, acceleration_cap)
-        self.assertEqual(IK_TRACKING_RATE_S, 1.0)
+        self.assertEqual(IK_TRACKING_RATE_S, 1.5)
         np.testing.assert_array_equal(
             s.caps, np.tile(np.deg2rad([90]*4+[180]*3), 2))
         np.testing.assert_array_equal(

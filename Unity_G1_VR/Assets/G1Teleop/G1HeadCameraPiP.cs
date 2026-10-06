@@ -61,6 +61,16 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
     private CancellationTokenSource receiver_cancellation;
     private Task receiver_task;
     private byte[] pending_jpeg;
+    private long received_frame_count;
+    private long overwritten_frame_count;
+    private long displayed_frame_count;
+    private long performance_previous_received;
+    private long performance_previous_overwritten;
+    private long performance_previous_displayed;
+    private float performance_window_start;
+    private double decode_window_total_ms;
+    private double decode_window_max_ms;
+    private int decode_window_frames;
     private Texture2D decoded_texture;
     private Texture2D placeholder_texture;
     private volatile bool bridge_connected;
@@ -210,6 +220,7 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
 
     private void OnEnable()
     {
+        ResetPerformanceStats();
         InitializeDisplay();
         if (Application.isPlaying && listen_on_start)
         {
@@ -222,6 +233,7 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
         ConsumeNewestFrame();
         UpdateStatus();
         LogPendingError();
+        LogPerformanceStats();
     }
 
     private void OnDisable()
@@ -383,7 +395,12 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
 
             lock (state_lock)
             {
+                if (pending_jpeg != null)
+                {
+                    overwritten_frame_count += 1;
+                }
                 pending_jpeg = jpeg_payload;
+                received_frame_count += 1;
                 last_error = string.Empty;
             }
         }
@@ -485,10 +502,18 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
             decoded_texture.filterMode = FilterMode.Bilinear;
         }
 
-        if (!ImageConversion.LoadImage(
+        long decode_start = System.Diagnostics.Stopwatch.GetTimestamp();
+        bool decoded = ImageConversion.LoadImage(
             decoded_texture,
             jpeg_payload,
-            false))
+            false);
+        double decode_ms = (
+            System.Diagnostics.Stopwatch.GetTimestamp() - decode_start)
+            * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+        decode_window_total_ms += decode_ms;
+        decode_window_max_ms = Math.Max(decode_window_max_ms, decode_ms);
+        decode_window_frames += 1;
+        if (!decoded)
         {
             SetBackgroundError("Unity could not decode the G1 camera JPEG.");
             return;
@@ -515,8 +540,74 @@ public sealed class G1HeadCameraPiP : MonoBehaviour
             video_image.texture = decoded_texture;
             video_image.color = Color.white;
         }
+        displayed_frame_count += 1;
         received_frame = true;
         last_frame_time = Time.realtimeSinceStartup;
+    }
+
+    private void ResetPerformanceStats()
+    {
+        lock (state_lock)
+        {
+            received_frame_count = 0;
+            overwritten_frame_count = 0;
+        }
+        displayed_frame_count = 0;
+        performance_previous_received = 0;
+        performance_previous_overwritten = 0;
+        performance_previous_displayed = 0;
+        performance_window_start = Time.realtimeSinceStartup;
+        decode_window_total_ms = 0.0;
+        decode_window_max_ms = 0.0;
+        decode_window_frames = 0;
+    }
+
+    private void LogPerformanceStats()
+    {
+        float now = Time.realtimeSinceStartup;
+        float elapsed = now - performance_window_start;
+        if (elapsed < 1.0f)
+        {
+            return;
+        }
+
+        long received_count;
+        long overwritten_count;
+        lock (state_lock)
+        {
+            received_count = received_frame_count;
+            overwritten_count = overwritten_frame_count;
+        }
+        long displayed_count = displayed_frame_count;
+        long received_delta =
+            received_count - performance_previous_received;
+        long displayed_delta =
+            displayed_count - performance_previous_displayed;
+        long overwritten_delta =
+            overwritten_count - performance_previous_overwritten;
+        double decode_average_ms = decode_window_frames > 0
+            ? decode_window_total_ms / decode_window_frames
+            : 0.0;
+
+        if (bridge_connected
+            || received_delta > 0
+            || displayed_delta > 0)
+        {
+            Debug.Log(
+                $"[CAMERA UNITY] rx={received_delta / elapsed:F1} fps "
+                + $"display={displayed_delta / elapsed:F1} fps "
+                + $"overwrite={overwritten_delta} "
+                + $"decode_avg={decode_average_ms:F2} ms "
+                + $"decode_max={decode_window_max_ms:F2} ms");
+        }
+
+        performance_previous_received = received_count;
+        performance_previous_overwritten = overwritten_count;
+        performance_previous_displayed = displayed_count;
+        performance_window_start = now;
+        decode_window_total_ms = 0.0;
+        decode_window_max_ms = 0.0;
+        decode_window_frames = 0;
     }
 
     private void UpdateStatus()

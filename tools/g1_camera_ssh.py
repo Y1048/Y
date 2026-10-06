@@ -158,13 +158,17 @@ def run(host):
         creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
     connection = None
     frames = 0
-    last_status = 0.0
+    received_frames = 0
+    last_status = time.monotonic()
+    last_received_frames = 0
+    last_sent_frames = 0
     next_connect = 0.0
     try:
         child.stdin.write(REMOTE.encode('utf-8'))
         child.stdin.close()
         while True:
             packet = read_packet(child.stdout)
+            received_frames += 1
             if connection is None:
                 if time.monotonic() < next_connect:
                     continue
@@ -173,6 +177,9 @@ def run(host):
                     connection = socket.create_connection(('127.0.0.1', 5011), timeout=.2)
                     connection.settimeout(.2)
                     connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                    last_status = time.monotonic()
+                    last_received_frames = received_frames - 1
+                    last_sent_frames = frames
                 except OSError:
                     status('[WAIT] Unity TCP5011 unavailable; enter Play')
                     continue
@@ -183,10 +190,17 @@ def run(host):
                 connection.close()
                 connection = None
                 continue
-            if time.monotonic() - last_status >= 1.0:
-                status('[STREAMING] frames=%d latest_bytes=%d' % (
-                    frames, len(packet) - HEADER.size))
-                last_status = time.monotonic()
+            now = time.monotonic()
+            if now - last_status >= 1.0:
+                elapsed = max(now - last_status, 1e-6)
+                status('[STREAMING] frames=%d rx_fps=%.1f tx_fps=%.1f latest_bytes=%d' % (
+                    frames,
+                    (received_frames - last_received_frames) / elapsed,
+                    (frames - last_sent_frames) / elapsed,
+                    len(packet) - HEADER.size))
+                last_status = now
+                last_received_frames = received_frames
+                last_sent_frames = frames
     except KeyboardInterrupt:
         pass
     finally:

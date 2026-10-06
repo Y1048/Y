@@ -1,5 +1,6 @@
-# Supported scope: matching active/persistent DHCP mode, permanent manual IPv4,
-# and OS-managed routes. DHCP leases are renewed by Windows, never replayed.
+# DHCP belongs to the active interface; Windows does not expose a persistent
+# Get-NetIPInterface DHCP row on every build. Manual addresses are checked in
+# both stores. DHCP leases are renewed by Windows, never replayed.
 function GetG1ManualAddresses($index, $store)
 {
     return @(Get-NetIPAddress -InterfaceIndex $index -AddressFamily IPv4 -PolicyStore $store -ErrorAction Stop |
@@ -14,11 +15,15 @@ function GetG1AddressKeys($addresses)
 function GetG1EthernetSnapshot($adapter)
 {
     $snapshot = @{Index=$adapter.ifIndex; Guid=[string]$adapter.InterfaceGuid; Stores=@{}}
+    $interfaces = @(Get-NetIPInterface -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -PolicyStore ActiveStore -ErrorAction Stop)
+    if ($interfaces.Count -ne 1 -or [string]$interfaces[0].Dhcp -notin @('Enabled','Disabled'))
+    {
+        throw 'Unsupported active IPv4 interface state; no settings changed.'
+    }
+    $snapshot.Dhcp = [string]$interfaces[0].Dhcp
     foreach ($store in @('ActiveStore', 'PersistentStore'))
     {
-        $interfaces = @(Get-NetIPInterface -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -PolicyStore $store -ErrorAction Stop)
-        if ($interfaces.Count -ne 1 -or [string]$interfaces[0].Dhcp -notin @('Enabled','Disabled')) { throw 'Unsupported IPv4 interface state; no settings changed.' }
-        $routes = @(Get-NetRoute -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -PolicyStore $store -ErrorAction Stop)
+        $routes = @(Get-NetRoute -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -PolicyStore $store -ErrorAction SilentlyContinue)
         if (@($routes | Where-Object { [string]$_.Protocol -notin @('Local','Dhcp') }).Count)
         {
             throw 'Custom IPv4 routes present; automatic changes blocked. No settings changed.'
@@ -32,12 +37,11 @@ function GetG1EthernetSnapshot($adapter)
                 throw 'Unsupported temporary/manual IPv4 address; no settings changed.'
             }
         }
-        $snapshot.Stores[$store] = @{Dhcp=[string]$interfaces[0].Dhcp; Addresses=$addresses}
+        $snapshot.Stores[$store] = @{Dhcp=$snapshot.Dhcp; Addresses=$addresses}
     }
     $active = $snapshot.Stores.ActiveStore
     $persistent = $snapshot.Stores.PersistentStore
-    if ($active.Dhcp -ne $persistent.Dhcp -or
-        ((GetG1AddressKeys $active.Addresses) -join ',') -ne ((GetG1AddressKeys $persistent.Addresses) -join ','))
+    if (((GetG1AddressKeys $active.Addresses) -join ',') -ne ((GetG1AddressKeys $persistent.Addresses) -join ','))
     {
         throw 'Active/persistent IPv4 settings differ; no settings changed.'
     }
@@ -57,10 +61,10 @@ function AssertG1AdapterIdentity($snapshot)
 function SetG1Ipv4State($snapshot, $states)
 {
     AssertG1AdapterIdentity $snapshot
+    Set-NetIPInterface -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore ActiveStore -Dhcp Disabled -ErrorAction Stop
     foreach ($store in @('PersistentStore','ActiveStore'))
     {
         $state = $states[$store]
-        Set-NetIPInterface -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore $store -Dhcp Disabled -ErrorAction Stop
         foreach ($address in @(GetG1ManualAddresses $snapshot.Index $store))
         {
             Remove-NetIPAddress -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore $store -IPAddress $address.IPAddress -Confirm:$false -ErrorAction Stop
@@ -70,19 +74,22 @@ function SetG1Ipv4State($snapshot, $states)
             New-NetIPAddress -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore $store -IPAddress $address.IPAddress `
                 -PrefixLength $address.PrefixLength -SkipAsSource ([bool]$address.SkipAsSource) -ErrorAction Stop | Out-Null
         }
-        Set-NetIPInterface -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore $store -Dhcp $state.Dhcp -ErrorAction Stop
     }
+    Set-NetIPInterface -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore ActiveStore -Dhcp $states.ActiveStore.Dhcp -ErrorAction Stop
 }
 
 function AssertG1Ipv4State($snapshot, $states)
 {
+    $interfaces = @(Get-NetIPInterface -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore ActiveStore -ErrorAction Stop)
+    if ($interfaces.Count -ne 1 -or [string]$interfaces[0].Dhcp -ne $states.ActiveStore.Dhcp)
+    {
+        throw 'IPv4 DHCP verification failed: ActiveStore'
+    }
     foreach ($store in @('ActiveStore','PersistentStore'))
     {
-        $interfaces = @(Get-NetIPInterface -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore $store -ErrorAction Stop)
         $addresses = @(GetG1ManualAddresses $snapshot.Index $store)
         $all_addresses = @(Get-NetIPAddress -InterfaceIndex $snapshot.Index -AddressFamily IPv4 -PolicyStore $store -ErrorAction Stop)
-        if ($interfaces.Count -ne 1 -or [string]$interfaces[0].Dhcp -ne $states[$store].Dhcp -or
-            ($states[$store].Dhcp -eq 'Disabled' -and $all_addresses.Count -ne $addresses.Count) -or
+        if (($states[$store].Dhcp -eq 'Disabled' -and $all_addresses.Count -ne $addresses.Count) -or
             ((GetG1AddressKeys $addresses) -join ',') -ne ((GetG1AddressKeys $states[$store].Addresses) -join ','))
         {
             throw "IPv4 verification failed: $store"
@@ -90,7 +97,25 @@ function AssertG1Ipv4State($snapshot, $states)
     }
 }
 
-function InvokeG1EthernetChange($adapter, [bool]$automatic, $status_path)
+function TestG1WiredSsh()
+{
+    # Windows may briefly mark a newly assigned address tentative (DAD).
+    for ($attempt = 0; $attempt -lt 6; $attempt++)
+    {
+        $client = [System.Net.Sockets.TcpClient]::new()
+        try
+        {
+            $pending = $client.ConnectAsync('192.168.123.164', 22)
+            if ($pending.Wait(1500) -and $client.Connected) { return $true }
+        }
+        catch { }
+        finally { $client.Dispose() }
+        if ($attempt -lt 5) { Start-Sleep -Milliseconds 500 }
+    }
+    return $false
+}
+
+function InvokeG1EthernetChange($adapter, [bool]$automatic, $status_path, [bool]$verify_robot_ssh = $false)
 {
     $snapshot = GetG1EthernetSnapshot $adapter
     $addresses = @()
@@ -106,6 +131,10 @@ function InvokeG1EthernetChange($adapter, [bool]$automatic, $status_path)
         SetG1Ipv4State $snapshot $desired
         AssertG1Ipv4State $snapshot $desired
         ResetG1Dns $snapshot.Dns
+        if ($verify_robot_ssh -and -not (TestG1WiredSsh))
+        {
+            throw 'G1 wired SSH did not respond after IPv4 configuration'
+        }
         if (-not $automatic) { "$($adapter.Name) 192.168.123.99/24" | Set-Content -LiteralPath $status_path -Encoding ascii }
     }
     catch

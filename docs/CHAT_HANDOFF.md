@@ -175,3 +175,8 @@ code index PASS, no-system-Python startup check PASS. Backend 회귀는 `.git` �
 3. 기존 dirty/untracked를 reset/clean하지 않는다.
 4. 변경 후 embedded runtime에서 회귀 실행.
 5. relocation test 없이 portable 완료로 판정하지 않는다.
+## 2026-10-06 G1 dedicated Ethernet address drift
+
+On the Desktop portable runtime, the dedicated ASIX adapter was initially up at manually assigned `192.168.50.2/24`, while the G1 wired endpoint remained `192.168.123.164`. The existing config helper's read-only snapshot failed because this Windows build exposes DHCP state only in ActiveStore, not PersistentStore. The adapter later showed `192.168.123.99/24` and TCP/22 to G1 was reachable from that source; the time/cause of the address change was not established. The teleop dispatcher now checks the dedicated ASIX interface before any worker or motor-owner launch and requests UAC repair only for auto host selection with a connected adapter lacking `192.168.123.99/24`. The transaction verifies G1 TCP/22 after the change and attempts rollback to the previous IPv4/DNS settings on failure. This code is network-only; physical robot execution was not used as validation.
+
+Validation: 5 new offline auto-repair tests and 49 existing portable/launcher/dependency tests passed; PowerShell parser and code index checks passed. The four changed runtime scripts were copied into `C:\Users\user\Desktop\G1_Teleop_Portable` after confirming each prior portable copy matched the source commit, and copy hashes were verified. Read-only checks there reported `needs_repair=None`, selected wired host `192.168.123.164`, and a matching `192.168.123.99` adapter snapshot. The elevated address-change/rollback path could not be exercised while the live address was already correct; actual teleop and motor control were not launched.

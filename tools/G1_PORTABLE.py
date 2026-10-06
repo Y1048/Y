@@ -62,6 +62,26 @@ def check_runtime(check_camera=True):
 
 def teleop(args):
     require_embedded_interpreter()
+    # A direct G1 Ethernet NIC can retain an unrelated PC address on another machine.
+    # Repair only a safely inferred physical Ethernet link before any worker/motor owner.
+    requested_host = 'auto'
+    if '--host' in args:
+        index = args.index('--host')
+        requested_host = args[index + 1] if index + 1 < len(args) else ''
+    if requested_host == 'auto' and '--check-only' not in args:
+        from g1_portable_environment import dedicated_wired_adapter_needing_address
+        adapter_index = dedicated_wired_adapter_needing_address()
+        if adapter_index is not None:
+            print('[G1 NETWORK] Dedicated Ethernet address differs from '
+                  '192.168.123.99/24; requesting Windows UAC repair.', flush=True)
+            rc = elevated_powershell(
+                ROOT / 'tools/CONFIGURE_G1_ETHERNET_ADMIN.ps1',
+                ['-InterfaceIndex', str(adapter_index), '-VerifyRobotSsh'],
+            )
+            if rc:
+                raise RuntimeError('G1 Ethernet repair failed or was cancelled; '
+                                   'original network settings were preserved or restored. '
+                                   'No teleop workers were started.')
     dependencies.ensure()
     import G1_VR_TELEOP_LAUNCH as launcher
     return launcher.main(args)
@@ -174,7 +194,7 @@ def elevated_powershell(script: Path, extra):
     quoted = subprocess.list2cmdline(args).replace("'", "''")
     command = [
         "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command",
-        "$p=Start-Process powershell.exe -Verb RunAs -Wait -PassThru "
+        "$p=Start-Process powershell.exe -Verb RunAs -Wait -PassThru -WindowStyle Hidden "
         f"-ArgumentList '{quoted}'; exit $p.ExitCode",
     ]
     return subprocess.run(command, cwd=ROOT).returncode

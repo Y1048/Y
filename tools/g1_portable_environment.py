@@ -1,8 +1,54 @@
 """Path-independent helpers for the current Windows SSH teleop path."""
 from pathlib import Path
 import socket
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def dedicated_wired_adapter_needing_address():
+    """Return a safely inferred direct-wired Ethernet index that needs the G1 PC address.
+
+    Read-only Windows inspection. Vendor names are irrelevant. Missing Ethernet,
+    an Internet-routed link, or ambiguous linked Ethernet is never changed.
+    """
+    selector = str(ROOT / 'tools/G1_ETHERNET_ADAPTER.ps1').replace("'", "''")
+    query = (
+        "$ErrorActionPreference='Stop'; "
+        f". '{selector}'; "
+        "$physical=@(GetG1PhysicalEthernetAdapters); "
+        "$configured=@($physical | Where-Object { TestG1Ipv4Address $_ }); "
+        "if($configured.Count -eq 1 -and [string]$configured[0].Status -eq 'Up'){exit 0}; "
+        "if(@($configured | Where-Object { [string]$_.Status -eq 'Up' }).Count -gt 1){"
+        "throw 'Ambiguous connected G1 Ethernet adapters'}; "
+        "$linked=@($physical | Where-Object { [string]$_.Status -eq 'Up' }); "
+        "if($linked.Count -eq 0){exit 0}; "
+        "if($linked.Count -ne 1){throw 'Ambiguous connected physical Ethernet adapters'}; "
+        "$default=@(Get-NetRoute -InterfaceIndex $linked[0].ifIndex -AddressFamily IPv4 "
+        "-PolicyStore ActiveStore -ErrorAction SilentlyContinue | "
+        "Where-Object { [string]$_.DestinationPrefix -eq '0.0.0.0/0' }); "
+        "if($default.Count -gt 0){exit 0}; "
+        "$ip=@(Get-NetIPAddress -InterfaceIndex $linked[0].ifIndex "
+        "-AddressFamily IPv4 -PolicyStore ActiveStore -ErrorAction SilentlyContinue | "
+        "Where-Object { $_.IPAddress -eq '192.168.123.99' -and $_.PrefixLength -eq 24 }); "
+        "if($ip.Count -eq 0){Write-Output $linked[0].ifIndex}"
+    )
+    completed = subprocess.run(
+        ['powershell.exe', '-NoProfile', '-Command', query],
+        capture_output=True, text=True, encoding='utf-8', timeout=15,
+        check=False,
+    )
+    if completed.returncode:
+        raise RuntimeError(
+            'Cannot infer one dedicated G1 Ethernet adapter safely; '
+            'no network setting changed. Use CONFIGURE_G1_ETHERNET.bat '
+            '--interface-index <ifIndex> once for an ambiguous PC.')
+    result = completed.stdout.strip()
+    if not result:
+        return None
+    if not result.isdecimal() or int(result) <= 0:
+        raise RuntimeError('Invalid G1 Ethernet adapter index; no network setting changed')
+    return int(result)
 
 
 def select_robot_host(requested='auto'):

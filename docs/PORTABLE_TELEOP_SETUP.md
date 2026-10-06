@@ -63,19 +63,25 @@ Windows build는 `G1VRBuild.BuildWindows()`가 `resources.assets`의 로컬 Meta
 
 ## 3. Ethernet
 
-G1 유선 주소는 `192.168.123.164`, PC 쪽 G1 전용 주소는 `192.168.123.99/24`다. 새 PC에서 처음 연결하거나 해당 NIC가 아직 설정되지 않았으면 한 번 실행한다.
+G1 유선 주소는 `192.168.123.164`, PC 쪽 G1 전용 주소는 `192.168.123.99/24`다.
+
+기본 `START_G1_VR_TELEOP.bat` 실행은 worker나 motor owner를 시작하기 전에 Windows의 물리 Ethernet 상태를 읽기 전용으로 검사한다. 이미 `192.168.123.99/24`가 설정된 G1 NIC가 정상 링크 상태면 그대로 사용한다. 주소가 다른 경우에는 **물리 non-virtual 802.3 Ethernet 중 링크가 올라와 있고 기본 인터넷 route가 없는 후보가 정확히 하나일 때만** 해당 NIC의 ifIndex를 선택해 UAC 관리자 설정을 요청한다. Wi-Fi/VPN/가상/Bluetooth와 기본 인터넷 route가 있는 Ethernet은 자동 변경 대상이 아니다.
+
+자동 복구는 `CONFIGURE_G1_ETHERNET_ADMIN.ps1 -InterfaceIndex <ifIndex> -VerifyRobotSsh`를 사용한다. `192.168.123.99/24` 설정 후 `192.168.123.164:22`가 실제 응답해야 teleop 단계로 진행한다. 응답하지 않거나 설정/검증이 실패하면 기존 IPv4/DNS snapshot으로 rollback하고 **어떤 teleop worker도 시작하지 않는다**. UAC를 취소해도 동일하게 fail-closed한다. `--check-only`와 명시적 `--host` 실행은 자동 네트워크 변경을 하지 않는다.
+
+수동 설정이 필요하면:
 
 ```bat
 tools\CONFIGURE_G1_ETHERNET.bat
 ```
 
-어댑터 선택은 더 이상 ASIX 모델명에 의존하지 않는다. 물리 Ethernet(`HardwareInterface=True`, non-virtual, `802.3`)만 후보로 사용하며 Wi-Fi/VPN/가상/Bluetooth는 제외한다. 이미 `192.168.123.99/24`가 설정된 물리 Ethernet이 있으면 그 NIC를 우선 재사용하고, 아니면 링크가 올라온 물리 Ethernet이 정확히 하나일 때만 자동 선택한다. 여러 유선 NIC가 동시에 링크된 경우에는 추측하지 않고 fail-closed하며 아래처럼 명시한다.
+어댑터 selector는 특정 ASIX 모델명에 의존하지 않는다. 이미 `192.168.123.99/24`가 설정된 물리 Ethernet을 우선하고, 아니면 링크가 올라온 물리 Ethernet이 정확히 하나일 때만 선택한다. 여러 유선 NIC가 동시에 후보가 되어 안전하게 추론할 수 없으면 자동 변경하지 않고 아래처럼 명시한다.
 
 ```bat
 tools\CONFIGURE_G1_ETHERNET.bat --interface-index <ifIndex>
 ```
 
-설정 후 기본 teleop launcher는 `192.168.123.164:22` 유선을 먼저 확인하고, 안 되면 폐쇄망 `192.168.10.165:22`로 fallback한다. 따라서 같은 PC에서는 이후 랜선만 바뀌어도 별도 재설정 없이 유선을 자동 우선 사용한다.
+설정 후 teleop host 선택은 `192.168.123.164:22` 유선을 먼저 확인하고, 안 되면 폐쇄망 `192.168.10.165:22`로 fallback한다. 따라서 새 PC에서도 G1 직결 Ethernet을 안전하게 식별할 수 있는 상태라면 BAT 실행만으로 주소 복구와 유선 선택까지 이어진다.
 
 DHCP 복구:
 
@@ -83,9 +89,9 @@ DHCP 복구:
 tools\RESTORE_G1_ETHERNET_DHCP.bat
 ```
 
-자동 restore는 `192.168.123.99/24`가 설정된 물리 Ethernet을 찾아 링크가 내려가 있어도 복구한다. 찾지 못하거나 여러 후보가 있으면 자동 변경하지 않고 `--interface-index`를 요구한다.
+자동 restore는 `192.168.123.99/24`가 설정된 물리 Ethernet을 링크가 내려가 있어도 찾는다. 찾지 못하거나 여러 후보가 있으면 자동 변경하지 않고 `--interface-index`를 요구한다.
 
-UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell helper를 사용하지만, Python/venv dependency는 없다. IP/DNS 변경 전 snapshot을 만들고 검증 실패 시 기존 IPv4/DNS 상태로 rollback한다.
+UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell helper를 사용하지만 Python/venv dependency는 없다. IP/DNS 변경 전 snapshot을 만들고 검증 실패 시 기존 IPv4/DNS 상태로 rollback한다.
 
 ## 4. Camera
 

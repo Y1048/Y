@@ -47,6 +47,8 @@ runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 별도 setup BAT는 유지하지 않는다. 통합 실행 검사는 `START_G1_VR_TELEOP.bat --check-only`,
 Python runtime만 검사할 때는 위 dispatcher 명령을 사용한다.
 
+새 PC에서 G1 유선을 처음 쓸 때는 `tools\CONFIGURE_G1_ETHERNET.bat`으로 PC NIC를 `192.168.123.99/24`로 설정한다. selector는 특정 ASIX 모델에 묶이지 않고 물리 802.3 Ethernet을 사용하며, 이미 G1 IP가 있는 NIC를 우선하고 아니면 링크가 올라온 유선 NIC가 정확히 하나일 때만 자동 선택한다. 여러 유선 NIC가 동시에 활성화되어 있으면 fail-closed하고 `--interface-index`를 요구한다. 이후 teleop launcher는 G1 유선 `192.168.123.164`를 폐쇄망보다 자동 우선한다.
+
 ## 현재 데이터 흐름
 
 ```text

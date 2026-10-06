@@ -86,6 +86,8 @@ BAT는 bundled `runtime/python/python.exe`로 `tools/G1_PORTABLE.py teleop`을 �
 
 2026-10-06 standalone 실기에서 HMD tracking, Oculus XR, Insta360/PiP는 정상이나 `OVRHand` 좌/우가 세션 전체에서 `tracked=false`, `high_confidence=false`였고 시작 로그에 `Failed to set multimodal hands and controllers mode!`가 기록됐다. 따라서 Windows standalone은 기본 teleop 경로에서 제외하고 `--standalone` 진단용으로만 유지한다. 현재 기본 사용자 경로는 Unity Editor를 launcher가 자동 실행하고 `Library/G1TeleopAutoPlay.request`를 Editor-only helper가 소비해 자동 Play mode로 진입하는 방식이다. 사용자는 Play 버튼을 누를 필요가 없다. 최종 제품 목표는 Quest APK가 HMD/양손 tracking을 on-device에서 수행해 PC Portable로 pose를 전송하도록 바꾸어 운영 PC의 Unity Editor 의존성을 제거하는 것이다. 일반 실행은 camera worker와 onboard GROOT pair도 통합하며, 새 GROOT supervisor를 시작할 때만 local console에서 `ACTUATE` 확인을 요구한다.
 
+2026-10-06 Ethernet portability도 일반화했다. `CONFIGURE_G1_ETHERNET_ADMIN.ps1`/`RESTORE_G1_ETHERNET_DHCP_ADMIN.ps1`는 더 이상 ASIX AX88772A 이름을 하드코딩하지 않고 공통 `G1_ETHERNET_ADAPTER.ps1` selector를 사용한다. 자동 configure는 물리 non-virtual 802.3 NIC만 후보로 하며 이미 `192.168.123.99/24`인 NIC를 우선, 아니면 링크가 Up인 유선 NIC가 정확히 하나일 때만 선택한다. 자동 restore는 G1 IP가 설정된 물리 NIC를 링크 상태와 무관하게 찾는다. 후보가 여러 개거나 식별이 불가능하면 fail-closed하고 `--interface-index`를 요구한다. 기존 IPv4/DNS snapshot·검증·rollback transaction은 그대로 유지한다. teleop host 선택은 기존대로 `192.168.123.164` 유선을 먼저 시도하고 폐쇄망 `192.168.10.165`로 fallback한다.
+
 2026-10-01 실제 G1 로그에서 첫 통합 버전의 원격 실행 실패 원인을 확인했다. 기존 launcher가 `ssh -T`와 remote background child를 사용해 두 프로그램 모두 interactive-terminal 검사에서 종료됐다: actuator는 `walk keyboard requires an interactive terminal`, heading controller는 `controller requires an interactive terminal`이었다. Portable Python 자체의 문제가 아니다.
 
 현재 contract는 예전에 성공했던 수동 SSH 2개 구조를 자동화한다.

@@ -1,19 +1,8 @@
 param([int]$InterfaceIndex = 0)
 $ErrorActionPreference = "Stop"
 
-$adapters = @(Get-NetAdapter | Where-Object { $_.InterfaceDescription -like "ASIX AX88772A*" })
-if ($InterfaceIndex -ne 0)
-{
-    $adapters = @($adapters | Where-Object { $_.ifIndex -eq $InterfaceIndex })
-}
-if ($adapters.Count -ne 1)
-{
-    throw "Expected one ASIX AX88772A adapter. Check Get-NetAdapter and specify -InterfaceIndex explicitly; no settings were changed."
-}
-$adapter = $adapters[0]
-$interface_index = $adapter.ifIndex
-$interface_alias = $adapter.Name
-$ip_address = "192.168.123.99"
+. (Join-Path $PSScriptRoot 'G1_ETHERNET_ADAPTER.ps1')
+$adapter = GetG1EthernetAdapter -InterfaceIndex $InterfaceIndex -Mode Configure
 
 $project_root = Split-Path -Parent $PSScriptRoot
 $status_path = Join-Path $project_root "logs\runtime\g1_ethernet_configured.txt"

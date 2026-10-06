@@ -63,11 +63,19 @@ Windows build는 `G1VRBuild.BuildWindows()`가 `resources.assets`의 로컬 Meta
 
 ## 3. Ethernet
 
-필요 시:
+G1 유선 주소는 `192.168.123.164`, PC 쪽 G1 전용 주소는 `192.168.123.99/24`다. 새 PC에서 처음 연결하거나 해당 NIC가 아직 설정되지 않았으면 한 번 실행한다.
 
 ```bat
 tools\CONFIGURE_G1_ETHERNET.bat
 ```
+
+어댑터 선택은 더 이상 ASIX 모델명에 의존하지 않는다. 물리 Ethernet(`HardwareInterface=True`, non-virtual, `802.3`)만 후보로 사용하며 Wi-Fi/VPN/가상/Bluetooth는 제외한다. 이미 `192.168.123.99/24`가 설정된 물리 Ethernet이 있으면 그 NIC를 우선 재사용하고, 아니면 링크가 올라온 물리 Ethernet이 정확히 하나일 때만 자동 선택한다. 여러 유선 NIC가 동시에 링크된 경우에는 추측하지 않고 fail-closed하며 아래처럼 명시한다.
+
+```bat
+tools\CONFIGURE_G1_ETHERNET.bat --interface-index <ifIndex>
+```
+
+설정 후 기본 teleop launcher는 `192.168.123.164:22` 유선을 먼저 확인하고, 안 되면 폐쇄망 `192.168.10.165:22`로 fallback한다. 따라서 같은 PC에서는 이후 랜선만 바뀌어도 별도 재설정 없이 유선을 자동 우선 사용한다.
 
 DHCP 복구:
 
@@ -75,7 +83,9 @@ DHCP 복구:
 tools\RESTORE_G1_ETHERNET_DHCP.bat
 ```
 
-UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell helper를 사용하지만, Python/venv dependency는 없다.
+자동 restore는 `192.168.123.99/24`가 설정된 물리 Ethernet을 찾아 링크가 내려가 있어도 복구한다. 찾지 못하거나 여러 후보가 있으면 자동 변경하지 않고 `--interface-index`를 요구한다.
+
+UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell helper를 사용하지만, Python/venv dependency는 없다. IP/DNS 변경 전 snapshot을 만들고 검증 실패 시 기존 IPv4/DNS 상태로 rollback한다.
 
 ## 4. Camera
 

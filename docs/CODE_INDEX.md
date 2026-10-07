@@ -53,7 +53,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_session_report.py) | 636 | 목록 확인 | _recorded_motion_limits, _current_motion_limits, _open_text, _percentiles, _current_source_hashes (+7) | `f2256d7a613b` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_sim.py) | 372 | 입출력 확인 | BimanualSimulation, targets_from_json, main | `1b2cea19a9c2` |
 | [MuJoCo_G1_Controller/scripts/g1_bimanual_target.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_target.py) | 44 | 목록 확인 | copy_world_hands, world_target, world_targets | `3a7a438354ab` |
-| [MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py) | 589 | 입출력 확인 | decode, UnityCycle, main | `51d651e15a2d` |
+| [MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py](../MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py) | 593 | 입출력 확인 | decode, UnityCycle, main | `31886541fbd7` |
 | [MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py](../MuJoCo_G1_Controller/scripts/g1_mink_feasible_target.py) | 426 | 목록 확인 | PositionProgressConstraint, FeasiblePlan, FeasibleTargetPlanner | `63e4696e742a` |
 | [MuJoCo_G1_Controller/scripts/g1_mink_shared.py](../MuJoCo_G1_Controller/scripts/g1_mink_shared.py) | 396 | 입출력 확인 | _find_body, _prepare_mink_xml, _joint_id, _apply_operational_joint_limits, _body_distance (+13) | `168b84f4cda4` |
 | [MuJoCo_G1_Controller/scripts/g1_mink_trajectory.py](../MuJoCo_G1_Controller/scripts/g1_mink_trajectory.py) | 124 | 목록 확인 | TrajectoryStep, StatefulMinkTrajectory | `63245c475273` |
@@ -89,7 +89,7 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/fixtures/bimanual_return_starts_20260918.json](../backend/tests/fixtures/bimanual_return_starts_20260918.json) | 127 | 목록 확인 | - | `0e42927f9660` |
 | [backend/tests/fixtures/g1_measured_start_20261007.json](../backend/tests/fixtures/g1_measured_start_20261007.json) | 67 | 목록 확인 | - | `aab687ef2bb0` |
 | [backend/tests/fixtures/g1_onboard_arm_joint_ranges_20261007.json](../backend/tests/fixtures/g1_onboard_arm_joint_ranges_20261007.json) | 86 | 목록 확인 | - | `273bb908d0f0` |
-| [backend/tests/test_bimanual_boundaries.py](../backend/tests/test_bimanual_boundaries.py) | 210 | 목록 확인 | OutputContinuityTests, ProtocolBoundaryTests | `7f2072e8f8fd` |
+| [backend/tests/test_bimanual_boundaries.py](../backend/tests/test_bimanual_boundaries.py) | 210 | 목록 확인 | OutputContinuityTests, ProtocolBoundaryTests | `753c16e7191c` |
 | [backend/tests/test_bimanual_goal_preview.py](../backend/tests/test_bimanual_goal_preview.py) | 330 | 목록 확인 | encode, manager, result, GoalPreviewTests | `f61a84b579ae` |
 | [backend/tests/test_bimanual_marker_feedback.py](../backend/tests/test_bimanual_marker_feedback.py) | 139 | 목록 확인 | MarkerFeedbackTests | `1421df605955` |
 | [backend/tests/test_bimanual_measured_start.py](../backend/tests/test_bimanual_measured_start.py) | 271 | 목록 확인 | model_pose, snapshot, packet, MeasuredStartTests | `2fe29ef8e1e1` |
@@ -98,14 +98,14 @@ runtime\python\python.exe -B backend/tools/build_code_index.py --check
 | [backend/tests/test_bimanual_onboard_joint_ranges.py](../backend/tests/test_bimanual_onboard_joint_ranges.py) | 154 | 목록 확인 | OnboardJointRangeTests | `1a91443f8e6f` |
 | [backend/tests/test_bimanual_profile.py](../backend/tests/test_bimanual_profile.py) | 77 | 목록 확인 | BimanualProfileTests | `ea27688c2fd4` |
 | [backend/tests/test_bimanual_quest_reengage.py](../backend/tests/test_bimanual_quest_reengage.py) | 149 | 목록 확인 | rows, QuestReengageReplayTests | `c4d0a0bb1d86` |
-| [backend/tests/test_bimanual_recorded_session.py](../backend/tests/test_bimanual_recorded_session.py) | 178 | 목록 확인 | load_fixture, RecordedStagedSessionTests | `0cc030bff6ed` |
+| [backend/tests/test_bimanual_recorded_session.py](../backend/tests/test_bimanual_recorded_session.py) | 182 | 목록 확인 | load_fixture, RecordedStagedSessionTests | `655124c56be6` |
 | [backend/tests/test_bimanual_return.py](../backend/tests/test_bimanual_return.py) | 560 | 목록 확인 | assert_output, recorded_return, StagedReturnTests | `6bbb0f8380d0` |
 | [backend/tests/test_bimanual_runtime.py](../backend/tests/test_bimanual_runtime.py) | 167 | 목록 확인 | fake_engine, RuntimeTests | `dceaf0136b5f` |
 | [backend/tests/test_bimanual_safety_boundary.py](../backend/tests/test_bimanual_safety_boundary.py) | 129 | 목록 확인 | BimanualSafetyBoundaryTests | `b7d76073b4f9` |
 | [backend/tests/test_bimanual_session_report.py](../backend/tests/test_bimanual_session_report.py) | 401 | 목록 확인 | SessionReportTests | `83f0a26e2e28` |
 | [backend/tests/test_bimanual_sim.py](../backend/tests/test_bimanual_sim.py) | 298 | 목록 확인 | BimanualTests | `d15f72875bb4` |
 | [backend/tests/test_bimanual_split_tracking.py](../backend/tests/test_bimanual_split_tracking.py) | 57 | 목록 확인 | SplitTrackingTests | `6176c51362c0` |
-| [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 357 | 목록 확인 | packet, CycleTests | `c65361c4d47c` |
+| [backend/tests/test_bimanual_unity_sim.py](../backend/tests/test_bimanual_unity_sim.py) | 457 | 목록 확인 | packet, CycleTests | `cc1d20f153f3` |
 | [backend/tests/test_g1_archive_offline_validate.py](../backend/tests/test_g1_archive_offline_validate.py) | 107 | 목록 확인 | ArchiveOfflineValidatorTests | `605586c5102c` |
 | [backend/tests/test_g1_camera_follow_launch.py](../backend/tests/test_g1_camera_follow_launch.py) | 123 | 목록 확인 | FollowTests | `24067d746285` |
 | [backend/tests/test_g1_camera_ssh.py](../backend/tests/test_g1_camera_ssh.py) | 33 | 목록 확인 | CameraTransportTests | `3ad81aa6e714` |

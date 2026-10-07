@@ -10,6 +10,7 @@ from pathlib import Path
 import sys
 import time
 import unittest
+from unittest.mock import patch
 from collections import Counter
 
 import numpy as np
@@ -56,7 +57,10 @@ class RecordedStagedSessionTests(unittest.TestCase):
         self.assertEqual(states[-1]['return_motion']['settle_elapsed_s'], .5)
 
     def test_recorded_tracking_braking_and_staged_return(self):
-        with historical_recording_profile() as sim:
+        # Preserve the historical recording's hand-loss policy only for exact
+        # reproduction. The current-profile test below uses the live 1.5 s grace.
+        with historical_recording_profile() as sim, patch(
+                'g1_bimanual_unity_sim.TRACKING_LOSS_RETURN_DELAY_S', .35):
             self._replay(sim, exact_recording=True)
 
     def test_current_profile_preserves_recorded_cycle_and_bounds(self):

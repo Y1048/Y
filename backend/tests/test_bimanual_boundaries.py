@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'MuJoCo_G1_Controller/scripts'))
 from g1_bimanual_limits import TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2, TRACKING_JOINT_VELOCITY_LIMIT_RAD_S
 import g1_bimanual_sim as core
-from g1_bimanual_unity_sim import UnityCycle, decode, mink
+from g1_bimanual_unity_sim import UnityCycle, decode, mink, TRACKING_LOSS_RETURN_DELAY_S
 from test_bimanual_unity_sim import packet
 
 
@@ -67,7 +67,7 @@ class OutputContinuityTests(unittest.TestCase):
 
     def test_long_loss_returns_at_zero_speed_then_reengages(self):
         self.setup_motion()
-        for _ in range(30):
+        for _ in range(int(np.ceil(TRACKING_LOSS_RETURN_DELAY_S/self.sim.dt))+2):
             self.advance(packet(self.sequence+1, True, tracked=False))
         self.assertEqual(self.cycle.state, 'returning')
         for _ in range(1800):

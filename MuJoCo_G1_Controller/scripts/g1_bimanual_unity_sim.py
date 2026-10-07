@@ -20,6 +20,9 @@ SCHEMA = 'g1.bimanual.unity.sim.v1'
 WORLD_SCHEMA = 'g1.bimanual.unity.sim.v4'
 MEASURED_START_SCHEMA = 'g1.bimanual.unity.sim.v5'
 WORLD_FRAME = 'unity_display_world_v1'
+# Short Quest hand-confidence/occlusion gaps brake without ending the cycle.
+# Communication freshness is independent and still uses the 0.75 s timeout.
+TRACKING_LOSS_RETURN_DELAY_S = 1.5
 
 
 def decode(raw):
@@ -293,7 +296,7 @@ class UnityCycle:
             elif not all(self.packet[s]['tracked'] for s in ('left', 'right')):
                 if self.loss_since is None:
                     self.loss_since = now
-                if now - self.loss_since >= .35:
+                if now - self.loss_since >= TRACKING_LOSS_RETURN_DELAY_S:
                     self.start_return('tracking_lost')
                 else:
                     self.last_tick_action = 'tracking_braking'
@@ -459,6 +462,7 @@ def main():
                 source_timestamp_clock='monotonic',
                 motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
                 goal_preview_profile=goal_preview.metadata(),
+                tracking_loss_return_delay_s=TRACKING_LOSS_RETURN_DELAY_S,
                 return_policy=sim.return_motion.policy,
                 return_profile=dict(waypoint_rad=sim.return_motion.waypoint.tolist(),
                     velocity_rad_s=sim.return_motion.velocity_limits.tolist(),

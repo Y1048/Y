@@ -1,3 +1,33 @@
+## 2026-10-07 Transient hand-loss grace — current update
+
+사용자 승인에 따라 손 추적 손실에 의한 자동 복귀 기준만 **0.35 → 1.5 s**로 변경했다.
+최신 `unity_20261007_165710_963962.jsonl`의 세 복귀는 모두 left tracked=false / right
+tracked=true인 `tracking_lost`였다. 손실 전체 길이는 0.828/0.407/1.359 s였고, 각 복귀
+시점에는 engage=true, return_home=false, input_age=0였다. 이 길이를 견디도록 선택한
+operator grace이며 Quest sensor 또는 실제 G1 안전성이 검증된 임계값이 아니다.
+
+손실 중 기존 checked braking을 사용하고 양팔의 새 목표를 풀지 않는다. 유효한 양손
+추적이 회복되면 loss timer를 reset하고 같은 engagement에서 재개한다. 1.5 s 이상
+지속 손실에는 기존 safe return을 사용한다. 입력 통신 timeout 0.75 s, pinch/명시적
+해제, session 변경, joint/collision/motion limits와 outlier 검사는 그대로다.
+실행 헤더에 `tracking_loss_return_delay_s`를 기록한다. Unity 코드 변경은 없다.
+
+관련 state-machine/real IK 모의 검사 **17/17 PASS**: 로그에서 추출한 손실 길이,
+감속 중 invalid 목표 미사용, 양손 재획득, 지속 손실 경계, timer 초기화, pinch,
+통신 timeout, 실제 solver의 속도·가속도·범위·clearance 검사 포함.
+이는 원본 전체 operator 세션을 재생해 새로운 UI 피드백까지 검증한 결과가 아니다.
+원본 Unity 입력은 과거 복귀 응답에 따라 engage를 해제하므로 counterfactual operator
+flow는 새 Quest 시험이 필요하다. 실제 G1 실행·SSH·gain 변경은 하지 않았다.
+전체 backend **349/349 PASS**, hardware mock/fixture **44/44 PASS**.
+지속 손실 회귀는 새 1.5 s 조건을 사용하며, 과거 로그와 q/state를 정확히 비교하는
+historical 검사에만 당시 0.35 s 기준을 명시했다. current-profile replay에는 새 기준을
+사용한다. 최초 회귀의 두 historical 기대값 실패 로그도 삭제하지 않고 보존했다.
+evidence: `logs/test_results/tracking_grace_20261007/` (`backend_final.log`, `hardware.log`).
+Portable 대상 Python/tests/docs 6파일을 백업·hash 대조하여 반영했고 관련 검사
+17/17 PASS도 확인했다. Unity 코드와
+로컬 settings는 변경하지 않는다. 실행 중인 입력 프로세스가 없음을 확인했으며,
+다음 입력 세션부터 새 기준을 사용한다. Quest에서 실제 재획득 사용감은 별도 확인한다.
+
 ## 2026-10-07 Bilateral feasible IK goal display — current update
 
 사용자 승인에 따라 초록 구의 소스를 checked-stop endpoint에서 목표 방향의 검증된

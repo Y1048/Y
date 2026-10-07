@@ -14,7 +14,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'MuJoCo_G1_Controller/scripts'))
 from g1_bimanual_unity_sim import (UnityCycle, PairedHandFilter, decode, BASIS, SCHEMA,
-                                   WORLD_SCHEMA, WORLD_FRAME, mink)
+                                   WORLD_SCHEMA, WORLD_FRAME, mink,
+                                   TRACKING_LOSS_RETURN_DELAY_S)
 from g1_bimanual_limits import TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2, TRACKING_JOINT_VELOCITY_LIMIT_RAD_S
 from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_return import BimanualReturnMotion
@@ -124,13 +125,112 @@ class CycleTests(unittest.TestCase):
         self.cycle.receive(packet(2, True, tracked=False), .03)
         self.cycle.tick(.03)
         self.assertEqual(self.cycle.state, 'tracking')
-        self.cycle.tick(.39)
+        # Fresh packets keep the communication timeout independent from the
+        # longer hand-loss grace period.
+        self.cycle.receive(packet(3, True, tracked=False), .7)
+        self.cycle.tick(.7)
+        self.cycle.receive(packet(4, True, tracked=False), 1.3)
+        self.cycle.tick(1.3)
+        self.cycle.receive(packet(5, True, tracked=False), 1.54)
+        self.cycle.tick(1.54)
         self.assertEqual(self.cycle.reason, 'tracking_lost')
         other = UnityCycle(self.sim)
         other.receive(packet(), 0)
         other.receive(packet(1, True), .01)
         other.tick(.77)
         self.assertEqual(other.reason, 'input_timeout')
+
+    def test_recorded_short_left_hand_losses_brake_then_resume(self):
+        # Measured input-flag loss durations from the 2026-10-07 16:57 session.
+        # This is a state-machine fixture, not a measured robot response replay.
+        for duration in (.828, .407, 1.359):
+            with self.subTest(duration=duration):
+                sim = Mock(state='tracking')
+                sim.home_targets = self.sim.home_targets
+                cycle = UnityCycle(sim)
+                cycle.receive(packet(), 0.)
+                cycle.receive(packet(1, True), .02)
+                sequence = 2
+                for elapsed in np.arange(0., duration, 1/60):
+                    p = packet(sequence, True)
+                    p['left']['tracked'] = False
+                    cycle.receive(p, .04 + elapsed)
+                    cycle.tick(.04 + elapsed)
+                    self.assertEqual(cycle.state, 'tracking')
+                    self.assertEqual(cycle.last_tick_action, 'tracking_braking')
+                    sequence += 1
+                sim.step.assert_not_called()
+                sim.brake.assert_called_with('tracking_unavailable')
+                cycle.receive(packet(sequence, True), .04 + duration)
+                cycle.tick(.04 + duration)
+                self.assertEqual(cycle.state, 'tracking')
+                self.assertEqual(cycle.last_tick_action, 'tracking')
+                self.assertIsNone(cycle.loss_since)
+                sim.step.assert_called_once()
+
+    def test_sustained_single_hand_loss_returns_at_boundary(self):
+        self.engage()
+        for sequence, elapsed in enumerate((0., .6, 1.2, 1.499, 1.501), 2):
+            p = packet(sequence, True)
+            p['right']['tracked'] = False
+            self.cycle.receive(p, .04 + elapsed)
+            self.cycle.tick(.04 + elapsed)
+            self.assertEqual(self.cycle.state,
+                             'returning' if elapsed >= TRACKING_LOSS_RETURN_DELAY_S else 'tracking')
+        self.assertEqual(self.cycle.reason, 'tracking_lost')
+
+    def test_recovered_hand_resets_loss_timer(self):
+        self.engage()
+        for sequence, elapsed, tracked in ((2,.04,False),(3,.64,False),
+                (4,1.24,False),(5,1.34,True),(6,1.44,False),
+                (7,2.04,False),(8,2.64,False)):
+            self.cycle.receive(packet(sequence, True, tracked=tracked), elapsed)
+            self.cycle.tick(elapsed)
+            self.assertEqual(self.cycle.state, 'tracking')
+        self.assertAlmostEqual(self.cycle.loss_since, 1.44)
+
+    def test_pinch_still_returns_during_hand_loss_grace(self):
+        self.engage()
+        self.cycle.receive(packet(2, True, tracked=False), .04)
+        self.cycle.tick(.04)
+        self.cycle.receive(packet(3, True, tracked=False, returning=True), .06)
+        self.assertEqual(self.cycle.state, 'returning')
+        self.assertEqual(self.cycle.reason, 'pinch')
+
+    def test_real_solver_brakes_and_recovers_without_return(self):
+        sim = BimanualSimulation()
+        cycle = UnityCycle(sim)
+        cycle.receive(packet(), 0.)
+        cycle.receive(packet(1, True), sim.dt)
+        previous_velocity = np.zeros(14)
+        sequence = 2
+        for tick in range(140):
+            p = packet(sequence, True)
+            p['right']['position_m'][2] += .03
+            # 1.25 s of invalid left-hand input. The invalid position must
+            # never be solved, even if it contains an arbitrarily distant goal.
+            if 30 <= tick < 105:
+                p['left']['tracked'] = False
+                p['left']['position_m'] = [9.,9.,9.]
+            now = (sequence+1)*sim.dt
+            before = sim.config.q[sim.qids].copy()
+            cycle.receive(p, now)
+            cycle.tick(now)
+            self.assertEqual(cycle.state, 'tracking')
+            self.assertEqual(cycle.last_tick_action,
+                'tracking_braking' if 30 <= tick < 105 else 'tracking')
+            velocity = (sim.config.q[sim.qids]-before)/sim.dt
+            np.testing.assert_allclose(velocity,sim.velocity[sim.dofs],atol=1e-9)
+            self.assertTrue(np.all(np.abs(velocity)<=sim.caps+1e-6))
+            self.assertLessEqual(float(np.max(np.abs(velocity-previous_velocity))/sim.dt),
+                TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2+1e-5)
+            self.assertGreaterEqual(sim.clearance(sim.config.q),sim.clearance_m)
+            self.assertTrue(np.all(sim.config.q[sim.qids]>=sim.ranges[:,0]-1e-8))
+            self.assertTrue(np.all(sim.config.q[sim.qids]<=sim.ranges[:,1]+1e-8))
+            if tick==104:np.testing.assert_allclose(velocity,0.,atol=1e-9)
+            previous_velocity=velocity
+            sequence+=1
+        self.assertIsNone(cycle.loss_since)
 
     def test_session_change_returns_and_blocked_is_not_ready(self):
         self.engage()

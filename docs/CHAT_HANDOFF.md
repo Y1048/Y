@@ -1,3 +1,27 @@
+## 2026-10-07 Bilateral feasible IK goal display — current update
+
+사용자 승인에 따라 초록 구의 소스를 checked-stop endpoint에서 목표 방향의 검증된
+3틱 look-ahead FK로 교체했다. 별도 private process에서 동일 양팔 solver/제약/감속
+검사를 실행하며, 실제 command q와 tracking/return 상태는 수정하지 않는다.
+actual IK/command는 60 Hz 유지, 표시 계산만 최대 10 Hz, 생성 시점 기준 200 ms 이후
+숨긴다. 초록 구는 global reachable workspace나 실제 G1 도달 위치를 증명하지 않는다.
+LowState 29관절 실측 표시, READY 측정 초기화, authored home/return은 보존했다.
+
+backend **344/344**, hardware fixture **44/44**, native Unity edit-mode 신규 **24 checks**,
+기존 measured display **155 checks** 및 measured start **17 checks** PASS.
+기록 입력 재생 645개에서 live command 차이 0 rad, private goal-prefix FK 차이 0 m,
+부모 solver 상태 변경 없음. 최종 cadence 비교에서 loop p95는 예측 없는 앞/뒤
+12.785/12.362 ms, 예측 포함 13.050 ms였으며 모든 60 Hz deadline 보장은 아니다.
+실제 G1/Quest 표시 재시험은 하지 않았다. 불리했던 20/30 Hz 후보 결과도 보존한다.
+
+Play 정지 확인 후 Portable에는 관련 13파일만 백업·해시 확인하여 반영했다.
+Portable predictor 테스트 23/23 PASS. Unity Play를 자동 시작하지 않았다.
+기존 dirty `DevAgentSettings.asset`과 live solver/safety/return/gain 파일은 보존한다.
+이번에 SSH/SDK/DDS/모터 실행은 하지 않았다. 다음 범위는 Quest에서 초록 목표와
+실측 손목 표시 구분을 확인하고 추종오차·지연을 계측하는 것이다. continuous
+LowState reseeding은 이번 변경에 포함하지 않으며 별도 설계가 필요하다.
+세부 근거와 한계: `docs/G1_FEASIBLE_GOAL_DISPLAY_VALIDATION_20261007.md`.
+
 ## 2026-10-07 Measured initialization before engagement — current update
 
 참여 전 구와 실측 손목의 약 7.3 cm 어긋남을 수정했다. canonical Unity 입력은 v5이며, 최초 HMD 정렬 후 정상 LowState가 정지·최신성 조건을 통과하면 READY/inactive 모델을 한 번 초기화한다. backend가 초기화 revision을 알리고 Unity가 같은 기준을 준비한 뒤에만 기존 양손 정렬·참여가 가능하다. 추종/귀환 중 실측값으로 IK를 덮어쓰지 않는다. 실측 팔·허리 자세를 포함한 모델 초기화이며 원래 HMD anchor와 authored arm home/return 목표는 유지한다. Omni는 선택 사항이지만 v5 참여에는 G1 실측 상태가 필요하다.

@@ -50,9 +50,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private bool worldTargetValid;
     private Vector3 leftWorldTarget, rightWorldTarget;
     private Quaternion rightWorldRotation;
-    private bool checkedWorldTargetValid;
-    private Vector3 leftCheckedWorldTarget, rightCheckedWorldTarget;
-    private Quaternion rightCheckedWorldRotation;
+    private G1GoalPreviewState.Frame goalPreview;
+    private double goalPreviewReceived;
+    private bool HasFreshGoalPreview => G1GoalPreviewState.Fresh(
+        goalPreview, goalPreviewReceived, Time.realtimeSinceStartupAsDouble);
     private G1OmniBodyHeading Omni => rightBinder == null || rightBinder.head_camera_alignment == null
         ? null : rightBinder.head_camera_alignment.OmniBodyHeading;
 
@@ -63,8 +64,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         if (!IsTracking || !HasFreshJoints || binder == null) return false;
         if (useExistingScene)
         {
-            if (!checkedWorldTargetValid) return false;
-            position = left ? leftCheckedWorldTarget : rightCheckedWorldTarget;
+            // A goal-directed checked prefix, never the variable stop endpoint.
+            if (!HasFreshGoalPreview) return false;
+            position = G1GoalPreviewState.Position(goalPreview, left);
             return true;
         }
         if (!ikTargetValid) return false;
@@ -77,14 +79,16 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         if (useExistingScene)
         {
-            rotation = rightCheckedWorldRotation;
-            return IsTracking && HasFreshJoints && checkedWorldTargetValid;
+            rotation = Quaternion.identity;
+            if (!IsTracking || !HasFreshJoints || !HasFreshGoalPreview) return false;
+            rotation = G1GoalPreviewState.RightRotation(goalPreview);
+            return true;
         }
         rotation = rightWorldRotation;
         return IsTracking && HasFreshJoints && worldTargetValid;
     }
 
-    // Requested goal is distinct from the checked-stop target marker.
+    // Requested goal is distinct from the checked goal-prefix marker.
     public bool TryGetRequestedWorldTarget(bool left, out Vector3 position)
     {
         position = left ? leftWorldTarget : rightWorldTarget;
@@ -190,9 +194,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         public bool ik_target_valid;
         public float[] left_ik_target_world_m, right_ik_target_world_m;
         public float[] right_ik_target_world_wxyz;
-        public bool checked_target_valid;
-        public float[] left_checked_target_world_m, right_checked_target_world_m;
-        public float[] right_checked_target_world_wxyz;
+        public G1GoalPreviewState.Frame goal_preview;
         public string input_frame;
         public float[] left_ik_target_operator_delta;
         public float[] right_ik_target_operator_delta;
@@ -262,6 +264,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
         LatestJointNames = null;
         CommandBackendId = null;
         CommandFeedbackSequence = -1;
+        goalPreview = null;
+        goalPreviewReceived = 0;
         StartAcknowledgement = null;
         measuredStartReady = false;
         engageRequestSequence = -1;
@@ -462,20 +466,13 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     rightWorldRotation = new Quaternion(q[1], q[2], q[3], q[0]);
                     ikTargetValid = true;
                 }
-                checkedWorldTargetValid = feedback.input_frame == "unity_display_world_v1"
-                    && feedback.checked_target_valid
-                    && ValidDelta(feedback.left_checked_target_world_m)
-                    && ValidDelta(feedback.right_checked_target_world_m)
-                    && ValidRotation(feedback.right_checked_target_world_wxyz);
-                if (checkedWorldTargetValid)
-                {
-                    var l = feedback.left_checked_target_world_m;
-                    var r = feedback.right_checked_target_world_m;
-                    leftCheckedWorldTarget = new Vector3(l[0], l[1], l[2]);
-                    rightCheckedWorldTarget = new Vector3(r[0], r[1], r[2]);
-                    var q = feedback.right_checked_target_world_wxyz;
-                    rightCheckedWorldRotation = new Quaternion(q[1], q[2], q[3], q[0]);
-                }
+                // Missing/stale preview is not replaced with a stopping endpoint
+                // or an unconstrained requested hand pose. Commands are unaffected.
+                goalPreview = feedback.input_frame == "unity_display_world_v1"
+                    && feedback.state == "tracking"
+                    && G1GoalPreviewState.ValidForSequence(feedback.goal_preview, feedback.sequence)
+                        ? feedback.goal_preview : null;
+                goalPreviewReceived = now;
                 if (ikTargetValid && ValidDelta(feedback.left_ik_target_operator_delta) && ValidDelta(feedback.right_ik_target_operator_delta))
                 {
                     var l = feedback.left_ik_target_operator_delta;

@@ -80,7 +80,7 @@ def runtime_metadata(input_kind):
                for name in (
                    'g1_bimanual_runtime.py', 'g1_bimanual_sim.py',
                    'g1_bimanual_unity_sim.py', 'g1_bimanual_target.py',
-                   'g1_bimanual_legacy_input.py', 'g1_bimanual_measured_start.py',
+                   'g1_bimanual_legacy_input.py', 'g1_bimanual_measured_start.py', 'g1_bimanual_goal_preview.py',
                    'g1_bimanual_motion_policy.py', 'g1_bimanual_safety.py',
                    'g1_bimanual_return.py', 'g1_bimanual_limits.py',
                    'g1_bimanual_profile.py')}

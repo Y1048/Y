@@ -431,6 +431,8 @@ def main():
     sim = BimanualSimulation()
     startup_stage('model_ready')
     cycle = UnityCycle(sim)
+    from g1_bimanual_goal_preview import BimanualGoalPreview
+    goal_preview = BimanualGoalPreview(sim)
     observation = None
     if os.environ.get('G1_OBSERVATION_TAP') == '1':
         import importlib.util
@@ -456,6 +458,7 @@ def main():
                 loop_clock='perf_counter' if observation else 'monotonic',
                 source_timestamp_clock='monotonic',
                 motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
+                goal_preview_profile=goal_preview.metadata(),
                 return_policy=sim.return_motion.policy,
                 return_profile=dict(waypoint_rad=sim.return_motion.waypoint.tolist(),
                     velocity_rad_s=sim.return_motion.velocity_limits.tolist(),
@@ -523,6 +526,15 @@ def main():
                         unity_input_status='WAIT' if cycle.received is None else
                             ('FRESH' if generated_at-cycle.received <= .75 else 'STALE')),
                         generated_at)
+                # Only the UI gets look-ahead data. The motor observation above
+                # still contains exactly the current checked q_rad command.
+                preview_context = None
+                if cycle.world_input and feedback.get('ik_target_valid'):
+                    revision = (feedback.get('measured_start') or {}).get('revision', 0)
+                    preview_context = (cycle.backend_id, cycle.session,
+                                       cycle.input_schema, revision)
+                feedback['goal_preview'] = goal_preview.feedback(
+                    preview_context, time.perf_counter(), sim.base_rotation)
                 if peer:
                     try:
                         sock.sendto(json.dumps(feedback).encode(), peer)
@@ -547,6 +559,13 @@ def main():
                     log.flush()
                 if viewer:
                     viewer.sync()
+                # Publish commands first. A bounded-rate lightweight snapshot
+                # must not starve indefinitely when the main IK is busy; the
+                # separate process does all additional solves and never queues.
+                if preview_context is not None:
+                    goal_preview.request(
+                        sim, world_targets(cycle.hands), time.perf_counter(),
+                        cycle.sequence)
                 if observation:
                     deadline, missed = tap_module.next_deadline(deadline, time.perf_counter(), sim.dt)
                     deadline_misses += missed
@@ -559,6 +578,7 @@ def main():
     except KeyboardInterrupt:
         print('Simulation closed; no hardware owner exists here.')
     finally:
+        goal_preview.close()
         if observation:
             observation.close()
         if viewer:

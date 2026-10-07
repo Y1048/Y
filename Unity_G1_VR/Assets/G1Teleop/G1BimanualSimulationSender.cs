@@ -38,6 +38,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
     public bool IsTracking => active && backendState == "tracking";
     public float[] LatestJoints { get; private set; }
     public string[] LatestJointNames { get; private set; }
+    public string CommandBackendId { get; private set; }
+    public long CommandFeedbackSequence { get; private set; } = -1;
+    public double CommandReceivedAt => lastFeedback;
     public bool HasFreshJoints => LatestJoints != null && Time.realtimeSinceStartupAsDouble-lastFeedback < .75;
     private bool ikTargetValid;
     private Vector3 leftIkDelta, rightIkDelta;
@@ -76,6 +79,13 @@ public class G1BimanualSimulationSender : MonoBehaviour
         }
         rotation = rightWorldRotation;
         return IsTracking && HasFreshJoints && worldTargetValid;
+    }
+
+    // Requested goal is distinct from the checked-stop target marker.
+    public bool TryGetRequestedWorldTarget(bool left, out Vector3 position)
+    {
+        position = left ? leftWorldTarget : rightWorldTarget;
+        return useExistingScene && IsTracking && HasFreshJoints && worldTargetValid;
     }
 
     private static bool ValidRotation(float[] q)
@@ -200,7 +210,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private GameObject leftMarker, rightMarker;
     private GameObject leftTrackedMarker;
     private RectTransform statusBar;
-    private Text leftStatus, rightStatus, cycleStatus;
+    private Text leftStatus, rightStatus, cycleStatus, modelStatus;
     private Font statusFont;
     private G1HeadCameraPiP statusCamera;
     private double nextCameraSearch;
@@ -242,6 +252,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
         feedbackGate = new G1BimanualFeedbackGate();
         LatestJoints = null;
         LatestJointNames = null;
+        CommandBackendId = null;
+        CommandFeedbackSequence = -1;
         returnSequence = -1;
         leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
         client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0));
@@ -394,7 +406,13 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     ResetBinders();
                     Debug.Log("[BIMANUAL SIM] backend restarted; fresh alignment required.");
                 }
-                if (ValidJoints(feedback)) { LatestJoints = feedback.q_rad; LatestJointNames = feedback.joint_names; }
+                if (ValidJoints(feedback))
+                {
+                    LatestJoints = feedback.q_rad;
+                    LatestJointNames = feedback.joint_names;
+                    CommandBackendId = feedback.backend_id;
+                    CommandFeedbackSequence = feedback.feedback_sequence;
+                }
                 ikTargetValid = feedback.ik_target_valid &&
                     ValidDelta(feedback.left_ik_target_operator_delta) &&
                     ValidDelta(feedback.right_ik_target_operator_delta);
@@ -601,9 +619,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
         background.color = new Color(.025f, .03f, .04f, .97f);
         background.raycastTarget = false;
         statusFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 28);
-        leftStatus = CreateStatusText("Left", new Vector2(0, 2f / 3f), new Vector2(1, 1), 13);
-        rightStatus = CreateStatusText("Right", new Vector2(0, 1f / 3f), new Vector2(1, 2f / 3f), 13);
-        cycleStatus = CreateStatusText("Cycle", Vector2.zero, new Vector2(1, 1f / 3f), 12);
+        leftStatus = CreateStatusText("Left", new Vector2(0, .75f), new Vector2(1, 1), 13);
+        rightStatus = CreateStatusText("Right", new Vector2(0, .5f), new Vector2(1, .75f), 13);
+        cycleStatus = CreateStatusText("Cycle", new Vector2(0, .25f), new Vector2(1, .5f), 12);
+        modelStatus = CreateStatusText("Model source", Vector2.zero, new Vector2(1, .25f), 11);
         nextCameraSearch = 0;
     }
 
@@ -654,7 +673,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             statusBar.anchorMin = new Vector2(0, 0);
             statusBar.anchorMax = new Vector2(1, 0);
             statusBar.pivot = new Vector2(.5f, 1);
-            statusBar.sizeDelta = new Vector2(0, 60);
+            statusBar.sizeDelta = new Vector2(0, 80);
             statusBar.anchoredPosition3D = new Vector3(0, -6, -1);
             statusBar.localRotation = Quaternion.identity;
             statusBar.localScale = Vector3.one;
@@ -666,7 +685,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             if (statusBar.parent != head) statusBar.SetParent(head, false);
             statusBar.anchorMin = statusBar.anchorMax = new Vector2(.5f, .5f);
             statusBar.pivot = new Vector2(.5f, 1);
-            statusBar.sizeDelta = new Vector2(320, 60);
+            statusBar.sizeDelta = new Vector2(320, 80);
             statusBar.localScale = Vector3.one * G1HeadCameraPiP.DefaultCanvasScale;
             statusBar.localRotation = Quaternion.identity;
             statusBar.localPosition = new Vector3(0, G1HeadCameraPiP.DefaultCanvasVerticalOffset
@@ -682,6 +701,10 @@ public class G1BimanualSimulationSender : MonoBehaviour
             : active ? "양팔 제어 중 · pinch 0.5초: 종료" : mustLeaveZones ? "두 손을 구 밖으로 뺀 뒤 다시 맞추세요"
             : pinch ? "pinch를 풀어 주세요" : "양손을 구에 맞추고 잠시 유지하세요";
         cycleStatus.color = active ? Color.green : Color.white;
+        var preview = rightBinder == null || rightBinder.head_camera_alignment == null
+            ? null : rightBinder.head_camera_alignment.robot_preview;
+        modelStatus.text = preview == null ? "모델: 표시 연결 없음" : preview.ModelStatusText;
+        modelStatus.color = Color.white;
     }
 
     private void OnGUI() { GUI.Label(new Rect(20, 20, 900, 50), "BIMANUAL IK INPUT | " + Status); }

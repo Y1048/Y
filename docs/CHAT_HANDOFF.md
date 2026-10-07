@@ -1,10 +1,20 @@
+## 2026-10-07 Measured display and independent diagnostics — current update
+
+실측 수신과 모델 적용이 달랐던 양팔 표시 분기를 수정했다. 첫 정상 LowState 이후 화면의 29관절은 실측값을 적용하고, stale 상태에서는 마지막 실측 자세를 유지한다. 아직 실측을 한 번도 받지 못한 경우에만 IK 시뮬레이션임을 명시한다. HMD 상태창의 별도 행은 수신 여부가 아니라 실제 모델 적용 출처를 표시한다.
+
+명령 기준과 표시 기준을 분리했다. `G1BimanualCommandFrame`은 기존 rig로 명령 FK를 임시 평가하고 표시 자세를 즉시 복원한다. 초기 HMD 정렬, 양손 engage 기준 및 기존 송신 world-frame 진단값에는 실측 팔/허리 움직임을 주입하지 않는다. 실제 모델 관절은 LowState지만 root 위치/Omni yaw는 기존 표시 기준이다. `logs/test_results/measured_tracking/`에 5 Hz로 실측 q/dq, 명령 q, 각 source/sequence/receipt age 및 유효한 비교 오차를 분리 기록한다. 절대 지연 측정이나 물리 정지 증명은 아니다.
+
+이번 단계는 표시 수정 + 독립 진단 기반이며, 실측값으로 IK 상태를 매 틱 덮어쓰거나 engage 시 자동 재동기화하지 않는다. Python IK·안전·귀환·관절범위·카메라·Omni 로직은 변경하지 않았다. 실제 Unity edit-mode 프리팹 10개 시나리오/155개 검사, backend 305/hardware 44 테스트를 통과했다. 실제 Quest/G1 렌더·새 진단 로그의 실기 확인은 별도다. 자세한 구조와 검증 한계: `docs/G1_MEASURED_DISPLAY_VALIDATION_20261007.md`.
+
 ## 2026-10-07 PC/G1 joint-range contract — current update
 
 PC IK now intersects all 14 arm model/operational position ranges with the deployed G1 C++ acceptance limits (raw bounds plus/minus 0.05 rad, plus 1e-6 rad numerical reserve). Applied before Mink range caches; no output clipping or G1 safety-guard relaxation. Position/rotation rates 12/1.5 and tracking/return limits are unchanged. 09:56 exact baseline replay reproduced the mismatch; candidate output and checked tails contain zero receiver-bound violations and both returns complete. Full validation, holdout, numerical bounds and remaining physical limitations: `docs/G1_JOINT_RANGE_RECONCILIATION_20261007.md`. Status remains OFFLINE_VALIDATED_LIVE_UNVERIFIED for this repair. Historical replay uses historical ranges only in tests.
 
-## 2026-10-06 Windows standalone 기본 실행
+## 2026-10-06 Windows standalone 기본 실행 — 과거 기록, 현재 경로 아님
 
-기본 사용자 실행은 Unity Editor + Play가 아니라 `Builds/Windows/G1Teleop.exe`다.
+> 이 절은 당시 시도의 기록이다. 이후 양손 추적 실패로 기본 경로를 자동 Unity Editor 실행으로 복귀했다. 아래 현재 실행 절이 우선이며, 이번 실측 표시 수정은 기존 standalone 실행 파일에 재빌드되지 않았다.
+
+당시 시도한 기본 사용자 실행은 Unity Editor + Play가 아니라 `Builds/Windows/G1Teleop.exe`였다.
 `START_G1_VR_TELEOP.bat`가 standalone player를 자동 시작하고, 동일 player가 이미
 실행 중이면 재사용한다. 개발용 기존 Editor 경로는 `--unity-editor`, Unity 없이
 workers만 실행하는 경로는 `--no-unity`로 보존한다. standalone과 Editor가 동시에

@@ -74,6 +74,12 @@ public class G1UnityRightArmPreview : MonoBehaviour
     private GameObject official_g1_object;
     private G1OfficialRig official_g1_rig;
     private G1LowStateLegView measured_view;
+    private G1BimanualCommandFrame command_frame;
+    private bool measured_pose_applied;
+    private readonly G1MeasuredTrackingDiagnostics measured_diagnostics = new G1MeasuredTrackingDiagnostics();
+    public string ModelStatusText { get; private set; } = "모델: 실측 데이터 대기";
+    public string PoseSourceStatus { get; private set; } = "WAITING FOR POSE";
+    public bool IsShowingMeasuredPose => measured_pose_applied;
     private Transform tracked_hand_marker;
     private Transform robot_wrist_marker;
     private Transform target_hand_marker;
@@ -112,6 +118,17 @@ public class G1UnityRightArmPreview : MonoBehaviour
         shoulder_center = Vector3.zero;
         left_wrist_position = Vector3.zero;
         right_wrist_position = Vector3.zero;
+        // This API is a control/alignment reference, never the measured renderer.
+        if (UsesBimanualSimulation)
+        {
+            if (command_frame == null) return false;
+            root_position = command_frame.RootPosition;
+            root_rotation = command_frame.RootRotation;
+            shoulder_center = command_frame.ShoulderCenter;
+            left_wrist_position = command_frame.LeftWrist.position;
+            right_wrist_position = command_frame.RightWrist.position;
+            return true;
+        }
         if (official_g1_object == null || official_g1_rig == null
             || !official_g1_rig.TryGetShoulderCenter(out shoulder_center))
         {
@@ -137,9 +154,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
     public Transform RobotRoot => official_g1_object == null
         ? null
         : official_g1_object.transform;
-    public Transform HeadCameraMount => official_g1_rig == null
-        ? null
-        : official_g1_rig.head_camera_mount;
+    public Transform HeadCameraMount => UsesBimanualSimulation && command_frame != null
+        ? command_frame.HeadMount
+        : official_g1_rig == null ? null : official_g1_rig.head_camera_mount;
 
     private void Awake()
     {
@@ -172,8 +189,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
             AnchorOfficialRobot();
         }
 
-        Transform robot_position_reference = GetRobotPositionReference();
-        Transform robot_orientation_reference = GetRobotOrientationReference();
+        Transform robot_position_reference = UsesBimanualSimulation && command_frame != null
+            ? command_frame.RightWrist : GetRobotPositionReference();
+        Transform robot_orientation_reference = UsesBimanualSimulation && command_frame != null
+            ? command_frame.RightWrist : GetRobotOrientationReference();
         if (robot_anchored
             && hand_binder != null
             && !hand_binder.IsCalibrated
@@ -185,11 +204,15 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 robot_orientation_reference.rotation);
         }
 
-        if (UsesBimanualSimulation && robot_anchored && left_wrist_reference != null &&
+        if (UsesBimanualSimulation && robot_anchored && command_frame != null &&
             bimanual_simulation.leftBinder != null && !bimanual_simulation.leftBinder.IsCalibrated)
-            bimanual_simulation.leftBinder.SetEngagementTargetPose(left_wrist_reference.position, left_wrist_reference.rotation);
+            bimanual_simulation.leftBinder.SetEngagementTargetPose(
+                command_frame.LeftWrist.position, command_frame.LeftWrist.rotation);
         UpdateTrackingMarkers();
         UpdateInspectionDemo();
+        if (UsesBimanualSimulation && robot_anchored)
+            measured_diagnostics.Sample(measured_view, command_frame, bimanual_simulation,
+                left_wrist_reference, GetRobotPositionReference(), measured_pose_applied);
     }
 
     private void CreatePreview()
@@ -210,6 +233,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
             official_g1_rig = official_g1_object.GetComponent<G1OfficialRig>();
             measured_view = official_g1_object.AddComponent<G1LowStateLegView>();
             ApplyFallbackPosture();
+            if (UsesBimanualSimulation)
+                command_frame = new G1BimanualCommandFrame(official_g1_rig, preview_root);
             official_g1_object.SetActive(false);
         }
 
@@ -385,6 +410,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void UpdateOfficialRobotPose()
     {
+        measured_pose_applied = false;
         if (official_g1_rig == null)
         {
             return;
@@ -401,10 +427,31 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 // 0.780 m. Match the rendered model to the solver world.
                 official_g1_object.transform.SetPositionAndRotation(
                     new Vector3(0, -0.013f, 0), omni.BaseRotation);
-            if (bimanual_simulation.HasFreshJoints)
-                for (int i=0; i<14; ++i)
-                    official_g1_rig.ApplyJointPosition(bimanual_simulation.LatestJointNames[i], bimanual_simulation.LatestJoints[i]);
-            return; // Never mix old UDP/hardware state into this simulation.
+            bool commandFrameValid = command_frame != null && command_frame.Refresh(
+                bimanual_simulation.LatestJointNames, bimanual_simulation.LatestJoints);
+            if (measured_view != null && measured_view.LatestState != null)
+            {
+                // An accepted measured stream owns all 29 rendered joints, including
+                // during staleness. Evaluating command FK above restored this pose.
+                measured_pose_applied = measured_view.ApplyMeasuredPose();
+                PoseSourceStatus = !measured_pose_applied ? "MEASURED POSE APPLY FAILED"
+                    : measured_view.HasFreshState ? "G1 JOINTS MEASURED / FIXED DISPLAY BASE"
+                    : "G1 JOINTS STALE / LAST MEASURED POSE HELD";
+                ModelStatusText = !measured_pose_applied ? "모델 표시 오류 · 로그 확인"
+                    : measured_view.HasFreshState ? "모델: G1 실측 관절 | 목표: IK"
+                    : "모델: 마지막 실측 자세 · 수신 끊김";
+            }
+            else
+            {
+                // Before the first measured sample the preview is explicitly simulated.
+                // Never return here merely because a once-live stream became stale.
+                if (commandFrameValid) command_frame.ApplyCommandPose();
+                PoseSourceStatus = commandFrameValid ? "IK SIMULATION / NO MEASURED STATE"
+                    : "COMMAND FRAME UNAVAILABLE / POSE HELD";
+                ModelStatusText = commandFrameValid ? "모델: IK 시뮬레이션 · 실측 대기"
+                    : "모델 기준 오류 · 로그 확인";
+            }
+            return;
         }
 
         G1RobotStateUdpReceiver display_receiver = GetDisplayStateReceiver();
@@ -589,10 +636,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
         if (UsesBimanualSimulation)
         {
             recent = bimanual_simulation.HasFreshJoints;
-            DisplayStatus = (measured_view != null && measured_view.LatestState != null
-                ? (measured_view.HasFreshState ? "G1 MEASURED 29 JOINTS / IK TARGET - "
-                                             : "G1 STATE STALE (POSE HELD) / IK TARGET - ")
-                : "BIMANUAL SIMULATION (NO G1 STATE) - ") + bimanual_simulation.Status;
+            DisplayStatus = PoseSourceStatus + " | " + bimanual_simulation.Status;
         }
         if (DisplayStatus != previous_display_status)
         {
@@ -652,9 +696,13 @@ public class G1UnityRightArmPreview : MonoBehaviour
             Quaternion.identity);
         official_g1_rig.SetFirstPersonView(true);
         robot_anchored = true;
+        if (command_frame != null)
+            command_frame.Refresh(bimanual_simulation.LatestJointNames, bimanual_simulation.LatestJoints);
 
-        Transform robot_position_reference = GetRobotPositionReference();
-        Transform robot_orientation_reference = GetRobotOrientationReference();
+        Transform robot_position_reference = UsesBimanualSimulation && command_frame != null
+            ? command_frame.RightWrist : GetRobotPositionReference();
+        Transform robot_orientation_reference = UsesBimanualSimulation && command_frame != null
+            ? command_frame.RightWrist : GetRobotOrientationReference();
         if (hand_binder != null
             && robot_position_reference != null
             && robot_orientation_reference != null)
@@ -882,6 +930,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
 
     private void OnDestroy()
     {
+        measured_diagnostics.Dispose();
         if (display_status_text != null)
         {
             Destroy(display_status_text.gameObject);

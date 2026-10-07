@@ -1,2 +1,4 @@
 *.sh text eol=lf
 runtime/python/** -text
+# Unified diff context uses one literal space for an empty source line.
+tools/onboard/groot_command_observer.patch text eol=lf whitespace=-blank-at-eol,-blank-at-eof

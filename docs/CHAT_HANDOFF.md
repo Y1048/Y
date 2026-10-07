@@ -1,3 +1,28 @@
+## 2026-10-07 양팔 최종 명령 관찰 hook — 별도 후보
+
+사용자 승인으로 `codex/g1-arm-command-observer-20261007`의 isolated worktree에서
+선택적 비동기 C++ 로거, hash-pinned 원본 source patch/preparer, fail-closed CSV reader를
+구현했다. 최신 main/origin/main은 시작 당시 05c8735로 일치했고 원래 dirty
+DevAgentSettings.asset 및 기존 worktree/runtime는 변경하지 않았다.
+
+수신 양팔 14축 목표와 slew 이후 desired q, 기존 writer가 Write에 넘긴 실제 q/dq/Kp/Kd/tau
+29축 및 대응 LowState q/dq/tau_est를 관찰한다. 내부 steady-clock timestamp와 입력 seq,
+큐 drop/invalid/gap을 기록한다. Write 반환은 motor acceptance가 아니다.
+PC/producer clock 정렬이나 실제 Unity 목표 생성 시각을 만들어내지 않는다.
+기본 비활성이며 기존 제어/PD/속도제한/publisher/launcher는 그대로다.
+
+실행 검증: Python fixture 8/8 PASS, Windows MSVC C++ fixture PASS
+(100,000 concurrent samples, bounded full/wrap queue, CSV drain, 비활성 및 file-open 실패),
+C++ CSV→Python round-trip PASS. pinned source 후보 생성 및 PD/rate/LowCmd composer/기존
+CSV 함수 보존, publisher/Write 개수 보존을 확인했다. 이는 synthetic/offline 검사다.
+G1 소스 전송/ARM 통합 빌드/SDK/DDS 초기화/모터 실행/물리 gain 변경은 하지 않았다.
+완성 patch와 header는 저장소에 있으며 회수 baseline 전체는 로컬 evidence다.
+
+남은 항목: G1 ARM SDK/CMake 통합 컴파일, 500 Hz 실제 기록 부하, 최종 명령 비교 측정.
+새 로그로 received→sent→measured를 나눈 뒤 모델 식별과 별도 episode 검증을 진행한다.
+`recommended_hardware_gains = null`. 자세한 필드·활성화 방식·한계:
+`docs/GROOT_ARM_COMMAND_OBSERVER_20261007.md`.
+
 ## 2026-10-07 Transient hand-loss grace — current update
 
 사용자 승인에 따라 손 추적 손실에 의한 자동 복귀 기준만 **0.35 → 1.5 s**로 변경했다.

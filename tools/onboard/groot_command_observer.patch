@@ -1,0 +1,118 @@
+--- a/src/g1_balance_actuator.cpp
++++ b/src/g1_balance_actuator.cpp
+@@ -1,6 +1,7 @@
+ #include "trt_runner.hpp"
+ #include "twist2_common.hpp"
+ #include "external_controller_bridge.hpp"
++#include "groot_command_observer.hpp"
+ 
+ #include <unitree/robot/b2/motion_switcher/motion_switcher_client.hpp>
+ #include <unitree/robot/channel/channel_publisher.hpp>
+@@ -518,13 +519,15 @@
+     }
+   }
+ 
+-  bool try_snapshot(LowState* state, double* age_ms) const noexcept {
++  bool try_snapshot(LowState* state, double* age_ms,
++                    std::int64_t* receipt_ns = nullptr) const noexcept {
+     try {
+       std::lock_guard<std::mutex> lock(mutex_);
+       if (!has_state_.load()) {
+         return false;
+       }
+       *state = state_;
++      if (receipt_ns) *receipt_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(received_.time_since_epoch()).count();
+       *age_ms = std::chrono::duration<double, std::milli>(
+                     Clock::now() - received_).count();
+       return true;
+@@ -1197,6 +1200,8 @@
+ }
+ 
+ struct DesiredCommand {
++  groot_external::CommandSnapshot observed_input{};
++  std::int64_t input_observed_ns{0};
+   Clock::time_point created{};
+   JointArray target{};
+   JointArray feedforward{};
+@@ -1762,7 +1767,8 @@
+           LowState state{};
+           double age_ms = 0.0;
+           DesiredCommand desired;
+-          const bool have_state = reader_.try_snapshot(&state, &age_ms);
++          std::int64_t state_received_ns = 0;
++          const bool have_state = reader_.try_snapshot(&state, &age_ms, &state_received_ns);
+           if (!have_state) {
+             if (supervisor_enabled_) {
+               request_safe_stand("LowState unavailable");
+@@ -1840,8 +1846,40 @@
+           }
+           const LowCmd command =
+               make_command(state, desired, damping_alpha, damping_.load());
++          const auto observed_write_begin = groot_observer::monotonic_ns();
+           publisher_->Write(command);
++          const auto observed_write_end = groot_observer::monotonic_ns();
+           write_count_.fetch_add(1);
++          // Observe const snapshots only, after the existing Write returns.
++          if (command_observer_.enabled()) {
++            groot_observer::Sample sample;
++            sample.writer_sequence = write_count_.load();
++            sample.input_sequence = desired.observed_input.seq;
++            sample.input_source_timestamp = desired.observed_input.source_timestamp;
++            sample.input_valid = desired.observed_input.valid;
++            sample.arms_specified = desired.observed_input.arms_specified;
++            sample.arms_active = desired.observed_input.arms_active;
++            sample.input_observed_ns = desired.input_observed_ns;
++            sample.target_created_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(desired.created.time_since_epoch()).count();
++            sample.state_received_ns = state_received_ns;
++            sample.state_available = have_state;
++            sample.write_begin_ns = observed_write_begin;
++            sample.write_end_ns = observed_write_end;
++            sample.safe_stand = safe_stand_.load();
++            sample.damping = damping_.load();
++            sample.received_arm_q = desired.observed_input.arm_position;
++            sample.target_q = desired.target;
++            for (std::size_t i=0; i<kDofs; ++i) {
++              const auto& motor = command.motor_cmd()[i];
++              sample.sent_q[i]=motor.q(); sample.sent_dq[i]=motor.dq();
++              sample.kp[i]=motor.kp(); sample.kd[i]=motor.kd();
++              sample.tau_ff[i]=motor.tau();
++              sample.measured_q[i]=state.motor_state()[i].q();
++              sample.measured_dq[i]=state.motor_state()[i].dq();
++              sample.tau_est[i]=state.motor_state()[i].tau_est();
++            }
++            command_observer_.observe(sample);
++          }
+         }
+         std::this_thread::sleep_until(next);
+         const auto woke = Clock::now();
+@@ -1871,6 +1909,7 @@
+     }
+   }
+ 
++  groot_observer::Logger command_observer_;
+   StateReader& reader_;
+   const float tracking_error_limit_;
+   const bool supervisor_enabled_;
+@@ -2101,9 +2140,13 @@
+             kRuntimeVelocityLimit, kRuntimeAttitudeLimit, true, false);
+       }
+ 
++      groot_external::CommandSnapshot observed_input{};
++      std::int64_t input_observed_ns = 0;
+       if (external) {
+         const groot_external::CommandSnapshot snapshot =
+             external->command_snapshot();
++        observed_input = snapshot;
++        input_observed_ns = groot_observer::monotonic_ns();
+         command = snapshot.velocity;
+         if (snapshot.arms_specified) {
+           if (snapshot.arms_active) {
+@@ -2229,6 +2272,8 @@
+           selected_walk ? *walk_runner : balance_runner;
+       DesiredCommand desired;
+       desired.created = Clock::now();
++      desired.observed_input = observed_input;
++      desired.input_observed_ns = input_observed_ns;
+       desired.target = hold_target;
+       desired.feedforward.fill(0.0F);
+ 

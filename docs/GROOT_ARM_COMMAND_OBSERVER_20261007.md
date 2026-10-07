@@ -77,3 +77,21 @@ G1 ARM 통합 빌드, 기존 SDK/CMake link, 실제 500 Hz loop 부하 및 새 �
 
 다음 단계는 후보의 ARM 통합 빌드를 확인하고 별도 실행에서 이 로그를 회수하는 것이다.
 이후 received→sent→measured를 분리 비교한다. 같은 데이터로 모델 fit과 validation을 하지 않는다.
+
+## 후속: G1 ARM 통합 컴파일 완료
+
+사용자 별도 승인으로 2026-10-07 G1 유선 SSH에서 기준 소스 SHA256을 재확인한 뒤,
+`/home/unitree/groot_command_observer_build_20261007_9dd21a6`에 src/include/CMakeLists를
+복사하고 계측 후보만 적용했다. 기존 `/home/unitree/groot_onboard_runtime`에는 쓰지 않았다.
+기존 CMake와 SDK/Torch/TensorRT로 `cmake --build ... --target groot_balance_actuator -j1`
+링크까지 완료했다. 후보는 ARM aarch64 ELF이며 SHA256은
+`d44651d39c38ff4e46165efd0668dfb9a6ac000ea7afa22b1d2e4fb7f8f46bc5`.
+원본 소스·원본 바이너리의 컴파일 전후 SHA256 일치를 확인했다.
+후보 바이너리 실행, SDK/DDS runtime 초기화, LowCmd 출력, launcher 교체는 하지 않았다.
+
+컴파일의 SDK/DDS/Torch dependency 경고는 남아 있으나 fatal error 없이 target이 완료됐다.
+Windows SSH 출력 회수 wrapper에서 cp949 decode 오류가 발생해 remote compile.log를
+UTF-8로 다시 회수했다. 이는 wrapper 출력 처리 실패였으며 remote compile 성공은
+`[100%] Built target groot_balance_actuator`, ELF 및 원본 보존 검사로 별도 확인했다.
+원본 compile evidence는 로컬 `logs/test_results/builds_20261007/arm_compile_verified.log`.
+실제 500 Hz 기록 부하와 최종 명령 비교 측정은 여전히 남아 있다.

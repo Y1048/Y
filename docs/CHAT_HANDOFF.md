@@ -1,3 +1,32 @@
+## 2026-10-07 Windows Player 및 G1 ARM 통합 컴파일 완료
+
+사용자 승인으로 기존 Quest Link/Windows 구조의 Unity Player를 빌드하고, G1 관찰 hook
+후보를 별도 G1 폴더에서 ARM 컴파일했다. APK/손 추적/IK/실제 gain을 변경하지 않았다.
+
+Windows 첫 빌드는 Meta DevAgent post-build 복구 때문에 기존 sanitizer의 주소 exact count가
+0이 되어 실패했다. 실제 빌드 직전 SerializedObject 값을 마지막 preprocess hook에서
+캡처하도록 수정하고 재빌드했다. SDK package를 직접 수정하거나 검사 기준을 완화하지 않았다.
+실제 Windows64 build 및 Unity batch exit 0, exe SHA256, token/injected address 제거 확인 PASS.
+실제 C# sanitizer helper 컴파일/실행 테스트 PASS. 첫 실패 증거는 삭제하지 않았다.
+Portable 후보: `Builds/Windows_candidate_20261007/G1Teleop.exe` (폴더 전체 231파일 약244 MB).
+기존 Player는 덮어쓰지 않았다. 후보 Player 실행/Quest 실착 hand tracking은 아직 미검증이다.
+원래 source dirty DevAgentSettings.asset SHA256은 그대로이며 build가 자동 변경한 isolated
+worktree DevAgentSettings/ProjectSettings/TagManager/coverage settings는 커밋하지 않는다.
+실행 중인 Portable Editor와 프로젝트에 수정본을 자동 설치하지 않았다.
+상세: `docs/G1_WINDOWS_PLAYER_BUILD_20261007.md`.
+
+G1: `/home/unitree/groot_command_observer_build_20261007_9dd21a6/build/groot_balance_actuator`
+CMake ARM aarch64 링크 완료. SHA256
+`d44651d39c38ff4e46165efd0668dfb9a6ac000ea7afa22b1d2e4fb7f8f46bc5`.
+원본 `/home/unitree/groot_onboard_runtime` 소스/바이너리 해시 보존 확인.
+새 바이너리 실행, SDK/DDS runtime 초기화, LowCmd 출력, launcher 교체는 하지 않았다.
+SSH 출력 wrapper의 cp949 오류 후 원본 compile.log를 UTF-8로 재회수해 성공을 별도 검증했다.
+상세: `docs/GROOT_ARM_COMMAND_OBSERVER_20261007.md`.
+
+남은 항목: standalone Player의 Quest 양손 입력 실제 확인, G1 후보 선택/기록 부하 및
+received→sent→measured 비교 측정. 배포·계측 실행은 자동으로 진행하지 않았다.
+`recommended_hardware_gains = null`.
+
 ## 2026-10-07 양팔 최종 명령 관찰 hook — 별도 후보
 
 사용자 승인으로 `codex/g1-arm-command-observer-20261007`의 isolated worktree에서

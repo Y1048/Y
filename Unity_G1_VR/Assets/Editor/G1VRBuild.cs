@@ -7,8 +7,37 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
+public sealed class G1WindowsBuildResourceCapture : IPreprocessBuildWithReport
+{
+    public int callbackOrder => int.MaxValue;
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        if (report.summary.platform == BuildTarget.StandaloneWindows64)
+            G1VRBuild.CaptureWindowsBuildResources();
+    }
+}
+
 public static class G1VRBuild
 {
+    private static string capturedAccessToken;
+    private static string capturedServerAddress;
+
+    public static void CaptureWindowsBuildResources()
+    {
+        // Meta injects build-specific values into memory at callback order 1,
+        // then restores the asset after BuildPlayer. Capture the actual values
+        // being serialized, rather than reading the restored YAML afterwards.
+        UnityEngine.Object asset = AssetDatabase.LoadMainAssetAtPath(dev_agent_settings_path);
+        if (asset == null) throw new InvalidDataException("DevAgent settings missing before build.");
+        SerializedObject settings = new SerializedObject(asset);
+        settings.Update();
+        SerializedProperty token = settings.FindProperty("accessToken");
+        SerializedProperty address = settings.FindProperty("serverAddress");
+        if (token == null || address == null)
+            throw new InvalidDataException("DevAgent settings schema changed; refusing build.");
+        capturedAccessToken = token.stringValue;
+        capturedServerAddress = address.stringValue;
+    }
     private const string scene_path = "Assets/Scenes/SampleScene.unity";
     private const string output_path = "../Builds/G1TeleopVR.apk";
     private const string windows_output_path = "../../Builds/Windows/G1Teleop.exe";
@@ -71,6 +100,8 @@ public static class G1VRBuild
 
     public static void BuildWindows()
     {
+        capturedAccessToken = null;
+        capturedServerAddress = null;
         EditorUserBuildSettings.SwitchActiveBuildTarget(
             BuildTargetGroup.Standalone,
             BuildTarget.StandaloneWindows64);
@@ -147,9 +178,10 @@ public static class G1VRBuild
                 settings_path);
         }
 
-        string settings_text = File.ReadAllText(settings_path);
-        string access_token = ReadYamlValue(settings_text, "accessToken");
-        string server_address = ReadYamlValue(settings_text, "serverAddress");
+        if (capturedAccessToken == null || capturedServerAddress == null)
+            throw new InvalidDataException("Build-time DevAgent capture did not run; refusing build.");
+        string access_token = capturedAccessToken;
+        string server_address = capturedServerAddress;
         string data_directory = Path.Combine(
             Path.GetDirectoryName(executable_path),
             Path.GetFileNameWithoutExtension(executable_path) + "_Data");
@@ -187,7 +219,7 @@ public static class G1VRBuild
     {
         Match match = Regex.Match(
             text,
-            "^  " + Regex.Escape(key) + @":\s*(.*)$",
+            "^  " + Regex.Escape(key) + @":[ \t]*(.*)$",
             RegexOptions.Multiline);
         if (!match.Success)
         {

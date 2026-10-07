@@ -308,9 +308,11 @@ class StagedReturnTests(unittest.TestCase):
         self.assertGreaterEqual(minimum, sim.clearance_m)
 
     def test_near_hands_trigger_uses_inter_arm_clearance_only(self):
+        # The old -1.589258 wrist pitch was outside the onboard RX guard.
+        # -1.55 preserves this fixture's global/inter-arm distances exactly.
         q14 = np.array([
             0.37877105997466565, 0.5018709993910249, 1.3869880803444947,
-            1.7752305760909797, -1.0995418598260935, -1.5892583669620304,
+            1.7752305760909797, -1.0995418598260935, -1.55,
             0.17414428402689253, -2.2018477350905616, 0.2429193076737186,
             1.371685727018746, 0.5828341110909996, -0.5412371620371859,
             0.970856138973355, 1.2987824485641153,
@@ -319,6 +321,8 @@ class StagedReturnTests(unittest.TestCase):
         q = sim.home.copy()
         q[sim.qids] = q14
         sim.config.update(q)
+        self.assertTrue(np.all(q14 >= sim.ranges[:, 0]))
+        self.assertTrue(np.all(q14 <= sim.ranges[:, 1]))
         global_clearance = sim.clearance(sim.config.q)
         inter_arm_clearance = sim.return_motion._inter_arm_clearance(sim.config.q)
         self.assertGreaterEqual(global_clearance, sim.clearance_m)

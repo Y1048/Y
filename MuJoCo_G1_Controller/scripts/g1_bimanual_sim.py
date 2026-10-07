@@ -14,6 +14,7 @@ from qpsolvers.exceptions import SolverError
 import g1_mink_shared as base
 from g1_bimanual_runtime import require_validated_engine
 from g1_bimanual_motion_policy import ArmMotionPolicy
+from g1_bimanual_limits import onboard_compatible_joint_ranges
 from g1_bimanual_return import BimanualReturnMotion
 from g1_bimanual_safety import BimanualSafetyEnvelope
 from g1_bimanual_profile import RETURN as RETURN_PROFILE, TRACKING as PROFILE
@@ -48,6 +49,10 @@ class BimanualSimulation:
                 PROFILE.elbow_operational_min_rad,
                 PROFILE.elbow_operational_max_rad,
             ]
+        # Reconcile before ConfigurationLimit/posture/stop-tail cache ranges.
+        # Existing elbow operational bounds stay as the narrower intersection.
+        self.model.jnt_range[ids] = onboard_compatible_joint_ranges(
+            self.names, self.model.jnt_range[ids])
         self.home = base._initial_configuration(self.model)
         self.config = mink.Configuration(self.model)
         self.config.update(self.home)

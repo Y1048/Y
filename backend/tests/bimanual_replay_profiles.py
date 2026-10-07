@@ -51,7 +51,12 @@ def historical_recording_profile():
     historical_return = replace(
         simulator.RETURN_PROFILE,
         joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2)
-    with patch.object(simulator, 'PROFILE', historical_profile), patch.object(
+    # The archived controller predates the onboard 0.05-rad reconciliation.
+    # Bypass only inside this test context, before Mink caches old ranges.
+    with patch.object(
+            simulator, 'onboard_compatible_joint_ranges',
+            side_effect=lambda names, ranges: np.asarray(ranges).copy()), patch.object(
+            simulator, 'PROFILE', historical_profile), patch.object(
             simulator, 'RETURN_PROFILE', historical_return), patch.object(
             motion_policy, 'PROFILE', historical_profile), patch.object(
             motion_policy.ArmMotionPolicy, 'prepare', _historical_prepare):

@@ -1,3 +1,7 @@
+## 2026-10-07 PC/G1 joint-range contract — current update
+
+PC IK now intersects all 14 arm model/operational position ranges with the deployed G1 C++ acceptance limits (raw bounds plus/minus 0.05 rad, plus 1e-6 rad numerical reserve). Applied before Mink range caches; no output clipping or G1 safety-guard relaxation. Position/rotation rates 12/1.5 and tracking/return limits are unchanged. 09:56 exact baseline replay reproduced the mismatch; candidate output and checked tails contain zero receiver-bound violations and both returns complete. Full validation, holdout, numerical bounds and remaining physical limitations: `docs/G1_JOINT_RANGE_RECONCILIATION_20261007.md`. Status remains OFFLINE_VALIDATED_LIVE_UNVERIFIED for this repair. Historical replay uses historical ranges only in tests.
+
 ## 2026-10-06 Windows standalone 기본 실행
 
 기본 사용자 실행은 Unity Editor + Play가 아니라 `Builds/Windows/G1Teleop.exe`다.

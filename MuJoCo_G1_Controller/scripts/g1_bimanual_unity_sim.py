@@ -14,9 +14,11 @@ from g1_bimanual_sim import BimanualSimulation
 from g1_bimanual_runtime import runtime_metadata, startup_stage
 from g1_bimanual_legacy_input import PairedHandFilter, relative_targets
 from g1_bimanual_target import BASIS, copy_world_hands, world_targets
+from g1_bimanual_measured_start import MeasuredStartGate, validate_snapshot
 
 SCHEMA = 'g1.bimanual.unity.sim.v1'
 WORLD_SCHEMA = 'g1.bimanual.unity.sim.v4'
+MEASURED_START_SCHEMA = 'g1.bimanual.unity.sim.v5'
 WORLD_FRAME = 'unity_display_world_v1'
 
 
@@ -68,7 +70,7 @@ def decode(raw):
                        parse_float=floating, parse_constant=constant)
     except (RecursionError, OverflowError) as error:
         raise ValueError('json_numeric_or_depth') from error
-    if not isinstance(x, dict) or x.get('schema') not in (SCHEMA, WORLD_SCHEMA) or x.get('simulation_only') is not True:
+    if not isinstance(x, dict) or x.get('schema') not in (SCHEMA, WORLD_SCHEMA, MEASURED_START_SCHEMA) or x.get('simulation_only') is not True:
         raise ValueError('provenance')
     if not isinstance(x.get('session'), str) or not 1 <= len(x['session']) <= 64:
         raise ValueError('session')
@@ -77,7 +79,7 @@ def decode(raw):
     if type(x.get('sender_time_s')) not in (int, float) or not math.isfinite(x['sender_time_s']) or x['sender_time_s'] < 0:
         raise ValueError('sender_time')
     frame = x.get('input_frame', 'legacy_relative')
-    if (x['schema'] == WORLD_SCHEMA) != (frame == WORLD_FRAME):
+    if (x['schema'] in (WORLD_SCHEMA, MEASURED_START_SCHEMA)) != (frame == WORLD_FRAME):
         raise ValueError('schema_frame_mismatch')
     if frame not in ('legacy_relative', WORLD_FRAME):
         raise ValueError('input_frame')
@@ -127,6 +129,15 @@ def decode(raw):
             if (not isinstance(values, list) or len(values) != length or any(
                     type(v) not in (int, float) or not math.isfinite(v) for v in values)):
                 raise ValueError(key)
+    if x['schema'] == MEASURED_START_SCHEMA:
+        if type(x.get('start_aligned')) is not bool or type(x.get('start_state_available')) is not bool:
+            raise ValueError('measured_start_alignment')
+        revision = x.get('start_revision')
+        if type(revision) is not int or not -1 <= revision <= 2**53 - 1:
+            raise ValueError('measured_start_revision')
+        validate_snapshot(x.get('start_state') if x['start_state_available'] else None)
+        if x['start_state_available'] and x.get('start_state') is None:
+            raise ValueError('measured_start_missing_sample')
     return x
 
 
@@ -157,8 +168,14 @@ class UnityCycle:
         self.world_input = False
         self.base_yaw_rad = 0.
         self.input_frame = None
+        self.input_schema = None
+        self.start_gate = MeasuredStartGate()
+        self.now = 0.
+        self._last_start_revision = 0
+        self.idle_measured_initialization = False
 
     def receive(self, packet, now):
+        self.now = now
         if packet['session'] != self.session:
             if self.state == 'tracking':
                 self.start_return('session_changed')
@@ -168,12 +185,19 @@ class UnityCycle:
             self.armed = False
             self.hands = None
             self.input_frame = None
+            self.input_schema = None
+            self.start_gate.invalidate('unity_session_changed')
         if packet['sequence'] <= self.sequence or packet['sender_time_s'] <= self.sender_time:
             return False
         frame = packet.get('input_frame', 'legacy_relative')
         if self.input_frame is not None and frame != self.input_frame:
             if self.state == 'tracking': self.start_return('input_frame_changed')
             return False
+        if self.input_schema is not None and packet['schema'] != self.input_schema:
+            if self.state == 'tracking':
+                self.start_return('input_schema_changed')
+            return False
+        self.input_schema = packet['schema']
         self.input_frame = frame
         self.world_input = frame == WORLD_FRAME
         if self.world_input:
@@ -189,6 +213,19 @@ class UnityCycle:
         if packet['return_home'] and self.state == 'tracking':
             self.start_return('pinch')
         if self.state == 'ready':
+            if self.input_schema == MEASURED_START_SCHEMA:
+                self.start_gate.observe(
+                    packet.get('start_state') if packet['start_state_available'] else None, now, self.sim,
+                    allow_initialize=not packet['engage'] and not packet['return_home'],
+                    aligned=packet['start_aligned'])
+                self.reason = 'measured_start:' + self.start_gate.reason
+                if (packet['engage'] and not self.start_gate.can_engage(
+                        now, packet['start_revision'])):
+                    self.armed = False
+                    return True  # Input accepted, activation explicitly refused.
+                if not self.start_gate.can_engage(now, self.start_gate.revision):
+                    self.armed = False
+                    return True
             if not packet['engage']:
                 self.armed = True
             elif self.armed and not packet['return_home'] and all(packet[s]['tracked'] for s in ('left', 'right')):
@@ -230,12 +267,21 @@ class UnityCycle:
         return True
 
     def start_return(self, reason):
+        self.start_gate.invalidate('return_in_progress')
         self.state = 'returning'
         self.reason = reason
         self.armed = False
         self.loss_since = None
 
     def tick(self, now):
+        self.now = now
+        self.idle_measured_initialization = (
+            self.start_gate.revision != self._last_start_revision)
+        self._last_start_revision = self.start_gate.revision
+        if (self.state == 'ready' and self.input_schema == MEASURED_START_SCHEMA
+                and not self.start_gate.fresh(now)):
+            self.start_gate.invalidate('measurement_stale')
+            self.armed = False
         self.last_tick_action = 'idle'
         self.checked_braking_applied = False
         braking_before = getattr(self.sim, 'braking_steps', 0)
@@ -282,6 +328,8 @@ class UnityCycle:
         result = dict(tick_action=self.last_tick_action,
             input_age_s=None if self.received is None else max(0., now-self.received),
             checked_braking_applied=self.checked_braking_applied)
+        if self.input_schema == MEASURED_START_SCHEMA:
+            result['idle_measured_initialization'] = self.idle_measured_initialization
         if isinstance(self.sim, BimanualSimulation):
             result.update(ik_state=self.sim.state, ik_reason=self.sim.reason,
                 braking_steps_total=self.sim.braking_steps,
@@ -297,6 +345,10 @@ class UnityCycle:
                     backend_id=self.backend_id, backend_started_ns=self.backend_started_ns,
                     feedback_sequence=self.feedback_sequence,
                     session=self.session, sequence=self.sequence, state=self.state, reason=self.reason)
+        if self.input_schema == MEASURED_START_SCHEMA:
+            result['measured_start'] = self.start_gate.status(self.now)
+            if self.state == 'ready' and result['measured_start']['ready']:
+                self.start_gate.announced_revision = self.start_gate.revision
         result['base_yaw_rad'] = self.base_yaw_rad
         result['input_frame'] = self.input_frame
         self.feedback_sequence += 1

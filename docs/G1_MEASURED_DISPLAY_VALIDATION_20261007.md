@@ -1,5 +1,7 @@
 # Measured G1 display and independent diagnostics — 2026-10-07
 
+> **Superseding stage:** measured engagement-time initialization is now implemented separately; see `docs/G1_MEASURED_START_VALIDATION_20261007.md`. The no-reseed descriptions below record this display-only phase. Continuous measured-feedback IK is still not implemented.
+
 Status: **EDIT_MODE_VALIDATED_PHYSICAL_XR_UNVERIFIED**.
 Baseline: `9c4ecf81437b18b291da362518e892a4c3e0b4b6`.
 

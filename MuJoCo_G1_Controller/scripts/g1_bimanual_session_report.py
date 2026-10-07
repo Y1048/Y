@@ -169,6 +169,11 @@ def analyze_session(path):
     nonfinite_q_rows = 0
     malformed_joint_rows = 0
     accepted_inputs = 0
+    last_input_packet = None
+    initialization_events = []
+    initialization_keys = set()
+    invalid_initialization_events = 0
+    previous_output_state = None
     malformed_json_rows = 0
 
     with _open_text(path) as stream:
@@ -197,6 +202,7 @@ def analyze_session(path):
                 accepted_inputs += 1
                 try:
                     packet = json.loads(row['raw_json_text'])
+                    last_input_packet = packet
                     flags = (bool(packet['engage']), bool(packet['return_home']),
                              bool(packet['left']['tracked']), bool(packet['right']['tracked']))
                 except (KeyError, TypeError, json.JSONDecodeError):
@@ -275,6 +281,37 @@ def analyze_session(path):
                 nonfinite_q_rows += 1
                 previous_q = previous_velocity = None
                 continue
+            if row.get('idle_measured_initialization') is True:
+                packet = last_input_packet or {}
+                sample = packet.get('start_state') or {}
+                start = row.get('measured_start') or {}
+                seed_q = sample.get('q_rad')
+                key = (row.get('backend_id'), start.get('revision'))
+                valid_initialization = (
+                    state == 'ready' and row.get('tick_action') == 'idle'
+                    and previous_output_state in (None, 'ready')
+                    and packet.get('schema') == 'g1.bimanual.unity.sim.v5'
+                    and packet.get('engage') is False
+                    and packet.get('return_home') is False
+                    and packet.get('start_aligned') is True
+                    and packet.get('start_state_available') is True
+                    and start.get('ready') is True
+                    and type(start.get('revision')) is int and start['revision'] > 0
+                    and key not in initialization_keys
+                    and isinstance(seed_q, list) and len(seed_q) == 29
+                    and all(type(v) in (int, float) and math.isfinite(v) for v in seed_q)
+                    and np.allclose(q, seed_q[15:], rtol=0, atol=1e-8))
+                if valid_initialization:
+                    initialization_events.append(dict(
+                        line=line_number, revision=start['revision'],
+                        source_session=sample.get('session'),
+                        maximum_inactive_reset_rad=0. if previous_q is None else
+                            float(np.max(np.abs(q-previous_q)))))
+                    initialization_keys.add(key)
+                    previous_q, previous_velocity = q, np.zeros(14)
+                    previous_output_state = state
+                    continue
+                invalid_initialization_events += 1
             if previous_q is not None:
                 velocity = (q - previous_q) / SIM_DT
                 speed_deg = np.rad2deg(np.abs(velocity))
@@ -289,6 +326,7 @@ def analyze_session(path):
                         acceleration_deg - acceleration_caps_deg_s2)))
                 previous_velocity = velocity
             previous_q = q
+            previous_output_state = state
     current_hashes = _current_source_hashes()
     logged_hashes = {} if run is None else dict(run.get('source_sha256') or {})
     source_match = {name: (logged_hashes.get(name) == digest)
@@ -299,6 +337,8 @@ def analyze_session(path):
         failures.append('missing_run_metadata')
     if invalid_motion_limits:
         failures.append('invalid_motion_limits_metadata')
+    if invalid_initialization_events:
+        failures.append('invalid_inactive_initialization_event')
     if blocked_rows:
         failures.append('blocked_state_observed')
     if nonfinite_q_rows or malformed_joint_rows:
@@ -349,6 +389,7 @@ def analyze_session(path):
                                      max_acceleration_deg_s2=max_acceleration,
                                      max_acceleration_excess_deg_s2=max_acceleration_excess),
                 validation_motion_limits=motion_limits,
+                inactive_model_initializations=initialization_events,
                 blocked_rows=blocked_rows, nonfinite_joint_rows=nonfinite_q_rows,
                 malformed_joint_rows=malformed_joint_rows,
                 malformed_json_rows=malformed_json_rows,
@@ -405,6 +446,9 @@ def replay_session(path):
             state_rows += 1
             before_velocity = sim.velocity[sim.dofs].copy()
             cycle.tick(row['monotonic_s'])
+            if row.get('measured_start') is not None:
+                # This row records the feedback emission that announces a seed.
+                cycle.feedback()
             blocked_rows += cycle.state == 'blocked'
             for name, state, reason in (
                     ('logged', row.get('state'), row.get('reason', '')),

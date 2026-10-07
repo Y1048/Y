@@ -1,3 +1,9 @@
+## 2026-10-07 Measured initialization before engagement — current update
+
+참여 전 구와 실측 손목의 약 7.3 cm 어긋남을 수정했다. canonical Unity 입력은 v5이며, 최초 HMD 정렬 후 정상 LowState가 정지·최신성 조건을 통과하면 READY/inactive 모델을 한 번 초기화한다. backend가 초기화 revision을 알리고 Unity가 같은 기준을 준비한 뒤에만 기존 양손 정렬·참여가 가능하다. 추종/귀환 중 실측값으로 IK를 덮어쓰지 않는다. 실측 팔·허리 자세를 포함한 모델 초기화이며 원래 HMD anchor와 authored arm home/return 목표는 유지한다. Omni는 선택 사항이지만 v5 참여에는 G1 실측 상태가 필요하다.
+
+최종 offline backend 321/hardware 44 테스트와 실제 Unity edit-mode 기존 155개+새 18개 검사가 통과했다. 기록 자세 재현에서 양쪽 구·손목 오차가 수치상 0으로 일치했으며 실제 구동 검증은 아직 하지 않았다. 데이터 최신성 값은 절대 동기 지연이 아니고, body 15관절은 cycle 시작 snapshot으로 고정되므로 continuous measured-feedback IK로 해석하지 않는다. `docs/G1_MEASURED_START_VALIDATION_20261007.md`의 조건·단계·한계를 따른다. 다음 확인은 기존 세션을 정상 종료하고 컴파일 완료 후 `START_G1_VR_TELEOP.bat --no-groot-actuation`으로 한다. 이 옵션은 이미 켜진 GROOT를 끄지 않는다.
+
 ## 2026-10-07 Measured display and independent diagnostics — current update
 
 실측 수신과 모델 적용이 달랐던 양팔 표시 분기를 수정했다. 첫 정상 LowState 이후 화면의 29관절은 실측값을 적용하고, stale 상태에서는 마지막 실측 자세를 유지한다. 아직 실측을 한 번도 받지 못한 경우에만 IK 시뮬레이션임을 명시한다. HMD 상태창의 별도 행은 수신 여부가 아니라 실제 모델 적용 출처를 표시한다.

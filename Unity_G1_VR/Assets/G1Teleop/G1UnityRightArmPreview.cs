@@ -80,6 +80,9 @@ public class G1UnityRightArmPreview : MonoBehaviour
     public string ModelStatusText { get; private set; } = "모델: 실측 데이터 대기";
     public string PoseSourceStatus { get; private set; } = "WAITING FOR POSE";
     public bool IsShowingMeasuredPose => measured_pose_applied;
+    public long PreparedStartRevision { get; private set; } = -1;
+    public G1MeasuredStartState.Snapshot CaptureMeasuredStart(double now)
+        => G1MeasuredStartState.Capture(measured_view, now);
     private Transform tracked_hand_marker;
     private Transform robot_wrist_marker;
     private Transform target_hand_marker;
@@ -428,7 +431,10 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 official_g1_object.transform.SetPositionAndRotation(
                     new Vector3(0, -0.013f, 0), omni.BaseRotation);
             bool commandFrameValid = command_frame != null && command_frame.Refresh(
-                bimanual_simulation.LatestJointNames, bimanual_simulation.LatestJoints);
+                bimanual_simulation.LatestJointNames, bimanual_simulation.LatestJoints,
+                bimanual_simulation.StartAcknowledgement?.body_q_rad);
+            PreparedStartRevision = commandFrameValid
+                ? bimanual_simulation.StartAcknowledgement?.revision ?? -1 : -1;
             if (measured_view != null && measured_view.LatestState != null)
             {
                 // An accepted measured stream owns all 29 rendered joints, including
@@ -697,7 +703,8 @@ public class G1UnityRightArmPreview : MonoBehaviour
         official_g1_rig.SetFirstPersonView(true);
         robot_anchored = true;
         if (command_frame != null)
-            command_frame.Refresh(bimanual_simulation.LatestJointNames, bimanual_simulation.LatestJoints);
+            command_frame.Refresh(bimanual_simulation.LatestJointNames, bimanual_simulation.LatestJoints,
+                bimanual_simulation.StartAcknowledgement?.body_q_rad);
 
         Transform robot_position_reference = UsesBimanualSimulation && command_frame != null
             ? command_frame.RightWrist : GetRobotPositionReference();

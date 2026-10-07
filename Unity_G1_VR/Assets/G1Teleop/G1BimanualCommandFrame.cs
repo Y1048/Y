@@ -17,6 +17,9 @@ public sealed class G1BimanualCommandFrame
     private readonly float[] heldCommand = new float[14];
     private bool hasCommand;
     private readonly Transform sourceHead;
+    private readonly Vector3 initialHeadLocalPosition;
+    private readonly Quaternion initialHeadLocalRotation;
+    private float[] fixedBody;
 
     public Transform HeadMount { get; }
     public Transform LeftWrist { get; }
@@ -41,6 +44,8 @@ public sealed class G1BimanualCommandFrame
         }
         sourceHead = rig.head_camera_mount;
         if (sourceHead == null) throw new InvalidOperationException("Missing head mount");
+        initialHeadLocalPosition = rig.transform.InverseTransformPoint(sourceHead.position);
+        initialHeadLocalRotation = Quaternion.Inverse(rig.transform.rotation) * sourceHead.rotation;
         var root = new GameObject("G1 command references - not measured").transform;
         root.SetParent(parent, false);
         HeadMount = Reference(root, "Command head alignment");
@@ -56,8 +61,16 @@ public sealed class G1BimanualCommandFrame
         return value;
     }
 
-    public bool Refresh(string[] jointNames, float[] positions)
+    public bool Refresh(string[] jointNames, float[] positions, float[] bodyPositions = null)
     {
+        // Only an acknowledged backend initialization supplies this frozen body.
+        // The camera anchor remains the startup anchor, not the reseeded torso.
+        if (bodyPositions != null)
+        {
+            if (bodyPositions.Length != 15) return false;
+            foreach (float q in bodyPositions)
+                if (float.IsNaN(q) || float.IsInfinity(q)) return false;
+        }
         if (jointNames != null || positions != null)
         {
             if (jointNames == null || positions == null
@@ -68,6 +81,7 @@ public sealed class G1BimanualCommandFrame
             Array.Copy(positions, heldCommand, 14);
             hasCommand = true;
         }
+        fixedBody = bodyPositions == null ? null : (float[])bodyPositions.Clone();
         for (int i = 0; i < nodes.Length; ++i)
             savedRotations[i] = nodes[i].transform.localRotation;
         try
@@ -78,7 +92,8 @@ public sealed class G1BimanualCommandFrame
             ShoulderCenter = 0.5f * (nodes[15].transform.position + nodes[22].transform.position);
             LeftWrist.SetPositionAndRotation(nodes[21].transform.position, nodes[21].transform.rotation);
             RightWrist.SetPositionAndRotation(nodes[28].transform.position, nodes[28].transform.rotation);
-            HeadMount.SetPositionAndRotation(sourceHead.position, sourceHead.rotation);
+            HeadMount.SetPositionAndRotation(rig.transform.TransformPoint(initialHeadLocalPosition),
+                rig.transform.rotation * initialHeadLocalRotation);
         }
         finally
         {
@@ -93,6 +108,8 @@ public sealed class G1BimanualCommandFrame
     {
         for (int i = 0; i < nodes.Length; ++i)
             nodes[i].transform.localRotation = initialRotations[i];
+        if (fixedBody != null)
+            for (int i = 0; i < 15; ++i) nodes[i].SetJointPosition(fixedBody[i]);
         if (hasCommand)
             for (int i = 0; i < 14; ++i) nodes[15 + i].SetJointPosition(heldCommand[i]);
     }

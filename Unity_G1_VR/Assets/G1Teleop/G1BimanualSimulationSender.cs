@@ -41,6 +41,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
     public string CommandBackendId { get; private set; }
     public long CommandFeedbackSequence { get; private set; } = -1;
     public double CommandReceivedAt => lastFeedback;
+    public G1MeasuredStartState.Acknowledgement StartAcknowledgement { get; private set; }
+    private bool measuredStartReady;
+    private long engageRequestSequence = -1;
     public bool HasFreshJoints => LatestJoints != null && Time.realtimeSinceStartupAsDouble-lastFeedback < .75;
     private bool ikTargetValid;
     private Vector3 leftIkDelta, rightIkDelta;
@@ -143,13 +146,17 @@ public class G1BimanualSimulationSender : MonoBehaviour
     }
     [Serializable] private class Packet
     {
-        public string schema = "g1.bimanual.unity.sim.v4";
+        public string schema = G1MeasuredStartState.InputSchema;
         public bool simulation_only = true;
         public string session;
         public long sequence;
         public double sender_time_s;
         public bool engage;
         public bool return_home;
+        public bool start_aligned;
+        public bool start_state_available;
+        public long start_revision = -1;
+        public G1MeasuredStartState.Snapshot start_state;
         public string input_frame = "unity_display_world_v1";
         public float base_yaw_rad;
         public float omni_source_yaw_deg;
@@ -168,6 +175,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     }
     [Serializable] private class Feedback
     {
+        public G1MeasuredStartState.Acknowledgement measured_start;
         public string schema;
         public bool simulation_only;
         public string backend_id;
@@ -254,6 +262,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
         LatestJointNames = null;
         CommandBackendId = null;
         CommandFeedbackSequence = -1;
+        StartAcknowledgement = null;
+        measuredStartReady = false;
+        engageRequestSequence = -1;
         returnSequence = -1;
         leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
         client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0));
@@ -384,13 +395,14 @@ public class G1BimanualSimulationSender : MonoBehaviour
             {
                 IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);
                 byte[] data = client.Receive(ref remote);
-                if (!IPAddress.IsLoopback(remote.Address) || remote.Port != port || data.Length > 4096) continue;
+                if (!IPAddress.IsLoopback(remote.Address) || remote.Port != port || data.Length > 8192) continue;
                 var feedback = JsonUtility.FromJson<Feedback>(Encoding.UTF8.GetString(data));
                 if (feedback == null || feedback.schema != "g1.bimanual.unity.sim.state.v1" ||
                     !feedback.simulation_only || feedback.session != packet.session) continue;
                 if (feedback.state != "ready" && feedback.state != "tracking" &&
                     feedback.state != "returning" && feedback.state != "blocked") continue;
-                if (useExistingScene && !ValidJoints(feedback)) continue;
+                if (useExistingScene && (!ValidJoints(feedback)
+                    || !G1MeasuredStartState.Valid(feedback.measured_start))) continue;
                 bool restarted;
                 if (!feedbackGate.Accept(feedback.backend_id, feedback.backend_started_ns,
                     feedback.feedback_sequence, feedback.sequence, packet.sequence, out restarted)) continue;
@@ -405,6 +417,27 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     alignmentTime = pinchTime = 0;
                     ResetBinders();
                     Debug.Log("[BIMANUAL SIM] backend restarted; fresh alignment required.");
+                }
+                if (useExistingScene)
+                {
+                    var previousStart = StartAcknowledgement;
+                    StartAcknowledgement = feedback.measured_start;
+                    bool changedStart = previousStart == null
+                        || previousStart.revision != StartAcknowledgement.revision
+                        || previousStart.session != StartAcknowledgement.session || restarted;
+                    if (!active && changedStart)
+                    {
+                        leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
+                        leftBinder?.ResetCalibration(); rightBinder?.ResetCalibration();
+                    }
+                    if (active && feedback.state == "ready" && engageRequestSequence >= 0
+                        && feedback.sequence >= engageRequestSequence)
+                    {
+                        active = false;
+                        mustLeaveZones = true;
+                        ResetBinders();
+                        Debug.Log("[MEASURED START] Backend refused engage; fresh alignment required.");
+                    }
                 }
                 if (ValidJoints(feedback))
                 {
@@ -500,11 +533,24 @@ public class G1BimanualSimulationSender : MonoBehaviour
             if (packet.left.tracked) leftTrackedMarker.transform.SetPositionAndRotation(
                 leftBinder.DisplayedWristPosition, leftBinder.DisplayedWristRotation);
         }
-        packet.schema = useExistingScene ? "g1.bimanual.unity.sim.v4" : "g1.bimanual.unity.sim.v1";
+        packet.schema = useExistingScene ? G1MeasuredStartState.InputSchema : "g1.bimanual.unity.sim.v1";
         packet.input_frame = useExistingScene ? "unity_display_world_v1" : "legacy_relative";
         // Unity +Y yaw and MuJoCo +Z yaw have opposite signs under BASIS.
         packet.base_yaw_rad = Omni == null ? 0 : -(float)Omni.OperatorBodyYawDegrees * Mathf.Deg2Rad;
         UpdateWorldDiagnostics();
+        if (useExistingScene)
+        {
+            var alignment = rightBinder == null ? null : rightBinder.head_camera_alignment;
+            var preview = alignment == null ? null : alignment.robot_preview;
+            packet.start_aligned = alignment != null && alignment.IsInitialAlignmentApplied;
+            packet.start_state = preview == null ? null : preview.CaptureMeasuredStart(now);
+            packet.start_state_available = packet.start_state != null;
+            packet.start_revision = preview == null ? -1 : preview.PreparedStartRevision;
+            measuredStartReady = G1MeasuredStartState.CanEngage(StartAcknowledgement,
+                packet.start_revision, packet.start_state,
+                now - lastFeedback <= G1MeasuredStartState.MaximumAgeSeconds);
+        }
+        else measuredStartReady = true;
         bool inZones = useExistingScene
             ? tracked && leftBinder.IsAlignmentReady && rightBinder.IsAlignmentReady
             : tracked && Vector3.Distance(leftWrist.position, leftZone) < .07f && Vector3.Distance(rightWrist.position, rightZone) < .07f;
@@ -522,7 +568,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
             mustLeaveZones = false;
         if (useExistingScene && !active)
         {
-            bool eligible = fresh && backendState == "ready" && !pinch && !mustLeaveZones;
+            bool eligible = fresh && measuredStartReady && backendState == "ready" && !pinch && !mustLeaveZones;
             leftReadyUntil = RememberReady(now, leftReadyUntil, eligible && packet.left.tracked,
                 leftBinder.EngagementProgress);
             rightReadyUntil = RememberReady(now, rightReadyUntil, eligible && packet.right.tracked,
@@ -530,12 +576,12 @@ public class G1BimanualSimulationSender : MonoBehaviour
         }
         if (!active)
         {
-            alignmentTime = fresh && backendState == "ready" && inZones && !pinch && !mustLeaveZones
+            alignmentTime = fresh && measuredStartReady && backendState == "ready" && inZones && !pinch && !mustLeaveZones
                 ? alignmentTime + Time.unscaledDeltaTime : 0;
             // Binders already enforce the configured stable hold. Do not add
             // another simultaneous dwell gate on top of the two hand timers.
             bool engageReady = useExistingScene
-                ? CanEngage(fresh, backendState == "ready", tracked, inZones, pinch, mustLeaveZones,
+                ? CanEngage(fresh && measuredStartReady, backendState == "ready", tracked, inZones, pinch, mustLeaveZones,
                     now < leftReadyUntil ? 1 : 0, now < rightReadyUntil ? 1 : 0)
                 : alignmentTime >= .35f;
             if (engageReady)
@@ -548,6 +594,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     ReadBinder(rightBinder, packet.right);
                 }
                 active = true;
+                engageRequestSequence = packet.sequence;
                 returnPending = false;
                 returnSequence = -1;
                 pinchTime = 0;
@@ -601,7 +648,8 @@ public class G1BimanualSimulationSender : MonoBehaviour
             Status += string.Format("\nL: {0} {1:F1}cm {2:P0} | R: {3} {4:F1}cm {5:P0}",
                 leftBinder.EngagementState, leftBinder.AlignmentPositionError*100, leftBinder.EngagementProgress,
                 rightBinder.EngagementState, rightBinder.AlignmentPositionError*100, rightBinder.EngagementProgress);
-        if (useExistingScene && !active) Status = "ALIGNED: release external hold\n" + Status;
+        if (useExistingScene && !active && backendState == "ready" && !measuredStartReady)
+            Status = "WAIT: measured start / " + (StartAcknowledgement?.reason ?? "backend acknowledgement");
         UpdateStatusBar(fresh, pinch);
     }
 
@@ -696,7 +744,9 @@ public class G1BimanualSimulationSender : MonoBehaviour
             leftBinder != null && leftBinder.IsTrackingValid, leftReadyUntil);
         UpdateHandStatus(rightStatus, "오른손", rightBinder,
             rightBinder != null && rightBinder.IsTrackingValid, rightReadyUntil);
-        cycleStatus.text = !fresh ? "IK · 연결 대기" : backendState == "blocked" ? "IK 중단 · PC 로그 확인"
+        cycleStatus.text = useExistingScene && !active && backendState == "ready" && !measuredStartReady
+            ? "실측 초기화 대기 · 로봇 정지/수신 확인"
+            : !fresh ? "IK · 연결 대기" : backendState == "blocked" ? "IK 중단 · PC 로그 확인"
             : backendState == "returning" || returnPending ? "팔을 기본자세로 복귀 중"
             : active ? "양팔 제어 중 · pinch 0.5초: 종료" : mustLeaveZones ? "두 손을 구 밖으로 뺀 뒤 다시 맞추세요"
             : pinch ? "pinch를 풀어 주세요" : "양손을 구에 맞추고 잠시 유지하세요";

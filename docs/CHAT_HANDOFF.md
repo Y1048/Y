@@ -74,7 +74,7 @@ BAT의 위임 경로 launcher에 실행 명령을 표시하며 자동으로 카�
 
 # G1 Teleop Current Handoff
 
-최종 갱신: 2026-10-06
+최종 갱신: 2026-10-07
 
 ## 현재 실행
 
@@ -107,6 +107,12 @@ SSH/PTTY B (-tt), foreground:
 Actuator duration은 remote binary capability를 자동 검사한다. `--unlimited-duration`을 지원하면 무제한을 사용하고, 아직 지원하지 않으면 현재 binary 호환을 위해 `--duration 300`으로 fail-compatible 동작한다. G1 onboard source용 패치는 `tools/GROOT_ONBOARD_UNLIMITED_DURATION.patch`에 있다. 이 패치는 NORMAL 모드에만 unlimited를 추가하며 signal/emergency damping은 유지한다.
 
 `--check-only`은 remote login/actuation을 하지 않는다. 기존 observation-only 동작이 필요하면 `START_G1_VR_TELEOP.bat --no-groot-actuation`을 사용한다. exact existing remote process는 보존하고 다른 옵션/duplicate는 자동 종료하지 않고 fail closed한다.
+
+## 2026-10-07 Omni 미연결 수신 지원
+
+G1 onboard `tools/g1_omni_heading_controller.py`가 PC의 최초 Omni `WAIT` 상태를 잘못 거부하던 문제를 수정했다. Omni를 처음부터 연결하지 않아도 정상적인 최신 양팔 목표는 처리하며, 이동·회전 명령은 0으로 유지한다. 정상 Omni 입력의 시간·보정·수치 검증, 양팔 입력 검증, 재연결 시 heading reference 유지, C++ Balance/Walk 로직은 바꾸지 않았다. 임의의 잘못된 Omni 데이터를 미연결로 간주하지 않는다.
+
+원본 백업 후 G1 파일 한 개에 반영했고 native self-test 및 backend 288/hardware 44 테스트를 통과했다. 정상·stale 입력 1,000건과 양쪽 yaw 부호의 기존 제어 루프 출력도 수정 전후 동일했다. 실제 모터 구동은 수행하지 않았다. 저장소/Portable용 source mirror는 `tools/onboard/g1_omni_heading_controller.py`이며 Windows launcher가 실행하는 새 worker가 아니다. 현재 상태와 원본/설치 해시, rollback, 미검증 범위는 `docs/G1_OMNI_OPTIONAL_VALIDATION_20261007.md` 참고.
 
 ## Portable Python
 

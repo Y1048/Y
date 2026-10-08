@@ -303,7 +303,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     {
         if (skeleton.Bones != null)
             foreach (OVRBone bone in skeleton.Bones)
-                if (bone != null && bone.Id == OVRSkeleton.BoneId.Hand_WristRoot)
+                if (bone != null && bone.Id == G1HandSkeletonMapping.Bone(skeleton.GetSkeletonType(), G1HandSkeletonMapping.Joint.Wrist))
                     return bone.Transform;
         return null; // Never switch to a different pose source while tracking.
     }

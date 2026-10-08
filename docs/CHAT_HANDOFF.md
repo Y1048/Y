@@ -1,3 +1,10 @@
+## 2026-10-08 OpenXR palm incorrectly used as wrist — mapping fix
+
+Same current Quest/Link connection: user confirms Editor hands work while Windows Player hands still absent. Editor screenshot shows cyan wrist markers at palm center. Installed SDK reports OpenXR skeleton; SDK enum Hand_WristRoot=0 aliases XRHand_Palm=0, while XRHand_Wrist=1. Existing binder and separate bimanual sender selected Hand_WristRoot without skeleton-type context; anatomical finger bases also used legacy IDs.
+
+Added G1HandSkeletonMapping to choose wrist and index/middle/little proximal bases from OVRSkeleton.GetSkeletonType, preserving legacy OVR semantics, selecting OpenXR semantics for XRHandLeft/Right, rejecting unsupported types. Applied to binder and separate bimanual Wrist reader. No arbitrary position offset, mesh/IK/gain/network change. This corrects the input position and anatomical rotation as well as marker display.
+
+Actual C# mapping fixture passes: both hands and formats, overlapping palm/wrist numbers, anatomical base indices, unsupported body/none and invalid joint. User confirmed Play stopped. Portable original consumer files matched source baseline before replacement, copies backed up in local live_wrist_fix_backup; new helper/meta and two consumers copied byte-identically. Windows_wrist_fix_20261008 Windows64 build succeeded with batch exit 0 and matching SHA256 sidecar; visual wrist alignment retest pending. Windows EXE no-hands issue remains separately unresolved; raw-runtime diagnostic candidate still needs operator run.
 ## 2026-10-08 Development Player still has no hands; splash removal and raw diagnosis
 
 Operator retest of Windows_link_candidate_20261008 failed hand recognition. Actual Development Player log confirms valid HMD tracking but both hand binders remain tracked=false. Therefore Development build alone is not a confirmed fix. Original Release and Development logs remain preserved under local logs/test_results/windows_link_20261008.

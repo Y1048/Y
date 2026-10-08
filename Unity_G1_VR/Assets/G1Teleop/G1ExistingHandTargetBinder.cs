@@ -795,15 +795,15 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
                 continue;
             }
 
-            if (bone_value.Id == OVRSkeleton.BoneId.Hand_Middle1)
+            if (bone_value.Id == G1HandSkeletonMapping.Bone(ovr_skeleton.GetSkeletonType(), G1HandSkeletonMapping.Joint.MiddleBase))
             {
                 middle_finger_base_transform = bone_value.Transform;
             }
-            else if (bone_value.Id == OVRSkeleton.BoneId.Hand_Index1)
+            else if (bone_value.Id == G1HandSkeletonMapping.Bone(ovr_skeleton.GetSkeletonType(), G1HandSkeletonMapping.Joint.IndexBase))
             {
                 index_finger_base_transform = bone_value.Transform;
             }
-            else if (bone_value.Id == OVRSkeleton.BoneId.Hand_Pinky1)
+            else if (bone_value.Id == G1HandSkeletonMapping.Bone(ovr_skeleton.GetSkeletonType(), G1HandSkeletonMapping.Joint.PinkyBase))
             {
                 pinky_finger_base_transform = bone_value.Transform;
             }
@@ -819,7 +819,7 @@ public class G1ExistingHandTargetBinder : MonoBehaviour
 
         foreach (OVRBone bone_value in ovr_skeleton.Bones)
         {
-            if (bone_value != null && bone_value.Id == OVRSkeleton.BoneId.Hand_WristRoot)
+            if (bone_value != null && bone_value.Id == G1HandSkeletonMapping.Bone(ovr_skeleton.GetSkeletonType(), G1HandSkeletonMapping.Joint.Wrist))
             {
                 return bone_value.Transform;
             }

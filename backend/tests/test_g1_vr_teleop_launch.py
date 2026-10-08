@@ -73,6 +73,24 @@ class WorkerRecognitionTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     launcher.running_workers([row, list(row)], ROOT, HOST)
 
+    def test_relative_lowstate_source_is_not_silently_duplicated(self):
+        for script in ('tools/g1_lowstate_view.py', r'.\tools\g1_lowstate_view.py',
+                       'g1_lowstate_view.py', '../tools/g1_lowstate_view.py'):
+            with self.subTest(script=script):
+                row = ['python.exe', '-I', '-u', '-B', script, '--host', HOST]
+                with self.assertRaisesRegex(RuntimeError, 'relative script path'):
+                    launcher.running_workers([row], ROOT, HOST)
+                with self.assertRaisesRegex(RuntimeError, 'relative script path'):
+                    launcher.running_workers([worker_row('lowstate'), row], ROOT, HOST)
+
+    def test_other_absolute_checkout_and_code_text_are_not_relative_workers(self):
+        rows = [
+            ['python.exe', str(ROOT / 'other/tools/g1_lowstate_view.py'), '--host', HOST],
+            ['python.exe', '-c', 'g1_lowstate_view.py'],
+            ['python.exe', '-m', 'g1_lowstate_view.py'],
+        ]
+        self.assertEqual(set(), launcher.running_workers(rows, ROOT, HOST))
+
     def test_exact_groot_supervisor_is_reused(self):
         row = [
             sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),

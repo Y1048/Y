@@ -45,7 +45,10 @@ public static class G1MeasuredStartState
         if (value == null || value.revision < 0 || value.revision > 9007199254740991L
             || string.IsNullOrEmpty(value.reason) || value.reason.Length > 128) return false;
         if (value.revision == 0)
-            return !value.ready && value.body_q_rad == null && value.session == null;
+            // JsonUtility maps explicit JSON null strings/arrays to empty values.
+            // This is an uninitialized acknowledgement only; it cannot engage.
+            return !value.ready && string.IsNullOrEmpty(value.session)
+                && (value.body_q_rad == null || value.body_q_rad.Length == 0);
         if (string.IsNullOrEmpty(value.session) || value.session.Length > 64
             || value.body_q_rad == null || value.body_q_rad.Length != 15) return false;
         foreach (float q in value.body_q_rad)

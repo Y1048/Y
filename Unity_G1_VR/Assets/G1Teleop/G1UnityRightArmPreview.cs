@@ -80,6 +80,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
     public string ModelStatusText { get; private set; } = "모델: 실측 데이터 대기";
     public string PoseSourceStatus { get; private set; } = "WAITING FOR POSE";
     public bool IsShowingMeasuredPose => measured_pose_applied;
+    public bool IsModelReady => official_g1_rig != null && official_g1_object != null;
     public long PreparedStartRevision { get; private set; } = -1;
     public G1MeasuredStartState.Snapshot CaptureMeasuredStart(double now)
         => G1MeasuredStartState.Capture(measured_view, now);
@@ -777,19 +778,28 @@ public class G1UnityRightArmPreview : MonoBehaviour
         tracked_hand_marker.rotation = hand_binder.DisplayedWristRotation;
         bool active = bimanual_simulation.IsTracking;
         Vector3 ikPosition;
-        bool ikAvailable = bimanual_simulation.TryGetIkTarget(false, out ikPosition);
+        Quaternion ikRotation;
+        bool ikPositionAvailable = bimanual_simulation.TryGetIkTarget(false, out ikPosition);
+        bool ikRotationAvailable = bimanual_simulation.TryGetRightIkRotation(out ikRotation);
+        bool commandWorldFrame = bimanual_simulation.UsesExistingScene;
+        bool ikAvailable = ikPositionAvailable && (!commandWorldFrame || ikRotationAvailable);
         target_hand_marker.gameObject.SetActive(!active || ikAvailable);
         target_hand_axes.gameObject.SetActive(show_orientation_axes && (!active || ikAvailable));
         Vector3 targetPosition = active && ikAvailable
             ? ikPosition
             : hand_binder.EngagementTargetPosition;
-        Quaternion targetRotation = active
-            ? hand_binder.MappedHandRotation
-            : hand_binder.EngagementTargetRotation;
-        if (active && bimanual_simulation.TryGetRightIkRotation(out Quaternion ikRotation))
-            targetRotation = ikRotation;
-        target_hand_marker.position = hand_binder.DisplayInputPosition(targetPosition);
-        target_hand_marker.rotation = hand_binder.DisplayInputRotation(targetRotation);
+        Quaternion targetRotation = hand_binder.EngagementTargetRotation;
+        if (active)
+        {
+            if (ikRotationAvailable) targetRotation = ikRotation;
+            // The legacy relative-input experiment keeps its original display.
+            else if (!commandWorldFrame) targetRotation = hand_binder.MappedHandRotation;
+        }
+        // Command FK arrives in the same Unity world frame as this packet's q.
+        target_hand_marker.position = active && commandWorldFrame
+            ? targetPosition : hand_binder.DisplayInputPosition(targetPosition);
+        target_hand_marker.rotation = active && commandWorldFrame
+            ? targetRotation : hand_binder.DisplayInputRotation(targetRotation);
         target_hand_axes.SetPositionAndRotation(target_hand_marker.position, target_hand_marker.rotation);
         tracked_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TrackedMarkerDiameter;
         target_hand_marker.localScale = Vector3.one * G1BimanualSimulationSender.TargetMarkerDiameter;
@@ -806,7 +816,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 ? hand_binder.DisplayedWristPosition : wrist.position);
             mapping_line.SetPosition(1, rightAlignmentLine
                 ? hand_binder.EngagementTargetPosition
-                : hand_binder.DisplayInputPosition(ikPosition));
+                : commandWorldFrame ? ikPosition : hand_binder.DisplayInputPosition(ikPosition));
         }
         Vector3 leftGoal;
         bool leftGoalAvailable = bimanual_simulation.TryGetIkTarget(true, out leftGoal);
@@ -824,7 +834,7 @@ public class G1UnityRightArmPreview : MonoBehaviour
                 1,
                 leftAlignmentLine
                     ? bimanual_simulation.leftBinder.EngagementTargetPosition
-                    : bimanual_simulation.leftBinder.DisplayInputPosition(leftGoal));
+                    : commandWorldFrame ? leftGoal : bimanual_simulation.leftBinder.DisplayInputPosition(leftGoal));
         }
     }
 

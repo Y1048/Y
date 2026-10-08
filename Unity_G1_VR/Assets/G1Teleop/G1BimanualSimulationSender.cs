@@ -28,6 +28,31 @@ public class G1BimanualSimulationSender : MonoBehaviour
 
     public static bool CanClearMustLeave(bool backendReady, bool tracked, bool inZones, bool pinch)
         => backendReady && tracked && !inZones && !pinch;
+
+    // Display only: never changes engagement or measured-start requirements.
+    public static string PreparationMessage(bool modelReady, bool fresh, bool measuredReady, string reason,
+        string previousInitializationFailure = null)
+    {
+        if (!modelReady) return "준비 중 · G1 모델 불러오는 중";
+        if (!fresh) return "준비 중 · IK 연결 기다리는 중";
+        if (measuredReady) return null;
+        // Keep the last failed check visible during its 0.35 s settling retry.
+        // This is display state only; the backend still decides readiness.
+        if (reason == "settling_measurement" && previousInitializationFailure != null)
+            reason = previousInitializationFailure;
+        if (reason == "measured_start_pose_clearance")
+            return "시작 대기 · 실측 시작 자세의 모델 충돌 여유 부족 (재확인 중)";
+        if (reason == "measured_start_home_clearance" || reason == "measured_start_waypoint_clearance")
+            return "시작 대기 · 복귀 자세의 모델 충돌 여유 부족 (재확인 중)";
+        if (reason == "settling_measurement" || reason == "robot_not_stationary")
+            return "준비 중 · 실측 자세 안정 확인 중";
+        if (reason == "synchronized") return "준비 중 · 모델과 IK 초기화 확인 중";
+        if (reason == "waiting_fresh_measurement" || reason == "waiting_measurement"
+            || reason == "measurement_too_old" || reason == "measurement_stale")
+            return "준비 중 · 최신 G1 실측 수신 대기";
+        if (reason == "waiting_head_alignment") return "준비 중 · 헤드셋 기준 정렬 중";
+        return "준비 중 · 실측 초기화 확인: " + (reason ?? "응답 대기");
+    }
     private double leftReadyUntil = double.NegativeInfinity;
     private double rightReadyUntil = double.NegativeInfinity;
 
@@ -50,10 +75,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private bool worldTargetValid;
     private Vector3 leftWorldTarget, rightWorldTarget;
     private Quaternion rightWorldRotation;
-    private G1GoalPreviewState.Frame goalPreview;
-    private double goalPreviewReceived;
-    private bool HasFreshGoalPreview => G1GoalPreviewState.Fresh(
-        goalPreview, goalPreviewReceived, Time.realtimeSinceStartupAsDouble);
+    private G1GoalPreviewState.Frame commandTarget;
+    private double commandTargetReceived;
+    private bool HasFreshCommandTarget => G1GoalPreviewState.Fresh(
+        commandTarget, commandTargetReceived, Time.realtimeSinceStartupAsDouble)
+        && G1GoalPreviewState.ValidForFeedback(commandTarget, feedbackSequence, CommandFeedbackSequence);
     private G1OmniBodyHeading Omni => rightBinder == null || rightBinder.head_camera_alignment == null
         ? null : rightBinder.head_camera_alignment.OmniBodyHeading;
 
@@ -62,33 +88,36 @@ public class G1BimanualSimulationSender : MonoBehaviour
         var binder = left ? leftBinder : rightBinder;
         position = Vector3.zero;
         if (!IsTracking || !HasFreshJoints || binder == null) return false;
-        if (useExistingScene)
+        // Preserve the separate legacy relative-input experiment. The current
+        // existing-scene/world teleop path below uses command FK exclusively.
+        if (!useExistingScene)
         {
-            // A goal-directed checked prefix, never the variable stop endpoint.
-            if (!HasFreshGoalPreview) return false;
-            position = G1GoalPreviewState.Position(goalPreview, left);
+            if (!ikTargetValid) return false;
+            position = binder.EngagementTargetPosition + binder.OperatorHeading *
+                (left ? leftIkDelta : rightIkDelta);
             return true;
         }
-        if (!ikTargetValid) return false;
-        position = binder.EngagementTargetPosition + binder.OperatorHeading *
-            (left ? leftIkDelta : rightIkDelta);
+        if (!HasFreshCommandTarget) return false;
+        // Exact FK of this feedback's checked q_rad; no independent solution,
+        // raw hand fallback, prediction, interpolation or body-frame rebase.
+        position = G1GoalPreviewState.Position(commandTarget, left);
         return true;
     }
 
     public bool TryGetRightIkRotation(out Quaternion rotation)
     {
-        if (useExistingScene)
+        if (!useExistingScene)
         {
-            rotation = Quaternion.identity;
-            if (!IsTracking || !HasFreshJoints || !HasFreshGoalPreview) return false;
-            rotation = G1GoalPreviewState.RightRotation(goalPreview);
-            return true;
+            rotation = rightWorldRotation;
+            return IsTracking && HasFreshJoints && worldTargetValid;
         }
-        rotation = rightWorldRotation;
-        return IsTracking && HasFreshJoints && worldTargetValid;
+        rotation = Quaternion.identity;
+        if (!IsTracking || !HasFreshJoints || !HasFreshCommandTarget) return false;
+        rotation = G1GoalPreviewState.RightRotation(commandTarget);
+        return true;
     }
 
-    // Requested goal is distinct from the checked goal-prefix marker.
+    // Requested hand goal is distinct from the exported joint-command FK marker.
     public bool TryGetRequestedWorldTarget(bool left, out Vector3 position)
     {
         position = left ? leftWorldTarget : rightWorldTarget;
@@ -194,7 +223,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         public bool ik_target_valid;
         public float[] left_ik_target_world_m, right_ik_target_world_m;
         public float[] right_ik_target_world_wxyz;
-        public G1GoalPreviewState.Frame goal_preview;
+        public G1GoalPreviewState.Frame command_target;
         public string input_frame;
         public float[] left_ik_target_operator_delta;
         public float[] right_ik_target_operator_delta;
@@ -217,6 +246,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
     private double lastDiagnostic;
     private float pinchTime;
     private string backendState = "waiting";
+    private string lastStartInitializationFailure;
     private GameObject leftMarker, rightMarker;
     private GameObject leftTrackedMarker;
     private RectTransform statusBar;
@@ -264,9 +294,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
         LatestJointNames = null;
         CommandBackendId = null;
         CommandFeedbackSequence = -1;
-        goalPreview = null;
-        goalPreviewReceived = 0;
+        worldTargetValid = false;
+        commandTarget = null;
+        commandTargetReceived = 0;
         StartAcknowledgement = null;
+        lastStartInitializationFailure = null;
         measuredStartReady = false;
         engageRequestSequence = -1;
         returnSequence = -1;
@@ -286,6 +318,7 @@ public class G1BimanualSimulationSender : MonoBehaviour
         }
         if (!useExistingScene) rightMarker = MakeMarker("Right engage zone");
         CreateStatusBar();
+        UpdateStatusBar(false, false);
     }
 
     private GameObject MakeMarker(string name)
@@ -429,6 +462,18 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     bool changedStart = previousStart == null
                         || previousStart.revision != StartAcknowledgement.revision
                         || previousStart.session != StartAcknowledgement.session || restarted;
+                    if (changedStart || StartAcknowledgement.ready)
+                        lastStartInitializationFailure = null;
+                    string startReason = StartAcknowledgement.reason;
+                    if (startReason == "measured_start_pose_clearance"
+                        || startReason == "measured_start_home_clearance"
+                        || startReason == "measured_start_waypoint_clearance")
+                    {
+                        if (lastStartInitializationFailure != startReason)
+                            Debug.LogWarning("[MEASURED START] " + startReason
+                                + "; waiting for a checked initial pose; no engage allowed.");
+                        lastStartInitializationFailure = startReason;
+                    }
                     if (!active && changedStart)
                     {
                         leftReadyUntil = rightReadyUntil = double.NegativeInfinity;
@@ -466,13 +511,15 @@ public class G1BimanualSimulationSender : MonoBehaviour
                     rightWorldRotation = new Quaternion(q[1], q[2], q[3], q[0]);
                     ikTargetValid = true;
                 }
-                // Missing/stale preview is not replaced with a stopping endpoint
-                // or an unconstrained requested hand pose. Commands are unaffected.
-                goalPreview = feedback.input_frame == "unity_display_world_v1"
+                // A target belongs to exactly this command packet. Never replace
+                // a missing target with raw input or a separate geometric solve.
+                commandTarget = feedback.input_frame == "unity_display_world_v1"
                     && feedback.state == "tracking"
-                    && G1GoalPreviewState.ValidForSequence(feedback.goal_preview, feedback.sequence)
-                        ? feedback.goal_preview : null;
-                goalPreviewReceived = now;
+                    && ValidJoints(feedback)
+                    && G1GoalPreviewState.ValidForFeedback(feedback.command_target,
+                        feedback.sequence, feedback.feedback_sequence)
+                        ? feedback.command_target : null;
+                commandTargetReceived = now;
                 if (ikTargetValid && ValidDelta(feedback.left_ik_target_operator_delta) && ValidDelta(feedback.right_ik_target_operator_delta))
                 {
                     var l = feedback.left_ik_target_operator_delta;
@@ -704,6 +751,11 @@ public class G1BimanualSimulationSender : MonoBehaviour
 
     private void UpdateStatusBar(bool fresh, bool pinch)
     {
+        var preview = rightBinder == null || rightBinder.head_camera_alignment == null
+            ? null : rightBinder.head_camera_alignment.robot_preview;
+        string preparation = useExistingScene && !active && !returnPending && backendState != "blocked"
+            ? PreparationMessage(preview != null && preview.IsModelReady, fresh,
+                measuredStartReady, StartAcknowledgement?.reason, lastStartInitializationFailure) : null;
         // Search after the camera's Start has created the PiP. Never create a
         // camera receiver as a side effect of showing engagement instructions.
         if (statusCamera == null && Time.realtimeSinceStartupAsDouble >= nextCameraSearch)
@@ -712,7 +764,19 @@ public class G1BimanualSimulationSender : MonoBehaviour
             nextCameraSearch = Time.realtimeSinceStartupAsDouble + 1;
         }
         var cameraRect = statusCamera == null ? null : statusCamera.transform as RectTransform;
-        if (cameraRect != null)
+        if (preparation != null)
+        {
+            // During startup put the explanation in view, above the video canvas.
+            if (statusBar.parent != head) statusBar.SetParent(head, false);
+            statusBar.anchorMin = statusBar.anchorMax = new Vector2(.5f, .5f);
+            statusBar.pivot = new Vector2(.5f, .5f);
+            statusBar.sizeDelta = new Vector2(420, 100);
+            statusBar.localScale = Vector3.one * G1HeadCameraPiP.DefaultCanvasScale;
+            statusBar.localRotation = Quaternion.identity;
+            statusBar.localPosition = new Vector3(0, -.05f, .75f);
+            statusBar.GetComponent<Canvas>().sortingOrder = 101;
+        }
+        else if (cameraRect != null)
         {
             if (statusBar.parent != cameraRect) statusBar.SetParent(cameraRect, false);
             statusBar.anchorMin = new Vector2(0, 0);
@@ -741,15 +805,20 @@ public class G1BimanualSimulationSender : MonoBehaviour
             leftBinder != null && leftBinder.IsTrackingValid, leftReadyUntil);
         UpdateHandStatus(rightStatus, "오른손", rightBinder,
             rightBinder != null && rightBinder.IsTrackingValid, rightReadyUntil);
-        cycleStatus.text = useExistingScene && !active && backendState == "ready" && !measuredStartReady
+        if (preparation != null)
+        {
+            Status = preparation;
+            leftStatus.text = "G1 TELEOP · 준비 중";
+            rightStatus.text = "준비가 끝나면 engage 안내가 표시됩니다";
+            leftStatus.color = rightStatus.color = Color.white;
+        }
+        cycleStatus.text = preparation != null ? preparation : useExistingScene && !active && backendState == "ready" && !measuredStartReady
             ? "실측 초기화 대기 · 로봇 정지/수신 확인"
             : !fresh ? "IK · 연결 대기" : backendState == "blocked" ? "IK 중단 · PC 로그 확인"
             : backendState == "returning" || returnPending ? "팔을 기본자세로 복귀 중"
             : active ? "양팔 제어 중 · pinch 0.5초: 종료" : mustLeaveZones ? "두 손을 구 밖으로 뺀 뒤 다시 맞추세요"
             : pinch ? "pinch를 풀어 주세요" : "양손을 구에 맞추고 잠시 유지하세요";
         cycleStatus.color = active ? Color.green : Color.white;
-        var preview = rightBinder == null || rightBinder.head_camera_alignment == null
-            ? null : rightBinder.head_camera_alignment.robot_preview;
         modelStatus.text = preview == null ? "모델: 표시 연결 없음" : preview.ModelStatusText;
         modelStatus.color = Color.white;
     }

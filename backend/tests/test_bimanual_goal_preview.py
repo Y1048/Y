@@ -46,18 +46,24 @@ def manager():
 
 def result(context=('backend', 'session', 1), generation=0, stamp=10.):
     return dict(valid=True, context=context, generation=generation,
-                source_time=stamp, sequence=5, accepted_steps=3,
-                braking_steps=0, status='checked_goal_prefix', compute_ms=2.,
+                source_time=stamp, sequence=5, iterations=8, minimum_clearance_m=.02,
+                position_error_m=[.001,.001], orientation_error_rad=[.01,.01],
+                status='geometric_goal_converged', compute_ms=2.,
                 poses={s: (np.array([.3, .2 if s == 'left' else -.2, .8]),
                            np.eye(3)) for s in ('left', 'right')})
 
 
 class GoalPreviewTests(unittest.TestCase):
     def setUp(self):
+        # Deterministic math comparisons do not depend on host scheduling.
+        budget = patch.object(preview, 'SOLVE_BUDGET_S', None)
+        budget.start()
+        self.addCleanup(budget.stop)
         self.sim = BimanualSimulation()
         # Unit tests use private native buffers without changing process priority.
         self.native_owner = BimanualSimulation()
         preview._WORKER_NATIVE = preview._snapshot_objects(self.native_owner)
+        preview._WORKER_GEOMETRIC_CACHE = None
 
     def goals(self, offset=.08):
         return {s: mink.SE3.from_rotation_and_translation(
@@ -69,7 +75,7 @@ class GoalPreviewTests(unittest.TestCase):
         return preview._rollout(payload, q, self.goals() if goals is None else goals,
                                 0, ('test', 1), 10., 1)
 
-    def test_same_three_checked_steps_and_live_state_is_unchanged(self):
+    def test_geometric_solution_and_live_state_is_unchanged(self):
         goals = self.goals()
         self.sim.step(goals)
         before, q = encode(self.sim)
@@ -78,10 +84,12 @@ class GoalPreviewTests(unittest.TestCase):
                   if name != 'model'}
         digest = preview._model_digest(self.sim.model)
         expected = copy.deepcopy(self.sim, {id(self.sim.model): self.sim.model})
-        for _ in range(3): self.assertTrue(expected.step(goals))
+        from g1_bimanual_geometric_goal import solve_geometric_goal
+        solution = solve_geometric_goal(expected, goals)
+        self.assertTrue(solution['valid'])
         actual = self.roll(goals)
         self.assertTrue(actual['valid'])
-        self.assertEqual(actual['accepted_steps'], 3)
+        self.assertEqual(actual['iterations'], solution['iterations'])
         for side, (position, rotation) in actual['poses'].items():
             pose = expected.config.get_transform_frame_to_world(side+'_wrist_yaw_link', 'body')
             np.testing.assert_allclose(position, expected.base_rotation.T @ pose.translation(), atol=1e-12, rtol=0)
@@ -101,14 +109,42 @@ class GoalPreviewTests(unittest.TestCase):
         self.assertTrue(any(np.linalg.norm(predicted['poses'][s][0]-stop[s][0])>1e-6
                             for s in ('left','right')))
 
-    def test_checked_braking_does_not_truncate_a_safe_horizon(self):
+    def test_geometric_goal_does_not_run_the_rate_limited_live_step(self):
         self.sim.step(self.goals())
-        with patch('g1_bimanual_sim.qpsolvers.solve_problem', return_value=None):
+        with patch.object(BimanualSimulation, 'step', side_effect=AssertionError('live step')):
             prediction = self.roll()
         self.assertTrue(prediction['valid'])
-        self.assertEqual(prediction['accepted_steps'],3)
-        self.assertEqual(prediction['braking_steps'],3)
-        self.assertEqual(prediction['status'],'checked_braking_prefix')
+        self.assertIn(prediction['status'], ('geometric_goal_converged','geometric_goal_partial'))
+
+    def test_invalid_cached_witness_is_discarded_without_poisoning_live_state(self):
+        self.assertTrue(self.roll()['valid'])
+        preview._WORKER_GEOMETRIC_CACHE['arm_q'][:] = np.nan
+        before = encode(self.sim)[0]
+        self.assertTrue(self.roll()['valid'])
+        self.assertTrue(np.isfinite(preview._WORKER_GEOMETRIC_CACHE['arm_q']).all())
+        self.assertEqual(encode(self.sim)[0], before)
+
+    def test_new_context_does_not_reuse_previous_geometric_witness(self):
+        self.roll()
+        preview._WORKER_GEOMETRIC_CACHE['key'] = (999, ('old-session', 1))
+        from g1_bimanual_geometric_goal import solve_geometric_goal
+        with patch('g1_bimanual_geometric_goal.solve_geometric_goal',
+                   wraps=solve_geometric_goal) as solve:
+            self.assertTrue(self.roll()['valid'])
+            self.assertIsNone(solve.call_args.kwargs['initial_q'])
+
+    def test_warm_start_never_replays_old_base_or_nonarm_coordinates(self):
+        self.roll()
+        from g1_bimanual_geometric_goal import solve_geometric_goal
+        current = self.sim.config.q.copy()
+        frozen = np.ones(self.sim.model.nq, dtype=bool)
+        frozen[self.sim.qids] = False
+        with patch('g1_bimanual_geometric_goal.solve_geometric_goal',
+                   wraps=solve_geometric_goal) as solve:
+            self.assertTrue(self.roll()['valid'])
+            seed = solve.call_args.kwargs['initial_q']
+            self.assertIsNotNone(seed)
+            np.testing.assert_array_equal(seed[frozen], current[frozen])
 
     def test_independent_model_contracts_ignore_only_solver_scratch(self):
         self.assertEqual(preview._contract_digest(self.sim),
@@ -181,6 +217,19 @@ class GoalPreviewTests(unittest.TestCase):
         self.assertFalse(obj.request(self.sim,self.goals(),10.,1))
         obj.executor.submit.assert_not_called()
 
+    def test_display_refresh_uses_control_cadence_without_backlog(self):
+        self.assertAlmostEqual(preview.UPDATE_PERIOD_S, 1. / 60.)
+        obj=manager();obj.tokens={id(v):k for k,v in preview._snapshot_objects(self.sim).items()}
+        future=Future();obj.executor.submit.return_value=future
+        self.assertTrue(obj.request(self.sim,self.goals(),10.,1))
+        self.assertAlmostEqual(obj.next_submit,10.+1./60.)
+        # Even after its deadline, an unfinished job cannot queue more work.
+        self.assertFalse(obj.request(self.sim,self.goals(),10.2,2))
+        obj.executor.submit.assert_called_once()
+        obj.pending=None
+        self.assertFalse(obj.request(self.sim,self.goals(),10.001,3))
+        self.assertTrue(obj.request(self.sim,self.goals(),10.+1./60.,4))
+
     def test_stale_and_reversed_clock_predictions_are_hidden(self):
         obj=manager();obj.result=result()
         self.assertTrue(obj.feedback(obj.context,10.05,np.eye(3))['valid'])
@@ -204,7 +253,7 @@ class GoalPreviewTests(unittest.TestCase):
 
     def test_malformed_worker_outputs_disable_only_display_before_serialization(self):
         for key, value in (('poses', {}), ('sequence', -1),
-                           ('accepted_steps', 2), ('compute_ms', float('nan'))):
+                           ('iterations', 65), ('compute_ms', float('nan'))):
             with self.subTest(key=key):
                 obj=manager();obj.result=result();obj.result[key]=value
                 before=encode(self.sim)[0]
@@ -314,14 +363,21 @@ class GoalPreviewTests(unittest.TestCase):
             else:
                 self.assertLess(float(np.max(error)), .002)
 
-    def test_live_publication_precedes_optional_prediction_and_ui_has_no_stop_fallback(self):
+    def test_live_display_uses_command_snapshot_without_independent_prediction(self):
         text=(ROOT/'MuJoCo_G1_Controller/scripts/g1_bimanual_unity_sim.py').read_text(encoding='utf-8-sig')
         main=text.split('def main():',1)[1]
-        self.assertLess(main.index('observation.publish('),main.index("feedback['goal_preview']"))
-        self.assertLess(main.index('sock.sendto('),main.index('goal_preview.request('))
-        self.assertNotIn('goal_preview',text.split('class UnityCycle:',1)[1].split('def main():',1)[0])
+        self.assertLess(main.index('feedback = cycle.feedback()'), main.index('observation.publish('))
+        self.assertLess(main.index('observation.publish('), main.index('sock.sendto('))
+        self.assertNotIn('BimanualGoalPreview', main)
+        self.assertNotIn('goal_preview.request(', main)
+        self.assertNotIn('g1_bimanual_geometric_goal', main)
+        self.assertIn("result['command_target'] = command_target", text)
         cs=(ROOT/'Unity_G1_VR/Assets/G1Teleop/G1BimanualSimulationSender.cs').read_text(encoding='utf-8-sig')
-        self.assertIn('G1GoalPreviewState.Position(goalPreview, left)',cs)
+        self.assertIn('G1GoalPreviewState.Position(commandTarget, left)',cs)
+        self.assertIn('HasFreshCommandTarget',cs)
+        branch=cs.split('public bool TryGetIkTarget(',1)[1].split('public bool TryGetRightIkRotation(',1)[0]
+        self.assertNotIn('leftWorldTarget',branch)
+        self.assertNotIn('goalMarkerInterpolation',cs)
         self.assertNotIn('checkedWorldTargetValid',cs)
         self.assertNotIn('rightCheckedWorldTarget',cs)
 

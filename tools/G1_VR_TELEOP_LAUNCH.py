@@ -3,7 +3,7 @@ import argparse
 import ctypes
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import shlex
 import socket
@@ -269,6 +269,19 @@ def running_workers(rows, root, host):
             continue
         for worker, path in paths.items():
             if normalize(path) not in [normalize(arg) for arg in argv[1:]]:
+                # Process inventory does not include its working directory.
+                # A relative script may be our already-running receiver: do not
+                # silently start a second source, or assume it is safe to reuse.
+                python_process = Path(argv[0]).name.lower() in ('python', 'python.exe', 'pythonw.exe', 'python3')
+                if python_process and '-c' not in argv and '-m' not in argv:
+                    for arg in argv[1:]:
+                        candidate = PureWindowsPath(arg)
+                        if (candidate.name.casefold() == path.name.casefold()
+                                and not candidate.is_absolute() and not Path(arg).is_absolute()):
+                            raise RuntimeError(
+                                'An existing %s process uses a relative script path; its working directory '
+                                'cannot be verified. Close its own window, then retry. '
+                                'No duplicate worker was started.' % worker)
                 continue
             valid = {
                 'camera_follow': option(argv, '--host') == host,

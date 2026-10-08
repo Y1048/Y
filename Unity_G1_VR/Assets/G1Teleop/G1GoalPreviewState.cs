@@ -2,12 +2,13 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Display-only checked goal prefix. Not a motor goal, a stopping endpoint,
-/// a global workspace boundary, or measured physical motion.
+/// Wrist FK of the checked joint command in the same backend feedback packet.
+/// This is the exported IK command target, not a separate geometric solution
+/// or measured physical motion. The class name is retained for scene compatibility.
 /// </summary>
 public static class G1GoalPreviewState
 {
-    public const string Schema = "g1.bimanual.goal.preview.v1";
+    public const string Schema = "g1.bimanual.command.target.v1";
     public const double MaximumAgeSeconds = 0.20;
 
     [Serializable]
@@ -15,9 +16,8 @@ public static class G1GoalPreviewState
     {
         public string schema, status;
         public bool valid;
-        public int horizon_steps, accepted_steps, braking_steps;
-        public long source_sequence;
-        public double age_s, horizon_s, compute_ms;
+        public long source_sequence, feedback_sequence;
+        public double age_s;
         public float[] left_world_m, right_world_m;
         public float[] left_world_wxyz, right_world_wxyz;
     }
@@ -42,15 +42,11 @@ public static class G1GoalPreviewState
 
     public static bool Valid(Frame value)
         => value != null && value.schema == Schema && value.valid
-            && (value.status == "checked_goal_prefix"
-                || value.status == "checked_braking_prefix")
-            && value.horizon_steps == 3 && value.accepted_steps == 3
-            && value.braking_steps >= 0 && value.braking_steps <= 3
+            && value.status == "checked_command_fk"
             && value.source_sequence >= 0 && value.source_sequence <= 9007199254740991L
+            && value.feedback_sequence >= 0 && value.feedback_sequence <= 9007199254740991L
             && Finite(value.age_s) && value.age_s >= 0
             && value.age_s <= MaximumAgeSeconds
-            && Finite(value.horizon_s) && Math.Abs(value.horizon_s - 0.05) < 0.000001
-            && Finite(value.compute_ms) && value.compute_ms >= 0
             && Vector(value.left_world_m, 3) && Vector(value.right_world_m, 3)
             && Rotation(value.left_world_wxyz) && Rotation(value.right_world_wxyz);
 
@@ -58,8 +54,9 @@ public static class G1GoalPreviewState
         => Valid(value) && Finite(received) && Finite(now) && now >= received
             && value.age_s + now - received <= MaximumAgeSeconds;
 
-    public static bool ValidForSequence(Frame value, long commandSequence)
-        => Valid(value) && value.source_sequence <= commandSequence;
+    public static bool ValidForFeedback(Frame value, long sourceSequence, long feedbackSequence)
+        => Valid(value) && value.source_sequence == sourceSequence
+            && value.feedback_sequence == feedbackSequence;
 
     public static Vector3 Position(Frame value, bool left)
     {

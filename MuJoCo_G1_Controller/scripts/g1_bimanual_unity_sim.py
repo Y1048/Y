@@ -364,8 +364,8 @@ class UnityCycle:
                 BASIS.T @ base_rotation @ BASIS).wxyz.tolist()
             result.update(joint_names=self.sim.names,
                           q_rad=self.sim.config.q[self.sim.qids].tolist())
-            # Display the goal actually supplied to IK (filtered/projected),
-            # not FK of the current command. This is not a reachability claim.
+            # Retain requested/filter diagnostics separately from the marker.
+            # The green marker below is FK of this exact outgoing q snapshot.
             valid = (self.state == 'tracking' and self.last_tick_action == 'tracking'
                      and self.sim.state == 'tracking'
                      and all(
@@ -386,6 +386,8 @@ class UnityCycle:
                 body_position = self.sim.base_rotation.T @ position if self.world_input else position
                 delta = BASIS.T @ (body_position-self.sim.home_targets[side].translation())
                 result[side+'_ik_target_base_m'] = (BASIS.T @ body_position).tolist() if valid else None
+                # Legacy "actual_wrist" fields mean model/command FK, NOT
+                # measured LowState. Reuse this same computation for display.
                 actual = self.sim.config.get_transform_frame_to_world(
                     side+'_wrist_yaw_link', 'body')
                 result[side+'_actual_wrist_world_m'] = (BASIS.T @ actual.translation()).tolist()
@@ -412,6 +414,22 @@ class UnityCycle:
                         if checked_valid else None
                     )
                 result[side+'_ik_target_operator_delta'] = delta.tolist() if valid else None
+            command_valid = (self.world_input and self.state == 'tracking'
+                             and self.sim.state == 'tracking')
+            command_target = dict(
+                schema='g1.bimanual.command.target.v1', valid=command_valid,
+                status='checked_command_fk' if command_valid else 'inactive',
+                source_sequence=result['sequence'],
+                feedback_sequence=result['feedback_sequence'], age_s=0.)
+            for side in ('left', 'right'):
+                command_target[side+'_world_m'] = (
+                    result[side+'_actual_wrist_world_m'].copy() if command_valid else None)
+                command_target[side+'_world_wxyz'] = (
+                    result[side+'_actual_wrist_world_wxyz'].copy() if command_valid else None)
+            # Same control tick, full body/base pose and 14 arm angles as q_rad.
+            # No extra IK, extrapolation, asynchronous cache or later yaw rebase.
+            # This is an exported target, not proof of G1 receipt or arrival.
+            result['command_target'] = command_target
         return result
 
 
@@ -434,8 +452,6 @@ def main():
     sim = BimanualSimulation()
     startup_stage('model_ready')
     cycle = UnityCycle(sim)
-    from g1_bimanual_goal_preview import BimanualGoalPreview
-    goal_preview = BimanualGoalPreview(sim)
     observation = None
     if os.environ.get('G1_OBSERVATION_TAP') == '1':
         import importlib.util
@@ -461,7 +477,11 @@ def main():
                 loop_clock='perf_counter' if observation else 'monotonic',
                 source_timestamp_clock='monotonic',
                 motion_policy='bimanual_motion_v1', boundary_policy='bimanual_boundary_v1',
-                goal_preview_profile=goal_preview.metadata(),
+                command_target_profile=dict(
+                    schema='g1.bimanual.command.target.v1',
+                    source='same_snapshot_q_rad_fk',
+                    identity='backend/session/feedback_sequence',
+                    extra_ik_solver=False),
                 tracking_loss_return_delay_s=TRACKING_LOSS_RETURN_DELAY_S,
                 return_policy=sim.return_motion.policy,
                 return_profile=dict(waypoint_rad=sim.return_motion.waypoint.tolist(),
@@ -530,15 +550,8 @@ def main():
                         unity_input_status='WAIT' if cycle.received is None else
                             ('FRESH' if generated_at-cycle.received <= .75 else 'STALE')),
                         generated_at)
-                # Only the UI gets look-ahead data. The motor observation above
-                # still contains exactly the current checked q_rad command.
-                preview_context = None
-                if cycle.world_input and feedback.get('ik_target_valid'):
-                    revision = (feedback.get('measured_start') or {}).get('revision', 0)
-                    preview_context = (cycle.backend_id, cycle.session,
-                                       cycle.input_schema, revision)
-                feedback['goal_preview'] = goal_preview.feedback(
-                    preview_context, time.perf_counter(), sim.base_rotation)
+                # q_rad and command_target already belong to this one feedback
+                # snapshot. The observation and UI never solve separate goals.
                 if peer:
                     try:
                         sock.sendto(json.dumps(feedback).encode(), peer)
@@ -563,13 +576,6 @@ def main():
                     log.flush()
                 if viewer:
                     viewer.sync()
-                # Publish commands first. A bounded-rate lightweight snapshot
-                # must not starve indefinitely when the main IK is busy; the
-                # separate process does all additional solves and never queues.
-                if preview_context is not None:
-                    goal_preview.request(
-                        sim, world_targets(cycle.hands), time.perf_counter(),
-                        cycle.sequence)
                 if observation:
                     deadline, missed = tap_module.next_deadline(deadline, time.perf_counter(), sim.dt)
                     deadline_misses += missed
@@ -582,7 +588,6 @@ def main():
     except KeyboardInterrupt:
         print('Simulation closed; no hardware owner exists here.')
     finally:
-        goal_preview.close()
         if observation:
             observation.close()
         if viewer:

@@ -23,6 +23,40 @@ public static class G1MeasuredStartValidation
     private static void Invoke(object value, string method)
         => value.GetType().GetMethod(method, Private).Invoke(value, null);
 
+    private static G1MeasuredStartState.Acknowledgement DecodeAcknowledgement(string json)
+    {
+        var type = typeof(G1BimanualSimulationSender).GetNestedType("Feedback", BindingFlags.NonPublic);
+        object feedback = JsonUtility.FromJson("{\"measured_start\":" + json + "}", type);
+        return (G1MeasuredStartState.Acknowledgement)type.GetField("measured_start").GetValue(feedback);
+    }
+
+    private static void ValidateAcknowledgementWire()
+    {
+        // Unity 6000.5 normalizes explicit JSON null strings/arrays to empty
+        // values. Test the real sender DTO and native JsonUtility path.
+        const string wait = "{\"ready\":false,\"revision\":0,\"reason\":\"waiting_fresh_measurement\",";
+        foreach (string tail in new[] {
+            "\"session\":null,\"body_q_rad\":null}",
+            "\"session\":\"\",\"body_q_rad\":[]}" })
+        {
+            var ack = DecodeAcknowledgement(wait + tail);
+            Assert(G1MeasuredStartState.Valid(ack), "Serialized waiting ACK must be accepted as feedback");
+            Assert(!G1MeasuredStartState.CanEngage(ack, 0, null, true),
+                "Accepted waiting ACK must never authorize engage");
+        }
+        foreach (string tail in new[] {
+            "\"session\":\"robot-A\",\"body_q_rad\":null}",
+            "\"session\":null,\"body_q_rad\":[0]}" })
+            Assert(!G1MeasuredStartState.Valid(DecodeAcknowledgement(wait + tail)),
+                "Revision zero cannot carry a measured session or body pose");
+        Assert(!G1MeasuredStartState.Valid(DecodeAcknowledgement(
+            "{\"ready\":true,\"revision\":0,\"reason\":\"synchronized\",\"session\":null,\"body_q_rad\":null}")),
+            "Revision-zero ready ACK must be rejected");
+        Assert(!G1MeasuredStartState.Valid(DecodeAcknowledgement(
+            "{\"ready\":false,\"revision\":1,\"reason\":\"synchronized\",\"session\":null,\"body_q_rad\":null}")),
+            "Revision-one ACK still requires measured session and fifteen body joints");
+    }
+
     public static void RunBatch()
     {
         string[] args = Environment.GetCommandLineArgs();
@@ -50,6 +84,7 @@ public static class G1MeasuredStartValidation
 
     private static object Validate(string output)
     {
+        ValidateAcknowledgementWire();
         var scene = EditorSceneManager.NewPreviewScene();
         GameObject host = null, model = null;
         G1UnityRightArmPreview preview = null;

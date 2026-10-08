@@ -1,3 +1,19 @@
+## 2026-10-08 Development Player still has no hands; splash removal and raw diagnosis
+
+Operator retest of Windows_link_candidate_20261008 failed hand recognition. Actual Development Player log confirms valid HMD tracking but both hand binders remain tracked=false. Therefore Development build alone is not a confirmed fix. Original Release and Development logs remain preserved under local logs/test_results/windows_link_20261008.
+
+Windows BuildWindows now disables both SplashScreen.showUnityLogo and SplashScreen.show. Added G1LinkHandDiagnostics, read-only OVRPlugin hand-enabled/query-status/active-controller diagnostics every 2 s in Editor and Player. It does not enable features, publish packets, alter poses, or change IK/control. This distinguishes raw runtime hand-state absence from binder/skeleton failures. No undocumented runtime configuration or registry changes.
+
+New candidate: Portable/Builds/Windows_link_no_splash_20261008/G1Teleop.exe. Runtime hand recognition still requires actual retest; ask whether Editor hands work on the same current connection. No motor program executed. Real C# sanitizer helper regression passed (1 test); Windows64 build succeeded, candidate exe SHA256 sidecar matched, and generated project splash flags are both 0. Operator visual/startup and raw hand-status retest pending.
+## 2026-10-08 Windows Link hand tracking — Development candidate
+
+Release Player actual operator log: HMD orientation/position and XR session valid, both OVR hand binders continuously tracked=false. Backend also waiting; launching Player alone does not launch Python IK.
+
+Installed Meta SDK OVRManager.cs calls SetDeveloperMode(Debug.isDebugBuild) outside UNITY_EDITOR. Prior BuildWindows used BuildOptions.None, so Release disables developer features. This is a source-backed suspected cause of absent Link hands, not yet an operator-confirmed root cause.
+
+Windows builder now uses BuildOptions.Development without ScriptDebugging. Android builder, XR packages, input/IK/gains and robot launchers remain unchanged. Official Meta documentation requests Link Developer Runtime Features. Operator screenshots of installed Link 208.0.0.74.535 show only Account/General tabs and no Developer/Beta entry; runtime setting status is unknown. Do not assert that this missing menu is disabled or advise undocumented registry changes. Development build does not prove runtime permission.
+
+Separate candidate: Portable/Builds/Windows_link_candidate_20261008/G1Teleop.exe. Release artifact and operator log preserved. Development Windows64 build succeeded; SHA256 sidecar matched and real C# sanitizer helper regression passed (1 test). Actual Quest retest remains pending; no hardware validation claimed. Do not launch G1 controller merely to test Player hands. Start local IK separately only after valid hands.
 ## 2026-10-07 Windows Player 및 G1 ARM 통합 컴파일 완료
 
 사용자 승인으로 기존 Quest Link/Windows 구조의 Unity Player를 빌드하고, G1 관찰 hook

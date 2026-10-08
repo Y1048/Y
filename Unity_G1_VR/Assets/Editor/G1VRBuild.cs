@@ -107,6 +107,8 @@ public static class G1VRBuild
             BuildTarget.StandaloneWindows64);
 
         PlayerSettings.productName = "G1 Teleop";
+        PlayerSettings.SplashScreen.showUnityLogo = false;
+        PlayerSettings.SplashScreen.show = false;
         PlayerSettings.companyName = "KAERI";
         EditorBuildSettings.scenes = new[]
         {
@@ -135,7 +137,9 @@ public static class G1VRBuild
             scenes = new[] { scene_path },
             locationPathName = absolute_output_path,
             target = BuildTarget.StandaloneWindows64,
-            options = BuildOptions.None
+            // OVRManager enables Link developer features only when Debug.isDebugBuild is true.
+            // Keep ScriptDebugging off; this is the PC Link hand-tracking player.
+            options = BuildOptions.Development
         };
 
         BuildReport report = BuildPipeline.BuildPlayer(build_options);

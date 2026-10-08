@@ -1,3 +1,12 @@
+## 2026-10-08 Actual Player hand retest: runtime unavailable; Editor works
+
+Actual Windows_wrist_fix_20261008 operator Player log: 9 raw diagnostic samples, all development=True/focused=True, runtime_hands_enabled=True count 0, left/right query success count 0. User confirms same Quest/Link works in Editor and corrected cyan markers are now at wrist. This isolates Windows Player raw input availability from the separate bone-ID bug. Development build alone is falsified as a solution; do not repeat build toggles without new evidence.
+
+Meta hand-specific official documentation states Windows-over-Link hand tracking is supported only in Unity Editor for iteration: https://developers.meta.com/vr/documentation/unity/unity-handtracking-overview/ . Generic Link documentation describes standalone PC app tracking but does not establish standalone hand support. Earlier assurance that PC EXE packaging would directly retain Quest hands was too broad; withdrawn. No claim that all possible PC runtimes cannot expose hands.
+
+Current usable path: existing Editor hand tracking and PC Mink. For supported editor-independent distribution, use Quest-native APK hand tracking and exchange input/state with PC; architectural work remains separate. Do not treat APK input alone as preserving PC Link rendering simultaneously. No SDK migration, runtime config registry change, or motor launch attempted in this diagnosis.
+
+Local evidence: windows_link_20261008/wrist_fix_player_no_hands.log and wrist_fix_hand_summary.json (actual operator data, not synthetic). Physical gain recommendation remains null.
 ## 2026-10-08 OpenXR palm incorrectly used as wrist — mapping fix
 
 Same current Quest/Link connection: user confirms Editor hands work while Windows Player hands still absent. Editor screenshot shows cyan wrist markers at palm center. Installed SDK reports OpenXR skeleton; SDK enum Hand_WristRoot=0 aliases XRHand_Palm=0, while XRHand_Wrist=1. Existing binder and separate bimanual sender selected Hand_WristRoot without skeleton-type context; anatomical finger bases also used legacy IDs.

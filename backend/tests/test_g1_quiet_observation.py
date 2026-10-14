@@ -60,8 +60,8 @@ class QuietTests(unittest.TestCase):
             quiet.run_workers(Path(directory), ['camera'], 'example', {})
             bind.assert_called_once()
             self.assertEqual(
-                spawn.call_args.args[0][-2:],
-                ['--robot-host', 'example'])
+                spawn.call_args.args[0][-4:],
+                ['--robot-host', 'example', '--camera-codec', 'h264'])
             self.assertEqual(
                 spawn.call_args.kwargs['creationflags'],
                 quiet.subprocess.CREATE_NEW_CONSOLE)

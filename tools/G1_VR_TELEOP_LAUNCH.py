@@ -367,6 +367,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base-input', choices=('omni', 'keyboard'), default='omni',
                         help='keyboard: Unity Game WASD/QE replaces Omni')
+    parser.add_argument('--camera-codec', choices=('h264', 'mjpeg'), default='h264',
+                        help='H264 camera transport by default; mjpeg keeps the legacy path')
     parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
     checks = parser.add_mutually_exclusive_group()
     checks.add_argument('--check-only', action='store_true')
@@ -414,6 +416,8 @@ def main(argv=None):
         raise RuntimeError('Duplicate camera launchers; preserve existing sessions')
     if camera_rows and option(camera_rows[0], '--robot-host') != args.host:
         raise RuntimeError('Existing camera targets another host; preserved')
+    if camera_rows and (option(camera_rows[0], '--camera-codec') or 'mjpeg') != args.camera_codec:
+        raise RuntimeError('Existing camera codec differs; stop its owning launcher first')
     has_camera = bool(camera_rows)
     has_groot = groot_launcher_running(process_rows, args.host)
     plan = launch_plan(
@@ -421,6 +425,7 @@ def main(argv=None):
         args.no_receiver, args.no_groot_actuation, args.base_input)
     env = observation.engine_environment()
     env["G1_BASE_INPUT"] = args.base_input
+    env["G1_CAMERA_CODEC"] = args.camera_codec
     preflight(plan, env)
     unity_editor = None
     unity_player = None
@@ -442,6 +447,7 @@ def main(argv=None):
     if has_groot:
         kept.add('groot')
     print('[BASE INPUT] ' + args.base_input)
+    print('[CAMERA CODEC] ' + args.camera_codec + '; 1920x1080 / 30fps target')
     print('[KEEP] ' + (', '.join(sorted(kept)) or 'none'))
     print('[START] ' + (', '.join(plan) or 'none; existing processes are kept'))
     if args.no_unity:
@@ -487,6 +493,7 @@ def main(argv=None):
                 sys.executable, '-I', '-u', '-B',
                 str(ROOT / 'tools/G1_CAMERA_LAUNCH.py'),
                 '--robot-host', args.host,
+                '--camera-codec', args.camera_codec,
             ]
         elif worker == 'camera_follow':
             command = [sys.executable, '-I', '-u', '-B',

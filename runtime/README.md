@@ -7,6 +7,7 @@ This directory is the self-contained Windows x64 Python runtime used by G1 teleo
 - Python dependencies: preinstalled under `python/Lib/site-packages`
 - Runtime isolation/path contract: `python/python311._pth`
 - No system Python, venv, user-site, or runtime pip installation is required.
+- Camera codecs: PyAV 17.0.1 and its wheel-bundled FFmpeg DLLs. H.264 decode/MJPEG encode are checked before launch. Third-party license texts remain under `python/Lib/site-packages/av-17.0.1.dist-info/licenses/`.
 
 Operator PCs must consume this directory as-is. If validation fails, restore the complete `runtime/python` directory from a known-good project copy.
 

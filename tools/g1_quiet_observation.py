@@ -81,7 +81,8 @@ def run_workers(root, workers, host, env):
                 child = subprocess.Popen(
                     [sys.executable, '-I', '-u', '-B',
                      str(root / 'tools/G1_CAMERA_LAUNCH.py'),
-                     '--robot-host', host],
+                     '--robot-host', host,
+                     '--camera-codec', env.get('G1_CAMERA_CODEC', 'h264')],
                     cwd=root, env=env,
                     creationflags=subprocess.CREATE_NEW_CONSOLE)
             elif worker == 'groot':

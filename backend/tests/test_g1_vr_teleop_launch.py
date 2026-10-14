@@ -324,7 +324,7 @@ class OrchestrationTests(unittest.TestCase):
         inventory = list(rows)
         if camera:
             inventory.append([sys.executable, str(ROOT/'tools/G1_CAMERA_LAUNCH.py'),
-                              '--robot-host', HOST])
+                              '--robot-host', HOST, '--camera-codec', 'h264'])
         if groot:
             inventory.append([
                 sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),
@@ -379,7 +379,7 @@ class OrchestrationTests(unittest.TestCase):
             [launcher.option(command, '--worker') for command in commands[:4]])
         self.assertEqual(
             [sys.executable, '-I', '-u', '-B', str(ROOT/'tools/G1_CAMERA_LAUNCH.py'),
-             '--robot-host', HOST],
+             '--robot-host', HOST, '--camera-codec', 'h264'],
             commands[4])
         self.assertEqual(
             [sys.executable, '-I', '-u', '-B', str(launcher.GROOT_LAUNCHER),
@@ -407,6 +407,18 @@ class OrchestrationTests(unittest.TestCase):
         unity_start.assert_not_called()
         player_start.assert_not_called()
         auto_play.assert_called_once_with()
+
+    def test_explicit_mjpeg_reaches_camera_only_and_preserves_groot_command(self):
+        result, spawn, _, _, environment, *_ = self.invoke(args=['--camera-codec','mjpeg'])
+        self.assertEqual(result,0)
+        commands=[call.args[0] for call in spawn.call_args_list]
+        self.assertEqual(launcher.option(commands[4],'--camera-codec'),'mjpeg')
+        self.assertIsNone(launcher.option(commands[5],'--camera-codec'))
+        self.assertEqual(environment['G1_CAMERA_CODEC'],'mjpeg')
+
+    def test_conflicting_camera_codec_preserves_existing_process(self):
+        with self.assertRaisesRegex(RuntimeError,'codec differs'):
+            self.invoke(camera=True,args=['--camera-codec','mjpeg'])
 
     def test_keyboard_mode_selects_gateway_with_unchanged_remote_command(self):
         result, spawn, check, confirm, environment, *_ = self.invoke(args=['--base-input', 'keyboard'])

@@ -20,7 +20,8 @@ class DependencyTests(unittest.TestCase):
         self.assertEqual(pins["mujoco"], "3.12.0")
         self.assertEqual(pins["numpy"], "2.4.6")
         self.assertEqual(pins["websockets"], "15.0.1")
-        self.assertEqual(len(pins), 16)
+        self.assertEqual(pins['av'], '17.0.1')
+        self.assertEqual(len(pins), 17)
 
     def test_probe_rejects_wrong_version(self):
         real_version = deps.metadata.version

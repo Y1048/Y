@@ -124,15 +124,27 @@ UAC elevation과 Windows NetTCPIP/DNS 변경은 OS 기능이므로 PowerShell he
 
 ## 4. Camera
 
+영상만 보고 싶으면 루트의 `TEST_G1_CAMERA.bat`를 실행한다. 브라우저에 카메라만 표시하며 Unity/IK/Omni/PTZ/LowState/모터 제어는 시작하지 않는다. HTTP와 영상 수신 포트는 localhost에서 자동 배정하므로 Unity 5011과 겹치지 않는다. 종료는 페이지의 **카메라 종료** 버튼 또는 실행 창의 Ctrl+C. 브라우저 탭만 닫으면 수신은 계속되므로 종료 버튼을 사용한다. 이미 카메라를 쓰는 통합 세션은 먼저 정상 종료해야 한다.
+
 ```text
-Insta360 Link 2 Pro UVC MJPEG
+Insta360 Link 2 Pro UVC H.264
  -> SSH
- -> bundled Python g1_camera_ssh.py
- -> TCP 127.0.0.1:5011
+ -> bundled Python/PyAV: PC H.264 decode + JPEG conversion
+ -> TCP 127.0.0.1:5011 (existing G1CM/JPEG protocol)
  -> Unity HMD-follow PiP
 ```
 
-현재 target은 1920×1080 MJPEG / 30 fps / 16:9이며 G1에서 재인코딩하지 않는다.
+현재 기본 target은 **1920×1080 H.264 / 30 fps / 16:9**이다. 카메라 압축 출력을 G1에서 그대로 전달하고 PC에서만 디코딩한다. Unity에는 기존 JPEG 형식으로 전달하여 Unity 코드/씬은 바꾸지 않는다. PC의 JPEG 변환은 추가 손실 압축이며 시각적 화질 확인은 별도다. PyAV 17.0.1과 FFmpeg DLL은 `runtime/python`에 포함돼 별도 pip/FFmpeg 설치가 필요 없다.
+
+기존 방식은 `START_G1_VR_TELEOP.bat --camera-codec mjpeg`로 선택한다. 기존 카메라 프로세스가 다른 codec으로 실행 중이면 먼저 그 실행기를 종료해야 한다. 자동 fallback으로 100Mbps 링크에 무거운 MJPEG를 몰래 다시 켜지 않는다.
+
+모터/Unity를 실행하지 않는 20초 카메라 수신·디코딩 검사:
+
+```bat
+runtime\python\python.exe -I -B tools\G1_CAMERA_LAUNCH.py --robot-host auto --probe-seconds 20
+```
+
+H.264 모드는 시작 전 장치 점유 여부와 포맷을 확인하며 정상 종료/예외 시 이전 포맷과 FPS를 복원한다. PTZ 및 모터 명령은 생성하지 않는다. 로그 `camera_h264/*_frames.jsonl`의 remote timestamp는 압축 chunk를 읽은 시각이며 센서 촬영시각/절대 영상지연이 아니다. 수신과 로컬 송신을 분리하고 디코딩된 최신 영상 한 장만 유지한다.
 
 ## 5. 테스트
 

@@ -135,10 +135,21 @@ def read_packet(stream):
     return raw + jpeg
 def check_environment():
     client = ssh_executable()
+    from g1_camera_h264 import check_decoder
+    check_decoder()
     print('[CAMERA CHECK] SSH ready (' + client + '); Insta360/v4l2 checked on G1 at runtime.',
           flush=True)
 
-def run(host):
+def run(host, codec='h264', probe_seconds=0):
+    if codec == 'h264':
+        from g1_camera_h264 import run as run_h264
+        return run_h264(host, probe_seconds=probe_seconds)
+    if codec != 'mjpeg' or probe_seconds:
+        raise ValueError('Use h264 for a bounded probe, or mjpeg for the legacy stream')
+    return run_mjpeg(host)
+
+
+def run_mjpeg(host):
     ensure_login(host)
     command = [ssh_executable()] + identity_options() + [
         '-T', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=5',

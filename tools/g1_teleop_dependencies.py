@@ -77,6 +77,12 @@ def probe():
         except Exception as error:
             errors.append(name + ": " + type(error).__name__ + ": " + str(error))
     try:
+        import av
+        av.CodecContext.create('h264', 'r')
+        av.CodecContext.create('mjpeg', 'w')
+    except Exception as error:
+        errors.append('camera codecs: ' + type(error).__name__ + ': ' + str(error))
+    try:
         import qpsolvers
         if "daqp" not in qpsolvers.available_solvers:
             errors.append("qpsolvers: DAQP backend unavailable")

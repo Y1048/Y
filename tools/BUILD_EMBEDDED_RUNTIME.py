@@ -95,6 +95,7 @@ def write_manifest(runtime: Path) -> None:
     (runtime / "RUNTIME_MANIFEST.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
 
 
@@ -103,7 +104,8 @@ def validate_runtime(runtime: Path) -> None:
         str(runtime / "python.exe"), "-I", "-B", "-c",
         (
             "import importlib.metadata as m;"
-            "import numpy,scipy,mujoco,mink,qpsolvers,daqp,ruckig,websocket,websockets,OpenGL;"
+            "import numpy,scipy,mujoco,mink,qpsolvers,daqp,ruckig,websocket,websockets,OpenGL,av;"
+            "av.CodecContext.create('h264','r');av.CodecContext.create('mjpeg','w');"
             "assert mujoco.__version__=='3.12.0';"
             "assert 'daqp' in qpsolvers.available_solvers;"
             "print(m.version('numpy'),m.version('mujoco'),m.version('ruckig'))"

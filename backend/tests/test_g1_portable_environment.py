@@ -40,7 +40,7 @@ class PortableTests(unittest.TestCase):
         self.assertTrue(embedded.PYTHON_EXE.is_file())
         self.assertTrue((embedded.SITE_PACKAGES / "mujoco/__init__.py").is_file())
 
-    def test_all_bats_are_three_line_embedded_shims(self):
+    def test_portable_entry_bats_are_three_line_embedded_shims(self):
         expected = {
             "START_G1_VR_TELEOP": (ROOT / "START_G1_VR_TELEOP.bat", "teleop"),
             "BUILD_AND_INSTALL_VR_APK": (
@@ -51,7 +51,10 @@ class PortableTests(unittest.TestCase):
                 ROOT / "tools/RESTORE_G1_ETHERNET_DHCP.bat", "ethernet-restore"),
         }
         tracked_tools = {path.stem for path in (ROOT / "tools").glob("*.bat")}
-        self.assertEqual(set(expected) - {"START_G1_VR_TELEOP"}, tracked_tools)
+        # Optional APK setup/observation helpers are not portable runtime shims.
+        # They already existed at the baseline commit; keep the inventory explicit.
+        apk_helpers = {"RECORD_QUEST_APK_INPUT", "INSTALL_QUEST_INPUT_APK"}
+        self.assertEqual((set(expected) - {"START_G1_VR_TELEOP"}) | apk_helpers, tracked_tools)
         self.assertTrue((ROOT / "START_G1_VR_TELEOP.bat").is_file())
         for name, (path, command) in expected.items():
             with self.subTest(name=name):

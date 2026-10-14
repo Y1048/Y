@@ -16,7 +16,7 @@ runtime/python/RUNTIME_MANIFEST.json
 다른 Windows PC로 옮길 때 시스템 Python 설치, `py -3.11`, venv 생성, `pip install`이 필요하지 않다.
 프로젝트 폴더 전체를 복사하면 Python runtime도 같이 이동한다.
 
-남겨둔 사용자용 BAT 4개에는 환경 설정 로직이 없다. 모두 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다.
+기본 실행·빌드·유선 설정용 BAT 4개는 3줄짜리 shim으로 bundled Python의 `tools/G1_PORTABLE.py`를 호출한다. 별도 Quest APK 보조 도구와 PC 키보드 입력 preview BAT는 이 목록과 구분한다.
 
 BAT는 Quest 카메라 pan·tilt 추종기도 자동 시작한다. 실행 순서와 부호 옵션: [실시간 UDP 카메라 안내](docs/QUEST_CAMERA_PAN_TILT_20261001.md).
 
@@ -31,6 +31,22 @@ START_G1_VR_TELEOP.bat
 ```bat
 START_G1_VR_TELEOP.bat --check-only
 ```
+
+새 PC/G1의 연결 준비 조건을 읽기 전용으로 확인:
+
+```bat
+START_G1_VR_TELEOP.bat --check-connections
+```
+
+IP·SSH 인증·G1 필수 파일·Insta360 장치/권한을 확인하며 설정 변경이나 제어기 실행은 하지 않는다. 실제 영상·UDP 수신·모터 동작 검증은 별도다. 다른 주소라면 `--host 주소`를 붙인다. 새 환경 준비와 최초 Unity 임포트 안내는 [Portable 실행 안내](docs/PORTABLE_TELEOP_SETUP.md)에 있다.
+
+Omni 대신 Unity Game 키보드로 이동:
+
+```bat
+START_G1_VR_TELEOP.bat --base-input keyboard
+```
+
+WASD는 이동속도, Q/E는 가상 Omni 목표 방향을 변경한다. Q/E를 놓으면 마지막 목표 방향을 유지하므로 남은 각도만큼 더 회전할 수 있다. PC 입력만 확인하려면 `TEST_G1_UNITY_KEYBOARD.bat`을 쓴다. [키보드 사용법](docs/G1_UNITY_KEYBOARD_20261014.md).
 
 GROOT actuation 없이 기존 관측/Unity 경로만 실행:
 

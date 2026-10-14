@@ -10,6 +10,7 @@ import socket
 import subprocess
 import sys
 import time
+import tempfile
 from g1_ssh_login import ensure_login, ssh_executable
 from g1_camera_ssh import check_environment as check_camera_environment
 
@@ -238,11 +239,18 @@ def start_unity(editor, project=UNITY_PROJECT):
 
 
 def request_unity_auto_play(project=UNITY_PROJECT, now=None):
-    """Request one fresh Editor Play transition without touching scene content."""
+    """Atomically request Play after import; Editor selects the teleop scene."""
     request = project / 'Library/G1TeleopAutoPlay.request'
     request.parent.mkdir(parents=True, exist_ok=True)
     requested_at = int(time.time() if now is None else now)
-    request.write_text(str(requested_at), encoding='ascii')
+    with tempfile.NamedTemporaryFile(mode='w', encoding='ascii',
+                                     dir=request.parent, delete=False) as output:
+        temporary = Path(output.name)
+        output.write(str(requested_at))
+    try:
+        os.replace(temporary, request)
+    finally:
+        temporary.unlink(missing_ok=True)
     return request
 
 
@@ -253,6 +261,7 @@ def running_workers(rows, root, host):
         'lowstate': root / 'tools/g1_lowstate_view.py',
         'send': root / 'tools/G1_INPUT_RECEIVE_AUDIT.py',
         'omni': root / 'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py',
+        'keyboard': root / 'tools/g1_unity_keyboard_gateway.py',
         'arm': root / 'MuJoCo_G1_Controller/scripts/g1_bimanual_runtime.py',
     }
     normalize = lambda value: str(value).replace('\\', '/').casefold()
@@ -288,6 +297,7 @@ def running_workers(rows, root, host):
                 'lowstate': option(argv, '--host') == host,
                 'send': 'send-live' in argv and option(argv, '--host') == host
                         and option(argv, '--send-hz') == str(observation.COMPUTE_HZ),
+                'keyboard': '--preview' not in argv,
                 'omni': '--dry-run' in argv
                         and option(argv, '--process-hz') == str(observation.COMPUTE_HZ)
                         and option(argv, '--unity-alignment-port')
@@ -312,6 +322,8 @@ def preflight(missing, env):
             ('send', 55071),
             ('arm', 5020),
             ('omni', observation.UNITY_ALIGNMENT_PORT),
+            ('keyboard', observation.UNITY_ALIGNMENT_PORT),
+            ('keyboard', 55077),
             ('camera_follow', 55075)):
         if worker not in missing:
             continue
@@ -330,9 +342,16 @@ def preflight(missing, env):
 
 
 def launch_plan(existing, has_camera, has_groot=False,
-                no_receiver=False, no_groot_actuation=False):
+                no_receiver=False, no_groot_actuation=False, base_input="omni"):
+    if base_input not in ('omni', 'keyboard'):
+        raise ValueError('base_input')
+    conflict = 'omni' if base_input == 'keyboard' else 'keyboard'
+    if conflict in existing:
+        raise RuntimeError('Close the existing ' + conflict + ' input before switching modes; it was preserved.')
+    selected = tuple('keyboard' if worker == 'omni' and base_input == 'keyboard' else worker
+                     for worker in INTEGRATED_WORKERS)
     plan = [
-        worker for worker in INTEGRATED_WORKERS
+        worker for worker in selected
         if worker != 'receive' and worker not in existing
     ]
     if not has_camera:
@@ -346,8 +365,13 @@ def launch_plan(existing, has_camera, has_groot=False,
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--base-input', choices=('omni', 'keyboard'), default='omni',
+                        help='keyboard: Unity Game WASD/QE replaces Omni')
     parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
-    parser.add_argument('--check-only', action='store_true')
+    checks = parser.add_mutually_exclusive_group()
+    checks.add_argument('--check-only', action='store_true')
+    checks.add_argument('--check-connections', action='store_true',
+                        help='Read-only TCP/SSH/onboard-camera prerequisite report; no workers or IP repair')
     parser.add_argument('--no-receiver', action='store_true',
                         help='Compatibility flag; this launcher never starts a G1 audit receiver.')
     parser.add_argument('--show-consoles', action='store_true', help='Show legacy diagnostic windows')
@@ -368,6 +392,9 @@ def main(argv=None):
         parser.error('--unity-editor and --standalone cannot be used together')
     if os.name != 'nt':
         raise RuntimeError('Use this launcher on Windows')
+    if args.check_connections:
+        from g1_connection_check import check_connections
+        return check_connections(args.host)
     args.host = select_robot_host(args.host)
     process_rows = process_arguments()
     has_editor = unity_project_running(process_rows)
@@ -391,8 +418,9 @@ def main(argv=None):
     has_groot = groot_launcher_running(process_rows, args.host)
     plan = launch_plan(
         existing, has_camera, has_groot,
-        args.no_receiver, args.no_groot_actuation)
+        args.no_receiver, args.no_groot_actuation, args.base_input)
     env = observation.engine_environment()
+    env["G1_BASE_INPUT"] = args.base_input
     preflight(plan, env)
     unity_editor = None
     unity_player = None
@@ -413,6 +441,7 @@ def main(argv=None):
         kept.add('camera')
     if has_groot:
         kept.add('groot')
+    print('[BASE INPUT] ' + args.base_input)
     print('[KEEP] ' + (', '.join(sorted(kept)) or 'none'))
     print('[START] ' + (', '.join(plan) or 'none; existing processes are kept'))
     if args.no_unity:

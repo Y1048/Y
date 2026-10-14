@@ -322,6 +322,14 @@ def validate_source(packet):
                   and _sequence(values.get('sequence')))
         if not (waiting or identity) or not _sequence(values.get('feedback_sequence')):
             raise ValueError('source_arm_identity')
+    elif values.get('input_mode') == 'unity_keyboard':
+        if values.get('calibrated') is not True or not _finite(values.get('arm_yaw_deg')):
+            raise ValueError('source_keyboard_heading')
+        if values.get('source_origin') != 'unity_game_keyboard':
+            raise ValueError('source_keyboard_origin')
+        for key in ('vx', 'vy', 'yaw_rate'):
+            if not _finite(values.get(key)) or abs(values[key]) > 0.2 + 1e-9:
+                raise ValueError('source_keyboard_' + key)
     else:
         for key in ('mx','my','arm_yaw_deg','omni_yaw_rate_deg_s','vx','vy',
                     'yaw_rate','yaw_diff_deg','yaw_step_diff_deg'):

@@ -1,3 +1,31 @@
+## 2026-10-14 portability publication and next-PC handoff
+
+Publication target: main, fast-forward from 4e89f45e5e80b506cd453754cea5dc252f4b33e7. This bundle contains optional Unity Game WASD/QE using the existing Omni heading protocol, long-import-safe Editor auto-Play with explicit SampleScene selection, and read-only --check-connections diagnostics. G1 onboard programs remain unchanged. Existing dirty worktrees/private DevAgent settings are excluded.
+
+Final local validation: 147/147 offline tests, zero skips/failures; four Editor/Player x InputSystem/legacy actual Unity-reference compilations; AutoPlay actual Unity-reference compilation and stub lifecycle test. Earlier manual compile attempts needed Unity.Scripting and JSONSerializeModule reference additions to the standalone compiler command; no runtime source workaround was made. Evidence under logs/test_results/portability_publication_20261014/ (local/ignored). These are generated/mocked/desktop checks, not hardware acceptance.
+
+Next PC: pull main, use its own bundled runtime and declared Unity Editor, run START_G1_VR_TELEOP.bat --check-connections first. For keyboard-only local input use TEST_G1_UNITY_KEYBOARD.bat; integrated keyboard uses --base-input keyboard and the existing ACTUATE confirmation. Verify actual W forward/Q left direction and release behavior on site. Q/E release holds the target heading, not immediate zero physical yaw rate.
+
+Remaining external preparation: Unity/Link first setup, G1 SSH enrollment/host identity, camera actual video/PTZ, UDP receipt, actual hand/keyboard interaction and physical robot behavior. Auto host discovery still only probes the two known addresses; use --host for another address. User postponed G1 onboard-file copying because it will be transferred by USB. Final LowCmd logging validation remains a separate task. No G1 session was started for this publication.
+
+## 2026-10-14 read-only connection prerequisite check
+
+`START_G1_VR_TELEOP.bat --check-connections [--host ADDRESS]` is a separate diagnostic branch before NIC repair, dependency setup, authentication enrollment and all worker/Unity/actuator launches. It probes the two documented addresses (wired preferred) or an explicit host, prints the route's PC IP, performs strict noninteractive SSH and reads onboard file/device prerequisites. No SDK import/initialization, capture or robot command. Host-key change, missing trust, key authentication failure and connection timeout are distinct failures. No keys or network settings are modified.
+
+Camera checks device count, access and v4l2-ctl presence, not a working stream. Reports explicitly leave UDP ACK, live JPEG/PTZ, Quest hands, runtime model/library compatibility and motor operation unvalidated. JSON reports under logs/test_results/connection_checks/. Onboard file copy remains postponed by user. Offline tests: 128/128 passed, including mock network/SSH/camera failures, diagnostic dispatch side-effect exclusion and previous startup/keyboard regressions. No real SSH/G1 test executed in this implementation turn. Source tests: logs/test_results/connection_check_20261014/tests.txt. Included in the 2026-10-14 portability bundle.
+
+## 2026-10-14 fresh-PC Editor startup
+
+AutoPlay now validates launcher timestamp against the Editor process start (120s pre-start grace), not request age after import. Long import in the same session no longer expires at 2 minutes; requests predating that session are rejected, and pending request is removed on normal Editor quit. Request writes are atomic. On readiness explicitly open Assets/Scenes/SampleScene.unity; preserve unsaved edits through the normal save/cancel dialog. Cancel, missing scene or compilation failure does not start Play; rerun BAT after addressing it. Already playing scene is preserved.
+
+Validation: 100/100 tests passed, including actual C# source executed against stub Unity lifecycle APIs (3-hour import fixture, old-session rejection, scene selection/cancel/failure) and current keyboard/launcher regressions. Actual Unity 6000.5.4f1 reference-assembly compilation passed. No real cold-cache Editor import, Quest or G1 test performed. Logs: logs/test_results/unity_first_start_20261014/. Onboard source/actuator not changed. Included in the 2026-10-14 portability bundle.
+
+## 2026-10-14 Unity Game keyboard: existing Omni receiver compatibility
+
+See `docs/G1_UNITY_KEYBOARD_20261014.md`. `--base-input keyboard` selects only the PC source. WASD maps to vx/vy; Q/E integrates a virtual Omni arm_yaw_deg at 0.2 rad/s, accounting for production yaw-sign=-1. Keyboard origin remains explicit. Key release/focus loss/input expiry zeros translation and target angular rate but holds the target direction: G1 can finish turning toward it. No physical stop-on-release claim.
+
+Removed the earlier receiver rate-control branch, remote mode argument and receiver deployment/hash requirement. Onboard heading source, GROOT remote launcher and quiet supervisor match baseline HEAD. No G1 deployment required for this feature. Preview stays local; Omni/keyboard are mutually exclusive. Current revision: 98/98 offline Python tests passed, including a generated loopback UDP fixture and unmodified receiver parsing. C# unchanged from earlier 4 compilation variants. No SSH, robot execution or operator Game-view validation in this revision. Included in the 2026-10-14 portability bundle. Final LowCmd recording remains pending.
+
 ## 2026-10-08 Actual Player hand retest: runtime unavailable; Editor works
 
 Actual Windows_wrist_fix_20261008 operator Player log: 9 raw diagnostic samples, all development=True/focused=True, runtime_hands_enabled=True count 0, left/right query success count 0. User confirms same Quest/Link works in Editor and corrected cyan markers are now at wrist. This isolates Windows Player raw input availability from the separate bone-ID bug. Development build alone is falsified as a solution; do not repeat build toggles without new evidence.

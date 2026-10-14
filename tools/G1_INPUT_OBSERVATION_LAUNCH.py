@@ -30,6 +30,8 @@ def worker_command(worker, host, stamp):
         return python + [str(ROOT/'tools/G1_INPUT_RECEIVE_AUDIT.py'),
                          'send-live', '--host', host, '--send-hz', str(COMPUTE_HZ),
                          '--print-hz', str(DISPLAY_HZ)]
+    if worker == 'keyboard':
+        return python + [str(ROOT/'tools/g1_unity_keyboard_gateway.py')]
     if worker == 'omni':
         return python + [str(ROOT/'hardware/g1_arm_bridge/g1_omni_velocity_gateway.py'),
                          '--dry-run', '--process-hz', str(COMPUTE_HZ),
@@ -72,7 +74,7 @@ def preflight(env):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--host', default='auto', help='auto: wired address first, then closed network')
-    parser.add_argument('--worker', choices=WORKERS + ('lowstate',))
+    parser.add_argument('--worker', choices=WORKERS + ('lowstate', 'keyboard'))
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--no-receiver', action='store_true',
                         help='Start PC sources/sender only; keep your existing G1 receive console.')

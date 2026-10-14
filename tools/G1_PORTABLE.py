@@ -62,6 +62,10 @@ def check_runtime(check_camera=True):
 
 def teleop(args):
     require_embedded_interpreter()
+    if any(flag in args for flag in ('--check-connections', '--help', '-h')):
+        # Read-only route before NIC repair and dependency/bootstrap side effects.
+        import G1_VR_TELEOP_LAUNCH as launcher
+        return launcher.main(args)
     # A direct G1 Ethernet NIC can retain an unrelated PC address on another machine.
     # Repair only a safely inferred physical Ethernet link before any worker/motor owner.
     requested_host = 'auto'

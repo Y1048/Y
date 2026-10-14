@@ -61,6 +61,35 @@ BAT는 환경 로직을 갖지 않고 Embedded Python dispatcher만 호출한다
 
 Windows build는 `G1VRBuild.BuildWindows()`가 `resources.assets`의 로컬 Meta DevAgent access token/server address를 post-build 단계에서 제거하고, 유일 occurrence를 검증하지 못하면 fail closed한다. `DevAgentSettings.asset`의 로컬 값 자체는 build 과정에서 수정하지 않는다.
 
+### 읽기 전용 연결 점검
+
+```powershell
+.\START_G1_VR_TELEOP.bat --check-connections
+# 다른 주소라면:
+.\START_G1_VR_TELEOP.bat --check-connections --host 10.50.1.8
+```
+
+이 옵션은 TCP/SSH로 실제 접속해 필수 파일과 장치 상태를 읽지만, IP 설정/UAC, 로그인 키 등록, Unity/작업 프로세스, 카메라 캡처, SDK/DDS 초기화, 제어기를 실행하지 않는다. 점검용 별도 수신기도 만들지 않는다. 일반 실행 전 새 환경에서 사용한다.
+
+- auto는 192.168.123.164와 192.168.10.165 두 주소만 확인하며 유선을 우선한다. 임의 IP 탐색은 아니다. 연결에 사용된 PC IP도 출력한다.
+- 기존 SSH 신뢰 정보와 unitree 키 로그인을 사용한다. 새 PC의 키 미등록, 새 G1의 미신뢰 호스트, 같은 IP의 다른 G1로 인한 호스트 키 변경, timeout을 구분한다. 인증 정보는 자동 변경하지 않는다.
+- G1의 eth0, unitree_sdk2py 패키지 존재, GROOT 실행 파일/heading 소스/카메라 보조 파일 존재를 검사한다. 실행 파일 내부 동작·정책·라이브러리 호환성 검증은 아니다.
+- Insta360 video-index0 장치가 한 대인지, 읽기/쓰기 권한과 v4l2-ctl이 있는지 확인한다. 여러 대면 의도한 장치를 명확히 선택하도록 실패로 표시한다.
+- **PASS는 준비 조건 검사 통과**다. UDP 수신 ACK, 실제 JPEG 영상·PTZ, Quest 손 인식, 모터 동작은 검증하지 않는다.
+- 결과는 logs/test_results/connection_checks/connection_날짜_시각.json에 보존한다. 불완전하면 종료 코드 1이다.
+
+기존 --check-only는 실행 계획 검사다. --check-connections와 동시에 사용할 수 없다. 필수 파일 복제가 필요한 경우의 G1 내부 파일 복제 작업은 별도 단계로 남긴다.
+
+### 새 PC의 Unity 최초 임포트
+
+최초 실행에서는 패키지 다운로드·프로젝트 임포트·스크립트 컴파일을 기다린다. 프로젝트 파일만 복사해도 Unity 설치/라이선스, Meta Link 연결과 최초 패키지 준비까지 자동 완료되는 것은 아니다. 현장에 가져가기 전에 새 PC에서 한 번 열어 준비한다.
+
+자동 Play 요청은 2분 대기 만료 대신 현재 Unity 프로세스 시작 시각을 기준으로 검사한다. 같은 실행 세션에서 임포트가 오래 걸려도 요청은 유지한다. 이전 실행보다 오래된 요청은 거부하고 정상 Editor 종료 시 대기 요청을 제거한다. 시작 직전 120초는 launcher가 먼저 요청을 쓰는 순서를 위한 유예이며, 임포트 제한 시간이 아니다.
+
+준비되면 `Assets/Scenes/SampleScene.unity`를 명시적으로 연 뒤 Play한다. 다른 씬에 미저장 변경이 있으면 Unity의 저장/취소 대화상자가 나타날 수 있다. 취소하면 Play하지 않으며 다시 BAT를 실행해 요청한다. 이미 Play 중이면 현재 씬을 바꾸지 않는다. 씬 누락이나 스크립트 컴파일 실패는 Console에서 원인을 확인한다.
+
+정상 준비 로그: `[G1 AUTO PLAY] Import complete, SampleScene ready; starting Play mode.` 이 메시지는 Editor 준비 완료이며 IK 연결·카메라·실제 G1 준비 완료를 의미하지 않는다.
+
 ## 3. Ethernet
 
 G1 유선 주소는 `192.168.123.164`, PC 쪽 G1 전용 주소는 `192.168.123.99/24`다.

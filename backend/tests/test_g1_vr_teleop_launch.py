@@ -279,6 +279,18 @@ class UnityLaunchTests(unittest.TestCase):
                 request)
             self.assertEqual('1234567890', request.read_text(encoding='ascii'))
 
+    def test_auto_play_request_replaces_atomically_and_cleans_failed_temp(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / 'UnityProject'
+            request = launcher.request_unity_auto_play(project, now=1000)
+            launcher.request_unity_auto_play(project, now=2000)
+            self.assertEqual('2000', request.read_text(encoding='ascii'))
+            with mock.patch.object(launcher.os, 'replace', side_effect=OSError('fixture')):
+                with self.assertRaises(OSError):
+                    launcher.request_unity_auto_play(project, now=3000)
+            self.assertEqual('2000', request.read_text(encoding='ascii'))
+            self.assertEqual([request], list(request.parent.iterdir()))
+
     def test_unity_environment_fills_process_local_windows_defaults(self):
         with tempfile.TemporaryDirectory() as temporary:
             local = Path(temporary)
@@ -395,6 +407,15 @@ class OrchestrationTests(unittest.TestCase):
         unity_start.assert_not_called()
         player_start.assert_not_called()
         auto_play.assert_called_once_with()
+
+    def test_keyboard_mode_selects_gateway_with_unchanged_remote_command(self):
+        result, spawn, check, confirm, environment, *_ = self.invoke(args=['--base-input', 'keyboard'])
+        self.assertEqual(0, result)
+        commands = [call.args[0] for call in spawn.call_args_list]
+        self.assertEqual(['send', 'keyboard', 'arm', 'lowstate'],
+                         [launcher.option(command, '--worker') for command in commands[:4]])
+        self.assertIsNone(launcher.option(commands[5], '--base-input'))
+        self.assertEqual('keyboard', environment['G1_BASE_INPUT'])
 
     def test_closed_network_host_reaches_all_integrated_launches(self):
         result, spawn, _, _, _, _, _, auto_play = self.invoke(args=['--host', '192.168.10.165'])

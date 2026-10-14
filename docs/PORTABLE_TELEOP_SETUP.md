@@ -17,13 +17,13 @@ runtime/python/RUNTIME_MANIFEST.json
 - Windows 11 x64
 - 현재 Quest Link 양손 실기에는 프로젝트 `ProjectVersion.txt`의 Unity Editor가 필요하다. launcher가 자동 탐색하며 사용자가 Editor를 직접 조작할 필요는 없다
 - prebuilt Windows player `Builds/Windows/G1Teleop.exe` 및 동반 파일은 standalone 진단용으로 유지한다
-- 최종 운영 구조는 Quest APK가 손/HMD tracking을 직접 수집해 PC Portable로 전송하여 운영 PC의 Unity Editor 의존성을 제거하는 것이다
+- 현재 운영은 Unity Editor + Link다. Quest APK/ADB는 추후 Editor 의존성을 제거하려는 별도 경로이며 이번 새 PC 준비의 필수 조건이 아니다
 - Meta Quest / Link 환경과 필요한 드라이버
 - Omni Connect
 - working OpenSSH client (`ssh.exe`, `ssh-keygen.exe`): Windows OpenSSH 또는 Git for Windows OpenSSH
 - G1 Ethernet 또는 closed network
 - G1 onboard `/home/unitree/groot_onboard_runtime`에 heading controller와 executable `build/groot_balance_actuator`
-- APK 설치 시 Meta Quest Developer Hub의 `adb.exe`
+- APK를 별도로 설치할 때만 ADB 준비가 필요하다
 
 ## 1. 폴더 복사 후 runtime 검사
 
@@ -74,7 +74,7 @@ Windows build는 `G1VRBuild.BuildWindows()`가 `resources.assets`의 로컬 Meta
 - auto는 192.168.123.164와 192.168.10.165 두 주소만 확인하며 유선을 우선한다. 임의 IP 탐색은 아니다. 연결에 사용된 PC IP도 출력한다.
 - 기존 SSH 신뢰 정보와 unitree 키 로그인을 사용한다. 새 PC의 키 미등록, 새 G1의 미신뢰 호스트, 같은 IP의 다른 G1로 인한 호스트 키 변경, timeout을 구분한다. 인증 정보는 자동 변경하지 않는다.
 - G1의 eth0, unitree_sdk2py 패키지 존재, GROOT 실행 파일/heading 소스/카메라 보조 파일 존재를 검사한다. 실행 파일 내부 동작·정책·라이브러리 호환성 검증은 아니다.
-- Insta360 video-index0 장치가 한 대인지, 읽기/쓰기 권한과 v4l2-ctl이 있는지 확인한다. 여러 대면 의도한 장치를 명확히 선택하도록 실패로 표시한다.
+- Insta360 video-index0 장치가 한 대인지, 읽기/쓰기 권한과 v4l2-ctl이 있는지 확인한다. 여러 대면 의도한 장치를 명확히 선택하도록 실패로 표시한다. 선택한 codec의 1920×1080 30fps 열거도 읽기 전용으로 확인하며, 기본 H264에는 fuser 존재도 요구한다. `--check-connections --camera-codec mjpeg`는 기존 MJPEG 지원을 검사한다. 포맷 설정/캡처는 하지 않는다.
 - **PASS는 준비 조건 검사 통과**다. UDP 수신 ACK, 실제 JPEG 영상·PTZ, Quest 손 인식, 모터 동작은 검증하지 않는다.
 - 결과는 logs/test_results/connection_checks/connection_날짜_시각.json에 보존한다. 불완전하면 종료 코드 1이다.
 

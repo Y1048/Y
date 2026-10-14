@@ -15,16 +15,32 @@ import g1_connection_check as check
 import G1_VR_TELEOP_LAUNCH as launch
 import G1_PORTABLE as portable
 
+FORMATS = "[0]: 'H264'\n Size: Discrete 1920x1080\n Interval: Discrete 0.033s (30.000 fps)\n"
 
 def evidence(**changes):
     return dict(schema='g1.connection.prerequisites.v1', hostname='fixture-g1',
                 eth0=True, sdk_present=True, actuator=True, heading=True,
-                camera_follow=True, v4l2_ctl='/usr/bin/v4l2-ctl',
+                camera_follow=True, v4l2_ctl='/usr/bin/v4l2-ctl', fuser='/usr/bin/fuser',
+                camera_formats=FORMATS, camera_format_error='',
                 cameras=[dict(device='/dev/video8', name='Insta360-fixture',
                               readable=True, writable=True)], **{}) | changes
 
 
 class ConnectionTests(unittest.TestCase):
+    def test_format_size_and_rate_must_belong_to_same_codec(self):
+        self.assertTrue(check.supports_1080p30(FORMATS, 'h264'))
+        for bad in ('', FORMATS.replace('H264','MJPG'), FORMATS.replace('1920x1080','1280x720'),
+                    FORMATS.replace('30.000','15.000'),
+                    "[0]: 'H264'\n Size: Discrete 1920x1080\n Interval: Discrete 0.066s (15.000 fps)\n" +
+                    "[1]: 'MJPG'\n Size: Discrete 1920x1080\n Interval: Discrete 0.033s (30.000 fps)\n",
+                    "[0]: 'H264'\n Size: Discrete 1920x1080\n Size: Discrete 1280x720\n Interval: Discrete 0.033s (30.000 fps)\n"):
+            self.assertFalse(check.supports_1080p30(bad, 'h264'))
+
+    def test_mjpeg_diagnostic_selection_reaches_checker(self):
+        with mock.patch.object(check, 'check_connections', return_value=0) as diagnose:
+            self.assertEqual(0, launch.main(['--check-connections', '--camera-codec', 'mjpeg']))
+            diagnose.assert_called_once_with('auto', camera_codec='mjpeg')
+
     def run_check(self, remote=None, host='auto', endpoints=None, code=0, stderr=''):
         remote = evidence() if remote is None else remote
         result = subprocess.CompletedProcess([], code, json.dumps(remote), stderr)
@@ -85,7 +101,7 @@ class ConnectionTests(unittest.TestCase):
             self.assertIn('camera_device', [r['name'] for r in report['checks'] if r['status'] == 'FAIL'])
 
     def test_each_missing_onboard_prerequisite_fails(self):
-        for field in ('eth0', 'sdk_present', 'actuator', 'heading', 'camera_follow', 'v4l2_ctl'):
+        for field in ('eth0', 'sdk_present', 'actuator', 'heading', 'camera_follow', 'v4l2_ctl', 'fuser', 'camera_formats'):
             with self.subTest(field=field):
                 rc, report, _ = self.run_check(remote=evidence(**{field: False}))
                 self.assertEqual(1, rc)
@@ -114,8 +130,9 @@ class ConnectionTests(unittest.TestCase):
             self.assertEqual(subprocess.DEVNULL, run.call_args.kwargs['stdin'])
             self.assertEqual(15, run.call_args.kwargs['timeout'])
         for forbidden in ('ChannelFactoryInitialize', 'ChannelPublisher', '--enable-actuation',
-                          '--stream-mmap', '--set-fmt-video', 'authorized_keys', 'subprocess'):
+                          '--stream-mmap', '--set-fmt-video', 'authorized_keys'):
             self.assertNotIn(forbidden, check.REMOTE_INSPECT)
+        self.assertIn("'--list-formats-ext'", check.REMOTE_INSPECT)
         compile(check.REMOTE_INSPECT, '<read-only-inspection>', 'exec')
 
     def test_invalid_host_rejected_before_any_network(self):
@@ -148,7 +165,7 @@ class ConnectionTests(unittest.TestCase):
                 mock.patch.object(launch, 'process_arguments') as processes, \
                 mock.patch.object(launch, 'confirm_groot_actuation') as confirm:
             self.assertEqual(1, portable.teleop(['--check-connections', '--host', '10.5.1.2']))
-            diagnose.assert_called_once_with('10.5.1.2')
+            diagnose.assert_called_once_with('10.5.1.2', camera_codec='h264')
             for unused in (elevate, deps, select, enroll, processes, confirm): unused.assert_not_called()
 
     def test_check_modes_cannot_accidentally_combine(self):

@@ -396,7 +396,7 @@ def main(argv=None):
         raise RuntimeError('Use this launcher on Windows')
     if args.check_connections:
         from g1_connection_check import check_connections
-        return check_connections(args.host)
+        return check_connections(args.host, camera_codec=args.camera_codec)
     args.host = select_robot_host(args.host)
     process_rows = process_arguments()
     has_editor = unity_project_running(process_rows)

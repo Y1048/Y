@@ -1,5 +1,40 @@
 # 양팔 최종 명령 계측 — 2026-10-07
 
+## 2026-10-14 현재 G1 읽기 전용 재점검
+
+**기능 후보는 준비됐지만 현재 통합 실행에서는 최종 팔 LowCmd를 기록하지 않는다.**
+`tools/G1_GROOT_REMOTE_LAUNCH.py`는 여전히 `/home/unitree/groot_onboard_runtime/build/groot_balance_actuator`를 사용한다.
+후보 폴더와 로깅 환경변수로 연결되지 않았다. 원본 실행본에 환경변수만 추가해도 로거가 생기는 것은 아니다.
+
+| 확인 | 현재 결과 |
+|---|---|
+| 운영 소스 | SHA256 `882c661dba7478519ea5dab0cd4cd57c7fb2da58cc5b32514dc476eb5706d311`, 기존 hook 기준과 일치 |
+| 운영 바이너리 | SHA256 `81b309d4ca6b61347d44523f6ac0b75dbb375a89eb1e4748430b83e616b911d4` |
+| 후보 바이너리 | `groot_command_observer_build_20261007_9dd21a6/build/groot_balance_actuator`, SHA256 `d44651d39c38ff4e46165efd0668dfb9a6ac000ea7afa22b1d2e4fb7f8f46bc5`, 이전 ARM 빌드와 일치 |
+| 후보 소스·header | 회수본과 현재 preparation 결과 일치. 줄바꿈 CRLF/LF만 정규화해 비교 |
+| 측정 파일 | 운영 폴더 CSV 127개 중 최신 8개 header 확인. 최종 target 필드는 0..14만 존재. 두 점검 폴더에 `groot_command_v1_*.csv` 없음; 후보 폴더 CSV 0개 |
+| 실행 중 제어기 | 점검 시 `/proc`에 groot_balance_actuator 없음 |
+
+이번에 실행한 검증: Python 74/74 PASS, skip 0 (observer 8개와 준비 점검/실행기 회귀 포함).
+회수한 실제 기준 소스로 PD·limiter·LowCmd composer·기존 CSV 보존 검사까지 수행했다.
+Windows/MSVC C++ fixture 새 빌드 후 비활성, 파일 열기 실패, 활성 기록 세 모드 PASS.
+활성 fixture는 큐 full/wrap, 100,000개 동시 순서 검사, nonfinite 검사, 비동기 drain을 포함한다.
+생성한 CSV 3행을 실제 reader로 다시 읽었다. 이는 **generated fixture**이고 실제 G1 LowCmd 측정이 아니다.
+초기 compiler 호출의 cmd quoting/PATH 검색 실패를 수정한 뒤 빌드했으며, 로거 소스 변경은 없었다.
+
+로컬 증거: `logs/test_results/readiness_observer_20261014/remote_audit.json`, `offline_tests.txt`, `cpp_compile.log`, `cpp_fixture.json`.
+이 폴더는 Git에서 제외되므로 다른 PC에 자동 전달되지 않는다. 원격 소스는 bytes와 SHA256을 대조해 로컬 보존했다.
+이번 단계에서 원격 파일 쓰기, SDK/DDS 초기화, 후보 실행, publisher 생성, 모터 출력, gain 변경은 하지 않았다.
+
+남은 실측 순서:
+
+1. 별도 계측 실행에서 기존 단일 명령 소유자가 **검증된 후보 실행본**을 사용하도록 연결하고, 존재하는 기록 디렉터리에 `GROOT_COMMAND_OBSERVER_DIR`을 전달한다. 기존 제어기와 후보를 동시에 실행하지 않는다.
+2. 해당 실행에서 writer 500Hz 간격·기록 손실·저장장치 부하를 확인하고, 정상 종료한 sealed CSV를 회수한다. 현재 통합 시험 보류 중이므로 여기까지는 수행하지 않았다.
+3. `received_q15..28 → target_q15..28 → sent_q15..28 → measured_q15..28`을 비교한다. `sent`는 Write 호출 인자이며 모터 수신/실행 확인이 아니다.
+
+`actual parameter identification is data-blocked` — 필요한 실제 최종 명령 로그가 아직 없다.
+`recommended_hardware_gains = null`을 유지한다. 실제 로그를 얻은 뒤에도 식별용과 검증용 episode를 분리한다.
+
 현재 G1 원본 CSV는 q/dq/tau_est 29축을 기록하지만 명령은 하체·허리 0..14만 기록한다.
 따라서 PC IK와 실제 손목의 정지 오차를 PD 문제로 확정할 수 없다. 이를 비교할 수 있도록
 기존 제어기에 선택적으로 연결하는 관찰용 C++ 로거와 오프라인 parser를 만들었다.

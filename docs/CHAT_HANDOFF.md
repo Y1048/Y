@@ -1,3 +1,13 @@
+## 2026-10-14 new-PC readiness and final LowCmd observer audit
+
+Root NEW_PC_START_HERE.md now distinguishes clone-bundled dependencies from Unity/Link/Omni setup, per-device SSH enrollment, the two-address-only host discovery, fixed onboard unitree/root/eth0 contract, and user-deferred onboard USB copying. Current Editor path does not require APK/ADB, WSL or an added SteamVR layer. Corrected README camera diagram to H264 -> PC JPEG. New-PC/other-serial hardware acceptance and integrated simultaneous-load test remain pending.
+
+Read-only --check-connections now queries v4l2 format enumeration (never sets/captures) and checks selected codec's discrete 1920x1080@30; H264 also needs fuser. Codec selection reaches the checker; no automatic fallback. Actual current G1 passed all prerequisites. This laptop passed bundled runtime/model/Editor resolution; Link and Omni Connect installed, Omni localhost32123 not listening at inspection time.
+
+Final LowCmd observer: existing operational source matches pinned baseline, separately compiled ARM candidate source/header match current preparation after LF normalization, candidate binary SHA256 d44651d39c38ff4e46165efd0668dfb9a6ac000ea7afa22b1d2e4fb7f8f46bc5 unchanged. Launcher still points to original runtime, so observer is NOT active. Latest 8 legacy CSV headers have applied_target0..14 only. No observer CSV under either inspected runtime root. No active actuator process at inspection. No onboard files changed and no robot runtime started. Full status and remaining steps: docs/GROOT_ARM_COMMAND_OBSERVER_20261007.md.
+
+Tests actually run: 74/74 Python tests, zero skips, including real retrieved baseline preservation; MSVC-generated C++ fixture disabled/failure/enabled tests and 3-row CSV parser roundtrip passed (100000-item concurrent queue test included). These are synthetic/offline, not ARM 500Hz load validation. Evidence remains local/ignored at logs/test_results/readiness_observer_20261014/. actual parameter identification is data-blocked; recommended_hardware_gains = null.
+
 ## 2026-10-14 H.264 camera publication to main (base 93177ce7)
 
 Publication validation: 94/94 offline tests passed, zero failures/errors/skips (camera/preview, dependencies, integrated/quiet launchers, portable dispatch and connection diagnostics). Evidence: logs/test_results/h264_camera/publication_tests.txt (local, ignored). Fixtures use generated images/mock SSH/local sockets; no motor program was started for publication.

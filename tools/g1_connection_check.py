@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CANDIDATES = ('192.168.123.164', '192.168.10.165')
 # File/system queries only. No SDK import, controller execution or camera stream.
 REMOTE_INSPECT = r'''
-import importlib.util, json, os, shutil
+import importlib.util, json, os, shutil, subprocess
 from pathlib import Path
 root = Path('/home/unitree/groot_onboard_runtime')
 by_id = Path('/dev/v4l/by-id')
@@ -27,6 +27,15 @@ for path in sorted(by_id.glob('*Insta360*video-index0')):
         cameras[str(target)] = dict(name=path.name, device=str(target),
                                    readable=os.access(target, os.R_OK),
                                    writable=os.access(target, os.W_OK))
+formats, format_error = '', ''
+if len(cameras) == 1 and shutil.which('v4l2-ctl'):
+    try:
+        result = subprocess.run(['v4l2-ctl', '-d', next(iter(cameras)), '--list-formats-ext'],
+            capture_output=True, text=True, timeout=5, check=False)
+        if result.returncode == 0: formats = result.stdout
+        else: format_error = result.stderr[-1000:] or 'format query failed'
+    except (OSError, subprocess.SubprocessError) as error:
+        format_error = str(error)
 print(json.dumps(dict(schema='g1.connection.prerequisites.v1',
     hostname=os.uname().nodename,
     eth0=Path('/sys/class/net/eth0').is_dir(),
@@ -34,8 +43,27 @@ print(json.dumps(dict(schema='g1.connection.prerequisites.v1',
     actuator=(root/'build/groot_balance_actuator').is_file() and os.access(root/'build/groot_balance_actuator',os.X_OK),
     heading=(root/'tools/g1_omni_heading_controller.py').is_file(),
     camera_follow=(root/'receive_mink_ik_udp.py').is_file(),
-    v4l2_ctl=shutil.which('v4l2-ctl'), cameras=list(cameras.values()))))
+    v4l2_ctl=shutil.which('v4l2-ctl'), fuser=shutil.which('fuser'),
+    camera_formats=formats, camera_format_error=format_error, cameras=list(cameras.values()))))
 '''
+
+
+def supports_1080p30(formats, codec):
+    """Only accept an explicitly enumerated discrete size/rate in this format."""
+    selected_format = selected_size = False
+    fourcc = {'h264': 'H264', 'mjpeg': 'MJPG'}[codec]
+    for line in formats.splitlines():
+        match = re.search(r"\[\d+\]:\s*'([^']+)'", line)
+        if match:
+            selected_format = match[1] == fourcc
+            selected_size = False
+        elif 'Size:' in line:
+            selected_size = bool(re.search(r'Size:\s*Discrete\s+1920x1080\b', line))
+        elif selected_format and selected_size:
+            rate = re.search(r'\(([0-9.]+)\s+fps\)', line)
+            if rate and abs(float(rate[1]) - 30) <= .01:
+                return True
+    return False
 
 
 def tcp_probe(host):
@@ -71,11 +99,13 @@ def ssh_failure(stderr, code):
     return 'REMOTE_INSPECTION_FAILED', 'Check that remote python3 is available; no robot program was started.'
 
 
-def check_connections(host='auto', output_dir=None):
+def check_connections(host='auto', output_dir=None, camera_codec='h264'):
+    if camera_codec not in ('h264', 'mjpeg'):
+        raise ValueError('unsupported camera codec')
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]{0,252}', host):
         raise ValueError('host must be a hostname or IPv4 address')
     report = dict(schema='g1.connection.check.v1', checked_at=datetime.now(timezone.utc).isoformat(),
-                  read_only=True, requested_host=host, selected_host=None, checks=[],
+                  read_only=True, requested_host=host, selected_host=None, checks=[], camera_codec=camera_codec,
                   not_tested=['UDP delivery/ACK', 'live camera frames/PTZ', 'Quest hand tracking',
                               'policy/library compatibility', 'motor operation'])
 
@@ -145,6 +175,15 @@ def check_connections(host='auto', output_dir=None):
                    camera['device'] + '; read/write permissions checked, no stream opened.')
         record('camera_tool', 'PASS' if remote.get('v4l2_ctl') else 'FAIL',
                'v4l2-ctl ' + ('found.' if remote.get('v4l2_ctl') else 'missing on G1.'))
+        if camera_codec == 'h264':
+            record('camera_ownership_tool', 'PASS' if remote.get('fuser') else 'FAIL',
+                   'H264 capture needs fuser to preserve an existing camera owner.')
+        formats = remote.get('camera_formats')
+        supported = isinstance(formats, str) and supports_1080p30(formats, camera_codec)
+        record('camera_format', 'PASS' if supported else 'FAIL',
+               camera_codec + ' 1920x1080@30 ' + ('enumerated; no capture or format change.' if supported else
+               'not verified; check camera model/USB/permissions. No automatic codec fallback.'),
+               diagnostic=remote.get('camera_format_error', ''))
     else:
         record('onboard_and_camera', 'SKIP', 'Remote inspection was unavailable.')
 

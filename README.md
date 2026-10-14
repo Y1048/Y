@@ -1,5 +1,7 @@
 # G1 VR Bimanual Teleoperation
 
+**새 PC·다른 장비로 옮길 때:** [NEW_PC_START_HERE.md](NEW_PC_START_HERE.md). clone에 포함되는 것과 별도 설치·인증·실기 확인을 구분했다.
+
 현재 기본 경로는 **Quest/Unity → bilateral Mink/MuJoCo → Omni/LowState/camera observation + onboard GROOT actuation**이다.
 `START_G1_VR_TELEOP.bat`이 사용자 진입점이다. 현재 실기 개발 경로는 **Quest Link hand tracking 지원을 위해 Unity Editor를 자동 실행하고 Play mode도 자동 시작**하므로 사용자가 Editor를 조작하거나 Play를 누를 필요는 없다. 새 GROOT supervisor를 시작할 때 local console에서 `ACTUATE`를 확인한 뒤 onboard heading controller와 external balance actuator를 함께 실행한다. `--no-groot-actuation`은 motor output 없이 Editor/observation 경로를 유지한다. Windows standalone player는 `--standalone` 진단용으로만 남긴다. 최종 제품 경로는 Quest APK가 HMD/양손 tracking을 직접 수행하고 PC Portable로 pose를 전송해 **운영 PC의 Unity Editor 의존성을 제거**하는 것이다.
 
@@ -83,9 +85,9 @@ G1 LowState
   -> observation / Unity display
 
 Insta360 Link 2 Pro
-  -> G1 UVC video-index0 MJPEG 1920x1080@30
+  -> G1 UVC video-index0 H264 1920x1080@30
   -> SSH stdout
-  -> g1_camera_ssh.py
+  -> PC PyAV decode/JPEG (g1_camera_h264.py; legacy MJPEG optional)
   -> TCP 127.0.0.1:5011
   -> Unity HMD-follow PiP
 

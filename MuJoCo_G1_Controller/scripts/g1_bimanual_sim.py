@@ -142,6 +142,8 @@ class BimanualSimulation:
         self.check_data.qpos[address:address+7] = pose
         mujoco.mj_forward(self.model, self.check_data)
         for policy in self.motion.values():
+            policy.wrist_reference_rotation = (
+                delta_rotation @ policy.wrist_reference_rotation)
             policy.posture_reference[address:address+7] = pose
             policy.posture_task.set_target(policy.posture_reference)
             policy.distance_probe_data.qpos[address:address+7] = pose

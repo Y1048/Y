@@ -22,6 +22,7 @@ import time
 import uuid
 
 from g1_ssh_login import ensure_login, identity_options, ssh_executable
+from g1_session_journal import SessionJournal
 
 ROOT = Path(__file__).resolve().parents[1]
 REMOTE_DIR = "/home/unitree/groot_onboard_runtime"
@@ -54,6 +55,7 @@ ACTUATOR_UNLIMITED = ("--unlimited-duration",)
 REMOTE_INSPECT = r"""
 import hashlib, json, os, shutil
 root = "/home/unitree/groot_onboard_runtime"
+boot_id = open('/proc/sys/kernel/random/boot_id').read().strip()
 errors = []
 heading = os.path.join(root, "tools/g1_omni_heading_controller.py")
 actuator = observer_binary
@@ -104,6 +106,8 @@ for name in os.listdir("/proc"):
             pass
         rows.append({
             "pid": int(name),
+            "boot_id": boot_id,
+            "start_ticks": open('/proc/' + name + '/stat').read().rsplit(')', 1)[1].split()[19],
             "args": args,
             "cwd": os.readlink("/proc/" + name + "/cwd"),
             "owner": owner,
@@ -119,6 +123,40 @@ print(json.dumps({
     "observer_hashes": verified,
     "observer_binary": actuator,
 }))
+"""
+
+REMOTE_WATCH = r"""
+import json, os, time
+
+def check_expected(row):
+    base = '/proc/' + str(row['pid'])
+    try:
+        boot = open('/proc/sys/kernel/random/boot_id').read().strip()
+        stat = open(base + '/stat').read().rsplit(')', 1)[1].split()
+        args = [x.decode(errors='replace') for x in open(base + '/cmdline', 'rb').read().split(b'\0') if x]
+        env = open(base + '/environ', 'rb').read().split(b'\0')
+        owner = next((x.split(b'=', 1)[1].decode(errors='replace') for x in env
+                      if x.startswith(b'G1_GROOT_OWNER=')), '')
+        if (boot != row['boot_id'] or stat[19] != row['start_ticks']
+                or stat[0] in ('Z', 'X') or args != row['args']
+                or os.readlink(base + '/cwd') != row['cwd'] or owner != row['owner']):
+            return 'identity_changed_or_exited'
+        return None
+    except (OSError, ValueError, IndexError) as error:
+        return type(error).__name__ + ': ' + str(error)
+
+tick = 0
+while True:
+    failed = [dict(pid=row['pid'], reason=error) for row in expected
+              if (error := check_expected(row)) is not None]
+    if failed:
+        print(json.dumps(dict(event='reused_process_lost', failures=failed)), flush=True)
+        raise SystemExit(3)
+    if tick % 5 == 0:
+        print(json.dumps(dict(event='reused_process_alive', pids=[r['pid'] for r in expected],
+                             monotonic_s=time.monotonic())), flush=True)
+    tick += 1
+    time.sleep(1.0)
 """
 
 REMOTE_SIGNAL = r"""
@@ -290,9 +328,13 @@ def _tee(name: str, child: subprocess.Popen, log_path: Path) -> None:
         assert child.stdout is not None
         for line in child.stdout:
             rendered = "[" + name.upper() + "] " + line.rstrip()
-            print(rendered, flush=True)
             output.write(rendered + "\n")
             output.flush()
+            try:
+                print(rendered, flush=True)
+            except OSError:
+                # A lost console must not discard the remaining diagnostic stream.
+                pass
 
 
 def _spawn(
@@ -317,6 +359,23 @@ def _spawn(
     )
     thread = threading.Thread(
         target=_tee, args=(name, child, log_path), daemon=True)
+    thread.start()
+    return child, thread
+
+
+def _watch_reused(host: str, rows: list[dict], log_path: Path):
+    """Read-only /proc watcher. No SDK, signals, adoption or remote restart."""
+    for row in rows:
+        if (not isinstance(row.get('pid'), int) or row['pid'] <= 0
+                or not row.get('boot_id') or not str(row.get('start_ticks', '')).isdigit()):
+            raise RuntimeError('Reused process identity unavailable; no new GROOT process will start')
+    source = 'expected = ' + repr(rows) + '\n' + REMOTE_WATCH
+    child = subprocess.Popen(
+        _ssh_base(host, tty=False) + ['python3 -c ' + shlex.quote(source)],
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        text=True, encoding='utf-8', errors='replace',
+        creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == 'nt' else 0))
+    thread = threading.Thread(target=_tee, args=('reused_watch', child, log_path), daemon=True)
     thread.start()
     return child, thread
 
@@ -394,11 +453,21 @@ def _restore_stop_handlers(previous) -> None:
         signal.signal(sig, handler)
 
 
+def _manager_stop_requested(path, stopped, journal) -> bool:
+    if path is None or not path.is_file():
+        return False
+    if not stopped.is_set():
+        journal.record('stop_requested', source='manager_file', request_file=str(path))
+    stopped.set()
+    return True
+
+
 def run(
         host: str,
         *,
         confirmed: bool,
         owner_id: str | None = None,
+        stop_request_file: Path | None = None,
 ) -> int:
     if not confirmed:
         raise RuntimeError(
@@ -435,7 +504,15 @@ def run(
         semantics='Write arguments only; motor acceptance unknown'), indent=2), encoding='utf-8')
     print('[GROOT COMMAND LOG] ' + remote_logs + '/groot_command_v1_*.csv', flush=True)
     print('[GROOT COMMAND LOG] 29 joints, final q/dq/kp/kd/tau and measured state; file success requires post-run verification.', flush=True)
+    journal = SessionJournal(folder / 'supervisor.jsonl')
+    reused_rows = list(status.get('processes') or [])
+    journal.record('session_start', owner=owner_id, reused=reused_rows,
+                   stop_request_file=str(stop_request_file) if stop_request_file else None)
+    if existing:
+        print('[GROOT REUSED] Monitoring existing processes without taking ownership. '
+              'This window cannot stop another owner\'s actuator; use its original supervisor.', flush=True)
     children: dict[str, subprocess.Popen] = {}
+    watch = None
     threads = []
     stopped = threading.Event()
     previous_handlers = _install_stop_handlers(stopped)
@@ -445,29 +522,36 @@ def run(
         if not sys.stdin.isatty():
             return
         try:
-            input(
-                "GROOT active. Press Enter for controlled damping shutdown; "
-                "do not close this window to stop normally. ")
+            input("GROOT reused actuator: Enter stops this monitor only; use the original "
+                  "supervisor to stop the actuator. " if 'actuator' in existing else
+                  "GROOT active. Press Enter for controlled damping shutdown; "
+                  "do not close this window to stop normally. ")
         except (EOFError, KeyboardInterrupt):
             pass
         stopped.set()
 
     try:
-        if "heading" not in existing:
+        if existing and not _manager_stop_requested(stop_request_file, stopped, journal):
+            watch, thread = _watch_reused(host, reused_rows, folder / 'reused_watch.log')
+            threads.append(thread)
+            _require_still_running('reused process watcher', watch)
+        if "heading" not in existing and not _manager_stop_requested(stop_request_file, stopped, journal):
             child, thread = _spawn(
                 host, "heading", HEADING_ARGV, owner_id,
                 folder / "heading.log")
             children["heading"] = child
             threads.append(thread)
             _require_still_running("heading controller", child)
+            journal.record('worker_started', worker='heading', pid=child.pid)
 
-        if "actuator" not in existing:
+        if "actuator" not in existing and not _manager_stop_requested(stop_request_file, stopped, journal):
             child, thread = _spawn(
                 host, "actuator", selected_actuator, owner_id,
                 folder / "actuator.log")
             children["actuator"] = child
             threads.append(thread)
             _require_still_running("balance actuator", child)
+            journal.record('worker_started', worker='actuator', pid=child.pid)
 
         print(
             "[GROOT START] " + (", ".join(children)
@@ -477,23 +561,35 @@ def run(
         print("[GROOT LOGS] " + str(folder), flush=True)
         threading.Thread(target=wait_for_stop, daemon=True).start()
         while not stopped.wait(0.25):
+            if _manager_stop_requested(stop_request_file, stopped, journal):
+                break
             exited = [
                 (name, child.returncode)
                 for name, child in children.items()
                 if child.poll() is not None
             ]
+            if watch is not None and watch.poll() is not None:
+                exited.append(('reused_watch', watch.returncode))
             if exited:
-                runtime_failure = "Owned GROOT process ended: " + repr(exited)
+                runtime_failure = "GROOT process or reused-process watcher ended: " + repr(exited)
+                journal.record('unexpected_worker_exit', workers=exited)
                 print("[GROOT EXIT] " + repr(exited), flush=True)
                 break
     except KeyboardInterrupt:
         stopped.set()
+        journal.record('stop_requested', source='keyboard_interrupt')
+    except Exception as error:
+        runtime_failure = repr(error)
+        journal.record('supervisor_exception', error=runtime_failure)
     finally:
         stop_error = None
         try:
+            journal.record('owned_shutdown_requested', owner=owner_id)
             graceful_stop_owned(host, owner_id)
+            journal.record('owned_shutdown_complete', owner=owner_id)
         except Exception as error:
             stop_error = error
+            journal.record('owned_shutdown_failed', error=repr(error))
             print("[GROOT STOP FAILED] " + str(error), file=sys.stderr)
         for name, child in reversed(list(children.items())):
             if child.poll() is None and stop_error is None:
@@ -502,9 +598,20 @@ def run(
                 except subprocess.TimeoutExpired:
                     child.terminate()
                     child.wait(timeout=5)
+        if watch is not None and watch.poll() is None:
+            # This SSH child only reads /proc; it never owns a motor process.
+            try:
+                watch.terminate()
+                watch.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError) as error:
+                runtime_failure = runtime_failure or 'Read-only watcher cleanup failed: ' + repr(error)
+                journal.record('watcher_cleanup_failed', error=repr(error))
         for thread in threads:
             thread.join(timeout=1)
         _restore_stop_handlers(previous_handlers)
+        journal.record('session_end', failure=runtime_failure,
+                       shutdown_error=str(stop_error) if stop_error else None,
+                       reused_actuator_shutdown='not_owned_not_verified' if 'actuator' in existing else None)
         if stop_error is not None:
             raise RuntimeError(
                 "Controlled GROOT shutdown did not complete; "
@@ -512,6 +619,10 @@ def run(
 
     if runtime_failure:
         raise RuntimeError(runtime_failure)
+    if 'actuator' in existing:
+        print('[GROOT STOP UNVERIFIED] Reused actuator belongs to another session. '
+              'Its shutdown was NOT requested or verified. Do not assume it stopped.', flush=True)
+        return 2
     return 0
 
 
@@ -520,6 +631,8 @@ def main(argv=None):
     parser.add_argument("--host", required=True)
     parser.add_argument("--confirmed", action="store_true")
     parser.add_argument("--owner-id")
+    parser.add_argument('--stop-request-file', type=Path,
+                        help='Unique PC supervisor session file; requests existing controlled shutdown')
     parser.add_argument("--check-command", action="store_true")
     parser.add_argument('--check-observer', action='store_true',
                         help='Read-only SSH hashes/process inspection; no login enrollment or actuator execution')
@@ -536,6 +649,7 @@ def main(argv=None):
         args.host,
         confirmed=args.confirmed,
         owner_id=args.owner_id,
+        stop_request_file=args.stop_request_file,
     )
 
 
@@ -547,4 +661,12 @@ if __name__ == "__main__":
         json.JSONDecodeError, subprocess.SubprocessError,
     ) as error:
         print("[GROOT REMOTE FAILED] " + str(error), file=sys.stderr)
+        try:
+            folder = ROOT / 'logs/test_results/groot_remote' / datetime.now().strftime('%Y%m%d_%H%M%S_%f_failed')
+            folder.mkdir(parents=True, exist_ok=False)
+            journal = SessionJournal(folder / 'supervisor.jsonl')
+            journal.record('launcher_failed', error=repr(error), returncode=1)
+            print('[GROOT FAILURE LOG]', journal.path, flush=True)
+        except OSError as log_error:
+            print('[GROOT FAILURE LOG UNAVAILABLE]', str(log_error), file=sys.stderr)
         raise SystemExit(1)

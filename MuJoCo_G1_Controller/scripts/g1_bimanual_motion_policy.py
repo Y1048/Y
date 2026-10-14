@@ -101,6 +101,12 @@ class ArmMotionPolicy:
     def reset(self, reference):
         self.posture_reference = np.asarray(reference).copy()
         self.posture_task.set_target(self.posture_reference)
+        self.distance_probe_data.qpos[:] = self.posture_reference
+        mujoco.mj_forward(self.model, self.distance_probe_data)
+        wrist_body = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, self.side + '_wrist_yaw_link')
+        self.wrist_reference_rotation = (
+            self.distance_probe_data.xmat[wrist_body].reshape(3, 3).copy())
         self._reset_orientation_priority()
         self.elbow_assist_active = False
         self._elbow_reference_q = None
@@ -137,12 +143,13 @@ class ArmMotionPolicy:
         self.orientation_task.gain = min(
             PROFILE.frame_gain,
             self.dt_s * PROFILE.orientation_tracking_rate_s)
-        # Keep posture and shoulder comfort on the conservative orientation rate.
-        self.posture_task.gain = (
-            self.orientation_task.gain / PROFILE.frame_gain)
+        # Faster wrist alignment must not also accelerate posture correction.
+        posture_gain = min(
+            PROFILE.frame_gain, self.dt_s * PROFILE.posture_tracking_rate_s)
+        self.posture_task.gain = posture_gain / PROFILE.frame_gain
         self.shoulder_comfort_task.reference = (
             self.posture_reference[self.qpos_ids[1:3]].copy())
-        self.shoulder_comfort_task.gain = self.orientation_task.gain
+        self.shoulder_comfort_task.gain = posture_gain
         tasks = [self.position_task, self.orientation_task,
                  self.posture_task, self.damping_task,
                  self.wrist_priority_task, self.shoulder_comfort_task]
@@ -250,6 +257,16 @@ class ArmMotionPolicy:
             / position_span, 0., 1.))
         rotation_error = base._rotation_error_radians(
             current_pose.rotation().as_matrix(), goal.rotation().as_matrix())
+        if PROFILE.wrist_priority_preserve_held_rotation:
+            # Reaching the requested orientation must not release wrist priority
+            # and slowly transfer a held wrist rotation into shoulder yaw. This
+            # is only an activity weight, not a new orientation-error estimate.
+            # Compare requested task orientation, not wrist joint displacement:
+            # a pure translation can require wrist counter-rotation and must
+            # remain free to move the shoulder/elbow into position.
+            held_rotation = base._rotation_error_radians(
+                self.wrist_reference_rotation, goal.rotation().as_matrix())
+            rotation_error = max(rotation_error, held_rotation)
         rotation_weight = float(np.clip(
             rotation_error / PROFILE.wrist_priority_rotation_full_rad,
             0., 1.))

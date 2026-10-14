@@ -47,7 +47,8 @@ def historical_recording_profile():
         joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2,
         shoulder_comfort_cost=.6,
         shoulder_comfort_yaw_band_rad=float(np.deg2rad(45.)),
-        wrist_priority_proximal_damping_scale=5.0)
+        wrist_priority_proximal_damping_scale=5.0,
+        wrist_priority_preserve_held_rotation=False)
     historical_return = replace(
         simulator.RETURN_PROFILE,
         joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2)

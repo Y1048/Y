@@ -13,6 +13,7 @@ from g1_bimanual_limits import (
     JOINT_JERK_LIMIT_RAD_S3,
     ORIENTATION_TRACKING_RATE_S,
     POSITION_TRACKING_RATE_S,
+    POSTURE_TRACKING_RATE_S,
     RETURN_JOINT_ACCELERATION_LIMIT_RAD_S2,
     RETURN_JOINT_VELOCITY_LIMITS_RAD_S,
     RETURN_RIGHT_WAYPOINT_RAD,
@@ -81,6 +82,7 @@ class TrackingProfile:
     wrist_priority_clearance_min_m: float = .005
     wrist_priority_clearance_full_m: float = .025
     wrist_priority_proximal_damping_scale: float = 14.0
+    wrist_priority_preserve_held_rotation: bool = True
 
     # Collision and stopping parameters.
     collision_minimum_m: float = .006
@@ -93,6 +95,7 @@ class TrackingProfile:
     # Position and orientation use independent approach rates.
     position_tracking_rate_s: float = POSITION_TRACKING_RATE_S
     orientation_tracking_rate_s: float = ORIENTATION_TRACKING_RATE_S
+    posture_tracking_rate_s: float = POSTURE_TRACKING_RATE_S
     joint_acceleration_limit_rad_s2: float = (
         TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2)
     joint_velocity_limits_rad_s: tuple = (

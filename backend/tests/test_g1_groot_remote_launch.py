@@ -11,6 +11,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import threading
+from contextlib import ExitStack
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -145,8 +147,9 @@ class CommandContractTests(unittest.TestCase):
             scope=dict(observer_binary='/candidate/build/groot_balance_actuator',
                        observer_files=[('/candidate/build/groot_balance_actuator',
                                        hashlib.sha256(data).hexdigest(),False)])
-            stream=io.BytesIO(b'changed' if changed else data)
-            with mock.patch('builtins.open',return_value=stream), \
+            def fake_open(path, mode='r'):
+                return io.BytesIO(b'changed' if changed else data) if mode == 'rb' else io.StringIO('fixture-boot')
+            with mock.patch('builtins.open',side_effect=fake_open), \
                     mock.patch('os.path.isdir',return_value=True),mock.patch('os.path.isfile',return_value=True), \
                     mock.patch('os.access',return_value=True),mock.patch('os.listdir',return_value=[]), \
                     mock.patch('shutil.which',return_value='/usr/bin/python3'),redirect_stdout(io.StringIO()) as output:
@@ -196,7 +199,7 @@ class SpawnAndShutdownTests(unittest.TestCase):
                 mock.patch.object(groot,'ROOT',Path(directory)), \
                 mock.patch.object(groot,'ensure_login'), \
                 mock.patch.object(groot,'inspect_remote',return_value={'processes':[]}), \
-                mock.patch.object(groot,'_spawn',side_effect=lambda *a:(mock.MagicMock(),mock.MagicMock())) as spawn, \
+                mock.patch.object(groot,'_spawn',side_effect=lambda *a:(mock.MagicMock(pid=101),mock.MagicMock())) as spawn, \
                 mock.patch.object(groot,'_require_still_running'), \
                 mock.patch.object(groot,'_install_stop_handlers',return_value={}), \
                 mock.patch.object(groot,'_restore_stop_handlers'), \
@@ -225,6 +228,53 @@ class SpawnAndShutdownTests(unittest.TestCase):
         with mock.patch.object(groot.time, "sleep"):
             with self.assertRaisesRegex(RuntimeError, "exited during startup"):
                 groot._require_still_running("heading controller", child)
+
+    def test_manager_file_is_detected_without_stdin_or_signal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'groot.stop'
+            stopped = threading.Event()
+            journal = mock.MagicMock()
+            self.assertFalse(groot._manager_stop_requested(path, stopped, journal))
+            path.write_text('stop\n')
+            self.assertTrue(groot._manager_stop_requested(path, stopped, journal))
+            self.assertTrue(stopped.is_set())
+            self.assertTrue(groot._manager_stop_requested(path, stopped, journal))
+            journal.record.assert_called_once_with('stop_requested', source='manager_file', request_file=str(path))
+
+    def test_stop_already_requested_does_not_start_heading_or_actuator(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(groot, 'ROOT', Path(directory)), \
+                mock.patch.object(groot, 'ensure_login'), \
+                mock.patch.object(groot, 'inspect_remote', return_value={'processes': []}), \
+                mock.patch.object(groot, '_spawn') as spawn, \
+                mock.patch.object(groot, '_install_stop_handlers', return_value={}), \
+                mock.patch.object(groot, '_restore_stop_handlers'), \
+                mock.patch.object(groot, 'graceful_stop_owned') as stop, \
+                mock.patch.object(groot.threading, 'Thread'), redirect_stdout(io.StringIO()):
+            path = Path(directory) / 'groot.stop'
+            path.write_text('stop\n')
+            self.assertEqual(0, groot.run(HOST, confirmed=True, owner_id=OWNER, stop_request_file=path))
+            spawn.assert_not_called()
+            stop.assert_called_once_with(HOST, OWNER)
+
+    def test_request_during_heading_start_prevents_actuator_start(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(groot, 'ROOT', Path(directory)), \
+                mock.patch.object(groot, 'ensure_login'), \
+                mock.patch.object(groot, 'inspect_remote', return_value={'processes': []}), \
+                mock.patch.object(groot, '_require_still_running'), \
+                mock.patch.object(groot, '_install_stop_handlers', return_value={}), \
+                mock.patch.object(groot, '_restore_stop_handlers'), \
+                mock.patch.object(groot, 'graceful_stop_owned') as stop, \
+                mock.patch.object(groot.threading, 'Thread'), redirect_stdout(io.StringIO()):
+            path = Path(directory) / 'groot.stop'
+            def spawn_heading(*args):
+                path.write_text('stop\n')
+                return mock.MagicMock(pid=101), mock.MagicMock()
+            with mock.patch.object(groot, '_spawn', side_effect=spawn_heading) as spawn:
+                self.assertEqual(0, groot.run(HOST, confirmed=True, owner_id=OWNER, stop_request_file=path))
+                self.assertEqual(['heading'], [c.args[1] for c in spawn.call_args_list])
+                stop.assert_called_once_with(HOST, OWNER)
 
     def test_controlled_shutdown_is_actuator_then_heading(self):
         with mock.patch.object(
@@ -255,6 +305,112 @@ class SpawnAndShutdownTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "did not finish"):
                 groot._signal_owned(
                     HOST, OWNER, "groot_balance_actuator", 0.1)
+
+
+class ReusedProcessTests(unittest.TestCase):
+    def rows(self):
+        return [dict(pid=101, boot_id='boot-1', start_ticks='456', owner='old-owner',
+                     cwd=groot.REMOTE_DIR, args=list(groot.HEADING_ARGV)),
+                dict(pid=102, boot_id='boot-1', start_ticks='789', owner='old-owner',
+                     cwd=groot.REMOTE_DIR, args=list(groot.actuator_argv(False)),
+                     observer_log_dir=groot.observer_log_directory('old-owner'))]
+
+    def test_remote_watch_checks_pid_identity_and_is_read_only(self):
+        row = self.rows()[0]
+        def execute_watch(change=None):
+            def read(path, mode='r'):
+                if path.endswith('/boot_id'):
+                    return io.StringIO('different' if change == 'boot' else 'boot-1')
+                if path.endswith('/stat'):
+                    fields = ['Z' if change == 'zombie' else 'S'] + ['0'] * 18 + ['999' if change == 'pid_reuse' else '456']
+                    return io.StringIO('101 (python3) ' + ' '.join(fields))
+                if path.endswith('/cmdline'):
+                    if change == 'missing':
+                        raise FileNotFoundError(path)
+                    return io.BytesIO(b'other\0' if change == 'args' else '\0'.join(row['args']).encode())
+                if path.endswith('/environ'):
+                    return io.BytesIO(b'G1_GROOT_OWNER=' + (b'new-owner' if change == 'owner' else b'old-owner'))
+                raise AssertionError(path)
+            with mock.patch('builtins.open', side_effect=read), \
+                    mock.patch('os.readlink', return_value='/other' if change == 'cwd' else groot.REMOTE_DIR), \
+                    mock.patch('time.sleep', side_effect=InterruptedError('fixture end')), \
+                    redirect_stdout(io.StringIO()) as output:
+                if change:
+                    with self.assertRaises(SystemExit) as ended:
+                        exec(groot.REMOTE_WATCH, {'expected': [row]})
+                    self.assertEqual(3, ended.exception.code)
+                else:
+                    with self.assertRaises(InterruptedError):
+                        exec(groot.REMOTE_WATCH, {'expected': [row]})
+            return json.loads(output.getvalue())
+        self.assertEqual('reused_process_alive', execute_watch()['event'])
+        for change in ('boot', 'pid_reuse', 'zombie', 'missing', 'args', 'owner', 'cwd'):
+            with self.subTest(change=change):
+                self.assertEqual('reused_process_lost', execute_watch(change)['event'])
+        for forbidden in ('os.kill', 'subprocess', 'publisher', 'SDK', 'SIGINT'):
+            self.assertNotIn(forbidden, groot.REMOTE_WATCH)
+
+    def test_missing_identity_cannot_start_watcher(self):
+        for key in ('pid', 'boot_id', 'start_ticks'):
+            row = self.rows()[0]
+            del row[key]
+            with mock.patch.object(groot.subprocess, 'Popen') as spawn:
+                with self.assertRaisesRegex(RuntimeError, 'identity unavailable'):
+                    groot._watch_reused(HOST, [row], Path('unused'))
+                spawn.assert_not_called()
+
+    def test_watch_opens_noninteractive_read_only_ssh(self):
+        with mock.patch.object(groot, 'ssh_executable', return_value='ssh-test.exe'), \
+                mock.patch.object(groot.subprocess, 'Popen') as spawn, \
+                mock.patch.object(groot.threading, 'Thread') as thread:
+            groot._watch_reused(HOST, self.rows(), Path('unused'))
+            command = spawn.call_args.args[0]
+            self.assertIn('-T', command)
+            self.assertNotIn('-tt', command)
+            self.assertTrue(command[-1].startswith('python3 -c '))
+            self.assertNotIn('; exec ', command[-1])
+            self.assertEqual(subprocess.DEVNULL, spawn.call_args.kwargs['stdin'])
+            thread.return_value.start.assert_called_once()
+
+    def test_lost_console_does_not_drop_remote_error_log(self):
+        child = mock.MagicMock()
+        child.stdout = iter(['first error\n', 'last error\n'])
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch('builtins.print', side_effect=OSError('console lost')):
+            path = Path(directory) / 'heading.log'
+            groot._tee('heading', child, path)
+            self.assertEqual('[HEADING] first error\n[HEADING] last error\n', path.read_text())
+
+    def test_watch_loss_and_normal_stop_never_adopt_or_signal_reused_owner(self):
+        for lost in (False, True):
+            with self.subTest(lost=lost), tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+                stack.enter_context(mock.patch.object(groot, 'ROOT', Path(directory)))
+                stack.enter_context(mock.patch.object(groot, 'ensure_login'))
+                stack.enter_context(mock.patch.object(groot, 'inspect_remote', return_value={'processes': self.rows()}))
+                spawn = stack.enter_context(mock.patch.object(groot, '_spawn'))
+                watch = mock.MagicMock(pid=501, returncode=3 if lost else None)
+                watch.poll.return_value = 3 if lost else None
+                stack.enter_context(mock.patch.object(groot, '_watch_reused', return_value=(watch, mock.MagicMock())))
+                stack.enter_context(mock.patch.object(groot, '_require_still_running'))
+                stack.enter_context(mock.patch.object(groot, '_install_stop_handlers', return_value={}))
+                stack.enter_context(mock.patch.object(groot, '_restore_stop_handlers'))
+                stop = stack.enter_context(mock.patch.object(groot, 'graceful_stop_owned'))
+                stack.enter_context(mock.patch.object(groot.threading, 'Thread'))
+                event = stack.enter_context(mock.patch.object(groot.threading, 'Event'))
+                event.return_value.wait.return_value = not lost
+                stack.enter_context(redirect_stdout(io.StringIO()))
+                if lost:
+                    with self.assertRaisesRegex(RuntimeError, 'reused-process watcher ended'):
+                        groot.run(HOST, confirmed=True, owner_id='new-owner')
+                else:
+                    self.assertEqual(2, groot.run(HOST, confirmed=True, owner_id='new-owner'))
+                    watch.terminate.assert_called_once()
+                spawn.assert_not_called()
+                stop.assert_called_once_with(HOST, 'new-owner')
+                rows = [json.loads(s) for s in next(Path(directory).rglob('supervisor.jsonl')).read_text().splitlines()]
+                self.assertEqual('not_owned_not_verified', rows[-1]['reused_actuator_shutdown'])
+                if lost:
+                    self.assertIn('unexpected_worker_exit', [r['event'] for r in rows])
 
 
 if __name__ == "__main__":

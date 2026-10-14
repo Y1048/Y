@@ -17,6 +17,9 @@ class G1EthernetAutoRepairTests(unittest.TestCase):
         with mock.patch.object(network.subprocess, "run", return_value=result) as run:
             self.assertEqual(17, network.dedicated_wired_adapter_needing_address())
         command = run.call_args.args[0][-1]
+        self.assertEqual(
+            ['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command'],
+            run.call_args.args[0][:-1])
         self.assertIn("G1_ETHERNET_ADAPTER.ps1", command)
         self.assertIn("GetG1PhysicalEthernetAdapters", command)
         self.assertIn("Get-NetIPAddress", command)

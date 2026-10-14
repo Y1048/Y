@@ -34,7 +34,7 @@ def dedicated_wired_adapter_needing_address():
         "if($ip.Count -eq 0){Write-Output $linked[0].ifIndex}"
     )
     completed = subprocess.run(
-        ['powershell.exe', '-NoProfile', '-Command', query],
+        ['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', query],
         capture_output=True, text=True, encoding='utf-8', timeout=15,
         check=False,
     )
@@ -42,7 +42,8 @@ def dedicated_wired_adapter_needing_address():
         raise RuntimeError(
             'Cannot infer one dedicated G1 Ethernet adapter safely; '
             'no network setting changed. Use CONFIGURE_G1_ETHERNET.bat '
-            '--interface-index <ifIndex> once for an ambiguous PC.')
+            '--interface-index <ifIndex> once for an ambiguous PC. '
+            'PowerShell detail: ' + completed.stderr.strip())
     result = completed.stdout.strip()
     if not result:
         return None

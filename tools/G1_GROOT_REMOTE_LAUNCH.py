@@ -25,6 +25,13 @@ from g1_ssh_login import ensure_login, identity_options, ssh_executable
 
 ROOT = Path(__file__).resolve().parents[1]
 REMOTE_DIR = "/home/unitree/groot_onboard_runtime"
+OBSERVER_DIR = "/home/unitree/groot_command_observer_build_20261007_9dd21a6"
+OBSERVER_BINARY = OBSERVER_DIR + "/build/groot_balance_actuator"
+OBSERVER_SHA256 = "d44651d39c38ff4e46165efd0668dfb9a6ac000ea7afa22b1d2e4fb7f8f46bc5"
+BASE_SOURCE_SHA256 = "882c661dba7478519ea5dab0cd4cd57c7fb2da58cc5b32514dc476eb5706d311"
+OBSERVER_SOURCE_SHA256 = "6e6506c97c847275cbd05ff52aa7e9f7218c78f248177da626386309269674f2"
+OBSERVER_HEADER_SHA256 = "ead750fa56001583db48e85e1d91a70d91ee484ab512eee7fce3f4b14e16b9de"
+OBSERVER_LOG_ROOT = REMOTE_DIR + "/logs/command_observer"
 OWNER_ENV = "G1_GROOT_OWNER"
 OWNER_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 HEADING_ARGV = (
@@ -32,7 +39,7 @@ HEADING_ARGV = (
     "--yaw-sign", "-1",
 )
 ACTUATOR_BASE_ARGV = (
-    "./build/groot_balance_actuator",
+    OBSERVER_BINARY,
     "--normal",
     "--enable-actuation",
     "--acknowledge-harness",
@@ -45,31 +52,31 @@ ACTUATOR_FALLBACK_DURATION = ("--duration", "300")
 ACTUATOR_UNLIMITED = ("--unlimited-duration",)
 
 REMOTE_INSPECT = r"""
-import json, os, shutil, subprocess
+import hashlib, json, os, shutil
 root = "/home/unitree/groot_onboard_runtime"
 errors = []
 heading = os.path.join(root, "tools/g1_omni_heading_controller.py")
-actuator = os.path.join(root, "build/groot_balance_actuator")
+actuator = observer_binary
 if not os.path.isdir(root): errors.append("missing_runtime_dir")
 if not os.path.isfile(heading): errors.append("missing_heading_controller")
 if not os.path.isfile(actuator): errors.append("missing_balance_actuator")
 if os.path.isfile(actuator) and not os.access(actuator, os.X_OK):
     errors.append("balance_actuator_not_executable")
 if shutil.which("python3") is None: errors.append("python3_missing")
-supports_unlimited = False
-if not errors:
+verified = {}
+binary_data = b''
+for path, expected, normalize in observer_files:
     try:
-        probe = subprocess.run(
-            [actuator, "--help"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            timeout=5,
-            check=False,
-        )
-        supports_unlimited = "--unlimited-duration" in (probe.stdout or "")
-    except Exception:
-        pass
+        with open(path, 'rb') as f: data = f.read()
+        digest = hashlib.sha256(data.replace(b'\r\n', b'\n') if normalize else data).hexdigest()
+        verified[path] = digest
+        if digest != expected: errors.append('observer_hash_mismatch:' + path)
+        if path == actuator: binary_data = data
+    except OSError:
+        errors.append('observer_file_unavailable:' + path)
+# Inspect the pinned build's option string without executing even --help.
+supports_unlimited = b'--unlimited-duration' in binary_data
+if not os.access(root, os.W_OK): errors.append('runtime_not_writable_for_logs')
 rows = []
 for name in os.listdir("/proc"):
     if not name.isdigit():
@@ -84,13 +91,15 @@ for name in os.listdir("/proc"):
                 and "groot_balance_actuator" not in names):
             continue
         owner = ""
+        observer_log_dir = ""
         try:
             env = open("/proc/" + name + "/environ", "rb").read().split(b"\0")
             prefix = b"G1_GROOT_OWNER="
             for item in env:
                 if item.startswith(prefix):
                     owner = item[len(prefix):].decode(errors="replace")
-                    break
+                if item.startswith(b'GROOT_COMMAND_OBSERVER_DIR='):
+                    observer_log_dir = item.split(b'=', 1)[1].decode(errors='replace')
         except (FileNotFoundError, PermissionError, OSError):
             pass
         rows.append({
@@ -98,6 +107,7 @@ for name in os.listdir("/proc"):
             "args": args,
             "cwd": os.readlink("/proc/" + name + "/cwd"),
             "owner": owner,
+            "observer_log_dir": observer_log_dir,
         })
     except (FileNotFoundError, PermissionError, OSError):
         pass
@@ -105,6 +115,9 @@ print(json.dumps({
     "errors": errors,
     "supports_unlimited_duration": supports_unlimited,
     "processes": rows,
+    "observer_verified": not errors,
+    "observer_hashes": verified,
+    "observer_binary": actuator,
 }))
 """
 
@@ -161,6 +174,7 @@ def _ssh_base(host: str, *, tty: bool) -> list[str]:
     return [
         ssh_executable(), *identity_options(), "-tt" if tty else "-T",
         "-o", "BatchMode=yes", "-o", "ConnectTimeout=5",
+        "-o", "StrictHostKeyChecking=yes", "-o", "UpdateHostKeys=no",
         "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=2",
         "unitree@" + host,
     ]
@@ -170,11 +184,36 @@ def _foreground_remote_command(
         argv: tuple[str, ...], owner_id: str) -> str:
     if not OWNER_RE.fullmatch(owner_id):
         raise ValueError("Invalid GROOT owner id")
+    observer_setup = ""
+    if argv and argv[0] == OBSERVER_BINARY:
+        directory = observer_log_directory(owner_id)
+        observer_setup = (
+            "; mkdir -p -- " + shlex.quote(directory) + " || exit 1"
+            + "; test -w " + shlex.quote(directory) + " || exit 1"
+            + "; export GROOT_COMMAND_OBSERVER_DIR=" + shlex.quote(directory))
     return (
         "cd " + shlex.quote(REMOTE_DIR) + " || exit 1"
         + "; export " + OWNER_ENV + "=" + shlex.quote(owner_id)
+        + observer_setup
         + "; exec " + shlex.join(argv)
     )
+
+
+def observer_log_directory(owner_id: str) -> str:
+    if not OWNER_RE.fullmatch(owner_id) or owner_id in ('.', '..'):
+        raise ValueError('Invalid GROOT owner id')
+    return OBSERVER_LOG_ROOT + '/' + owner_id
+
+
+def inspection_source() -> str:
+    files = [
+        (OBSERVER_BINARY, OBSERVER_SHA256, False),
+        (REMOTE_DIR + '/src/g1_balance_actuator.cpp', BASE_SOURCE_SHA256, True),
+        (OBSERVER_DIR + '/src/g1_balance_actuator.cpp', OBSERVER_SOURCE_SHA256, True),
+        (OBSERVER_DIR + '/include/groot_command_observer.hpp', OBSERVER_HEADER_SHA256, True),
+    ]
+    return ('observer_binary = ' + repr(OBSERVER_BINARY) + '\nobserver_files = '
+            + repr(files) + '\n' + REMOTE_INSPECT)
 
 
 def ssh_command(
@@ -187,7 +226,7 @@ def ssh_command(
 def inspect_remote(host: str) -> dict:
     result = subprocess.run(
         _ssh_base(host, tty=False) + ["python3 -"],
-        input=REMOTE_INSPECT,
+        input=inspection_source(),
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -199,6 +238,8 @@ def inspect_remote(host: str) -> dict:
     if payload.get("errors"):
         raise RuntimeError(
             "GROOT remote preflight failed: " + ", ".join(payload["errors"]))
+    if payload.get('observer_verified') is not True or payload.get('observer_binary') != OBSERVER_BINARY:
+        raise RuntimeError('GROOT observer verification missing; no actuator will start')
     return payload
 
 
@@ -234,6 +275,9 @@ def classify_existing(
             continue
         if _match_process(
                 row, "groot_balance_actuator", expected_actuator_argv):
+            if (not OWNER_RE.fullmatch(row.get('owner') or '')
+                    or row.get('observer_log_dir') != observer_log_directory(row['owner'])):
+                raise RuntimeError('Existing actuator has no verified observer directory; preserved.')
             if "actuator" in found:
                 raise RuntimeError(
                     "Duplicate GROOT balance actuators found; preserved.")
@@ -382,6 +426,15 @@ def run(
     folder = ROOT / "logs/test_results/groot_remote" / (
         datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
     folder.mkdir(parents=True, exist_ok=False)
+    log_owner = next((row['owner'] for row in status.get('processes', [])
+                      if _match_process(row, 'groot_balance_actuator', selected_actuator)), owner_id)
+    remote_logs = observer_log_directory(log_owner)
+    (folder / 'command_observer.json').write_text(json.dumps(dict(
+        binary=OBSERVER_BINARY, sha256=OBSERVER_SHA256, remote_log_directory=remote_logs,
+        reused='actuator' in existing, expected_schema='groot.command.observation.v1',
+        semantics='Write arguments only; motor acceptance unknown'), indent=2), encoding='utf-8')
+    print('[GROOT COMMAND LOG] ' + remote_logs + '/groot_command_v1_*.csv', flush=True)
+    print('[GROOT COMMAND LOG] 29 joints, final q/dq/kp/kd/tau and measured state; file success requires post-run verification.', flush=True)
     children: dict[str, subprocess.Popen] = {}
     threads = []
     stopped = threading.Event()
@@ -468,7 +521,12 @@ def main(argv=None):
     parser.add_argument("--confirmed", action="store_true")
     parser.add_argument("--owner-id")
     parser.add_argument("--check-command", action="store_true")
+    parser.add_argument('--check-observer', action='store_true',
+                        help='Read-only SSH hashes/process inspection; no login enrollment or actuator execution')
     args = parser.parse_args(argv)
+    if args.check_observer:
+        print(json.dumps(inspect_remote(args.host), indent=2))
+        return 0
     if args.check_command:
         print(shlex.join(HEADING_ARGV))
         print("300s:", shlex.join(actuator_argv(False)))

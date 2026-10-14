@@ -8,6 +8,7 @@
 - 이미 clone한 PC: 사용자 변경을 보존하고 `git pull --ff-only origin main`
 - Python, IK 패키지, H264 디코더는 저장소의 `runtime/python`에 포함된다. BAT만 복사하지 않는다.
 - G1 내부 프로그램·정책·라이브러리는 PC clone에 포함되지 않는다. 사용자 계획대로 G1 파일 복제는 별도 USB 단계다.
+- 최종 팔 명령 계측 연결 후에는 G1의 `/home/unitree/groot_command_observer_build_20261007_9dd21a6` 후보 폴더도 필요하다. 기존 runtime은 그대로 두고, 후보 해시가 일치해야 실행된다.
 
 ## 별도 준비
 
@@ -34,9 +35,10 @@
 .\runtime\python\python.exe -I -B tools\G1_PORTABLE.py check-runtime --pc-only
 .\runtime\python\python.exe -I -B tools\G1_PORTABLE.py resolve-unity
 .\START_G1_VR_TELEOP.bat --check-connections
+.\runtime\python\python.exe -I -B tools\G1_GROOT_REMOTE_LAUNCH.py --host 192.168.123.164 --check-observer
 ```
 
-다른 G1 IP라면 마지막 명령에 `--host 주소`를 붙인다. 연결 점검은 인증 등록·IP 변경·SDK 초기화·카메라 캡처·모터 출력을 하지 않는다. 초기 인증이 안 된 PC는 SSH 항목이 실패하는 것이 정상이다.
+다른 G1 IP라면 연결 점검에 `--host 주소`를 붙이고 observer 점검의 주소도 바꾼다. 두 점검은 인증 등록·IP 변경·SDK 초기화·카메라 캡처·모터 출력을 하지 않는다. 초기 인증이 안 된 PC는 SSH 항목이 실패하는 것이 정상이다.
 
 카메라만 확인할 때:
 
@@ -53,6 +55,6 @@
 - 현재 노트북: bundled Python·IK 모델 구성·Unity 경로 확인 통과. Link/Omni Connect 설치 확인. 점검 순간 Omni 32123은 응답 없음.
 - 현재 G1: SSH, 파일·장치 권한, H264 1080p30 열거, fuser 확인 통과. 카메라 단독 영상은 사용자 확인 완료.
 - 아직 별도 확인: 새 PC 최초 임포트/Quest 손/Omni 입력/UDP 전달, 다른 시리얼 장비 실기, 통합 동시 부하, PTZ, 실제 로봇 제어.
-- 팔 최종 LowCmd 기록은 별도 후보만 빌드돼 있고 통합 실행에서는 아직 비활성. 새 측정 전에 이 점을 해결해야 한다.
+- 팔 최종 LowCmd 기록 후보를 통합 실행에 연결했다. 실행 후 실제 CSV 생성·누락·500Hz 부하는 아직 별도 확인해야 한다.
 
 상세 실행 옵션: [Portable 안내](docs/PORTABLE_TELEOP_SETUP.md). 계측 상태: [최종 LowCmd 점검](docs/GROOT_ARM_COMMAND_OBSERVER_20261007.md).

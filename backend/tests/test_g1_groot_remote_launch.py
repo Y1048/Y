@@ -1,6 +1,10 @@
 """Offline tests for the integrated onboard GROOT SSH supervisor."""
 
 import importlib.util
+import io
+import json
+import hashlib
+from contextlib import redirect_stdout
 import os
 from pathlib import Path
 import subprocess
@@ -68,7 +72,8 @@ class CommandContractTests(unittest.TestCase):
                 owner="",
                 args=["python3", "-u", "tools/g1_omni_heading_controller.py",
                       "--yaw-sign", "-1"]),
-            dict(cwd=groot.REMOTE_DIR, owner="", args=list(expected_actuator)),
+            dict(cwd=groot.REMOTE_DIR, owner=OWNER, args=list(expected_actuator),
+                 observer_log_dir=groot.observer_log_directory(OWNER)),
         ]
         self.assertEqual(
             {"heading", "actuator"},
@@ -92,10 +97,8 @@ class CommandContractTests(unittest.TestCase):
     def test_remote_inspection_is_noninteractive_and_read_only(self):
         completed = subprocess.CompletedProcess(
             args=[], returncode=0,
-            stdout=(
-                '{"errors":[],"supports_unlimited_duration":false,'
-                '"processes":[]}'
-            ),
+            stdout=json.dumps(dict(errors=[],supports_unlimited_duration=False,processes=[],
+                                   observer_verified=True,observer_binary=groot.OBSERVER_BINARY)),
             stderr="")
         with mock.patch.object(
                 groot.subprocess, "run", return_value=completed) as run:
@@ -106,6 +109,56 @@ class CommandContractTests(unittest.TestCase):
         self.assertNotIn("-tt", command)
         self.assertEqual("python3 -", command[-1])
         self.assertNotIn("--enable-actuation", " ".join(command))
+        self.assertNotIn('subprocess', groot.inspection_source())
+        self.assertNotIn('mkdir', groot.inspection_source())
+        self.assertNotIn('publisher', groot.inspection_source())
+
+    def test_observer_environment_only_for_actuator_and_preserves_runtime_cwd(self):
+        command=groot.ssh_command(HOST,groot.actuator_argv(False),OWNER)[-1]
+        self.assertIn('cd '+groot.REMOTE_DIR,command)
+        self.assertIn('mkdir -p -- '+groot.observer_log_directory(OWNER),command)
+        self.assertIn('export GROOT_COMMAND_OBSERVER_DIR='+groot.observer_log_directory(OWNER),command)
+        self.assertIn('exec '+groot.OBSERVER_BINARY,command)
+        self.assertNotIn('GROOT_COMMAND_OBSERVER_DIR',groot.ssh_command(HOST,groot.HEADING_ARGV,OWNER)[-1])
+        for owner in ('.','..','../escape'):
+            with self.assertRaises(ValueError):groot.observer_log_directory(owner)
+
+    def test_old_actuator_or_missing_log_environment_is_not_reused(self):
+        expected=groot.actuator_argv(False)
+        for args,directory in [(('./build/groot_balance_actuator',)+expected[1:],''),
+                               (expected,''),(expected,'/tmp/elsewhere')]:
+            with self.assertRaises(RuntimeError):
+                groot.classify_existing([dict(cwd=groot.REMOTE_DIR,owner=OWNER,
+                    args=list(args),observer_log_dir=directory)],expected)
+
+    def test_observer_check_does_not_enroll_or_run(self):
+        with mock.patch.object(groot,'inspect_remote',return_value={}) as inspect, \
+                mock.patch.object(groot,'ensure_login') as enroll, mock.patch.object(groot,'run') as run, \
+                redirect_stdout(io.StringIO()):
+            self.assertEqual(0,groot.main(['--host',HOST,'--check-observer']))
+            inspect.assert_called_once_with(HOST);enroll.assert_not_called();run.assert_not_called()
+
+    def test_hash_query_rejects_changed_candidate_without_execution(self):
+        # Execute the actual remote inspection against mocked files/proc; never runs a binary.
+        for changed in (False,True):
+            data=b'fixture --unlimited-duration'
+            scope=dict(observer_binary='/candidate/build/groot_balance_actuator',
+                       observer_files=[('/candidate/build/groot_balance_actuator',
+                                       hashlib.sha256(data).hexdigest(),False)])
+            stream=io.BytesIO(b'changed' if changed else data)
+            with mock.patch('builtins.open',return_value=stream), \
+                    mock.patch('os.path.isdir',return_value=True),mock.patch('os.path.isfile',return_value=True), \
+                    mock.patch('os.access',return_value=True),mock.patch('os.listdir',return_value=[]), \
+                    mock.patch('shutil.which',return_value='/usr/bin/python3'),redirect_stdout(io.StringIO()) as output:
+                exec(groot.REMOTE_INSPECT,scope)
+            result=json.loads(output.getvalue())
+            self.assertEqual(not changed,result['observer_verified'])
+            self.assertEqual(changed,bool(result['errors']))
+
+    def test_missing_verification_payload_fails(self):
+        result=subprocess.CompletedProcess([],0,'{"errors":[]}', '')
+        with mock.patch.object(groot.subprocess,'run',return_value=result):
+            with self.assertRaisesRegex(RuntimeError,'verification missing'):groot.inspect_remote(HOST)
 
     def test_owner_id_is_strictly_validated(self):
         with self.assertRaises(ValueError):
@@ -137,6 +190,34 @@ class SpawnAndShutdownTests(unittest.TestCase):
                 spawn.call_args.kwargs["creationflags"]
                 & subprocess.CREATE_NEW_PROCESS_GROUP)
         thread.start.assert_called_once_with()
+
+    def test_confirmed_start_selects_one_observer_and_records_log_directory(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(groot,'ROOT',Path(directory)), \
+                mock.patch.object(groot,'ensure_login'), \
+                mock.patch.object(groot,'inspect_remote',return_value={'processes':[]}), \
+                mock.patch.object(groot,'_spawn',side_effect=lambda *a:(mock.MagicMock(),mock.MagicMock())) as spawn, \
+                mock.patch.object(groot,'_require_still_running'), \
+                mock.patch.object(groot,'_install_stop_handlers',return_value={}), \
+                mock.patch.object(groot,'_restore_stop_handlers'), \
+                mock.patch.object(groot,'graceful_stop_owned') as stop, \
+                mock.patch.object(groot.threading,'Thread'), \
+                mock.patch.object(groot.threading,'Event') as event,redirect_stdout(io.StringIO()):
+            event.return_value.wait.return_value=True
+            self.assertEqual(0,groot.run(HOST,confirmed=True,owner_id=OWNER))
+            self.assertEqual(['heading','actuator'],[c.args[1] for c in spawn.call_args_list])
+            self.assertEqual(groot.OBSERVER_BINARY,spawn.call_args_list[1].args[2][0])
+            report=json.loads(next(Path(directory).rglob('command_observer.json')).read_text())
+            self.assertEqual(groot.observer_log_directory(OWNER),report['remote_log_directory'])
+            self.assertFalse(report['reused']);stop.assert_called_once_with(HOST,OWNER)
+
+    def test_failed_remote_hash_check_cannot_start_children(self):
+        with mock.patch.object(groot,'ensure_login'), \
+                mock.patch.object(groot,'inspect_remote',side_effect=RuntimeError('observer_hash_mismatch')), \
+                mock.patch.object(groot,'_spawn') as spawn:
+            with self.assertRaisesRegex(RuntimeError,'observer_hash_mismatch'):
+                groot.run(HOST,confirmed=True)
+            spawn.assert_not_called()
 
     def test_startup_exit_is_rejected(self):
         child = mock.MagicMock()

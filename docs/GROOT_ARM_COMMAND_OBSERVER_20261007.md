@@ -1,5 +1,41 @@
 # 양팔 최종 명령 계측 — 2026-10-07
 
+## 2026-10-14 통합 실행 연결 완료 (아래 재점검 이후)
+
+현재 `START_G1_VR_TELEOP.bat`의 GROOT supervisor는 검증된 별도 후보
+`/home/unitree/groot_command_observer_build_20261007_9dd21a6/build/groot_balance_actuator`를 선택한다.
+기존 운영 바이너리는 교체하지 않았다. working directory는 `/home/unitree/groot_onboard_runtime`로 유지하므로
+기존 정책/상대 경로와 heading controller, PD/limiter, 단일 publisher, 종료 동작을 유지한다.
+후보와 기존 제어기를 동시에 실행하지 않는다. 이미 원본 제어기가 실행 중이면 보존하고 충돌로 중단한다.
+
+매 새 실행에서 actuator에만 `GROOT_COMMAND_OBSERVER_DIR`을 전달한다. 저장 위치:
+
+```text
+/home/unitree/groot_onboard_runtime/logs/command_observer/<owner-id>/groot_command_v1_<steady-ns>.csv
+```
+
+디렉터리는 ACTUATE 확인 이후 해당 실행을 시작할 때 생성하고 쓰기 권한을 확인한다.
+`[GROOT COMMAND LOG]`에 위치가 출력되며 PC의 `logs/test_results/groot_remote/<session>/command_observer.json`에도 남는다.
+파일 존재·sealed footer·누락 여부는 실제 실행 후 확인해야 한다. 경로 출력만으로 기록 성공을 주장하지 않는다.
+CSV는 G1에 저장되며 이번 연결에 자동 다운로드/자동 삭제는 추가하지 않았다.
+
+실행 전 읽기 전용 확인:
+
+```powershell
+.\runtime\python\python.exe -I -B tools\G1_GROOT_REMOTE_LAUNCH.py --host 192.168.123.164 --check-observer
+```
+
+기존 SSH 키/호스트 신뢰만 사용하고 파일 해시와 프로세스만 읽는다. `--help`조차 후보 바이너리를 실행하지 않는다.
+후보 ELF, 후보 소스/header, 운영 기준 소스 해시가 다르거나 없으면 일반 실행도 원본으로 몰래 fallback하지 않는다.
+다른 G1로 USB 복제 시 **기존 runtime뿐 아니라 후보 폴더도 같은 경로로 복사**해야 한다.
+계측 후보 source/header의 CRLF/LF 차이만 허용한다. 실행 중 후보 재사용도 기록 환경변수/owner 경로 일치가 필요하다.
+
+이번 연결 검증: 현재 G1 해시 preflight PASS, 실행 중 actuator 없음, 운영 include 5개와 후보 include 모두 정규화 일치.
+오프라인 회귀 76/76 PASS, skip 0 (실제 회수 기준 소스를 이용한 제어 경로 보존 검사 포함).
+증거는 로컬 `logs/test_results/observer_connect_20261014/`에 있다.
+후보 실행, SDK/DDS 초기화, 모터 출력, 실제 CSV 생성/500Hz 부하 확인은 이번에 하지 않았다.
+`recommended_hardware_gains = null`; 실제 측정 전까지 식별 데이터 부족 상태는 유지한다.
+
 ## 2026-10-14 현재 G1 읽기 전용 재점검
 
 **기능 후보는 준비됐지만 현재 통합 실행에서는 최종 팔 LowCmd를 기록하지 않는다.**

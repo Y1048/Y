@@ -23,6 +23,7 @@ runtime/python/RUNTIME_MANIFEST.json
 - working OpenSSH client (`ssh.exe`, `ssh-keygen.exe`): Windows OpenSSH 또는 Git for Windows OpenSSH
 - G1 Ethernet 또는 closed network
 - G1 onboard `/home/unitree/groot_onboard_runtime`에 heading controller와 executable `build/groot_balance_actuator`
+- 최종 팔 명령 계측용 `/home/unitree/groot_command_observer_build_20261007_9dd21a6` 후보도 필요하다. 현재 통합 실행은 이 후보 ELF를 사용하며 기존 runtime을 working directory로 유지한다. `tools/G1_GROOT_REMOTE_LAUNCH.py --host 주소 --check-observer`로 해시·파일을 읽기 전용 확인한다. 새 G1 USB 복제 시 두 폴더가 필요하다
 - APK를 별도로 설치할 때만 ADB 준비가 필요하다
 
 ## 1. 폴더 복사 후 runtime 검사

@@ -1,3 +1,11 @@
+## 2026-10-14 final LowCmd observer connected to integrated launcher
+
+User explicitly requested connection after the audit. G1_GROOT_REMOTE_LAUNCH.py now selects the previously compiled/hash-verified candidate /home/unitree/groot_command_observer_build_20261007_9dd21a6/build/groot_balance_actuator, while retaining cwd /home/unitree/groot_onboard_runtime and original heading/arguments/shutdown. Original runtime binary untouched. Actuator-only GROOT_COMMAND_OBSERVER_DIR points to logs/command_observer/<owner>; mkdir/writeability check happens only on confirmed launch. Printed location and PC command_observer.json identify the remote CSV directory; actual logging still needs post-run validation, not inferred from path output.
+
+Preflight reads pinned binary/source/header hashes and /proc without executing the binary even for --help. Missing/drifted candidate or an existing original/nonlogging actuator is rejected and preserved. Existing candidate reuse requires matching owner/log environment. --check-observer is read-only and does not enroll login or start processes. Other G1s need the candidate folder copied alongside original runtime; not included as an ARM binary in Git. No remote deployment/actuation performed in this connection turn. Current remote hashes verified and all five runtime include files match candidate after LF normalization.
+
+Offline regression 76/76 PASS, zero skips, with retrieved baseline preservation enabled. Local evidence logs/test_results/observer_connect_20261014/. Actual generated G1 CSV and 500Hz overhead remain unvalidated; recommended_hardware_gains=null. Original controller behavior/PD/limits and camera code unchanged. Integrated physical test is still deferred to user operation.
+
 ## 2026-10-14 new-PC readiness and final LowCmd observer audit
 
 Root NEW_PC_START_HERE.md now distinguishes clone-bundled dependencies from Unity/Link/Omni setup, per-device SSH enrollment, the two-address-only host discovery, fixed onboard unitree/root/eth0 contract, and user-deferred onboard USB copying. Current Editor path does not require APK/ADB, WSL or an added SteamVR layer. Corrected README camera diagram to H264 -> PC JPEG. New-PC/other-serial hardware acceptance and integrated simultaneous-load test remain pending.

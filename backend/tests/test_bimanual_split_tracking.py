@@ -25,7 +25,7 @@ class SplitTrackingTests(unittest.TestCase):
                 self.assertTrue(np.all(np.asarray(policy.position_task.orientation_cost) == 0))
                 self.assertTrue(np.all(np.asarray(policy.orientation_task.position_cost) == 0))
                 self.assertTrue(np.all(np.asarray(policy.orientation_task.orientation_cost) > 0))
-                self.assertAlmostEqual(policy.position_task.gain, sim.dt * 12.)
+                self.assertAlmostEqual(policy.position_task.gain, sim.dt * 5.)
                 self.assertAlmostEqual(policy.orientation_task.gain, sim.dt * 3.)
                 self.assertAlmostEqual(policy.posture_task.gain, sim.dt * 1.5 / TRACKING.frame_gain)
                 self.assertAlmostEqual(policy.shoulder_comfort_task.gain, sim.dt * 1.5)
@@ -38,7 +38,7 @@ class SplitTrackingTests(unittest.TestCase):
         sim = BimanualSimulation()
         for side, policy in sim.motion.items():
             policy.prepare(sim.home_targets[side], .2)
-            self.assertEqual(policy.diagnostics()['position_approach_rate_s'], 12.)
+            self.assertEqual(policy.diagnostics()['position_approach_rate_s'], 5.)
             self.assertEqual(policy.diagnostics()['orientation_approach_rate_s'], 3.)
             policy.reset(sim.home)
             self.assertEqual(policy.diagnostics()['position_approach_rate_s'], 0.)

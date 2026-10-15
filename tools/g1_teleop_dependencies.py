@@ -14,6 +14,24 @@ PYTHON = ROOT / "runtime" / "python" / "python.exe"
 MODULES = {"websocket-client": "websocket", "absl-py": "absl", "pyopengl": "OpenGL"}
 EXPECTED_PYTHON = (3, 11, 9)
 MANIFEST = ROOT / "runtime" / "python" / "RUNTIME_MANIFEST.json"
+MINK_SOURCE_COMMIT = "ae6759602593113ed7e5431ac7c65726ea27dc29"
+
+
+def mink_source_errors(root, manifest):
+    """Reject the old same-version wheel and mixed Python/native installs."""
+    source = manifest.get("mink_source", {})
+    if source.get("commit") != MINK_SOURCE_COMMIT:
+        return ["Mink source commit missing or mismatched"]
+    files = source.get("code_sha256", {})
+    package = Path(root) / "runtime/python/Lib/site-packages/mink"
+    actual = {p.relative_to(package).as_posix() for p in package.rglob("*")
+              if p.is_file() and p.suffix in (".py", ".pyd")}
+    if not files or set(files) != actual:
+        return ["Mink Python/native file inventory mismatch"]
+    if "lie/se3.py" not in files or not any(x.endswith(".pyd") for x in files):
+        return ["Mink Python/native provenance incomplete"]
+    return ["Mink code hash mismatch: " + name for name, digest in files.items()
+            if sha256(package / name) != digest]
 
 
 def runtime_manifest():
@@ -64,6 +82,7 @@ def probe():
             path = ROOT / "runtime" / "python" / filename
             if not path.is_file() or sha256(path) != expected_hash:
                 errors.append("runtime core hash mismatch: " + filename)
+        errors.extend(mink_source_errors(ROOT, manifest))
     except Exception as error:
         errors.append("runtime manifest: " + type(error).__name__ + ": " + str(error))
         expected_pins = requirements(ROOT / "tools/requirements-teleop.txt")

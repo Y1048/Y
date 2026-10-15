@@ -7,8 +7,10 @@ offering easy access to frame transforms and frame Jacobians. A frame refers to 
 system that can be attached to various parts of the robot, such as a body, geom, or site.
 """
 
+import functools
 import logging
 import os
+from typing import TYPE_CHECKING
 
 import mujoco
 import numpy as np
@@ -16,6 +18,9 @@ import numpy as np
 from . import constants as consts
 from . import exceptions
 from .lie import SE3, SO3
+
+if TYPE_CHECKING:
+    from .limits import ConfigurationLimit
 
 try:
     if os.environ.get("MINK_DISABLE_NATIVE", ""):
@@ -108,6 +113,9 @@ class Configuration:
         # mj_kinematics. An extra call to mj_comPos is required for updated Jacobians.
         mujoco.mj_kinematics(self.model, self.data)
         mujoco.mj_comPos(self.model, self.data)
+        # ten_length and ten_J feed mjEQ_TENDON rows and tendon armature in M.
+        if self.model.ntendon > 0:
+            mujoco.mj_tendon(self.model, self.data)
         if self.model.neq > 0:
             mujoco.mj_makeConstraint(self.model, self.data)
 
@@ -195,6 +203,13 @@ class Configuration:
 
             {}_B v_{WB} = {}_B J_{WB} \dot{q}
 
+        Note:
+            MuJoCo's ``mj_jac*`` functions return Jacobians whose reference
+            frame is centered at the frame origin but aligned with the world
+            axes, i.e., Pinocchio's ``LOCAL_WORLD_ALIGNED`` convention. This
+            method re-expresses them in the local frame, matching Pinocchio's
+            ``LOCAL`` convention.
+
         Args:
             frame_name: Name or id of the frame in the MJCF.
             frame_type: Type of frame. Can be a geom, a body or a site.
@@ -202,15 +217,12 @@ class Configuration:
         Returns:
             Jacobian :math:`{}_B J_{WB}` of the frame.
         """
-        frame_id = self._resolve_frame_id(frame_name, frame_type)
-
-        jac = np.empty((6, self.model.nv))
-        jac_func = consts.FRAME_TO_JAC_FUNC[frame_type]
-        jac_func(self.model, self.data, jac[:3], jac[3:], frame_id)
+        jac = self._get_frame_jacobian_world_aligned(frame_name, frame_type)
 
         # MuJoCo jacobians have a frame of reference centered at the local frame but
         # aligned with the world frame. To obtain a jacobian expressed in the local
         # frame, aka body jacobian, we need to left-multiply by A[T_fw].
+        frame_id = self._resolve_frame_id(frame_name, frame_type)
         xmat = getattr(self.data, consts.FRAME_TO_XMAT_ATTR[frame_type])[frame_id]
         if _native is not None:
             A_fw = _native.se3_rotation_adjoint_from_xmat(xmat)
@@ -219,6 +231,16 @@ class Configuration:
             A_fw = SE3.from_rotation(R_wf.inverse()).adjoint()
         jac = A_fw @ jac
 
+        return jac
+
+    def _get_frame_jacobian_world_aligned(
+        self, frame_name: str | int, frame_type: str
+    ) -> np.ndarray:
+        """MuJoCo frame Jacobian: world-aligned axes at the frame origin."""
+        frame_id = self._resolve_frame_id(frame_name, frame_type)
+        jac = np.empty((6, self.model.nv))
+        jac_func = consts.FRAME_TO_JAC_FUNC[frame_type]
+        jac_func(self.model, self.data, jac[:3], jac[3:], frame_id)
         return jac
 
     def _resolve_frame_id(self, frame_name: str | int, frame_type: str) -> int:
@@ -233,7 +255,7 @@ class Configuration:
     def _get_transform_frame_to_world_wxyz_xyz(
         self, frame_name: str | int, frame_type: str
     ) -> np.ndarray:
-        """Return the raw wxyz_xyz[7] array for a frame pose. Internal use."""
+        """Return the raw wxyz_xyz[7] array for a frame pose."""
         frame_id = self._resolve_frame_id(frame_name, frame_type)
         xpos = getattr(self.data, consts.FRAME_TO_POS_ATTR[frame_type])[frame_id]
         xmat = getattr(self.data, consts.FRAME_TO_XMAT_ATTR[frame_type])[frame_id]
@@ -267,7 +289,7 @@ class Configuration:
         dest_name: str | int,
         dest_type: str,
     ) -> np.ndarray:
-        """Return the raw wxyz_xyz[7] for a relative transform. Internal use."""
+        """Return the raw wxyz_xyz[7] for a relative transform."""
         source = self._get_transform_frame_to_world_wxyz_xyz(source_name, source_type)
         dest = self._get_transform_frame_to_world_wxyz_xyz(dest_name, dest_type)
         if _native is not None:
@@ -337,6 +359,13 @@ class Configuration:
         M = np.empty((self.nv, self.nv), dtype=np.float64)
         mujoco.mj_fullM(self.model, self.data, M)
         return M
+
+    @functools.cached_property
+    def _default_limit(self) -> "ConfigurationLimit":
+        """Configuration limit used when `solve_ik` is given ``limits=None``."""
+        from .limits import ConfigurationLimit  # noqa: PLC0415
+
+        return ConfigurationLimit(self.model)
 
     # Aliases.
 

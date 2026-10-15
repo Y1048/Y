@@ -27,7 +27,10 @@ class TrackingProfile:
     # Loop rate and hard operational geometry.
     control_hz: float = 60.0
     hard_clearance_m: float = .005
-    elbow_operational_min_rad: float = math.radians(5.0)
+    # Model zero is not a straight elbow: negative angles fold the arm further.
+    # Keep a narrower floor than the model/onboard guard (~-57 deg after margin).
+    # BimanualSimulation still intersects this range with the receiver limits.
+    elbow_operational_min_rad: float = math.radians(-30.0)
     elbow_operational_max_rad: float = math.radians(120.0)
 
     # Base IK objective and numerical damping.

@@ -1,0 +1,43 @@
+{
+  "schema": "g1.ik.next_measurement.v1",
+  "status": "awaiting_new_operator_episode",
+  "purpose": "Evaluate the frozen accuracy candidate on previously unused operator input, separately from physical tracking.",
+  "frozen_profile": {
+    "position_tracking_rate_s": 5.0,
+    "orientation_tracking_rate_s": 3.0,
+    "elbow_operational_min_deg": -30.0,
+    "proximal_velocity_cap_deg_s": 150.0,
+    "wrist_velocity_cap_deg_s": 180.0,
+    "tracking_acceleration_cap_deg_s2": 300.0,
+    "hardware_gain_changes": false
+  },
+  "operator_sequence": [
+    "Engage and hold a comfortable reachable pose for 3 seconds.",
+    "With hands comfortably in front of the torso, rotate each wrist in turn and hold each endpoint for 3 seconds.",
+    "Reach forward within a comfortable range and return twice; hold endpoints for 3 seconds. Do not force a straight-arm or joint-limit pose.",
+    "Move both arms together, then pinch, complete the return, re-engage and pinch again."
+  ],
+  "analysis_before_tuning": {
+    "input": "One new untouched operator JSONL; preserve original and SHA256 before analysis.",
+    "comparison": "Replay identical processed targets and initial state through pre-change and frozen candidate IK. Do not overwrite either configuration or its historical artifacts.",
+    "metrics_each_arm": [
+      "Position residual in mm: mean, median, p95 and max, separated into movement and stationary-target windows.",
+      "Orientation geodesic residual in degrees: mean, median, p95 and max, with the same windows.",
+      "Time to reach and continuously remain within 10 mm and 5 degrees for 0.5 seconds after each target hold; report not_reached rather than omitting failures.",
+      "Tracking/braking/return states, sampled clearance, joint range, velocity and acceleration violations."
+    ],
+    "stationary_window_rule": "Use at least 2 seconds of target positions within 5 mm of the window start and target orientations within 2 degrees of the window start. Assess the final 1 second. If none qualify, stationary accuracy is unavailable.",
+    "offline_comparison_gate": "For each arm, full tracking-window mean position and orientation errors must improve versus the pre-change profile. Each p95 must be no worse than baseline plus 0.05 mm or 0.05 degree. Preserve the existing range, speed, acceleration, clearance and cycle tests. This is a comparative software gate, not a physical safety criterion.",
+    "if_gate_fails": "Retain the failure and label the candidate as failing this new episode. If tuning uses this episode, it becomes development data; reserve a further new episode for validation."
+  },
+  "physical_evidence": {
+    "required_for_motor_tracking_claims": "Final command-observer CSV plus LowState with documented timestamps and joint ordering.",
+    "separate_stages": ["operator target to IK command FK", "IK input to final writer command", "final writer command to measured joints"],
+    "clock_rule": "Do not equate clocks or add errors from different windows. Without justified alignment, report per-stream measurements only.",
+    "acceptance_rule": "A successful write or UDP send does not prove motor acceptance.",
+    "unavailable_data": "Quest-only input supports IK comparison, not actual G1 response or PD optimization."
+  },
+  "execution": "No robot or Unity process is started by this document. Use the existing supported operator workflow only when equipment is available.",
+  "recommended_hardware_gains": null,
+  "hardware_validation": "not_performed"
+}

@@ -7,6 +7,7 @@ import mujoco
 import numpy as np
 
 from ..configuration import Configuration, _resolve_frame_id
+from ..exceptions import LimitDefinitionError
 from .limit import Constraint, Limit
 
 # Type aliases.
@@ -54,13 +55,19 @@ def _is_welded_together(model: mujoco.MjModel, geom_id1: int, geom_id2: int) -> 
 def _are_geom_bodies_parent_child(
     model: mujoco.MjModel, geom_id1: int, geom_id2: int
 ) -> bool:
-    """Returns true if the geom bodies have a parent-child relationship."""
+    """Returns true if the geom bodies have a parent-child relationship.
+
+    As in MuJoCo, the world body is exempt, so world geoms still pair with top-level
+    bodies.
+    """
     body_id1 = model.geom_bodyid[geom_id1]
     body_id2 = model.geom_bodyid[geom_id2]
 
     # body_weldid is the ID of the body's weld.
     body_weldid1 = model.body_weldid[body_id1]
     body_weldid2 = model.body_weldid[body_id2]
+    if body_weldid1 == 0 or body_weldid2 == 0:
+        return False
 
     # weld_parent_id is the ID of the parent of the body's weld.
     weld_parent_id1 = model.body_parentid[body_weldid1]
@@ -85,7 +92,7 @@ def _is_pass_contype_conaffinity_check(
 
 
 class CollisionAvoidanceLimit(Limit):
-    """Normal velocity limit between geom pairs.
+    """Normal distance limit between geom pairs.
 
     Attributes:
         model: MuJoCo model.
@@ -96,17 +103,18 @@ class CollisionAvoidanceLimit(Limit):
             geom in the first geom group with every geom in the second geom group.
             Self collision is achieved by adding a collision pair with the same
             geom group in both pair fields.
-        gain: Gain factor in (0, 1] that determines how fast the geoms are
-            allowed to move towards each other at each iteration. Smaller values
-            are safer but may make the geoms move slower towards each other.
+        gain: Fraction in (0, 1] of the gap above the minimum distance that
+            the geoms may close in a single step. Smaller values are safer but
+            slow the approach.
         minimum_distance_from_collisions: The minimum distance to leave between
             any two geoms. A negative distance allows the geoms to penetrate by
             the specified amount.
-        collision_detection_distance: The distance between two geoms at which the
-            active collision avoidance limit will be active. A large value will
-            cause collisions to be detected early, but may incur high computational
-            cost. A negative value will cause the geoms to be detected only after
-            they penetrate by the specified amount.
+        collision_detection_distance: The distance between two geoms below which
+            the limit is active. Must exceed the minimum distance, and the margin
+            between them must exceed the largest distance the geoms can close in a
+            single step (roughly the maximum approach speed times dt); otherwise
+            pairs can pass through the band undetected. Larger values are safer
+            but cost more distance queries.
         bound_relaxation: An offset on the upper bound of each collision avoidance
             constraint.
         broadphase: If True, skip geom pairs that are provably out of collision
@@ -120,7 +128,7 @@ class CollisionAvoidanceLimit(Limit):
         geom_pairs: CollisionPairs,
         gain: float = 0.85,
         minimum_distance_from_collisions: float = 0.005,
-        collision_detection_distance: float = 0.01,
+        collision_detection_distance: float = 0.05,
         bound_relaxation: float = 0.0,
         broadphase: bool = True,
     ):
@@ -135,17 +143,18 @@ class CollisionAvoidanceLimit(Limit):
                 geom in the first geom group with every geom in the second geom group.
                 Self collision is achieved by adding a collision pair with the same
                 geom group in both pair fields.
-            gain: Gain factor in (0, 1] that determines how fast the geoms are
-                allowed to move towards each other at each iteration. Smaller values
-                are safer but may make the geoms move slower towards each other.
+            gain: Fraction in (0, 1] of the gap above the minimum distance that
+                the geoms may close in a single step. Smaller values are safer but
+                slow the approach.
             minimum_distance_from_collisions: The minimum distance to leave between
                 any two geoms. A negative distance allows the geoms to penetrate by
                 the specified amount.
-            collision_detection_distance: The distance between two geoms at which the
-                active collision avoidance limit will be active. A large value will
-                cause collisions to be detected early, but may incur high computational
-                cost. A negative value will cause the geoms to be detected only after
-                they penetrate by the specified amount.
+            collision_detection_distance: The distance between two geoms below which
+                the limit is active. Must exceed the minimum distance, and the margin
+                between them must exceed the largest distance the geoms can close in a
+                single step (roughly the maximum approach speed times dt); otherwise
+                pairs can pass through the band undetected. Larger values are safer
+                but cost more distance queries.
             bound_relaxation: An offset on the upper bound of each collision avoidance
                 constraint.
             broadphase: If True (default), cheaply skip geom pairs whose bounding
@@ -155,6 +164,17 @@ class CollisionAvoidanceLimit(Limit):
                 that would not produce a constraint, so the resulting constraint is
                 identical to the unfiltered computation.
         """
+        if not 0.0 < gain <= 1.0:
+            raise LimitDefinitionError(
+                f"{self.__class__.__name__} gain must be in the range (0, 1]"
+            )
+        if not collision_detection_distance > minimum_distance_from_collisions:
+            raise LimitDefinitionError(
+                f"{self.__class__.__name__} collision_detection_distance "
+                f"({collision_detection_distance}) must exceed "
+                f"minimum_distance_from_collisions ({minimum_distance_from_collisions})"
+            )
+
         self.model = model
         self.gain = gain
         self.minimum_distance_from_collisions = minimum_distance_from_collisions
@@ -252,6 +272,33 @@ class CollisionAvoidanceLimit(Limit):
         configuration: Configuration,
         dt: float,
     ) -> Constraint:
+        r"""Compute the configuration-dependent collision avoidance limits.
+
+        For each geom pair within the detection distance, the limit is defined as:
+
+        .. math::
+
+            -\Delta d \leq \begin{cases}
+                \xi (d - d_{min}) + \epsilon & d > d_{min} \\
+                \epsilon & \text{otherwise}
+            \end{cases}
+
+        where :math:`d` is the signed distance between the geoms,
+        :math:`\Delta d = n^T J \Delta q` is its first-order change along the
+        contact normal :math:`n`, :math:`\xi` is the gain, :math:`d_{min}` is the
+        minimum distance, and :math:`\epsilon` is the bound relaxation. The limit
+        is a displacement bound and does not depend on :math:`dt`.
+
+        Args:
+            configuration: Robot configuration :math:`q`.
+            dt: Integration timestep in [s].
+
+        Returns:
+            Pair :math:`(G, h)` representing the inequality constraint as
+            :math:`G \Delta q \leq h`. Rows of inactive pairs have
+            :math:`h = \infty`.
+        """
+        del dt  # Unused.
         model = self.model
         data = configuration.data
         upper_bound = np.full((self.max_num_contacts,), np.inf)
@@ -279,7 +326,7 @@ class CollisionAvoidanceLimit(Limit):
                 model, data, geom1_id, geom2_id, fromto, normal, jac1, jac2
             )
             if dist > min_dist:
-                upper_bound[idx] = (gain * (dist - min_dist) / dt) + relaxation
+                upper_bound[idx] = gain * (dist - min_dist) + relaxation
             else:
                 upper_bound[idx] = relaxation
             sign = -1.0 if dist >= 0 else 1.0

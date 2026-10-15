@@ -46,7 +46,7 @@ class BimanualProfileTests(unittest.TestCase):
             TRACKING.shoulder_comfort_yaw_band_rad,
             math.radians(15.0))
         self.assertEqual(
-            TRACKING.elbow_operational_min_rad, math.radians(5.0))
+            TRACKING.elbow_operational_min_rad, math.radians(-30.0))
         self.assertEqual(
             TRACKING.elbow_operational_max_rad, math.radians(120.0))
 

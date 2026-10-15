@@ -42,6 +42,7 @@ def historical_recording_profile():
     """Keep exact fixture replay independent of the current default profile."""
     historical_profile = replace(
         simulator.PROFILE,
+        elbow_operational_min_rad=float(np.deg2rad(5.)),
         position_tracking_rate_s=1.5,
         orientation_tracking_rate_s=1.5,
         joint_acceleration_limit_rad_s2=RECORDED_ACCELERATION_RAD_S2,

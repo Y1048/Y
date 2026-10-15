@@ -45,8 +45,8 @@ class BimanualTests(unittest.TestCase):
         self.assertAlmostEqual(
             TRACKING_JOINT_ACCELERATION_LIMIT_RAD_S2,
             tracking_acceleration)
-        self.assertEqual(POSITION_TRACKING_RATE_S, 12.0)
-        self.assertEqual(ORIENTATION_TRACKING_RATE_S, 1.5)
+        self.assertEqual(POSITION_TRACKING_RATE_S, 5.0)
+        self.assertEqual(ORIENTATION_TRACKING_RATE_S, 3.0)
         np.testing.assert_array_equal(
             s.caps, np.asarray(TRACKING_JOINT_VELOCITY_LIMITS_RAD_S))
         np.testing.assert_array_equal(

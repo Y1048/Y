@@ -7,7 +7,9 @@ import numpy as np
 TRACKING_PROXIMAL_VELOCITY_LIMIT_DEG_S = 150.0
 TRACKING_WRIST_VELOCITY_LIMIT_DEG_S = 180.0
 TRACKING_JOINT_ACCELERATION_LIMIT_DEG_S2 = 300.0
-POSITION_TRACKING_RATE_S = 12.0
+# A slower Cartesian approach avoids position/orientation competition at the
+# elbow boundary. This is an IK error-decay rate, not a motor gain or speed cap.
+POSITION_TRACKING_RATE_S = 5.0
 # Approach rates are inverse seconds, not joint velocity caps or motor PD.
 ORIENTATION_TRACKING_RATE_S = 3.0
 POSTURE_TRACKING_RATE_S = 1.5

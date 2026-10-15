@@ -1,0 +1,293 @@
+{
+  "status": "applied_locally_offline_verified",
+  "source": "C:\\Users\\user\\Documents\\Codex\\2026-10-15\\g1-mink-upgrade-offline",
+  "portable": "C:\\Users\\user\\Desktop\\G1_Teleop_Portable",
+  "backup": "C:\\Users\\user\\Documents\\Codex\\2026-09-07\\c-users-user-desktop-g1-teleop\\artifacts\\ik_visual_20261014\\accuracy_apply_20261015\\portable_backup",
+  "changes": [
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_limits.py",
+      "before": "54d86f8509ceb908526e4dea8042604756ab1dd2b6559ed922118de195473cb8",
+      "after": "f20168d9e75d80655e829208c7a920843cac8e18f377508475525dc7ee8b776b"
+    },
+    {
+      "path": "MuJoCo_G1_Controller/scripts/g1_bimanual_profile.py",
+      "before": "f76a5ab569e843741a6a21c6cfdf1d776bfb7546f60095d6be914638276a6c97",
+      "after": "9aeb0b2b34e6a863b82ea96f57ddc92aa83e7c060ede9c6a9d304fe593a990ba"
+    }
+  ],
+  "comparisons": [
+    {
+      "session": "20261014_131735_727737",
+      "input_sha256": "2da27bd2815d24a9a2c207fd9854521c005c9f9ca8f57c6d49314df3a01abc96",
+      "samples": 501,
+      "braking_ticks": 90,
+      "before_mean_mm_deg": [
+        [
+          35.489166185047374,
+          12.272574792515902
+        ],
+        [
+          68.29656108464161,
+          19.48205554835252
+        ]
+      ],
+      "after_mean_mm_deg": [
+        [
+          32.603357044488625,
+          9.048299826625064
+        ],
+        [
+          55.44713164822737,
+          11.21340145654939
+        ]
+      ],
+      "before_p95_mm_deg": [
+        [
+          142.96224087514975,
+          25.52917625580495
+        ],
+        [
+          222.2305941847586,
+          33.428384933965894
+        ]
+      ],
+      "after_p95_mm_deg": [
+        [
+          97.26030426985169,
+          20.93160892325448
+        ],
+        [
+          193.7480628505105,
+          30.213668673182475
+        ]
+      ],
+      "improvement_percent": [
+        [
+          8.131521393068475,
+          26.272196506450108
+        ],
+        [
+          18.814167554482907,
+          42.44241102424308
+        ]
+      ],
+      "minimum_clearance_mm": 23.89429465256363
+    },
+    {
+      "session": "20261014_133837_304396",
+      "input_sha256": "43ffe4f04c50f8fb15ad8d298bbb00dde34b81a519eed233bc79cb3dccfc04a6",
+      "samples": 2122,
+      "braking_ticks": 69,
+      "before_mean_mm_deg": [
+        [
+          45.37298057334884,
+          33.73187482069722
+        ],
+        [
+          20.21657569710846,
+          15.35449836794474
+        ]
+      ],
+      "after_mean_mm_deg": [
+        [
+          22.488182402970626,
+          16.119351945307688
+        ],
+        [
+          17.856547249933943,
+          13.11925368352369
+        ]
+      ],
+      "before_p95_mm_deg": [
+        [
+          88.98941096145896,
+          69.87176891111999
+        ],
+        [
+          60.40468034831497,
+          51.05522363207054
+        ]
+      ],
+      "after_p95_mm_deg": [
+        [
+          71.86340909397666,
+          62.20343619015531
+        ],
+        [
+          60.424907428268064,
+          50.40535584424727
+        ]
+      ],
+      "improvement_percent": [
+        [
+          50.437061619487864,
+          52.21329371405954
+        ],
+        [
+          11.673729926043153,
+          14.557588472493011
+        ]
+      ],
+      "minimum_clearance_mm": 6.018837478237094
+    },
+    {
+      "session": "20261014_134237_876142",
+      "input_sha256": "b1761e370a4c35ae441625f26f5b00e81350003b3c115daa486c17763d5aef6e",
+      "samples": 1756,
+      "braking_ticks": 0,
+      "before_mean_mm_deg": [
+        [
+          46.09790234131163,
+          32.1470155411492
+        ],
+        [
+          38.69481046075168,
+          28.03765868060307
+        ]
+      ],
+      "after_mean_mm_deg": [
+        [
+          26.92878886687471,
+          18.420321468521795
+        ],
+        [
+          24.975872189874252,
+          17.28096472267399
+        ]
+      ],
+      "before_p95_mm_deg": [
+        [
+          89.25172337733748,
+          83.960186877212
+        ],
+        [
+          83.68599392062403,
+          74.91342996099004
+        ]
+      ],
+      "after_p95_mm_deg": [
+        [
+          83.79970044101945,
+          76.57639192565885
+        ],
+        [
+          78.25538737617154,
+          68.82756866054993
+        ]
+      ],
+      "improvement_percent": [
+        [
+          41.58348319736472,
+          42.69974627988966
+        ],
+        [
+          35.454207185722254,
+          38.36516479662671
+        ]
+      ],
+      "minimum_clearance_mm": 19.020579939802648
+    }
+  ],
+  "selected_profile": {
+    "control_hz": 60.0,
+    "hard_clearance_m": 0.005,
+    "elbow_operational_min_rad": -0.5235987755982988,
+    "elbow_operational_max_rad": 2.0943951023931953,
+    "position_cost": 8.0,
+    "orientation_cost": 2.0,
+    "posture_cost": 0.04,
+    "frame_gain": 0.35,
+    "lm_damping": 1e-05,
+    "build_ik_damping": 1e-06,
+    "proximal_damping_cost": 0.25,
+    "wrist_damping_cost": 0.015,
+    "shoulder_comfort_cost": 1.2,
+    "shoulder_comfort_roll_band_rad": 0.3490658503988659,
+    "shoulder_comfort_yaw_band_rad": 0.2617993877991494,
+    "shoulder_yaw_envelope_rad": 1.5707963267948966,
+    "shoulder_yaw_stop_scale": 0.8,
+    "elbow_clearance_cost": 8.0,
+    "elbow_gain_per_second": 0.6,
+    "elbow_reference_release_m": 0.025,
+    "elbow_assist_error_m": 0.02,
+    "elbow_assist_start_max_rad": 0.3490658503988659,
+    "elbow_lift_m": 0.08,
+    "elbow_below_shoulder_m": 0.04,
+    "elbow_min_lift_m": 0.005,
+    "torso_front_inner_m": 0.015,
+    "torso_front_outer_m": 0.06,
+    "torso_front_lateral_margin_m": 0.03,
+    "orientation_position_priority_scale": 0.5,
+    "orientation_collision_clearance_m": 0.012,
+    "orientation_joint_margin_rad": 0.08726646259971647,
+    "orientation_elbow_margin_rad": 0.08726646259971647,
+    "orientation_error_elbow_m": 0.025,
+    "orientation_error_constrained_m": 0.08,
+    "orientation_release_error_m": 0.01,
+    "orientation_release_clearance_m": 0.025,
+    "orientation_release_joint_margin_rad": 0.13962634015954636,
+    "orientation_priority_dwell_s": 0.3,
+    "orientation_scale_slew_per_second": 1.0,
+    "wrist_priority_position_full_m": 0.002,
+    "wrist_priority_position_zero_m": 0.008,
+    "wrist_priority_rotation_full_rad": 0.05235987755982989,
+    "wrist_priority_margin_min_rad": 0.08726646259971647,
+    "wrist_priority_margin_full_rad": 0.4886921905584123,
+    "wrist_priority_clearance_min_m": 0.005,
+    "wrist_priority_clearance_full_m": 0.025,
+    "wrist_priority_proximal_damping_scale": 14.0,
+    "wrist_priority_preserve_held_rotation": true,
+    "collision_minimum_m": 0.006,
+    "collision_detection_distance_m": 0.15,
+    "collision_gain": 0.85,
+    "collision_stopping_acceleration_scale": 0.25,
+    "joint_limit_stopping_speed_scale": 0.8,
+    "checked_stop_substep_rad": 0.004363323129985824,
+    "position_tracking_rate_s": 5.0,
+    "orientation_tracking_rate_s": 3.0,
+    "posture_tracking_rate_s": 1.5,
+    "joint_acceleration_limit_rad_s2": 5.235987755982989,
+    "joint_velocity_limits_rad_s": [
+      2.6179938779914944,
+      2.6179938779914944,
+      2.6179938779914944,
+      2.6179938779914944,
+      3.141592653589793,
+      3.141592653589793,
+      3.141592653589793,
+      2.6179938779914944,
+      2.6179938779914944,
+      2.6179938779914944,
+      2.6179938779914944,
+      3.141592653589793,
+      3.141592653589793,
+      3.141592653589793
+    ]
+  },
+  "selection": "Operational elbow floor -30 deg (narrower than RX/model guard), position approach 5/s; no acceleration increase or motor gain changes.",
+  "p95_gate": "Per side/session <= pre-turn current +0.05 mm or deg; one position p95 +0.02023 mm, other eleven metrics lower.",
+  "tests": {
+    "unique_tests": 101,
+    "initial_regression": "84/85; one new test used wrong return completion attribute",
+    "corrected_test": "stage == complete; rerun 2/2 passed; no production changes to return logic",
+    "motion_quality": "16/16 passed",
+    "replay_runs_selected": 3
+  },
+  "limitations": [
+    "All recorded logs are reused development data, not independent validation.",
+    "Fixed solver-tick replay, not original wall-clock/transport timing.",
+    "Dynamic errors include lag; no guarantee every sample improves.",
+    "Selected render frames are not an exhaustive natural-posture proof.",
+    "Robot has not been moved or physically validated."
+  ],
+  "preserved_files": 84,
+  "recommended_hardware_gains": null,
+  "hardware_validation": false,
+  "installed_replay_match": "PASS: 1756 ticks, q/errors/clearance atol 1e-9, identical goals and timestamps",
+  "dependency_probe": "PASS",
+  "model_import_probe": "PASS (no transport/viewer)",
+  "git_status": "Local source and Portable updated; no commit or push in this task",
+  "source_base_commit": "801b5589c9ff96a7555b320a0247d2d4d6250177",
+  "mink_commit": "ae6759602593113ed7e5431ac7c65726ea27dc29",
+  "visual_check": "Inspected 12 before/candidate paired front/side views from 6 selected extreme instants. No inverted elbow seen in those views; not exhaustive human-motion certification."
+}

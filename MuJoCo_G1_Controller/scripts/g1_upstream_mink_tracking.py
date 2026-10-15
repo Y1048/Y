@@ -1,7 +1,7 @@
 """Mink objective/contact Jacobians with reduced velocity QP, simulation only.
 
-CollisionAvoidanceLimit supplies geometry/Jacobians; the installed 1.3.0
-velocity-distance bound is converted to the delta-q units used by build_ik.
+CollisionAvoidanceLimit supplies geometry/Jacobians and displacement bounds
+from the pinned upstream revision recorded in RUNTIME_MANIFEST.json.
 Acceleration bounds are a project extension inside the same QP, not a filter
 that changes the collision-avoiding direction after solving. No tracking jerk
 bound is imposed by this flow. Return still uses the checked Ruckig trajectory.
@@ -238,7 +238,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
                 plus, minus = origin.copy(), origin.copy()
                 plus[address] += 1e-5; minus[address] -= 1e-5
                 g[index, dof] = -(distance(plus)-distance(minus))/(2e-5)
-            h[index] = limit.gain * max(0., corrected-limit.minimum_distance_from_collisions)/self.dt_s + limit.bound_relaxation
+            h[index] = limit.gain * max(0., corrected-limit.minimum_distance_from_collisions) + limit.bound_relaxation
         return Constraint(G=g, h=h)
 
     def Reset(self, current_q):
@@ -309,9 +309,8 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
             g = c.G[:, ids] * dt
             h = c.h.copy()
             if isinstance(limit, mink.CollisionAvoidanceLimit):
-                # Installed Mink 1.3.0 returns a velocity-distance bound
-                # (gain * distance / dt); convert it to delta-q units.
-                h *= dt
+                # Pinned upstream already returns a delta-q bound. The
+                # reduced velocity QP conversion is on G above, not h.
                 # Reserve 0.5 mm ahead of the exact guard. A small outward
                 # recovery request avoids getting stuck on the linearized
                 # boundary; the exact checked path remains authoritative.
@@ -321,7 +320,7 @@ class UpstreamMinkTracking(StatefulMinkTrajectory):
                 normal_acceleration = .25 * (np.abs(c.G[:, ids]) @
                     np.asarray(self.acceleration_limits))
                 remaining = np.maximum(0., np.where(np.isfinite(c.h),
-                    (c.h-limit.bound_relaxation)*dt/limit.gain, 0.))
+                    (c.h-limit.bound_relaxation)/limit.gain, 0.))
                 stopping_speed = .5 * (np.sqrt((normal_acceleration*dt)**2 +
                     2*normal_acceleration*remaining)-normal_acceleration*dt)
                 finite_stopping = np.isfinite(c.h) & np.isfinite(stopping_speed)

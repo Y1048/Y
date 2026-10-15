@@ -11,6 +11,24 @@ import g1_teleop_dependencies as deps
 
 
 class DependencyTests(unittest.TestCase):
+    def test_mink_rejects_old_wheel_with_same_version(self):
+        manifest = deps.runtime_manifest()
+        manifest.pop("mink_source")
+        self.assertTrue(deps.mink_source_errors(ROOT, manifest))
+
+    def test_mink_rejects_mixed_native_and_python_files(self):
+        manifest = deps.runtime_manifest()
+        files = manifest["mink_source"]["code_sha256"]
+        native = next(name for name in files if name.endswith(".pyd"))
+        files[native] = "0" * 64
+        errors = deps.mink_source_errors(ROOT, manifest)
+        self.assertEqual(errors, ["Mink code hash mismatch: " + native])
+
+    def test_mink_rejects_missing_inventory_entry(self):
+        manifest = deps.runtime_manifest()
+        manifest["mink_source"]["code_sha256"].pop("lie/se3.py")
+        self.assertTrue(deps.mink_source_errors(ROOT, manifest))
+
     def test_real_bundled_runtime_probe_passes(self):
         result = deps.validate(deps.PYTHON)
         self.assertTrue(result)

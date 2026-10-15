@@ -81,7 +81,7 @@ class OnboardJointRangeTests(unittest.TestCase):
             indices = [NAMES.index(n) for n in s.names if n.startswith(p.side+'_')]
             np.testing.assert_array_equal(s.model.jnt_range[p.joint_ids], s.ranges[indices])
         # Preserve the existing more restrictive elbow minimum; hardware caps max.
-        self.assertEqual(s.ranges[3, 0], math.radians(5.))
+        self.assertEqual(s.ranges[3, 0], math.radians(-30.))
         self.assertLess(s.ranges[3, 1], math.radians(120.))
 
     def test_home_and_return_waypoint_remain_inside_receiver_guard(self):

@@ -91,7 +91,9 @@ class BimanualSafetyEnvelope:
         # that made the old 3.11 zero-witness finite-difference repair obsolete.
         # Hard geometry is still rechecked by clearance()/checked_stop_plan().
 
-        collision_h = ch * s.dt
+        # Pinned upstream Mink returns a joint-displacement bound already.
+        # Do not repeat the dt conversion required by the old 1.3.0 wheel.
+        collision_h = ch.copy()
         if not returning:
             normal_acceleration = (
                 self.profile.collision_stopping_acceleration_scale
@@ -109,7 +111,6 @@ class BimanualSafetyEnvelope:
                     np.isfinite(ch),
                     (
                         (ch - collision.bound_relaxation)
-                        * s.dt
                         / collision.gain
                     ),
                     0.0,
